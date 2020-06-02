@@ -32,7 +32,6 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 var router = require('express-convention-routes');
 
-console.log (__dirname);
 router.load(app, {
     // Defaults to "./controllers" but showing for example
     routesDirectory: './controllers', 

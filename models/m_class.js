@@ -1,8 +1,13 @@
+const db = require('../database');
+
 const {
   DataTypes
 } = require('sequelize');
 
 module.exports = sequelize => {
+  if (!sequelize) {
+    sequelize = db.sequelize();
+  }
   const attributes = {
     class_id: {
       type: DataTypes.INTEGER(11),
@@ -88,6 +93,7 @@ module.exports = sequelize => {
   };
   const options = {
     tableName: "m_class",
+    timestamps: false,
     comment: "",
     indexes: []
   };

@@ -207,6 +207,47 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "group",
+			"item": [
+				{
+					"name": "GET group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/group",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET group by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/group/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "task",
 			"item": [
 				{

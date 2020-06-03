@@ -1,8 +1,13 @@
+const db = require('../database');
+
 const {
   DataTypes
 } = require('sequelize');
 
 module.exports = sequelize => {
+  if (!sequelize) {
+    sequelize = db.sequelize();
+  }
   const attributes = {
     group_id: {
       type: DataTypes.INTEGER(11),
@@ -70,6 +75,7 @@ module.exports = sequelize => {
   };
   const options = {
     tableName: "sec_group",
+    timestamps: false,
     comment: "",
     indexes: []
   };

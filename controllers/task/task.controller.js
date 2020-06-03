@@ -15,6 +15,10 @@ module.exports = function (router) {
             filter.class_id= req.query.class;
         }
 
+        if (!!req.query.subject) {
+            filter.subject_id= req.query.subject;
+        }
+
         const model_task = t_task();
         var data = await model_task.findAll(
             {

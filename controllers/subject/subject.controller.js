@@ -1,9 +1,5 @@
 const m_subject = require('../../models/m_subject');
-const { sha256 } = require('../../helpers/sha');
-const query = require('../../models/query');
-const {Op} = require('sequelize');
 const moment = require('moment');
-var config = require('../../config/app.config');
 
 
 module.exports = function (router) {

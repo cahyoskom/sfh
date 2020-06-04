@@ -1,8 +1,13 @@
+const db = require('../database');
+
 const {
   DataTypes
 } = require('sequelize');
 
 module.exports = sequelize => {
+  if (!sequelize) {
+    sequelize = db.sequelize();
+  }
   const attributes = {
     task_collection_file_id: {
       type: DataTypes.INTEGER(11),
@@ -119,6 +124,7 @@ module.exports = sequelize => {
   };
   const options = {
     tableName: "t_task_collection_file",
+    timestamps: false,
     comment: "",
     indexes: [{
       name: "fk_t_task_collection_file_t_task_collection",

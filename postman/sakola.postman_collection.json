@@ -320,6 +320,45 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "PUT task files",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/ASUS/Downloads/download.png"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/ASUS/Downloads/cp10.pptx"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task/{{task_id}}/files",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"{{task_id}}",
+								"files"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}

@@ -18,11 +18,16 @@ var corsOptions = {
   
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+var rawBodySaver = function (req, res, buf, encoding) {
+  if (buf && buf.length) {
+      req.rawBody = buf.toString(encoding || 'utf8');
+  }
+};
+
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.raw({ verify: rawBodySaver, type: function () { return true } }));
 
 
 app.use(logger('dev'));

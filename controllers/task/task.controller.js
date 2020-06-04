@@ -1,9 +1,10 @@
 const t_task = require('../../models/t_task');
-const { sha256 } = require('../../helpers/sha');
-const query = require('../../models/query');
-const {Op} = require('sequelize');
+const t_task_file = require('../../models/t_task_file');
 const moment = require('moment');
-var config = require('../../config/app.config');
+const fs = require('fs');
+const { sha256 } = require('../../helpers/sha');
+const {FILE_UPLOAD_DIR} = require('../../config/app.config');
+const formidable =require('formidable');
 
 
 module.exports = function (router) {
@@ -32,7 +33,8 @@ module.exports = function (router) {
     router.get('/:id', async function (req, res) {
         const model_task = t_task();
         var datum = await model_task.findOne({ where : {task_id: req.params.id}});
-
+        var files = await t_task_file().findAll({where : {task_id : req.params.id}});
+        datum.files = files;
         res.json({ data : datum});
     });
 
@@ -59,4 +61,85 @@ module.exports = function (router) {
             res.status(411).json({error: 11, message: err.message})
         }
     });
+
+    router.put('/:id/files', async function(req, res) {
+        const form = formidable({ multiples: true });
+        const task_id = req.params.id;
+
+        var task = await t_task().findOne({ where : {task_id: req.params.id}});
+        let result = [];
+        if (!task) {
+            res.status(404).json({error: 31, message: 'Task not found.'})
+            return;
+        }
+
+        let {fields, files} = await new Promise(function (resolve, reject) {
+            form.parse(req, function (err, fields, files) {
+                if (err) {
+                    reject(err)
+                    return;
+                }
+                if (!Array.isArray(files.files)) {
+                    resolve( { fields, files: [files.files] });
+                }else {
+                    resolve( { fields, files: files.files });
+                }
+            });
+        });
+
+       if (files.length == 0) {
+            res.status(421).json({error: 21, message: "Files not found"});
+        }
+
+        var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/";
+        if (!fs.existsSync(upload_dir)){
+            fs.mkdirSync(upload_dir);
+        }        
+        for (const element of files) {
+            let filename = upload_dir + element.name;
+            await move_file(element.path, filename);
+            let new_file = {
+                task_id : task_id,
+                filename : element.name,
+                ext : filename.split('.').pop(),
+                mime_type : element.type,
+                location: filename,
+                sequence : 0, //todo ambil dari terakhir
+                status: 1,
+                created_date : moment().format(),
+                created_by : 'temp'
+                };
+            
+            var task_file = await t_task_file().findOne({where : {task_id: task_id, filename : element.name}});
+            if (!task_file) { // belum ada, insert baru
+                task_file = await t_task_file().create(new_file);
+            } else {
+                // todo, update ganti updated date
+            }
+
+            result.push(task_file);
+        };
+
+        res.json( {data : result });
+    });
+
+    async function move_file(oldpath, newpath) {
+        fs.readFile(oldpath, function (err, data) {
+            if (err) throw err;
+            // console.log('File read!');
+
+            // Write the file
+            fs.writeFile(newpath, data, function (err) {
+                if (err) throw err;
+                // console.log('File written!');
+            });
+
+            // Delete the file
+            fs.unlink(oldpath, function (err) {
+                if (err) throw err;
+                // console.log('File deleted!');
+            });
+        });        
+    }
+
 };

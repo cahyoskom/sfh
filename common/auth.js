@@ -40,8 +40,10 @@ module.exports = async (req, res, next) => {
         return res.status(401).send({message:'User not found!'});
     }
 
-    user.roles = await roles.get(token.user_id);
+    user.roles = await roles.set(await roles.get(token.user_id));
     req.user = user;
+
+    console.log('================= AUTHORIZATION END =================');
     return next();
 
 }

@@ -25,14 +25,14 @@ module.exports = function (router) {
         }
 
         var roles = await ROLES.get(user.user_id);
-        var token = await setToken(user.user_id)
+        var token = await setToken(user.user_id);
         var result = {
             user : { 
                     user_id : user.user_id,
                     user_name : user.user_name,
                     email : user.email
                     },
-            roles : roles,
+            roles : await ROLES.set(roles),
             token : token.token,
             token_validity : token.valid_until
         }

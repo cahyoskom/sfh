@@ -38,9 +38,10 @@ app.use(cookieParser());
 var router = require('express-convention-routes');
 
 app.use((req, res, next) => { 
-  console.log('URL : ' + req.url);
+  console.log(' ============================== ' + req.url + ' ==============================');
   console.log('Header : ' + JSON.stringify(req.headers));
   console.log('Body : ' + JSON.stringify(req.body));
+  console.log(' ============================================================================ ');
   next();
 });
 

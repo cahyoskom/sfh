@@ -5,27 +5,40 @@ const fs = require('fs');
 const { sha256 } = require('../../common/sha');
 const {FILE_UPLOAD_DIR} = require('../../config/app.config');
 const formidable =require('formidable');
+const MoveFile = require('../../common/move');
+const {query} = require('../../models/query');
 
 
 module.exports = function (router) {
 
     router.get('/', async function (req, res) {
         var filter = {};
+        var where = [];
 
         if (!!req.query.class) {
-            filter.class_id= req.query.class;
+            filter.class_id = req.query.class;
+            where.push('c.class_id IN (:class_id)');
         }
 
         if (!!req.query.subject) {
             filter.subject_id= req.query.subject;
+            where.push('s.subject_id IN (:subject_id)');
         }
 
-        const model_task = t_task();
-        var data = await model_task.findAll(
-            {
-                where : filter
-            }
-        );
+        var sql = `
+            SELECT t.task_id, title, notes, weight, start_date, finish_date, publish_date,
+                    s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
+            FROM t_task t
+            JOIN m_subject s ON s.subject_id=t.subject_id
+            JOIN m_class c ON c.class_id=t.class_id
+            WHERE t.status = 1 AND s.status=1 AND c.status = 1
+        `;
+
+        if (Object.keys(filter).length > 0) {
+            sql = sql + " AND " + where.join(' AND ');
+        }
+
+        var data = await query(sql, filter);
 
         res.json({ data : data});
     });
@@ -97,7 +110,7 @@ module.exports = function (router) {
         }        
         for (const element of files) {
             let filename = upload_dir + element.name;
-            await move_file(element.path, filename);
+            await MoveFile(element.path, filename);
             let new_file = {
                 task_id : task_id,
                 filename : element.name,
@@ -123,23 +136,5 @@ module.exports = function (router) {
         res.json( {data : result });
     });
 
-    async function move_file(oldpath, newpath) {
-        fs.readFile(oldpath, function (err, data) {
-            if (err) throw err;
-            // console.log('File read!');
-
-            // Write the file
-            fs.writeFile(newpath, data, function (err) {
-                if (err) throw err;
-                // console.log('File written!');
-            });
-
-            // Delete the file
-            fs.unlink(oldpath, function (err) {
-                if (err) throw err;
-                // console.log('File deleted!');
-            });
-        });        
-    }
 
 };

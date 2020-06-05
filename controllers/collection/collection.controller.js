@@ -4,38 +4,29 @@ const t_task_collection = require('../../models/t_task_collection');
 const t_task_collection_file = require('../../models/t_task_collection_file');
 const query = require('../../models/query');
 const moment = require('moment');
-const fs = require('fs');
 const { sha256 } = require('../../common/sha');
 const {FILE_UPLOAD_DIR} = require('../../config/app.config');
 const formidable =require('formidable');
-
+const GROUP_ENUMS = require('../../enums/group.enums');
+const MoveFile = require('../../common/move');
 
 module.exports = function (router) {
 
     router.get('/', async function (req, res) {
         var filter = {};
 
+        if (!!req.user.roles[GROUP_ENUMS.STUDENT]) {
+            // student
+            var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0]);
+        } else {
+            // not student
+
+        }
+
         if (!!req.query.class) {
             filter.class_id= req.query.class;
         }
 
-        var sql = `SELECT r.group_id, group_name, r.class_id, class_name, 
-                            r.subject_id, subject_name,
-                            r.student_id, student_name
-                    FROM t_task t
-                    LEFT JOIN t_task_file tf ON t.task_id=tf.task_id
-                    LEFT JOIN t_task_collection tc ON tc.task_id=t.task_id
-                    LEFT JOIN t_task_collection_file tcf ON tcf.task_collection_id=t.task_collection_id
-                    WHERE t.class_id = :class_id AND 
-                    `;
-        var param = { user_id : user_id};
-
-        const model_task = t_task();
-        var data = await model_task.findAll(
-            {
-                where : filter
-            }
-        );
 
         res.json({ data : data});
     });
@@ -107,7 +98,7 @@ module.exports = function (router) {
         }        
         for (const element of files) {
             let filename = upload_dir + element.name;
-            await move_file(element.path, filename);
+            await MoveFile(element.path, filename);
             let new_file = {
                 task_id : task_id,
                 filename : element.name,
@@ -133,23 +124,21 @@ module.exports = function (router) {
         res.json( {data : result });
     });
 
-    async function move_file(oldpath, newpath) {
-        fs.readFile(oldpath, function (err, data) {
-            if (err) throw err;
-            // console.log('File read!');
+    async function GetCollectionForStudent(student) {
+        var sql = `SELECT t.task_id, t.title, notes, start_date, finish_date, 
+                        s.subject_name,
+                        COALESCE(tc.task_collection_id, 0) AS task_collection_id, 
+                        COALESCE(tc.status,0) AS collection_status
+                    FROM t_task t
+                    JOIN m_subject s ON s.subject_id=t.subject_id
+                    LEFT JOIN (SELECT * FROM t_task_collection WHERE student_id = :student_id) tc ON tc.task_id=t.task_id
+                    WHERE t.class_id = :class_id AND t.status=1 AND s.status = 1
+                    `;
+        var param = { class_id : student.student_class_id, student_id : student.student_id };
 
-            // Write the file
-            fs.writeFile(newpath, data, function (err) {
-                if (err) throw err;
-                // console.log('File written!');
-            });
+        return await query.query(sql, param);
 
-            // Delete the file
-            fs.unlink(oldpath, function (err) {
-                if (err) throw err;
-                // console.log('File deleted!');
-            });
-        });        
     }
+
 
 };

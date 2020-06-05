@@ -16,6 +16,18 @@ module.exports.get = async (user_id) => {
     return await query.query(sql, param);
 }
 
+module.exports.set = async (roles) => {
+    var result = {};
+    for(var role of roles) {
+        var role_id = role.group_id;
+        if (!result[role_id]) {
+            result[role_id] = [];
+        }
+        result[role_id].push(role);
+    }
+    return result;
+}
+
 module.exports.getStudent = async (roles) => {
     for (var role of roles) {
         if(!!role.student_id) {

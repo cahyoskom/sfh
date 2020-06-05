@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 require('express-async-errors');
@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(bodyParser.raw({ verify: rawBodySaver, type: function () { return true } }));
 
 
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -38,12 +38,18 @@ app.use(cookieParser());
 var router = require('express-convention-routes');
 
 app.use((req, res, next) => { 
+  console.log('URL : ' + req.url);
+  console.log('Header : ' + JSON.stringify(req.headers));
+  console.log('Body : ' + JSON.stringify(req.body));
+  next();
+});
+
+app.use((req, res, next) => { 
     if (req.url == '/' || req.url == '/login') {
       return next();
     }
     auth(req, res, next)
   });
-
 
 router.load(app, {
     // Defaults to "./controllers" but showing for example

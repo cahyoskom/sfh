@@ -1,5 +1,8 @@
 const t_task = require('../../models/t_task');
 const t_task_file = require('../../models/t_task_file');
+const t_task_collection = require('../../models/t_task_collection');
+const t_task_collection_file = require('../../models/t_task_collection_file');
+const query = require('../../models/query');
 const moment = require('moment');
 const fs = require('fs');
 const { sha256 } = require('../../common/sha');
@@ -16,9 +19,16 @@ module.exports = function (router) {
             filter.class_id= req.query.class;
         }
 
-        if (!!req.query.subject) {
-            filter.subject_id= req.query.subject;
-        }
+        var sql = `SELECT r.group_id, group_name, r.class_id, class_name, 
+                            r.subject_id, subject_name,
+                            r.student_id, student_name
+                    FROM t_task t
+                    LEFT JOIN t_task_file tf ON t.task_id=tf.task_id
+                    LEFT JOIN t_task_collection tc ON tc.task_id=t.task_id
+                    LEFT JOIN t_task_collection_file tcf ON tcf.task_collection_id=t.task_collection_id
+                    WHERE t.class_id = :class_id AND 
+                    `;
+        var param = { user_id : user_id};
 
         const model_task = t_task();
         var data = await model_task.findAll(

@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 require('express-async-errors');
-
+const auth = require('./common/auth');
 // connect to DB
 const db = require('./database');
 db.connectDB();
@@ -36,6 +36,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 var router = require('express-convention-routes');
+
+app.use((req, res, next) => { 
+    if (req.url == '/' || req.url == '/login') {
+      return next();
+    }
+    auth(req, res, next)
+  });
+
 
 router.load(app, {
     // Defaults to "./controllers" but showing for example

@@ -24,7 +24,7 @@ module.exports = function (router) {
             subject_name : req.body.subject_name,
             status: 1,
             created_date : moment().format(),
-            created_by : 'temp'
+            created_by : req.user.user_name
         }
         try {
             var datum = await model_subject.create(new_obj);

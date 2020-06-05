@@ -24,7 +24,7 @@ module.exports = function (router) {
     //         group_name : req.body.group_name,
     //         status: 1,
     //         created_date : moment().format(),
-    //         created_by : 'temp'
+    //         created_by : req.user.user_name
     //     }
     //     try {
     //         var datum = await model_group.create(new_obj);

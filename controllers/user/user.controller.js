@@ -1,5 +1,5 @@
 const sec_user = require('../../models/sec_user');
-const { sha256 } = require('../../helpers/sha');
+const { sha256 } = require('../../common/sha');
 const query = require('../../models/query');
 const {Op} = require('sequelize');
 const moment = require('moment');
@@ -30,7 +30,7 @@ module.exports = function (router) {
             password : sha256(req.body.user_name+req.body.password),
             status: 1,
             created_date : moment().format(),
-            created_by : 'temp'
+            created_by : req.user.user_name
         }
         try {
             var user = await model_user.create(new_user);

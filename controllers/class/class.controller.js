@@ -1,5 +1,5 @@
 const m_class = require('../../models/m_class');
-const { sha256 } = require('../../helpers/sha');
+const { sha256 } = require('../../common/sha');
 const query = require('../../models/query');
 const {Op} = require('sequelize');
 const moment = require('moment');
@@ -30,7 +30,7 @@ module.exports = function (router) {
             class_name : req.body.class_name,
             status: 1,
             created_date : moment().format(),
-            created_by : 'temp'
+            created_by : req.user.user_name
         }
         try {
             var datum = await model_class.create(new_obj);

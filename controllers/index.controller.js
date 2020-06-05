@@ -1,10 +1,10 @@
 const sec_user = require('../models/sec_user');
 const sec_token = require('../models/sec_token');
-const { sha256 } = require('../helpers/sha');
-const query = require('../models/query');
+const { sha256 } = require('../common/sha');
 const {Op} = require('sequelize');
 const moment = require('moment');
 var config = require('../config/app.config');
+const ROLES = require('../common/roles');
 
 
 module.exports = function (router) {
@@ -24,7 +24,7 @@ module.exports = function (router) {
             return;
         }
 
-        var roles = await getRoles(user.user_id);
+        var roles = await ROLES.get(user.user_id);
         var token = await setToken(user.user_id)
         var result = {
             user : { 
@@ -48,8 +48,6 @@ module.exports = function (router) {
         } else {
             var now = moment();
             var expiry_date = moment(token.valid_until);
-            console.log(now.format());
-            console.log(expiry_date.format());
             isValid = now.isBefore(expiry_date);
             if (!isValid) {
                 reason = 'Token already expired';
@@ -68,22 +66,6 @@ module.exports = function (router) {
             }
         });
         return user;
-    }
-
-    async function getRoles (user_id) {
-        var sql = `SELECT r.group_id, group_name, r.class_id, class_name, 
-                            r.subject_id, subject_name,
-                            r.student_id, student_name
-                    FROM sec_user_role r
-                    JOIN sec_group g ON r.group_id=g.group_id
-                    LEFT JOIN m_class c ON c.class_id=r.class_id
-                    LEFT JOIN m_subject s ON s.subject_id=r.subject_id
-                    LEFT JOIN t_student st ON st.student_id=r.student_id
-                    WHERE r.user_id = :user_id AND g.status = 1 AND r.status = 1
-                    `;
-        var param = { user_id : user_id};
-
-        return await query.query(sql, param);
     }
 
     async function getToken(user_id) {

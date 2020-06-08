@@ -7,7 +7,7 @@ const {FILE_UPLOAD_DIR} = require('../../config/app.config');
 const formidable =require('formidable');
 const MoveFile = require('../../common/move');
 const {query} = require('../../models/query');
-
+const TASK_STATUS = require('../../enums/status.enums');
 
 module.exports = function (router) {
 
@@ -26,7 +26,7 @@ module.exports = function (router) {
         }
 
         var sql = `
-            SELECT t.task_id, title, notes, weight, start_date, finish_date, publish_date,
+            SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, publish_date,
                     s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
             FROM t_task t
             JOIN m_subject s ON s.subject_id=t.subject_id
@@ -47,8 +47,9 @@ module.exports = function (router) {
         const model_task = t_task();
         var datum = await model_task.findOne({ where : {task_id: req.params.id}});
         var files = await t_task_file().findAll({where : {task_id : req.params.id}});
-        datum.files = files;
-        res.json({ data : datum});
+        var result = datum.toJSON();
+        result.files = files;
+        res.json({ data : result});
     });
 
     router.put('/', async function (req, res) {
@@ -74,6 +75,31 @@ module.exports = function (router) {
             res.status(411).json({error: 11, message: err.message})
         }
     });
+
+    router.post('/', async function (req, res) {
+        const model_task = t_task();
+        var update_obj = {
+            assignor_id: req.body.assignor_id,
+            class_id : req.body.class_id,
+            subject_id : req.body.subject_id,
+            title : req.body.title,
+            notes : req.body.notes,
+            weight : req.body.weight,
+            start_date : req.body.start_date,
+            finish_date : req.body.finish_date,
+            publish_date : req.body.publish_date,
+            status: TASK_STATUS.ACTIVE,
+            updated_date : moment().format(),
+            updated_by : req.user.user_name
+        }
+        try {
+            var datum = await model_task.update(update_obj, {where : {task_id : req.body.task_id }});
+            res.json({message: "Data has been updated."});
+        } catch(err) {
+            res.status(411).json({error: 11, message: err.message})
+        }
+    });
+
 
     router.put('/:id/files', async function(req, res) {
         const form = formidable({ multiples: true });
@@ -134,6 +160,26 @@ module.exports = function (router) {
         };
 
         res.json( {data : result });
+    });
+
+    router.delete('/:id', async function (req, res) {
+        const model_task = t_task();
+        model_task.update(
+            { status : TASK_STATUS.DELETED},
+            {where : {task_id : req.params.id}});
+
+        res.json({message : 'Data has been deleted.'});
+
+    });
+
+    router.delete('/:id/files/:file_id', async function (req, res) {
+        const model_task = t_task_file();
+        model_task.update(
+            { status : TASK_STATUS.DELETED},
+            {where : {task_file_id : req.params.file_id}});
+
+        res.json({message : 'Data has been deleted.'});
+
     });
 
 

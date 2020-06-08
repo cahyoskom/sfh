@@ -61,7 +61,7 @@ router.load(app, {
     
     //Root url of partial convention routes ('/api/ for instance')
     // Defaults to '/'
-    rootDirectory: '../../',
+    rootUrl: '/',
     
     // Do you want the created routes to be shown in the console?
     logRoutes: true

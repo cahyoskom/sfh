@@ -69,7 +69,7 @@ CREATE TABLE t_student(
 	created_by VARCHAR(100),
 	updated_date DATETIME,
 	updated_by VARCHAR(100),
-	FOREIGN KEY fk_t_student_class (student_id) REFERENCES m_class(class_id)
+	FOREIGN KEY fk_t_student_class (class_id) REFERENCES m_class(class_id)
 );
 
 CREATE TABLE sec_user_role (
@@ -168,5 +168,5 @@ INSERT INTO sec_group (group_name, status, created_date, created_by) VALUES ('te
 INSERT INTO sec_group (group_name, status, created_date, created_by) VALUES ('guardian', 1, CURRENT_TIMESTAMP(), 'system');
 INSERT INTO sec_group (group_name, status, created_date, created_by) VALUES ('student', 1, CURRENT_TIMESTAMP(), 'system');
 
-INSERT INTO sec_user_role (user_id, group_id, status, created_date, created_by) VALUES (21, 1, 1, CURRENT_TIMESTAMP(), 'system');
+INSERT INTO sec_user_role (user_id, group_id, status, created_date, created_by) VALUES (1, 1, 1, CURRENT_TIMESTAMP(), 'system');
 

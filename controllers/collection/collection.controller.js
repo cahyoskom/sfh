@@ -1,10 +1,9 @@
-const t_task = require('../../models/t_task');
-const t_task_file = require('../../models/t_task_file');
 const t_task_collection = require('../../models/t_task_collection');
 const t_task_collection_file = require('../../models/t_task_collection_file');
-const query = require('../../models/query');
+const fs = require('fs');
+const {query} = require('../../models/query');
+const TASK_STATUS = require('../../enums/status.enums');
 const moment = require('moment');
-const { sha256 } = require('../../common/sha');
 const {FILE_UPLOAD_DIR} = require('../../config/app.config');
 const formidable =require('formidable');
 const GROUP_ENUMS = require('../../enums/group.enums');
@@ -20,57 +19,71 @@ module.exports = function (router) {
             var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0]);
         } else {
             // not student
-
+            if (!!req.query.class) {
+                filter.class_id= req.query.class;
+            }
+    
         }
-
-        if (!!req.query.class) {
-            filter.class_id= req.query.class;
-        }
-
-
-        res.json({ data : data});
+        res.json({ data : cols});
     });
 
     router.get('/:id', async function (req, res) {
-        const model_task = t_task();
-        var datum = await model_task.findOne({ where : {task_id: req.params.id}});
-        var files = await t_task_file().findAll({where : {task_id : req.params.id}});
-        datum.files = files;
-        res.json({ data : datum});
+        const model_task = t_task_collection();
+        var datum = await model_task.findOne({ where : {task_collection_id: req.params.id}});
+        var files = await t_task_collection_file().findAll({where : {task_collection_id : req.params.id}});
+        var result = datum.toJSON();
+        result.files = files;
+        res.json({ data : result});
     });
 
     router.put('/', async function (req, res) {
-        const model_task = t_task();
+        if (!req.user.roles[GROUP_ENUMS.STUDENT]) {
+            res.status(401).json({error: 10, message: 'Not a student'});
+            return;
+        }
         var new_obj = {
-            assignor_id: req.body.assignor_id,
-            class_id : req.body.class_id,
-            subject_id : req.body.subject_id,
-            title : req.body.title,
-            notes : req.body.notes,
-            weight : req.body.weight,
-            start_date : req.body.start_date,
-            finish_date : req.body.finish_date,
-            publish_date : req.body.publish_date,
+            task_id: req.body.task_id,
+            student_id : req.user.roles[GROUP_ENUMS.STUDENT][0].student_id,
             status: 1,
             created_date : moment().format(),
             created_by : req.user.user_name
         }
         try {
-            var datum = await model_task.create(new_obj);
+            var datum = await t_task_collection().create(new_obj);
             res.json({data: datum});
         } catch(err) {
             res.status(411).json({error: 11, message: err.message})
         }
     });
 
+    router.post('/:status', async function (req, res) {
+        let new_status = 1;
+        if (req.params.status == 'submit') {
+            status = 4;
+        }
+        var update_obj = {
+            status: status,
+            updated_date : moment().format(),
+            updated_by : req.user.user_name
+        }
+        try {
+            var datum = await t_task_collection().update(update_obj, {where : {task_collection_id : req.body.task_collection_id }});
+            res.json({message: "Data has been updated."});
+        } catch(err) {
+            res.status(411).json({error: 11, message: err.message})
+        }
+    });
+
+
+    
     router.put('/:id/files', async function(req, res) {
         const form = formidable({ multiples: true });
-        const task_id = req.params.id;
+        const task_collection_id = req.params.id;
 
-        var task = await t_task().findOne({ where : {task_id: req.params.id}});
+        var task_collection = await t_task_collection().findOne({ where : {task_collection_id: req.params.id}});
         let result = [];
-        if (!task) {
-            res.status(404).json({error: 31, message: 'Task not found.'})
+        if (!task_collection) {
+            res.status(404).json({error: 31, message: 'Task Collection not found.'})
             return;
         }
 
@@ -92,15 +105,17 @@ module.exports = function (router) {
             res.status(421).json({error: 21, message: "Files not found"});
         }
 
-        var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/";
+
+        let task_id = task_collection.task_id;
+        var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/collection/" + task_collection_id;
         if (!fs.existsSync(upload_dir)){
-            fs.mkdirSync(upload_dir);
+            fs.mkdirSync(upload_dir, { recursive: true });
         }        
         for (const element of files) {
             let filename = upload_dir + element.name;
             await MoveFile(element.path, filename);
             let new_file = {
-                task_id : task_id,
+                task_collection_id : task_collection_id,
                 filename : element.name,
                 ext : filename.split('.').pop(),
                 mime_type : element.type,
@@ -111,14 +126,14 @@ module.exports = function (router) {
                 created_by : req.user.user_name
                 };
             
-            var task_file = await t_task_file().findOne({where : {task_id: task_id, filename : element.name}});
-            if (!task_file) { // belum ada, insert baru
-                task_file = await t_task_file().create(new_file);
+            var task_collection_file = await t_task_collection_file().findOne({where : {task_collection_id: task_collection_id, filename : element.name}});
+            if (!task_collection_file) { // belum ada, insert baru
+                task_collection_file = await t_task_collection_file().create(new_file);
             } else {
                 // todo, update ganti updated date
             }
 
-            result.push(task_file);
+            result.push(task_collection_file);
         };
 
         res.json( {data : result });
@@ -136,9 +151,9 @@ module.exports = function (router) {
                     `;
         var param = { class_id : student.student_class_id, student_id : student.student_id };
 
-        return await query.query(sql, param);
+        return await query(sql, param);
 
-    }
+    };
 
 
 };

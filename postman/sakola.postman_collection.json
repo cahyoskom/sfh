@@ -183,7 +183,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"class_level\": 1,\n\t\"class_parallel\" : \"A\",\n\t\"class_name\" : \"1-A\"\n}",
+							"raw": "{\n\t\"class_level\": 1,\n\t\"class_parallel\" : \"B\",\n\t\"class_name\" : \"1-B\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -488,7 +488,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/task?class=1&subject=1",
+							"raw": "{{base_url}}/task?class=1&subject=1&class=2",
 							"host": [
 								"{{base_url}}"
 							],
@@ -503,6 +503,10 @@
 								{
 									"key": "subject",
 									"value": "1"
+								},
+								{
+									"key": "class",
+									"value": "2"
 								}
 							]
 						}
@@ -523,6 +527,35 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/task/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DEL task by id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"url": {
@@ -570,6 +603,44 @@
 							],
 							"path": [
 								"task"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST task (update",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"task_id\" : 1,\n\t\"assignor_id\": 22,\n\t\"class_id\" : 1,\n\t\"subject_id\" : 1,\n\t\"title\" : \"Quiz 02xxxx\",\n\t\"notes\" : \"Quiz untuk bab xxxxx\",\n\t\"weight\" : 50,\n\t\"start_date\" : \"2020-06-08\",\n\t\"finish_date\" : \"2020-06-10\",\n\t\"publish_date\" : \"2020-06-05\"\n}\n\t\n\n\n\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"{{task_id}}"
 							]
 						}
 					},
@@ -624,6 +695,303 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "DEL task files",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task/{{task_id}}/files/{{task_file_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"{{task_id}}",
+								"files",
+								"{{task_file_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "collection",
+			"item": [
+				{
+					"name": "GET collection",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/collection",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET collection by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/collection/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DEL collection by id (belum)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/collection/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT collection",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"task_id\": 3\n}\n\t\n\n\n\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/collection",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST collection (submit)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"task_collection_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/collection/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT collection files",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/ASUS/Downloads/download.png"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/ASUS/Downloads/cp10.pptx"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/collection/{{task_collection_id}}/files",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"{{task_collection_id}}",
+								"files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DEL collection files (belum)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/collection/{{task_collection_id}}/files/{{file_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"{{task_collection_id}}",
+								"files",
+								"{{file_id}}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -651,6 +1019,47 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bdfa3ee1-6fbc-4320-9dc3-a1ffc8b51b0e",
+						"exec": [
+							"let response = JSON.parse(responseBody);\r",
+							"// postman.setEnvironmentVariable(\"AUTH_TOKEN\", response.token); \r",
+							"\r",
+							"pm.environment.set(\"token\",  response.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"murid01\",\n    \"password\": \"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

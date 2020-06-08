@@ -39,4 +39,15 @@ module.exports = function (router) {
             res.status(411).json({error: 11, message: err.message})
         }
     });
+
+    router.delete('/:id', async function (req, res) {
+        const model_task = m_class();
+        model_task.update(
+            { status : -1},
+            {where : {class_id : req.params.id}});
+
+        res.json({message : 'Data has been deleted.'});
+    });
+
+
 };

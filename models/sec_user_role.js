@@ -1,8 +1,14 @@
+const db = require('../database');
+
 const {
   DataTypes
 } = require('sequelize');
 
 module.exports = sequelize => {
+  if (!sequelize) {
+    sequelize = db.sequelize();
+  }
+
   const attributes = {
     user_role_id: {
       type: DataTypes.INTEGER(11),
@@ -122,6 +128,7 @@ module.exports = sequelize => {
   };
   const options = {
     tableName: "sec_user_role",
+    timestamps: false,
     comment: "",
     indexes: [{
       name: "fk_sec_user_role_sec_group",

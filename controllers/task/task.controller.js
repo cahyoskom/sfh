@@ -100,6 +100,29 @@ module.exports = function (router) {
         }
     });
 
+    router.post('/:status', async function (req, res) {
+        var id = req.body.task_id;
+        if (!id) {
+            res.status(411).json({error: 11, message: "Id needed."});
+            return;
+        }
+
+        let update_obj = {};
+        if (req.params.status == 'archived') {
+            update_obj = {
+                status : 5,
+                updated_date : moment().format(),
+                updated_by : req.user.user_name
+            }
+        }
+        try {
+            var datum = await t_task().update(update_obj, {where : {task_id : req.body.task_id }});
+            res.json({message: "Data has been updated."});
+        } catch(err) {
+            res.status(411).json({error: 11, message: err.message})
+        }
+
+    });
 
     router.put('/:id/files', async function(req, res) {
         const form = formidable({ multiples: true });

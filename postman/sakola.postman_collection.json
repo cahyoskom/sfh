@@ -647,6 +647,44 @@
 					"response": []
 				},
 				{
+					"name": "POST change status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"task_id\" : 1\n}\n\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task/archived",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"archived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "PUT task files",
 					"request": {
 						"method": "PUT",

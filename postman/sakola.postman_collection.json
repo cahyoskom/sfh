@@ -543,6 +543,36 @@
 					"response": []
 				},
 				{
+					"name": "GET task collection by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/task/{{task_id}}/collection",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"{{task_id}}",
+								"collection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "DEL task by id",
 					"request": {
 						"method": "DELETE",
@@ -680,7 +710,8 @@
 								"task",
 								"archived"
 							]
-						}
+						},
+						"description": "status can be archived, published, finished"
 					},
 					"response": []
 				},

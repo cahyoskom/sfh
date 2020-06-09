@@ -58,14 +58,16 @@ module.exports = function (router) {
 
     router.post('/:status', async function (req, res) {
         let new_status = 1;
-        if (req.params.status == 'submit') {
-            status = 4;
-        }
         var update_obj = {
-            status: status,
             updated_date : moment().format(),
             updated_by : req.user.user_name
+        };
+        if (req.params.status == 'submit') {
+            status = 4;
+            update_obj.submitted_date = moment().format();
         }
+        update_obj.status = status
+        
         try {
             var datum = await t_task_collection().update(update_obj, {where : {task_collection_id : req.body.task_collection_id }});
             res.json({message: "Data has been updated."});

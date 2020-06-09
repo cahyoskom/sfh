@@ -656,7 +656,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\n\t\"task_id\" : 1,\n\t\"assignor_id\": 22,\n\t\"class_id\" : 1,\n\t\"subject_id\" : 1,\n\t\"title\" : \"Quiz 02xxxx\",\n\t\"notes\" : \"Quiz untuk bab xxxxx\",\n\t\"weight\" : 50,\n\t\"start_date\" : \"2020-06-08\",\n\t\"finish_date\" : \"2020-06-10\",\n\t\"publish_date\" : \"2020-06-05\"\n}\n\t\n\n\n\n\n",
+							"raw": "{\n\t\"task_id\" : 2,\n\t\"assignor_id\": 1,\n\t\"class_id\" : 1,\n\t\"subject_id\" : 1,\n\t\"title\" : \"Quiz 02xxxx\",\n\t\"notes\" : \"Quiz untuk bab xxxxx\",\n\t\"weight\" : 50,\n\t\"start_date\" : \"2020-06-08\",\n\t\"finish_date\" : \"2020-06-10\",\n\t\"publish_date\" : \"2020-06-05\"\n}\n\t\n\n\n\n\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -664,13 +664,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/task/{{task_id}}",
+							"raw": "{{base_url}}/task",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"task",
-								"{{task_id}}"
+								"task"
 							]
 						}
 					},

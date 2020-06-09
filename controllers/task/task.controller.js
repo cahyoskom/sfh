@@ -64,7 +64,7 @@ module.exports = function (router) {
 
         var sql = `
             SELECT
-                s.student_no, s.student_name, submitted_date, c.status
+                s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
             FROM (SELECT * from t_student WHERE class_id = :class_id AND status=1) s
             LEFT JOIN (SELECT * FROM t_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id
         `;

@@ -173,6 +173,18 @@ export const setStateUploadTaskSiwa = (field, value) => ({
     field
 })
 
+export const studentPutCollection = () => ({
+    type: types.STUDENT_PUT_COLLECTION
+})
+
+export const studentPutCollectionFiles = () => ({
+    type: types.STUDENT_PUT_COLLECTION_FILES
+})
+
+export const studentSubmitCollection = () => ({
+    type: types.STUDENT_SUBMIT_COLLECTION
+})
+
 //ortu
 export const getTaskOrtuList = (data) => ({
     type: types.GET_TASK_ORTU_LIST,
@@ -182,6 +194,11 @@ export const getTaskOrtuList = (data) => ({
 //guru
 export const deleteTask = (ids) => ({
     type: types.DELETE_TASK,
+    payload: ids
+})
+
+export const archivedTask = (ids) => ({
+    type: types.ARCHIVED_TASK,
     payload: ids
 })
 
@@ -208,4 +225,24 @@ export const setStateModalForm = (field, value) => ({
 
 export const postTask = () => ({
     type: types.POST_TASK
+})
+
+export const updateTask = () => ({
+    type: types.UPDATE_TASK
+})
+
+//kepsek
+export const kepsekGetTaskList = (data) => ({
+    type: types.KEPSEK_GET_TASK_LIST,
+    payload: data
+})
+
+export const kepsekGetSubjectList = (data) => ({
+    type: types.KEPSEK_GET_SUBJECT_LIST,
+    payload: data
+})
+
+export const kepsekGetClassList = (data) => ({
+    type: types.KEPSEK_GET_CLASS_LIST,
+    payload: data
 })

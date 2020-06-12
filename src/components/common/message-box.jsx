@@ -16,6 +16,22 @@ export function confirmDelete(ids, deleteFunction) {
   })
 }
 
+export function confirmArchive(ids, archiveFunction) {
+  Swal.fire({
+    title: 'Are you sure?',
+    html: "You won't be able to revert this!",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, archived it!'
+  }).then((result) => {
+    if (result.value) {
+      archiveFunction(ids)
+    }
+  })
+}
+
 export function notification(title, text, func, type = "") {
   Swal.fire({
     title: title,

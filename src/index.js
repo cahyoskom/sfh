@@ -64,6 +64,8 @@ import TaskSiswa from './components/tasklist/tasksiswa';
 import TaskOrtu from './components/tasklist/taskortu';
 import TaskKepsek from './components/tasklist/taskkepsek';
 import TaskGuru from './components/tasklist/taskguru';
+import TaskGuruPerId from './components/tasklist/taskguru_perid';
+import Admin from './components/usermanagement/admin';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -125,6 +127,18 @@ class Root extends React.Component {
 								<PrivateRoute
 									path={`${process.env.PUBLIC_URL}/taskguru`}
 									component={TaskGuru}
+									authenticated={this.authCheck()}
+								/>
+
+								<PrivateRoute
+									path={`${process.env.PUBLIC_URL}/taskguru/:id`}
+									component={TaskGuruPerId}
+									authenticated={this.authCheck()}
+								/>
+
+								<PrivateRoute
+									path={`${process.env.PUBLIC_URL}/usermanagement`}
+									component={Admin}
 									authenticated={this.authCheck()}
 								/>
 

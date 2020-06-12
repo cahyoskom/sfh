@@ -1,5 +1,6 @@
 import { all } from 'redux-saga/effects';
 import account from './account'
+import admin from './admin'
 import taskSiswa from './tasksiswa';
 import taskOrtu from './taskortu';
 import taskKepsek from './taskkepsek';
@@ -12,5 +13,6 @@ export default function* rootSaga(getState) {
     taskOrtu(),
     taskKepsek(),
     taskGuru(),
+    admin()
   ]);
 }

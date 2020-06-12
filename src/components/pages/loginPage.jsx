@@ -22,7 +22,7 @@ class SignIn extends Component {
 
     componentDidMount() {
         document.getElementById('footer').style.display = "none"
-        // document.getElementById('sticky').style.display = "none"
+        document.getElementById('sticky').style.display = "none"
     }
 
     componentWillMount() {

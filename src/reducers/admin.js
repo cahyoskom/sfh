@@ -17,8 +17,10 @@ import {
   
   const initialState = {
     data: [],
-    dataCollection:[],
     filter: {
+        // startDate: new Date(),
+        // // endDate: new Date().setDate(new Date().getDate() + 7)
+        // endDate: new Date((new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 7))
         class_id:[],
         subject_id:[],
         start_date: new Date(),
@@ -41,6 +43,24 @@ import {
         endDateTask: "",
         file: null
     },
+    dt: {
+        filter: {
+            status: "",
+            taskDateFrom: "",
+            taskDateTo: ""
+        },
+        table: {
+            offset: 0,
+            limit: 10,
+            page: 0,
+            count: 0,
+            search: null,
+            sortColumn: null,
+            sortDirection: null
+        },
+        selectedRows: null,
+        submitIds: null
+    },
     // dataSourceClass : [
     //     {label: "SD 1", value: "1"},
     //     {label: "SD 2", value: "2"},
@@ -49,7 +69,6 @@ import {
     dataSourceSubject:[],
     dataSourceClass:[],
     form: {
-        task_id:"",
         assignor_id: "",
         class_id: "",
         subject_id: "",
@@ -67,11 +86,18 @@ import {
     loader: false
   };
   
-  export default function taskGuruReducer(state = initialState, action) {
+  export default function adminReducer(state = initialState, action) {
     switch (action.type) {
         case SET_TASK_LIST_FILTER:
         return {
             ...state,
+            // dt: {
+            //     ...state.dt,
+            //     filter: {
+            //         ...state.dt.filter,
+            //         [action.field]: action.value
+            //     }                
+            // }
             filter: {
                 ...state.filter,
                 [action.field]: action.value
@@ -111,6 +137,7 @@ import {
         case SET_DATE:
             return {
                 ...state,
+                // stardet: action.value
             };
         case SET_LOADER:
             return {
@@ -139,6 +166,14 @@ import {
             return {
                 ...state,
                 taskDetail: { ...state.taskDetail, [action.field]: action.value }
+            };
+        case SET_MODAL_FORM:
+            return {
+                ...state,
+                form: {
+                    ...state.form,
+                    [action.field]: action.value
+                }
             };
         case SET_MODAL_FORM:
             return {

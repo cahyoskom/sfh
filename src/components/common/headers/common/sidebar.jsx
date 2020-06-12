@@ -25,7 +25,7 @@ class SideBar extends Component {
                 <a href="javascript:void(0)" className="sidebar-overlay" onClick={this.closeNav}></a>
                 <nav>
                     <div onClick={this.closeNav}>
-                        <div className="sidebar-back text-left">
+                        <div className="sidebar-back text-left"  style={{zIndex:200}}>
                             <i className="fa fa-angle-left pr-2" aria-hidden="true"></i> Back
                         </div>
                     </div>

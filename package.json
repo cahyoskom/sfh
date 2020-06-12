@@ -1,8 +1,8 @@
 {
-  "name": "react-multicart",
+  "name": "sfh",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://react.pixelstrap.com/",
+  "homepage": "/sfh_web/",
   "basename": "/",
   "dependencies": {
     "@babel/core": "7.1.0",

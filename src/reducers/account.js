@@ -1,5 +1,6 @@
 import {
     SET_LOGIN_SUCCESS,
+    SET_ROLES_SUCCESS,
     SET_REGISTER_SUCCESS,
     SET_FORGOT_SUCCESS,
     SET_LOADER,
@@ -27,6 +28,23 @@ import {
       alamat: "",
       password: "",
       rePassword: ""
+    },
+    // roles:[],
+    roles: localStorage.getItem("roles")
+      ? JSON.parse(localStorage.getItem("roles"))
+      : undefined,
+    role:{
+      group_id: 0,
+      group_name: "",
+      class_id: 0,
+      class_name: "",
+      subject_id: 0,
+      subject_name: "",
+      student_id: 0,
+      student_no: "",
+      student_name: "",
+      student_class_id: 0,
+      sex: ""
     },
     token: localStorage.getItem("token"),
     profile: localStorage.getItem("profile")
@@ -98,6 +116,11 @@ import {
         return {
           ...state,
           token: action.value
+        };
+      case SET_ROLES_SUCCESS:
+        return {
+          ...state,
+          roles: action.value
         };
       default:
     }

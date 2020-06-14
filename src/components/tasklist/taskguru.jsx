@@ -5,7 +5,7 @@ import BlockUi from "react-block-ui";
 import { Link, NavLink } from "react-router-dom";
 import { 
     Button, FormGroup, Modal, ModalHeader, 
-    ModalBody, ModalFooter, Col, Row, Label, Input } from "reactstrap";
+    ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import 'react-widgets/dist/css/react-widgets.css';
 import DateTimePicker from "../common/DatePicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -134,7 +134,10 @@ class TaskGuru extends Component {
                             if(value){
                                 return (
                                 <div>
-                                    <Button title="Detail Task" color="primary" size="sm" onClick={() => this.detailTask(tableMeta)}>Detail</Button>&nbsp;
+                                    {/* <Button title="Detail Task" color="primary" size="sm" 
+                                    onClick={() => this.detailTask(tableMeta)}
+                                    >Detail</Button>&nbsp; */}
+                                    <Link to={`${process.env.PUBLIC_URL}/taskguru/` + value}><Button title="Detail Task" color="primary" size="sm">Detail</Button></Link>&nbsp;
                                     <Button title="Arsipkan Task" color="secondary" size="sm" onClick={() => this.archivedTask(tableMeta)}>Arsipkan</Button>&nbsp;
                                     <Button title="Edit Task" color="info" style={{ color: "#fff" }} onClick={() => this.editTask(tableMeta)} size="sm">Edit</Button>&nbsp;
                                     <Button title="Delete Task" color="danger" style={{ color: "#fff" }} onClick={() => this.deleteTask(tableMeta)} size="sm">Delete</Button>
@@ -176,7 +179,8 @@ class TaskGuru extends Component {
             multiValueClass: [],
             dataSourceClass:this.props.taskGuruState.dataSourceClass,
             uploadedFileName: [],
-            isFormInvalid:false
+            isFormInvalid:false,
+            listOfFile: []
         }
         this.getList = this.getList.bind(this);
         this.uploadTask = this.uploadTask.bind(this);
@@ -191,6 +195,7 @@ class TaskGuru extends Component {
         this.handleMultiChange = this.handleMultiChange.bind(this);
         this.update = this.update.bind(this);
         this.clearModal = this.clearModal.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     componentDidMount(){
@@ -266,18 +271,20 @@ class TaskGuru extends Component {
     }
 
     editTask(data){
-        let { getSubjectList, getClassList, setModal, setStateModalForm } = this.props;
+        let { getSubjectList, getClassList, setModal, setStateModalForm, getTaskGuruById } = this.props;
         getSubjectList();
-        getClassList();
+        getClassList();  
+        setStateModalForm("task_id", data.rowData[7])   
+        getTaskGuruById();   
 
-        setStateModalForm("task_id", data.rowData[7])
-        setStateModalForm("class_id", data.rowData[8])
-        setStateModalForm("subject_id", data.rowData[9])
-        setStateModalForm("assignor_id", data.rowData[10])
-        setStateModalForm("title", data.rowData[4])
-        setStateModalForm("notes", data.rowData[1])
-        setStateModalForm("start_date", data.rowData[5])
-        setStateModalForm("finish_date", data.rowData[6])
+        // setStateModalForm("task_id", data.rowData[7])
+        // setStateModalForm("class_id", data.rowData[8])
+        // setStateModalForm("subject_id", data.rowData[9])
+        // setStateModalForm("assignor_id", data.rowData[10])
+        // setStateModalForm("title", data.rowData[4])
+        // setStateModalForm("notes", data.rowData[1])
+        // setStateModalForm("start_date", data.rowData[5])
+        // setStateModalForm("finish_date", data.rowData[6])
         
         setModal("type", "edit")
         setModal("title", "Edit Task")
@@ -290,6 +297,7 @@ class TaskGuru extends Component {
             isDetail:false,
         })
         );
+        
     }
 
     deleteTask(tableMeta) {
@@ -334,8 +342,9 @@ class TaskGuru extends Component {
     };
 
     fileHandler = event => {
-        let { setLoader, setStateModalForm } = this.props;
+        let { setLoader, setStateModalForm,taskGuruState } = this.props;
         console.log('handel file', event.target.files);
+        // console.log('fileeeesss', taskGuruState.form.files);
         if (event.target.files.length) {
             var fileObj = [];
             var fileName = [];
@@ -404,6 +413,43 @@ class TaskGuru extends Component {
         setStateTaskListFilter("class_id", option);
     }
 
+    deleteFile(task_file_id){
+        let { guruDeleteTaskFile, setStateModalForm } = this.props;
+        setStateModalForm("deleteFileIds", task_file_id);
+        guruDeleteTaskFile();
+    }
+
+    // renderFiles() {
+    //     let { taskGuruState } = this.props;
+    //     if(taskGuruState.form.files != null || taskGuruState.form.files != undefined){
+    //         console.log(taskGuruState.form.files);
+    //         for(let i=0;i<taskGuruState.form.files.length;i++){
+    //             listOfFile.push(
+    //                 <InputGroup>
+    //                 <div className="row">
+    //                     <Input
+    //                     type="text"
+    //                     className="form-control"
+    //                     value={taskGuruState.form.files[i].filename}
+    //                     readOnly
+    //                     />
+    //                 </div>
+    //                 <div className="row">
+    //                     <Button onClick={this.deleteFile(taskGuruState.form.files[i].task_file_id)}>X</Button>
+    //                 </div>
+    //                 </InputGroup>
+    //             )   
+    //         }
+    //         if (this.state.listOfFile !== listOfFile) {
+    //             this.setState({
+    //                 ...this.state,
+    //                 listOfFile: listOfFile
+    //             })
+    //         }
+    //     }
+    // }
+
+
     renderView(){
         let { taskGuruState, setStateTaskListFilter, setStateModalForm, getTaskGuruList } = this.props;
 
@@ -413,7 +459,8 @@ class TaskGuru extends Component {
             search:false,
             download:false,
             print:false,
-            viewColumns:false
+            viewColumns:false,
+            selectableRows:'none',
         };
 
         let filesToUpload = this.state.uploadedFileName;
@@ -430,6 +477,30 @@ class TaskGuru extends Component {
                     />
                 )   
             }
+        }
+
+        console.log(taskGuruState.form.files);
+
+        let listOfFile = [];
+        if(taskGuruState.form.files != null || taskGuruState.form.files != undefined){
+            for(let i=0;i<taskGuruState.form.files.length;i++){
+                listOfFile.push(
+                    <InputGroup>
+                        <div className="row">
+                            <Input
+                            type="text"
+                            className="form-control"
+                            value={taskGuruState.form.files[i].filename}
+                            readOnly
+                            />
+                        </div>
+                        <div className="row">
+                            <Button onClick={() => { this.deleteFile(taskGuruState.form.files[i].task_file_id); }}>X</Button>
+                        </div>
+                    </InputGroup>
+                )   
+            }
+
         }
 
         return (
@@ -658,32 +729,18 @@ class TaskGuru extends Component {
                                                 />
                                             </FormGroup>
                                             <FormGroup>
-                                                <Label for="file">File Upload </Label>
-                                                {/* <Input
-                                                    type="file"
-                                                    name="file"
-                                                    id="file"
-                                                    multiple="true"
-                                                /> */}
-                                                {/* {validator.message(
-                                                    "area_description",
-                                                    areaState.master.form.area_description,
-                                                    "required"
-                                                )} */}
-                                                <Input
-                                                type="text"
-                                                className="form-control"
-                                                value={this.state.uploadedFileName}
-                                                readOnly
-                                                invalid={this.state.isFormInvalid}
-                                                />
+                                                <Label for="file">File Upload </Label> {"  "}
                                                 <Button 
                                                     accept={".jpg,.jpeg,.png"}
                                                     onClick={this.openFileBrowser.bind(this)}
+                                                    size="sm"
+                                                    color="info"
                                                 >
-                                                    {/* {translate('upload_pallet_and_wooden_box')} */}
                                                     Browse
                                                 </Button>
+                                                <div>
+                                                {filePreview}
+                                                </div>
                                                 <input
                                                     type="file"
                                                     hidden
@@ -826,19 +883,35 @@ class TaskGuru extends Component {
                                                 />
                                             </FormGroup>
                                             <FormGroup>
-                                                <Label for="file">File Upload</Label>
-                                                <Input
+                                                <Label for="file">File Upload</Label> {"  "}
+                                                <Button 
+                                                    accept={".jpg,.jpeg,.png"}
+                                                    onClick={this.openFileBrowser.bind(this)}
+                                                    size="sm"
+                                                    color="info"
+                                                >
+                                                    Browse
+                                                </Button>
+                                                <div>
+                                                {filePreview}
+                                                </div>
+                                                <input
                                                     type="file"
-                                                    name="file"
-                                                    id="file"
-                                                    // defaultValue={areaState.master.form.area_description}
-                                                    // onBlur={e => setStateMasterAreaForm(e.target.id, e.target.value)}
+                                                    hidden
+                                                    accept={".jpg,.jpeg,.png"}
+                                                    onChange={this.fileHandler.bind(this)}
+                                                    ref={this.fileInput}
+                                                    onClick={event => {
+                                                    event.target.value = null;
+                                                    }}
+                                                    style={{ padding: "10px" }}
+                                                    multiple={true}
                                                 />
-                                                {/* {validator.message(
-                                                    "area_description",
-                                                    areaState.master.form.area_description,
-                                                    "required"
-                                                )} */}
+                                                <Label>List of file</Label>
+                                                <div>
+                                                {listOfFile}
+                                                {/* {console.log('www',taskGuruState.form.files)} */}
+                                                </div>
                                             </FormGroup>
                                         </Col>  
                                         </Row>

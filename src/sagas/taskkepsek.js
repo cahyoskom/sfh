@@ -6,6 +6,8 @@ import {
     KEPSEK_GET_SUBJECT_LIST_SUCCESS,
     KEPSEK_GET_CLASS_LIST,
     KEPSEK_GET_CLASS_LIST_SUCCESS,
+    KEPSEK_GET_TASK_COLLECTION_LIST,
+    KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS,
     SET_LOADER,
     SET_MODAL
 } from "../constants/ActionTypes";
@@ -89,6 +91,54 @@ console.log("rzponze".response)
           });
     }
 }
+
+export function* kepsekGetTaskCollectionList() {
+    try {
+      const taskKepsek = yield select(getKepsekState)
+  
+      yield put({
+          type: SET_LOADER,
+          value: true
+      });
+  
+      let task_id = taskKepsek.params;
+      console.log('par',task_id)
+      const response = yield call(services.GET, API_BASE_URL_DEV + "/task/" + task_id + "/collection", HeaderAuth());
+  
+      if(response.status == 200){
+        let datas = response.data;
+        console.log("L", datas)
+        let result = [];
+        for (let i=0; i < datas.data.length; i++) {
+            let obj = {};
+            obj.status = datas.data[i].status;
+            obj.student_name = datas.data[i].student_name;
+            obj.student_no = datas.data[i].student_no;
+            obj.submitted_date = datas.data[i].submitted_date;
+            obj.task_collection_id = datas.data[i].task_collection_id;
+            result.push(obj);
+        }
+        console.log('ressss', result);
+        yield put({ 
+          type: KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS, 
+          field: "dataCollection",
+          value: result
+        });
+      }
+  
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });          
+    } catch (error) {
+        console.log(error)
+        fail(error);
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    }
+  }
 
 export function* kepsekGetSubjectList() {
     try {
@@ -174,6 +224,7 @@ export function* kepsekGetClassList() {
 export default function* rootSaga() {
     yield all([
         takeEvery(KEPSEK_GET_TASK_LIST, kepsekGetTaskList),
+        takeEvery(KEPSEK_GET_TASK_COLLECTION_LIST, kepsekGetTaskCollectionList),
         takeEvery(KEPSEK_GET_SUBJECT_LIST, kepsekGetSubjectList),
         takeEvery(KEPSEK_GET_CLASS_LIST, kepsekGetClassList)
     ]);

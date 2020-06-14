@@ -2,6 +2,8 @@ import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
 import {
     GET_TASK_GURU_LIST,
     GET_TASK_GURU_LIST_SUCCESS,
+    GURU_GET_TASK_COLLECTION_LIST,
+    GURU_GET_TASK_COLLECTION_LIST_SUCCESS,
     GET_SUBJECT_LIST,
     GET_SUBJECT_LIST_SUCCESS,
     GET_CLASS_LIST,
@@ -11,13 +13,17 @@ import {
     POST_TASK,
     UPDATE_TASK,
     DELETE_TASK,
-    ARCHIVED_TASK
+    ARCHIVED_TASK,
+    GET_TASK_GURU_BY_ID,
+    GURU_DELETE_TASK_FILE,
+    SET_MODAL_EDIT_FORM_GURU
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
 import { Header, HeaderAuth } from "../services/header";
 import moment from 'moment'
+import { setStateModalForm, setModal } from "../actions";
 
 const getTaskGuruState = state => state.taskGuru;
 const getAccountState = state => state.account;
@@ -93,6 +99,117 @@ export function* getTaskGuruList() {
             value: false
           });
     }
+}
+
+export function* guruGetTaskCollectionList() {
+  try {
+    const taskGuru = yield select(getTaskGuruState)
+
+    yield put({
+        type: SET_LOADER,
+        value: true
+    });
+
+    let task_id = taskGuru.params;
+    console.log('par',task_id)
+    const response = yield call(services.GET, API_BASE_URL_DEV + "/task/" + task_id + "/collection", HeaderAuth());
+
+    if(response.status == 200){
+      let datas = response.data;
+      console.log("L", datas)
+      let result = [];
+      for (let i=0; i < datas.data.length; i++) {
+          let obj = {};
+          obj.status = datas.data[i].status;
+          obj.student_name = datas.data[i].student_name;
+          obj.student_no = datas.data[i].student_no;
+          obj.submitted_date = datas.data[i].submitted_date;
+          obj.task_collection_id = datas.data[i].task_collection_id;
+          result.push(obj);
+      }
+      console.log('ressss', result);
+      yield put({ 
+        type: GURU_GET_TASK_COLLECTION_LIST_SUCCESS, 
+        field: "dataCollection",
+        value: result
+      });
+    }
+
+    yield put({
+        type: SET_LOADER,
+        value: false
+      });          
+  } catch (error) {
+      console.log(error)
+      fail(error);
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  }
+}
+
+export function* getTaskGuruById() {
+  try {
+    const taskGuru = yield select(getTaskGuruState)
+    const account = yield select(getAccountState)
+
+    yield put({
+        type: SET_LOADER,
+        value: true
+    });
+
+    let task_id = taskGuru.form.task_id;
+    // console.log("task_id",task_id);
+    const response = yield call(services.GET, API_BASE_URL_DEV + "/task/" + task_id, HeaderAuth());
+
+    if(response.status == 200){
+      let datas = response.data;
+      if(datas.data.files != undefined || datas.data.files.length != 0 ){
+
+        // let result = {};
+        let files = [];
+        for(let i=0; i<datas.data.files.length; i++){
+          let obj = {};
+          obj.task_file_id = datas.data.files[i].task_file_id;
+          obj.filename = datas.data.files[i].filename;
+          files.push(obj);
+        }
+
+        let result = {
+          files : files,
+          task_id : datas.data.task_id,
+          assignor_id : datas.data.assignor_id,
+          class_id : datas.data.class_id,
+          subject_id : datas.data.subject_id,
+          class_name : datas.data.class_name,
+          subject_name : datas.data.subject_name,
+          notes : datas.data.notes,
+          title : datas.data.title,
+          start_date : datas.data.start_date,
+          finish_date : datas.data.finish_date,
+        }
+
+        // console.log('ressss', result);
+        yield put({ 
+          type: SET_MODAL_EDIT_FORM_GURU, 
+          payload: result
+        });
+      }      
+    }
+
+    yield put({
+        type: SET_LOADER,
+        value: false
+      });          
+  } catch (error) {
+      console.log(error)
+      fail(error);
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  }
 }
 
 export function* getSubjectList() {
@@ -263,19 +380,21 @@ export function* updateTask() {
     const _response = yield call(services.POST, API_BASE_URL_DEV + "/task" , params, HeaderAuth());
 
     if (_response.status == 200) {
-      // let datas = _response.data;
-      // let task_id = datas.data.task_id
+      if (form.files != null || form.files != undefined){
+        let datas = _response.data;
+        let task_id = datas.data.task_id
 
-      // const formData = new FormData();
-      // formData.append("files", form.files);
-      // for(let i = 0; i<form.files.length; i++){
-      //   formData.append("file", form.files[i])
-      // }
-
-      //const response = yield call(services.PUT, API_BASE_URL_DEV + "/task/" + task_id + "/files", formData, HeaderAuth());
-      //if(response.status == 200){
-        //console.log('respon formdata',response);
-      //}
+        const formData = new FormData();
+        // formData.append("files", form.files);
+        for(let i = 0; i<form.files.length; i++){
+          formData.append("files", form.files[i])
+        }
+// console.log('ffaaaiill', form.files[0]);
+        const response = yield call(services.PUT, API_BASE_URL_DEV + "/task/" + task_id + "/files", formData, HeaderAuth());
+        if(response.status == 200){
+          console.log('respon formdata',response);
+        }
+      }
       success("Task Updated Successfully");
       yield put({
         type: SET_MODAL,
@@ -369,14 +488,52 @@ export function* archivedTask() {
   }
 }
 
+export function* guruDeleteTaskFile() {
+  try {
+    const taskGuruState = yield select(getTaskGuruState);
+    const form = taskGuruState.form;
+    // const task_file_ids = taskGuruState.form.deleteFileIds;
+
+    yield put({
+      type: SET_LOADER,
+      value: true
+    });
+
+    let task_id = form.task_id;
+    if(form.deleFileIds.length != 0 || form.deleFileIds != undefined || form.deleFileIds != null){
+      for(let i=0; i<form.deleFileIds.length; i++){
+        let task_file_id = form.deleFileIds[i];
+        const _response = yield call(services.DELETE, API_BASE_URL_DEV + "/task/" + task_id + "/files/" + task_file_id, HeaderAuth());
+        if (_response.status === 200) {
+          success("File Deleted");
+        }
+      }
+    }
+    yield put({
+      type: SET_LOADER,
+      value: false
+    });
+
+  } catch (error) {
+    yield put({
+      type: SET_LOADER,
+      value: false
+    });
+    fail(error);
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(GET_TASK_GURU_LIST, getTaskGuruList),
+    takeEvery(GURU_GET_TASK_COLLECTION_LIST, guruGetTaskCollectionList),
     takeEvery(GET_SUBJECT_LIST, getSubjectList),
     takeEvery(GET_CLASS_LIST, getClassList),
     takeEvery(POST_TASK, postTask),
     takeEvery(UPDATE_TASK, updateTask),
     takeEvery(DELETE_TASK, deleteTask),
     takeEvery(ARCHIVED_TASK, archivedTask),
+    takeEvery(GET_TASK_GURU_BY_ID, getTaskGuruById),
+    takeEvery(GURU_DELETE_TASK_FILE, guruDeleteTaskFile),
   ]);
 }

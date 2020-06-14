@@ -32,6 +32,22 @@ export function confirmArchive(ids, archiveFunction) {
   })
 }
 
+export function confirmSubmitCollection(length,submitFunction) {
+  Swal.fire({
+    title: 'Are you sure?',
+    html: "Submit " + length + " Task?",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes'
+  }).then((result) => {
+    if (result.value) {
+      submitFunction()
+    }
+  })
+}
+
 export function notification(title, text, func, type = "") {
   Swal.fire({
     title: title,

@@ -59,10 +59,15 @@ import BlogPage from './components/blogs/blog-page'
 //customme
 import SignIn from './components/pages/loginPage'
 import PrivateRoute from './PrivateRoute';
+import PrivateRouteGuru from './PrivateRouteGuru';
+import PrivateRouteSiswa from './PrivateRouteSiswa';
+import PrivateRouteAdmin from './PrivateRouteAdmin';
+import PrivateRouteKepsek from './PrivateRouteAdmin';
 import PublicRoute from './PublicRoute';
 import TaskSiswa from './components/tasklist/tasksiswa';
 import TaskOrtu from './components/tasklist/taskortu';
 import TaskKepsek from './components/tasklist/taskkepsek';
+import TaskKepsekPerId from './components/tasklist/taskkepsek_perid';
 import TaskGuru from './components/tasklist/taskguru';
 import TaskGuruPerId from './components/tasklist/taskguru_perid';
 import Admin from './components/usermanagement/admin';
@@ -82,7 +87,67 @@ class Root extends React.Component {
 		else{
 			return true
 		}
-  	}
+	  }
+	  
+	roleGuruCheck(){
+		let { account } = store.getState()
+		if(account.token == null || account.token==undefined || account.profile == null || account.profile==undefined){
+			return false
+		}
+		else{
+			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 4){
+				return false
+			}
+			else{
+				return true
+			}
+		}
+	}
+
+	roleSiswaCheck(){
+		let { account } = store.getState()
+		if(account.token == null || account.token==undefined || account.profile == null || account.profile==undefined){
+			return false
+		}
+		else{
+			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 6){
+				return false
+			}
+			else{
+				return true
+			}
+		}
+	}
+
+	roleAdminCheck(){
+		let { account } = store.getState()
+		if(account.token == null || account.token==undefined || account.profile == null || account.profile==undefined){
+			return false
+		}
+		else{
+			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 1){
+				return false
+			}
+			else{
+				return true
+			}
+		}
+	}
+
+	roleKepsekCheck(){
+		let { account } = store.getState()
+		if(account.token == null || account.token==undefined || account.profile == null || account.profile==undefined){
+			return false
+		}
+		else{
+			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 2){
+				return false
+			}
+			else{
+				return true
+			}
+		}
+	}
 
     render() {
         // store.dispatch(getAllProducts());
@@ -100,16 +165,17 @@ class Root extends React.Component {
 									path={`${process.env.PUBLIC_URL}/`}
 									component={SignIn}
 									authenticated={this.authCheck()}
-									// authenticated={true}
 								/>
 
 								{/* Custom Routes */}
 								<PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn}/>
 
-								<PrivateRoute
+								<PrivateRouteSiswa
 									path={`${process.env.PUBLIC_URL}/tasksiswa`}
 									component={TaskSiswa}
-									authenticated={this.authCheck()}
+									// authenticated={this.authCheck()}
+									role={this.roleSiswaCheck()}
+									exact={true}
 								/>
 
 								<PrivateRoute
@@ -118,32 +184,45 @@ class Root extends React.Component {
 									authenticated={this.authCheck()}
 								/>
 
-								<PrivateRoute
+								<PrivateRouteKepsek
+									path={`${process.env.PUBLIC_URL}/taskkepsek/:id`}
+									component={TaskKepsekPerId}
+									// authenticated={this.authCheck()}
+									role={this.roleKepsekCheck()}
+								/>
+
+								<PrivateRouteKepsek
 									path={`${process.env.PUBLIC_URL}/taskkepsek`}
 									component={TaskKepsek}
-									authenticated={this.authCheck()}
+									// authenticated={this.authCheck()}
+									role={this.roleKepsekCheck()}
 								/>
 
-								<PrivateRoute
-									path={`${process.env.PUBLIC_URL}/taskguru`}
-									component={TaskGuru}
-									authenticated={this.authCheck()}
-								/>
-
-								<PrivateRoute
+								<PrivateRouteGuru
 									path={`${process.env.PUBLIC_URL}/taskguru/:id`}
 									component={TaskGuruPerId}
-									authenticated={this.authCheck()}
+									// authenticated={this.authCheck()}
+									role={this.roleGuruCheck()}
+									exact={true}
 								/>
 
-								<PrivateRoute
+								<PrivateRouteGuru
+									path={`${process.env.PUBLIC_URL}/taskguru`}
+									component={TaskGuru}
+									// authenticated={this.authCheck()}
+									role={this.roleGuruCheck()}
+									exact={true}
+								/>
+
+								<PrivateRouteAdmin
 									path={`${process.env.PUBLIC_URL}/usermanagement`}
 									component={Admin}
 									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
 								/>
 
 								{/*Routes For Extra Pages*/}
-                                <Route path={`${process.env.PUBLIC_URL}/pages/about-us`} component={aboutUs}/>
+                                {/* <Route path={`${process.env.PUBLIC_URL}/pages/about-us`} component={aboutUs}/>
                                 <Route path={`${process.env.PUBLIC_URL}/pages/404`} component={PageNotFound}/>
                                 <Route path={`${process.env.PUBLIC_URL}/pages/lookbook`} component={lookbook}/>
                                 <Route path={`${process.env.PUBLIC_URL}/pages/login`} component={Login}/>
@@ -153,7 +232,7 @@ class Root extends React.Component {
                                 <Route path={`${process.env.PUBLIC_URL}/pages/forget-password`} component={ForgetPassword}/>
                                 <Route path={`${process.env.PUBLIC_URL}/pages/contact`} component={Contact}/>
                                 <Route path={`${process.env.PUBLIC_URL}/pages/dashboard`} component={Dashboard}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/faq`} component={Faq}/>
+                                <Route path={`${process.env.PUBLIC_URL}/pages/faq`} component={Faq}/> */}
 
 								{/*Blog Pages*/}
                                 {/* <Route path={`${process.env.PUBLIC_URL}/blog/right-sidebar`} component={RightSide}/>

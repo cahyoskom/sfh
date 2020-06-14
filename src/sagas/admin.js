@@ -8,7 +8,9 @@ import {
     GET_CLASS_LIST_SUCCESS,
     SET_LOADER,
     SET_MODAL,
-    POST_TASK
+    POST_TASK,
+    ADMIN_GET_GROUP_LIST,
+    ADMIN_GET_GROUP_LIST_SUCCESS
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
@@ -16,63 +18,38 @@ import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
 import { Header, HeaderAuth } from "../services/header";
 import moment from 'moment'
 
+const adminState = state => state.admin;
 const getTaskGuruState = state => state.taskGuru;
 
-export function* getTaskGuruList() {
+export function* adminGetGroupList() {
     try {
-        const taskGuru = yield select(getTaskGuruState)
+        const admin = yield select(adminState)
 
         yield put({
             type: SET_LOADER,
             value: true
         });
 
-        let classes = taskGuru.filter.class_id;
-        let paramClass = "&class=";
-        
-        if(classes.length != 0){
-          let kelas = [];
-          let optional = "";
-          for(let i=0; i<classes.length; i++ ){
-              kelas.push(classes[i].value)
-              optional +="&class=" + kelas[i];
-          }
-
-          paramClass = optional;
-        }
-        
-        let param = {
-            class: taskGuru.filter.class_id,
-            subject: taskGuru.filter.subject_id,
-            start_date: moment(taskGuru.filter.start_date).format("YYYY-MM-DD"),
-            end_date: moment(taskGuru.filter.end_date).format("YYYY-MM-DD"),
-        };
-        // console.log("param",param);
-        // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?class=" + param.class + "&subject=" + param.subject + optional, HeaderAuth());
-        const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject, HeaderAuth());
+        const response = yield call(services.GET, API_BASE_URL_DEV + "/group", HeaderAuth());
 
         if(response.status == 200){
             let datas = response.data;
             let result = [];
             for (let i=0; i < datas.data.length; i++) {
                 let obj = {};
-                obj.status = true;
-                obj.task_id = datas.data[i].task_id;
-                obj.assignor_id = datas.data[i].assignor_id;
-                obj.class_id = datas.data[i].class_id;
-                obj.subject_id = datas.data[i].subject_id;
-                obj.class_name = datas.data[i].class_name;
-                obj.subject_name = datas.data[i].subject_name;
-                obj.notes = datas.data[i].notes;
-                obj.title = datas.data[i].title;
-                obj.start_date = datas.data[i].start_date;
-                obj.finish_date = datas.data[i].finish_date;
+                obj.group_id = datas.data[i].group_id;
+                obj.group_name = datas.data[i].group_name;
+                obj.status = datas.data[i].status;
+                obj.created_date = datas.data[i].created_date;
+                obj.created_by = datas.data[i].created_by;
+                obj.updated_date = datas.data[i].updated_date;
+                obj.updated_by = datas.data[i].updated_by;
                 result.push(obj);
             }
             // console.log('ressss', result);
             yield put({ 
-                type: GET_TASK_GURU_LIST_SUCCESS, 
-                field: "data",
+                type: ADMIN_GET_GROUP_LIST_SUCCESS, 
+                field: "dataGroup",
                 value: result
             });
         }
@@ -90,6 +67,80 @@ export function* getTaskGuruList() {
             value: false
           });
     }
+}
+
+export function* getTaskGuruList() {
+  try {
+      const taskGuru = yield select(getTaskGuruState)
+
+      yield put({
+          type: SET_LOADER,
+          value: true
+      });
+
+      let classes = taskGuru.filter.class_id;
+      let paramClass = "&class=";
+      
+      if(classes.length != 0){
+        let kelas = [];
+        let optional = "";
+        for(let i=0; i<classes.length; i++ ){
+            kelas.push(classes[i].value)
+            optional +="&class=" + kelas[i];
+        }
+
+        paramClass = optional;
+      }
+      
+      let param = {
+          class: taskGuru.filter.class_id,
+          subject: taskGuru.filter.subject_id,
+          start_date: moment(taskGuru.filter.start_date).format("YYYY-MM-DD"),
+          end_date: moment(taskGuru.filter.end_date).format("YYYY-MM-DD"),
+      };
+      // console.log("param",param);
+      // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?class=" + param.class + "&subject=" + param.subject + optional, HeaderAuth());
+      const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject, HeaderAuth());
+
+      if(response.status == 200){
+          let datas = response.data;
+          let result = [];
+          for (let i=0; i < datas.data.length; i++) {
+              let obj = {};
+              obj.status = true;
+              obj.task_id = datas.data[i].task_id;
+              obj.assignor_id = datas.data[i].assignor_id;
+              obj.class_id = datas.data[i].class_id;
+              obj.subject_id = datas.data[i].subject_id;
+              obj.class_name = datas.data[i].class_name;
+              obj.subject_name = datas.data[i].subject_name;
+              obj.notes = datas.data[i].notes;
+              obj.title = datas.data[i].title;
+              obj.start_date = datas.data[i].start_date;
+              obj.finish_date = datas.data[i].finish_date;
+              result.push(obj);
+          }
+          // console.log('ressss', result);
+          yield put({ 
+              type: GET_TASK_GURU_LIST_SUCCESS, 
+              field: "data",
+              value: result
+          });
+      }
+
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+        
+  } catch (error) {
+      console.log(error)
+      fail(error);
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  }
 }
 
 export function* getSubjectList() {
@@ -240,6 +291,8 @@ console.log('setelah formdata');
 
 export default function* rootSaga() {
   yield all([
+      takeEvery(ADMIN_GET_GROUP_LIST, adminGetGroupList),
+
       takeEvery(GET_TASK_GURU_LIST, getTaskGuruList),
       takeEvery(GET_SUBJECT_LIST, getSubjectList),
       takeEvery(GET_CLASS_LIST, getClassList),

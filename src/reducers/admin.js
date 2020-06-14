@@ -1,4 +1,7 @@
 import {
+    ADMIN_GET_GROUP_LIST,
+    ADMIN_GET_GROUP_LIST_SUCCESS,
+    
     GET_TASK_GURU_LIST,
     GET_TASK_GURU_LIST_SUCCESS,
     GET_SUBJECT_LIST,
@@ -16,6 +19,11 @@ import {
   } from "../constants/ActionTypes";
   
   const initialState = {
+    group:{
+        dataGroup:[]
+    },
+
+
     data: [],
     filter: {
         // startDate: new Date(),
@@ -88,6 +96,21 @@ import {
   
   export default function adminReducer(state = initialState, action) {
     switch (action.type) {
+        case ADMIN_GET_GROUP_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_GROUP_LIST_SUCCESS: {
+            return {
+                ...state,
+                group:{
+                    ...state.group,
+                    [action.field]: action.value
+                }                
+            };
+        }
+
+
         case SET_TASK_LIST_FILTER:
         return {
             ...state,

@@ -23,7 +23,7 @@ import { Formik, Form, Field } from 'formik';
 import Select from 'react-select'
 import zIndex from '@material-ui/core/styles/zIndex';
 
-class TaskKepsek extends Component {
+class TaskKepsekPerId extends Component {
 
     constructor (props) {
         super (props)
@@ -31,81 +31,38 @@ class TaskKepsek extends Component {
         this.state = {
             columns: [
                 {
-                    name: 'status',
-                    label: 'Status',
-                    options: {
-                        display:false,
-                        filter: false,
-                        sort: false,
-                        print: false,
-                        download: false,
-                        customBodyRender: (value, tableMeta, updateValue) => {
-                            if(value){
-                                return (
-                                    <div>
-                                        <i className="fa fa-check-circle" title="Submitted" style={{ color: "green" }}/>
-                                    </div>
-                                )
-                            }else{
-                                return (
-                                    <div>
-                                        <i className="fa fa-window-close" title="Belum Submit" style={{ color: "red" }}/>
-                                    </div>
-                                )
-                            }
-                          
-                        }
-                    }
+                    name:"status",
+                    label:"status",
+                    options:{
+                        display:false
+                    }                    
                 },
                 {
-                    name: 'notes',
-                    label: 'Deskripsi',
+                    name:"student_no",
+                    label:"No"
+                },
+                {
+                    name: 'student_name',
+                    label: 'Nama Siswa / Email',
+                },
+                {
+                    name: 'task_progress',
+                    label: 'Task Progress',
                     options: {
                         filter: false,
                         sort: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            if(value){
+                            if(tableMeta.rowData[0] == 4){
                                 return (
                                 <div>
-                                    <p>{value}</p>
-                                    <p>{tableMeta.rowData[3]}, {tableMeta.rowData[2]}</p>
+                                    <p style={{color:"yellow"}}><span style={{backgroundColor:"green"}}>Sudah Submit</span></p>
                                 </div>
                                 );
                             }
-                        }
-                    }
-                },
-                {
-                    name: "class_name",
-                    label: "Kelas",
-                    options: {
-                        display: false
-                    }
-                },
-                {
-                    name: "subject_name",
-                    label: "Mata Pelajaran",
-                    options: {
-                        display: false
-                    }
-                },
-                {
-                    name: "title",
-                    label: "Task",
-                    options: {
-                        display: false
-                    }
-                },
-                {
-                    name: "start_date",
-                    label: "Start",
-                    options: {
-                        display: false,
-                        customBodyRender: (value) => {
-                            if(value){
+                            else{
                                 return (
                                     <div>
-                                        <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
+                                        <p style={{color:"red"}}><span style={{backgroundColor:"yellow"}}>Belum Submit</span></p>
                                     </div>
                                 );
                             }
@@ -113,55 +70,27 @@ class TaskKepsek extends Component {
                     }
                 },
                 {
-                    name: "finish_date",
-                    label: "Finish",
-                    options: {
-                        display: false,
-                        customBodyRender: (value) => {
-                            if(value){
-                                return (
-                                    <div>
-                                        <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
-                                    </div>
-                                );
-                            }
-                        }
-                    }
+                    name: "submitted_date",
+                    label: "Last Submit",
                 },
                 {
-                    name: 'task_id',
-                    label: 'Action',
+                    name: 'task_collection_id',
+                    label: 'Upload Folder',
                     options: {
                         filter: false,
                         sort: false,
                         print: false,
                         download: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            if(value){
-                                return (
+                            return (
                                 <div>
-                                    <Link to={`${process.env.PUBLIC_URL}/taskkepsek/` + value}><Button title="Detail Task" color="primary" size="sm">Detail</Button></Link>
+                                    <Button color="primary" size="sm" onClick={() => this.OpenModal()}>OPEN</Button>
                                 </div>
-                                );
-                            }
+                            );
                         }
                       }
                 },
-                {
-                    name: "class_id",
-                    label: "class_id",
-                    options: {
-                        display: false
-                    }
-                },
-                {
-                    name: "subject_id",
-                    label: "subject_id",
-                    options: {
-                        display: false
-                    }
-                },
-            ],
+            ], 
             isAddNew:false,
             isEdit:false,
             isDetail:false,
@@ -175,11 +104,10 @@ class TaskKepsek extends Component {
     }
 
     componentDidMount(){
-        let {kepsekGetClassList, kepsekGetSubjectList} =this.props;
+        let {setUrlPath, kepsekGetTaskCollectionList} =this.props;
         // document.getElementById('sticky').style.display = "none"
-        this.getList();        
-        kepsekGetClassList();
-        kepsekGetSubjectList();
+        setUrlPath(this.props.match.params.id);
+        kepsekGetTaskCollectionList();
     }
     
 
@@ -314,7 +242,7 @@ class TaskKepsek extends Component {
                                     <MuiThemeProvider>
                                     <MUIDataTable
                                         // title={<div><Button onClick={this.submitTask}><i className="mdi mdi-plus"></i>&nbsp;Submit Selected Task</Button></div>}
-                                        data={taskKepsekState.data}
+                                        data={taskKepsekState.dataCollection}
                                         columns={this.state.columns}
                                         options={options}
                                         />
@@ -363,4 +291,4 @@ const mapStateToProps = state => ({
 export default connect(
     mapStateToProps,
     {...actions}
-)(withTranslate(TaskKepsek))
+)(withTranslate(TaskKepsekPerId))

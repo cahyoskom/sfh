@@ -12,6 +12,7 @@ import {
   
   const initialState = {
     data: [],
+    key: Math.random(),
     dataCollection:{},
     form: {
         task_id: 0,

@@ -5,6 +5,7 @@ import {
     KEPSEK_GET_SUBJECT_LIST_SUCCESS,
     KEPSEK_GET_CLASS_LIST,
     KEPSEK_GET_CLASS_LIST_SUCCESS,
+    KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM,
     SET_LOADER,
@@ -12,7 +13,8 @@ import {
     SET_TASK_LIST_FILTER,
     DELETE_TASK,
     SET_STATE_TASK_DETAIL,
-    HANDLE_STATE_UPDATE_TASK
+    HANDLE_STATE_UPDATE_TASK,
+    SET_URL_PATH
   } from "../constants/ActionTypes";
   
   const initialState = {
@@ -62,21 +64,22 @@ import {
     assignor_id: localStorage.getItem("user_id")
       ? JSON.parse(localStorage.getItem("user_id"))
       : undefined,
-    loader: false
+    loader: false,
+    params:0,
+    // taskkepsek_perid
+    dataCollection: []
   };
   
   export default function taskKepsekReducer(state = initialState, action) {
     switch (action.type) {
+        case SET_URL_PATH: 
+            return {
+                ...state,
+                params: action.payload
+            }
         case SET_TASK_LIST_FILTER:
         return {
             ...state,
-            // dt: {
-            //     ...state.dt,
-            //     filter: {
-            //         ...state.dt.filter,
-            //         [action.field]: action.value
-            //     }                
-            // }
             filter: {
                 ...state.filter,
                 [action.field]: action.value
@@ -90,6 +93,12 @@ import {
             return {
                 ...state,
                 // data: action.value
+                [action.field]: action.value
+            };
+        }
+        case KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS: {
+            return {
+                ...state,
                 [action.field]: action.value
             };
         }

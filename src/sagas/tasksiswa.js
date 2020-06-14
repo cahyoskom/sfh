@@ -180,7 +180,7 @@ export function* studentSubmitCollection() {
             value: true
           });
         const taskSiswa = yield select(getTaskSiswaState)
-        console.log(taskSiswa.form.task_collection_ids , "Files Uploaded Successfully")
+        // console.log(taskSiswa.form.task_collection_ids , "Files Uploaded Successfully")
         if(taskSiswa.form.task_collection_ids.length != 0){
             for(let i = 0; i<taskSiswa.form.task_collection_ids.length; i++){
                 let param = {

@@ -1,4 +1,5 @@
 import {
+    GURU_GET_TASK_COLLECTION_LIST_SUCCESS,
     GET_TASK_GURU_LIST,
     GET_TASK_GURU_LIST_SUCCESS,
     GET_SUBJECT_LIST,
@@ -11,13 +12,14 @@ import {
     SET_DATE,
     SET_TASK_LIST_FILTER,
     DELETE_TASK,
+    SET_URL_PATH,
     SET_STATE_TASK_DETAIL,
-    HANDLE_STATE_UPDATE_TASK
+    HANDLE_STATE_UPDATE_TASK,
+    SET_MODAL_EDIT_FORM_GURU
   } from "../constants/ActionTypes";
   
   const initialState = {
     data: [],
-    dataCollection:[],
     filter: {
         class_id:[],
         subject_id:[],
@@ -59,12 +61,17 @@ import {
         start_date: new Date(),
         finish_date: new Date(),
         publish_date: new Date(),
-        files:null
+        files:[],
+        deleteFileIds:[]
     },
+    formEdit:{},
     assignor_id: localStorage.getItem("user_id")
       ? JSON.parse(localStorage.getItem("user_id"))
       : undefined,
-    loader: false
+    loader: false,
+    params:0,
+    // taskguru_perid
+    dataCollection: []
   };
   
   export default function taskGuruReducer(state = initialState, action) {
@@ -82,6 +89,13 @@ import {
                 ...state,
             };
         case GET_TASK_GURU_LIST_SUCCESS: {
+            return {
+                ...state,
+                // data: action.value
+                [action.field]: action.value
+            };
+        }
+        case GURU_GET_TASK_COLLECTION_LIST_SUCCESS: {
             return {
                 ...state,
                 // data: action.value
@@ -130,16 +144,11 @@ import {
                 ...state,
                 deletedIds: action.payload
             }
-        case SET_STATE_TASK_DETAIL:
+        case SET_URL_PATH: 
             return {
                 ...state,
-                taskDetail: action.value
-            };
-        case HANDLE_STATE_UPDATE_TASK:
-            return {
-                ...state,
-                taskDetail: { ...state.taskDetail, [action.field]: action.value }
-            };
+                params: action.payload
+            }
         case SET_MODAL_FORM:
             return {
                 ...state,
@@ -148,6 +157,12 @@ import {
                     [action.field]: action.value
                 }
             };
+        case SET_MODAL_EDIT_FORM_GURU: {
+                return {
+                    ...state,
+                    form: action.payload
+                };
+            }
         default:
     }
     return state;

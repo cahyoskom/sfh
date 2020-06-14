@@ -18,6 +18,7 @@ import moment from 'moment'
 import Select from 'react-select'
 import { Formik, Form, Field } from 'formik';
 import { Checkbox } from '@material-ui/core';
+import * as messageBox from "../common/message-box";
 
 class TaskSiswa extends Component {
 
@@ -146,13 +147,28 @@ class TaskSiswa extends Component {
                     name:"checkbox",
                     label:"Select",
                     options: {
+                        filter:false,
+                        sort:false,
                         customBodyRender: (value, tableMeta, updateValue) => {
+                            let { taskSiswaState } = props;
+                            let data = taskSiswaState.data;
+                            console.log(value);
+                            // console.log(data, 'data checkbox')
+                            // console.log(tableMeta.rowData[8], 'data checkbox')
+                            // console.log(data.checkbox, 'data checkbox')
                             if(tableMeta.rowData[7] != 0){
+                                // console.log(value,'huh')
                                 return (                                
                                     <div>
                                       <Checkbox
-                                      onChange={() => this.handleRowClick(tableMeta)}
-                                      isChecked={value}
+                                        onChange={(event) => {
+                                            this.handleRowClick(tableMeta, event.target.checked);
+                                            // data[tableMeta.rowIndex].checkbox = val.value
+                                            // this.checked= val.target.checked
+                                            // console.log(val,"val")
+                                        }}
+                                        checked={value}
+                                        // checked={this.state.isChecked}
                                       />
                                     </div>
                                 );       
@@ -162,6 +178,7 @@ class TaskSiswa extends Component {
                                     <div>
                                       <Checkbox
                                       disabled={true}
+                                      title="Upload jawaban terlebih dahulu"
                                       />
                                     </div>
                                 );  
@@ -178,6 +195,7 @@ class TaskSiswa extends Component {
             uploadedFileName:[],
             fileObj:[],
             task_collection_ids: [],
+            isChecked:false,
         }
         this.getList = this.getList.bind(this);
         this.uploadTask = this.uploadTask.bind(this);
@@ -192,7 +210,6 @@ class TaskSiswa extends Component {
 
     componentDidMount(){
         this.getList();
-        let {taskSiswaState, accountState} =this.props;
     }
 
     getList(){
@@ -212,7 +229,7 @@ class TaskSiswa extends Component {
 
     uploadTask(tableMeta){
         let {setModal, setStateModalForm, studentPutCollection, taskSiswaState} = this.props;
-        // if(taskSiswaState.form.task_collection_id == 0){
+        if(taskSiswaState.form.task_collection_id == 0){
             if(tableMeta.rowData[7] == 0){
                 setStateModalForm('task_id', tableMeta.rowData[6]);
                 studentPutCollection();    
@@ -223,12 +240,12 @@ class TaskSiswa extends Component {
                 setStateModalForm("task_collection_id", tableMeta.rowData[7]);
                 console.log('pakai lembar jawaban yg sudah dibuat');
             }
-        // }
-        // else{
-        //     setStateModalForm("task_id", tableMeta.rowData[6]);
-        //     setStateModalForm("task_collection_id", tableMeta.rowData[7]);
-        //     console.log('pakai lembar jawaban yg sudah dibuat else');
-        // }
+        }
+        else{
+            setStateModalForm("task_id", tableMeta.rowData[6]);
+            setStateModalForm("task_collection_id", tableMeta.rowData[7]);
+            console.log('pakai lembar jawaban yg sudah dibuat else');
+        }
         
         setModal("type", "add")
         setModal("title", "Upload Files")
@@ -242,9 +259,10 @@ class TaskSiswa extends Component {
     }
 
     submitTask(){
-        let { studentSubmitCollection, setStateModalForm } = this.props;
+        let { studentSubmitCollection, setStateModalForm, taskSiswaState } = this.props;
         setStateModalForm("task_collection_ids", this.state.task_collection_ids);
-        studentSubmitCollection();
+        messageBox.confirmSubmitCollection(this.state.task_collection_ids.length, studentSubmitCollection);
+        // studentSubmitCollection();
     }
 
     modalToggle() {
@@ -258,7 +276,7 @@ class TaskSiswa extends Component {
 
     fileHandler = event => {
         let { setLoader, setStateModalForm ,taskSiswaState} = this.props;
-        console.log('handel file', event.target.files);
+        // console.log('handel file', event.target.files);
         if (event.target.files.length) {
             var fileObj = [];
             var fileName = [];
@@ -313,8 +331,8 @@ class TaskSiswa extends Component {
         });
         setStateModalForm('files', fileObj);
         setStateModalForm('task_collection_id', taskSiswaState.form.task_collection_id);
-        console.log('pailojek',fileObj);
-        console.log('pailojeknem',fileName);
+        // console.log('pailojek',fileObj);
+        // console.log('pailojeknem',fileName);
         }
     };
 
@@ -323,11 +341,17 @@ class TaskSiswa extends Component {
         window.location.href = process.env.PUBLIC_URL
     }
     
-    handleRowClick(tableMeta){
-        let { setStateModalForm, taskSiswaState } = this.props;
+    handleRowClick(tableMeta, val){
+        // console.log('metaa',tableMeta)
+        let { setStateModalForm, taskSiswaState, setStateTaskSiswaList } = this.props;
+        let data = taskSiswaState.data;
+        console.log(val, "click");
+        data[data.findIndex(x => x.task_id === tableMeta.rowData[6])].checkbox = val
+        setStateTaskSiswaList("data", data);
         setStateModalForm("rows", tableMeta.rowData[7]);
         this.setState(prevState => ({
-            task_collection_ids: [...prevState.task_collection_ids, tableMeta.rowData[7]]
+            task_collection_ids: [...prevState.task_collection_ids, tableMeta.rowData[7]],
+            // isChecked: !this.state.isChecked
         }));
     };
 
@@ -465,7 +489,7 @@ class TaskSiswa extends Component {
 
                                     <MuiThemeProvider>
                                     <MUIDataTable
-                                        key={taskSiswaState.data}
+                                        key={taskSiswaState.key}
                                         data={taskSiswaState.data}
                                         columns={this.state.columns}
                                         options={options}

@@ -192,6 +192,11 @@ export const getTaskOrtuList = (data) => ({
 })
 
 //guru
+export const setUrlPath = (id) => ({
+    type: types.SET_URL_PATH,
+    payload: id
+})
+
 export const deleteTask = (ids) => ({
     type: types.DELETE_TASK,
     payload: ids
@@ -207,6 +212,11 @@ export const getTaskGuruList = (data) => ({
     payload: data
 })
 
+export const guruGetTaskCollectionList = (data) => ({
+    type: types.GURU_GET_TASK_COLLECTION_LIST,
+    payload: data
+})
+
 export const getSubjectList = (data) => ({
     type: types.GET_SUBJECT_LIST,
     payload: data
@@ -217,8 +227,15 @@ export const getClassList = (data) => ({
     payload: data
 })
 
+
 export const setStateModalForm = (field, value) => ({
     type: types.SET_MODAL_FORM,
+    value,
+    field
+})
+
+export const setStateTaskSiswaList = (field, value) => ({
+    type: types.GET_TASK_SISWA_LIST_SUCCESS,
     value,
     field
 })
@@ -231,7 +248,20 @@ export const updateTask = () => ({
     type: types.UPDATE_TASK
 })
 
+export const guruDeleteTaskFile = () => ({
+    type: types.GURU_DELETE_TASK_FILE
+})
+
+export const getTaskGuruById = () => ({
+    type: types.GET_TASK_GURU_BY_ID
+})
+
 //kepsek
+export const kepsekGetTaskCollectionList = (data) => ({
+    type: types.KEPSEK_GET_TASK_COLLECTION_LIST,
+    payload: data
+})
+
 export const kepsekGetTaskList = (data) => ({
     type: types.KEPSEK_GET_TASK_LIST,
     payload: data
@@ -244,5 +274,11 @@ export const kepsekGetSubjectList = (data) => ({
 
 export const kepsekGetClassList = (data) => ({
     type: types.KEPSEK_GET_CLASS_LIST,
+    payload: data
+})
+
+//admin
+export const adminGetGroupList = (data) => ({
+    type: types.ADMIN_GET_GROUP_LIST,
     payload: data
 })

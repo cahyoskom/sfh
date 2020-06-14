@@ -27,34 +27,19 @@ class TaskGuruPerId extends Component {
         this.state = {
             columns: [
                 {
-                    name:"no",
-                    label:"No",
-                    display:true
+                    name:"status",
+                    label:"status",
+                    options:{
+                        display:false
+                    }                    
                 },
                 {
-                    name: 'name',
+                    name:"student_no",
+                    label:"No"
+                },
+                {
+                    name: 'student_name',
                     label: 'Nama Siswa / Email',
-                    options: {
-                        filter: false,
-                        sort: false,
-                        print: false,
-                        download: false,
-                        customBodyRender: (value, tableMeta, updateValue) => {
-                            return (
-                                <div>
-                                    {value + " / " + tableMeta.rowData[2]} 
-                                </div>
-                            )
-                          
-                        }
-                    }
-                },
-                {
-                    name: "email",
-                    label: "email",
-                    options: {
-                        display: false
-                    }
                 },
                 {
                     name: 'task_progress',
@@ -63,25 +48,29 @@ class TaskGuruPerId extends Component {
                         filter: false,
                         sort: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            if(value){
+                            if(tableMeta.rowData[0] == 4){
                                 return (
                                 <div>
-                                    <p style={{color:"yellow"}}>{value}</p>
+                                    <p style={{color:"yellow"}}><span style={{backgroundColor:"green"}}>Sudah Submit</span></p>
                                 </div>
+                                );
+                            }
+                            else{
+                                return (
+                                    <div>
+                                        <p style={{color:"red"}}><span style={{backgroundColor:"yellow"}}>Belum Submit</span></p>
+                                    </div>
                                 );
                             }
                         }
                     }
                 },
                 {
-                    name: "last_submit",
+                    name: "submitted_date",
                     label: "Last Submit",
-                    options: {
-                        display: true
-                    }
                 },
                 {
-                    name: 'task_id',
+                    name: 'task_collection_id',
                     label: 'Upload Folder',
                     options: {
                         filter: false,
@@ -89,16 +78,11 @@ class TaskGuruPerId extends Component {
                         print: false,
                         download: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            if(value){
-                                return (
+                            return (
                                 <div>
-                                    <Button title="Detail Task" color="primary" size="sm" onClick={() => this.detailTask(tableMeta)}>Detail</Button>&nbsp;
-                                    <Button title="Arsipkan Task" color="secondary" size="sm" onClick={() => this.archivedTask(tableMeta)}>Arsipkan</Button>&nbsp;
-                                    <Button title="Edit Task" color="info" style={{ color: "#fff" }} onClick={() => this.editTask(tableMeta)} size="sm">Edit</Button>&nbsp;
-                                    <Button title="Delete Task" color="danger" style={{ color: "#fff" }} onClick={() => this.deleteTask(tableMeta)} size="sm">Delete</Button>
+                                    <Button color="primary" size="sm" onClick={() => this.OpenModal()}>OPEN</Button>
                                 </div>
-                                );
-                            }
+                            );
                         }
                       }
                 },
@@ -106,160 +90,18 @@ class TaskGuruPerId extends Component {
             options : {
                  filterType: 'checkbox',
             },
-            status:"all",
-            isAddNew:false,
-            isEdit:false,
             isDetail:false,
-            multiValueClass: [],
-            dataSourceClass:this.props.taskGuruState.dataSourceClass,
-            uploadedFileName: [],
-            isFormInvalid:false
         }
-        this.getList = this.getList.bind(this);
-        this.uploadTask = this.uploadTask.bind(this);
-        this.editTask = this.editTask.bind(this);
-        this.detailTask = this.detailTask.bind(this);
         this.modalToggle = this.modalToggle.bind(this);
-        // this.openFileBrowser = this.openFileBrowser.bind(this);
-        this.fileInput = React.createRef();
         this.onClickSignOut = this.onClickSignOut.bind(this);
-        this.validator = new SimpleReactValidator();
-        this.save = this.save.bind(this);
-        this.handleMultiChange = this.handleMultiChange.bind(this);
-        this.update = this.update.bind(this);
-        this.clearModal = this.clearModal.bind(this);
     }
 
     componentDidMount(){
-        let {getClassList, getSubjectList, accountState} =this.props;
-        // document.getElementById('sticky').style.display = "none"
-        this.getList();        
-        getClassList();
-        getSubjectList();
-        this.clearModal();
-        console.log("acc state",accountState);
+        let {setUrlPath, guruGetTaskCollectionList} =this.props;
+        setUrlPath(this.props.match.params.id);
+        guruGetTaskCollectionList();
+        // console.log("url",this.props.match.params.id);
     }
-
-    clearModal(){
-        let {setStateModalForm} =this.props;
-        setStateModalForm("task_id", "")
-        setStateModalForm("class_id", "")
-        setStateModalForm("subject_id", "")
-        setStateModalForm("assignor_id", "")
-        setStateModalForm("title", "")
-        setStateModalForm("notes", "")
-        setStateModalForm("start_date", new Date())
-        setStateModalForm("finish_date", new Date())
-        setStateModalForm("files", null)
-    }
-
-    getList(){
-        let { getTaskGuruList } = this.props;
-        getTaskGuruList();
-    }
-
-    uploadTask(){
-        let { getSubjectList, getClassList, setModal } = this.props;
-        this.clearModal();
-        getSubjectList();
-        getClassList();
-
-        setModal("type", "add")
-        setModal("title", "Upload Task")
-        setModal("buttonText", "Upload")
-        setModal("show", true)
-        this.setState( prevState => ({
-            ...prevState,
-            isAddNew:true,
-            isEdit:false,
-            isDetail:false,
-        })
-        );
-    }
-
-    detailTask(data){
-        let { getSubjectList, getClassList, setModal, setStateModalForm } = this.props;
-        getSubjectList();
-        getClassList();
-
-        setStateModalForm("class_id", data.rowData[8])
-        setStateModalForm("subject_id", data.rowData[9])
-        setStateModalForm("title", data.rowData[4])
-        setStateModalForm("notes", data.rowData[1])
-        setStateModalForm("start_date", data.rowData[5])
-        setStateModalForm("finish_date", data.rowData[6])
-
-        setModal("type", "detail")
-        setModal("title", "Detail Task")
-        // setModal("buttonText", "Upload")
-        setModal("show", true)
-        this.setState( prevState => ({
-            ...prevState,
-            isAddNew:false,
-            isEdit:false,
-            isDetail:true,
-        })
-        );
-    }
-
-    editTask(data){
-        let { getSubjectList, getClassList, setModal, setStateModalForm } = this.props;
-        getSubjectList();
-        getClassList();
-
-        setStateModalForm("task_id", data.rowData[7])
-        setStateModalForm("class_id", data.rowData[8])
-        setStateModalForm("subject_id", data.rowData[9])
-        setStateModalForm("assignor_id", data.rowData[10])
-        setStateModalForm("title", data.rowData[4])
-        setStateModalForm("notes", data.rowData[1])
-        setStateModalForm("start_date", data.rowData[5])
-        setStateModalForm("finish_date", data.rowData[6])
-        
-        setModal("type", "edit")
-        setModal("title", "Edit Task")
-        setModal("buttonText", "Update")
-        setModal("show", true)
-        this.setState( prevState => ({
-            ...prevState,
-            isAddNew:false,
-            isEdit:true,
-            isDetail:false,
-        })
-        );
-    }
-
-    deleteTask(tableMeta) {
-        const { deleteTask, setStateModalForm, taskGuruState } = this.props;
-        setStateModalForm("task_id",tableMeta.rowData[7]);
-        messageBox.confirmDelete(taskGuruState.form.task_id, deleteTask);
-    }
-
-    archivedTask(tableMeta) {
-        const { archivedTask, setStateModalForm, taskGuruState } = this.props;
-        setStateModalForm("task_id",tableMeta.rowData[7]);
-        messageBox.confirmArchive(taskGuruState.form.task_id, archivedTask);
-    }
-
-    save() {
-        const { postTask } = this.props;
-        // if (this.validator.allValid()) {
-            postTask();
-        // } else {
-        //   this.validator.showMessages();
-        //   this.formArea.current.forceUpdate();
-        // }
-    }
-
-    update() {
-        const { updateTask } = this.props;
-        // if (this.validator.allValid()) {
-            updateTask();
-        // } else {
-        //     this.validator.showMessages();
-        //     this.formArea.current.forceUpdate();
-        // }
-    }  
 
     modalToggle() {
         const { taskGuruState, setModal } = this.props;
@@ -280,7 +122,8 @@ class TaskGuruPerId extends Component {
             search:false,
             download:false,
             print:false,
-            viewColumns:false
+            viewColumns:false,
+            selectableRows:'none',
         };
 
         return (
@@ -320,16 +163,12 @@ class TaskGuruPerId extends Component {
                                 <div className="theme-card authentication-right">
                                     <MuiThemeProvider>
                                     <MUIDataTable
+                                        title={<div>Kelas <span style={{backgroundColor:"green"}}>SD 1</span></div>}
                                         data={taskGuruState.dataCollection}
                                         columns={this.state.columns}
                                         options={options}
                                         />
                                     </MuiThemeProvider><br/>
-
-                                    <div className="text-right">
-                                        <Button size="sm" color="primary" onClick={this.uploadTask}><i className="fa fa-plus"/> Add New Task</Button>
-                                    </div>
-
                                 </div>
                             </div>
                         </div>
@@ -343,7 +182,7 @@ class TaskGuruPerId extends Component {
                     <Modal isOpen={taskGuruState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
                         <ModalHeader toggle={this.modalToggle}>{taskGuruState.modal.title}</ModalHeader>
                         <ModalBody>
-                            {this.state.isAddNew &&
+                            {this.state.isDetail &&
                                 <Formik
                                 enableReinitialize={true}
                                 initialValues={taskGuruState.taskDetail}
@@ -435,7 +274,7 @@ class TaskGuruPerId extends Component {
                                                         setStateModalForm("start_date", a);
                                                     }}
                                                     format={"DD/MMM/YYYY"}
-                                                    value={taskGuruState.form.start_date}
+                                                    // value={taskGuruState.form.start_date}
                                                 />
                                             </FormGroup>
                                             <FormGroup>
@@ -448,7 +287,7 @@ class TaskGuruPerId extends Component {
                                                         setStateModalForm("finish_date", a);
                                                     }}
                                                     format={"DD/MMM/YYYY"}
-                                                    value={taskGuruState.form.finish_date}
+                                                    // value={taskGuruState.form.finish_date}
                                                 />
                                             </FormGroup>
                                             <FormGroup>
@@ -510,10 +349,7 @@ class TaskGuruPerId extends Component {
                         
                         {' '}
                         {taskGuruState.modal.type == "edit" &&
-                            <Button size="sm" color="primary" onClick={() => this.update()}>{taskGuruState.modal.buttonText}</Button>
-                        }
-                        {taskGuruState.modal.type == "add" &&
-                            <Button size="sm" color="primary" onClick={() => this.save()}>{taskGuruState.modal.buttonText}</Button>
+                            <Button size="sm" color="primary">{taskGuruState.modal.buttonText}</Button>
                         }
                         </ModalFooter>
                     </Modal>

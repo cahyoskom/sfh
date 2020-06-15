@@ -1,7 +1,7 @@
 const sec_user_role = require('../../models/sec_user_role');
 const moment = require('moment');
-const {query} = require('../../models/query');
 const TASK_STATUS = require('../../enums/status.enums');
+const ROLES = require('../../common/roles');
 
 module.exports = function (router) {
 
@@ -27,13 +27,19 @@ module.exports = function (router) {
         res.json({ data : datum});
     });
 
+    router.get('/user/:id', async function (req, res) {
+        var roles = await ROLES.get(req.params.id);
+
+        res.json({ data : roles});
+    });
+
     router.put('/', async function (req, res) {
         var new_obj = {
-            user_id: req.body.assignor_id,
-            group_id : req.body.class_id,
+            user_id: req.body.user_id,
+            group_id : req.body.group_id,
             class_id : req.body.class_id,
             subject_id : req.body.subject_id,
-            student_id : req.body.title,
+            student_id : req.body.student_id,
             status: 1,
             created_date : moment().format(),
             created_by : req.user.user_name

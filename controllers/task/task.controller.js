@@ -241,5 +241,22 @@ module.exports = function (router) {
 
     });
 
+    router.get('/download/:file_id', async function (req, res) {
+        var file = await t_task_file().findOne({ where : { task_file_id : req.params.file_id}});
+
+        if (!!file) {
+            var task_id = file.task_id;
+            var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/";
+            var filename = upload_dir + file.filename;
+            if (!fs.existsSync(filename)){
+                res.status(404).json({error: 24, message: "File is missing. It shoud existed though."});
+                return;
+            }
+            res.download(filename);
+
+        } else {
+            res.status(404).json({error: 24, message: "File not found"});
+        }
+    });
 
 };

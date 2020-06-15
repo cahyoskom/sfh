@@ -306,6 +306,136 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "role",
+			"item": [
+				{
+					"name": "GET role",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET role by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET role by user id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role/user/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"user",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"user_id\": 22,\n\t\"group_id\": 1,\n\t\"class_id\": null,\n\t\"subject_id\": null,\n\t\"student_id\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/role",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "student",
 			"item": [
 				{
@@ -536,6 +666,36 @@
 							],
 							"path": [
 								"task",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET download by task file id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/task/download/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task",
+								"download",
 								"{{id}}"
 							]
 						}
@@ -861,6 +1021,36 @@
 							],
 							"path": [
 								"collection",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET collection download by task collection file id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/collection/download/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"collection",
+								"download",
 								"{{id}}"
 							]
 						}

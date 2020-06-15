@@ -109,7 +109,7 @@ module.exports = function (router) {
 
 
         let task_id = task_collection.task_id;
-        var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/collection/" + task_collection_id;
+        var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/collection/" + task_collection_id + "/";
         if (!fs.existsSync(upload_dir)){
             fs.mkdirSync(upload_dir, { recursive: true });
         }        
@@ -156,6 +156,32 @@ module.exports = function (router) {
         return await query(sql, param);
 
     };
+
+    router.get('/download/:file_id', async function (req, res) {
+        var file = await t_task_collection_file().findOne({ where : { task_collection_file_id : req.params.file_id}});
+
+        if (!!file) {
+            var task_collection_id = file.task_collection_id;
+
+            var coll = await t_task_collection().findOne({ where : { task_collection_id : task_collection_id }});
+
+            if (!coll) {
+                res.status(404).json({error: 34, message: "No collection found."});
+                return;
+            }
+            var task_id = coll.task_id;
+            var upload_dir = FILE_UPLOAD_DIR + "/task_" + task_id + "/collection/" + task_collection_id + "/";
+            var filename = upload_dir + file.filename;
+            if (!fs.existsSync(filename)){
+                res.status(404).json({error: 24, message: "File is missing. It shoud existed though."});
+                return;
+            }
+            res.download(filename);
+
+        } else {
+            res.status(404).json({error: 24, message: "File not found"});
+        }
+    });
 
 
 };

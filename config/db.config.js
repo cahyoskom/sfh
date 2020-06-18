@@ -6,7 +6,7 @@ module.exports = {
     database: process.env.DB_DATABASE,
     dialect: process.env.DB_DIALECT,
     timestamps: false,
-    // logging: false,
+    logging: process.env.NODE_ENV=='production' ? false : console.log,
     pool: {
       max: parseInt(process.env.DB_POOL_MAX),
       min: parseInt(process.env.DB_POOL_MIN),

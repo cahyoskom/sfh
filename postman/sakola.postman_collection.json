@@ -206,6 +206,124 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "master",
+			"item": [
+				{
+					"name": "GET master",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/master?table=sec_user&user_id=21&user_id=22&user_name=admin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"master"
+							],
+							"query": [
+								{
+									"key": "table",
+									"value": "sec_user"
+								},
+								{
+									"key": "user_id",
+									"value": "21"
+								},
+								{
+									"key": "user_id",
+									"value": "22"
+								},
+								{
+									"key": "user_name",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET class by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/class/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT class",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"class_level\": 1,\n\t\"class_parallel\" : \"B\",\n\t\"class_name\" : \"1-B\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/class",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "subject",
 			"item": [
 				{
@@ -618,7 +736,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/task?class=1&subject=1&class=2",
+							"raw": "{{base_url}}/task?class=1&subject=1&class=2&start_date=2020-06-11&finish_date=2020-06-13",
 							"host": [
 								"{{base_url}}"
 							],
@@ -628,15 +746,28 @@
 							"query": [
 								{
 									"key": "class",
-									"value": "1"
+									"value": "1",
+									"description": "optional. multi"
 								},
 								{
 									"key": "subject",
-									"value": "1"
+									"value": "1",
+									"description": "optional. multi"
 								},
 								{
 									"key": "class",
-									"value": "2"
+									"value": "2",
+									"description": "optional. multi"
+								},
+								{
+									"key": "start_date",
+									"value": "2020-06-11",
+									"description": "optional"
+								},
+								{
+									"key": "finish_date",
+									"value": "2020-06-13",
+									"description": "optional"
 								}
 							]
 						}

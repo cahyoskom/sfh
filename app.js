@@ -6,6 +6,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 require('express-async-errors');
 const auth = require('./common/auth');
+
 // connect to DB
 const db = require('./database');
 db.connectDB();
@@ -75,6 +76,5 @@ app.use(function(req, res, next) {
   app.use(function(err, req, res, next) {
     res.status(500).send({ error: 0, message: err.message });
   });
-
 
 module.exports = app;

@@ -13,8 +13,8 @@ const TASK_STATUS = require('../../enums/status.enums');
 module.exports = function (router) {
 
     router.get('/', async function (req, res) {
-        var filter = {};
-        var where = [];
+        let filter = {};
+        let where = [];
 
         if (!!req.query.class) {
             filter.class_id = req.query.class;
@@ -24,6 +24,17 @@ module.exports = function (router) {
         if (!!req.query.subject) {
             filter.subject_id= req.query.subject;
             where.push('s.subject_id IN (:subject_id)');
+        }
+
+        // if start_date specified, by default finish_date=start_date, unless finish_date is specified
+        // if start_date not specified, then finish_date will be skipped.
+        if (!!req.query.start_date) {
+            filter.start_date = req.query.start_date;
+            filter.finish_date = filter.start_date;
+            if (!!req.query.finish_date) {
+                filter.finish_date = req.query.finish_date;
+            }
+            where.push('(start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date)');
         }
 
         var sql = `

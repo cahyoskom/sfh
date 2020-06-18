@@ -142,7 +142,7 @@ module.exports = function (router) {
     });
 
     async function GetCollectionForStudent(student) {
-        var sql = `SELECT t.task_id, t.title, notes, start_date, finish_date, 
+        var sql = `SELECT t.task_id, t.title, notes, start_date, finish_date, publish_date,
                         s.subject_name,
                         COALESCE(tc.task_collection_id, 0) AS task_collection_id, 
                         COALESCE(tc.status,0) AS collection_status

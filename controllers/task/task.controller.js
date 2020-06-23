@@ -34,7 +34,7 @@ module.exports = function (router) {
             if (!!req.query.finish_date) {
                 filter.finish_date = req.query.finish_date;
             }
-            where.push('(start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date)');
+            where.push('((start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date))');
         }
 
         var sql = `

@@ -8,15 +8,51 @@ const {FILE_UPLOAD_DIR} = require('../../config/app.config');
 const formidable =require('formidable');
 const GROUP_ENUMS = require('../../enums/group.enums');
 const MoveFile = require('../../common/move');
+const {Op} = require('sequelize');
 
 module.exports = function (router) {
 
     router.get('/', async function (req, res) {
         var filter = {};
 
+        // if start_date specified, by default finish_date=start_date, unless finish_date is specified
+        // if start_date not specified, then finish_date will be skipped.
+        if (!!req.query.collection_status) {
+            filter.collection_status = req.query.collection_status;
+        }
+        if (!!req.query.start_date) {
+            let start_date = req.query.start_date;
+            let finish_date = start_date;
+            if (!!req.query.finish_date) {
+                finish_date = req.query.finish_date;
+            }
+
+            filter[Op.or] = [
+                {
+                    [Op.and] : [
+                        { start_date : {[Op.lte] : start_date}},
+                        { finish_date : {[Op.gte] : start_date}},
+                    ]
+                },
+                {
+                    [Op.and] : [
+                        { start_date : {[Op.lte] : finish_date}},
+                        { finish_date : {[Op.gte] : finish_date}},
+                    ]
+                },
+                {
+                    [Op.and] : [
+                        { start_date : {[Op.gte] : start_date}},
+                        { finish_date : {[Op.lte] : finish_date}},
+                    ]
+                }
+            ];
+            
+        }
+
         if (!!req.user.roles[GROUP_ENUMS.STUDENT]) {
             // student
-            var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0]);
+            var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0], filter);
         } else {
             // not student
             if (!!req.query.class) {
@@ -141,19 +177,22 @@ module.exports = function (router) {
         res.json( {data : result });
     });
 
-    async function GetCollectionForStudent(student) {
-        var sql = `SELECT t.task_id, t.title, notes, start_date, finish_date, publish_date,
-                        s.subject_name,
-                        COALESCE(tc.task_collection_id, 0) AS task_collection_id, 
-                        COALESCE(tc.status,0) AS collection_status
-                    FROM t_task t
-                    JOIN m_subject s ON s.subject_id=t.subject_id
-                    LEFT JOIN (SELECT * FROM t_task_collection WHERE student_id = :student_id) tc ON tc.task_id=t.task_id
-                    WHERE t.class_id = :class_id AND t.status=1 AND s.status = 1
+    async function GetCollectionForStudent(student, filter={}) {
+        var sql = `
+            SELECT * FROM (
+                SELECT t.task_id, t.status AS task_status, t.title, notes, start_date, finish_date, publish_date,
+                    s.subject_name,
+                    COALESCE(tc.task_collection_id, 0) AS task_collection_id, 
+                    COALESCE(tc.status,0) AS collection_status
+                FROM t_task t
+                JOIN m_subject s ON s.subject_id=t.subject_id
+                LEFT JOIN (SELECT * FROM t_task_collection WHERE student_id = :student_id) tc ON tc.task_id=t.task_id
+                WHERE t.class_id = :class_id AND t.status > 0 AND s.status = 1
+            ) t
                     `;
         var param = { class_id : student.student_class_id, student_id : student.student_id };
 
-        return await query(sql, param);
+        return await query(sql, param, filter);
 
     };
 

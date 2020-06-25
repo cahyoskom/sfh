@@ -4,8 +4,10 @@ import { withTranslate } from "react-redux-multilingual";
 import BlockUi from "react-block-ui";
 import { Link, NavLink } from "react-router-dom";
 import { 
-    Button, FormGroup, Modal, ModalHeader, 
-    ModalBody, ModalFooter, Col, Row, Label, Input } from "reactstrap";
+    Button, 
+    // Form, 
+    FormGroup, Modal, ModalHeader, 
+    ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import 'react-widgets/dist/css/react-widgets.css';
 import DateTimePicker from "../common/DatePicker";
 import CustomInput from "../common/CostumInput";
@@ -16,9 +18,18 @@ import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/
 import * as actions from "../../actions";
 import moment from 'moment'
 import Select from 'react-select'
-import { Formik, Form, Field } from 'formik';
+import { Formik, 
+    Form, 
+    Field } from 'formik';
 import { Checkbox } from '@material-ui/core';
 import * as messageBox from "../common/message-box";
+import SimpleReactValidator from "simple-react-validator";
+// import * as Yup from 'yup';
+
+// const uploadFilesSiswaSchema = Yup.object().shape({
+//     files: Yup.string()
+//             .required('Required')
+// });
 
 class TaskSiswa extends Component {
 
@@ -28,6 +39,7 @@ class TaskSiswa extends Component {
         this.state = {
             columns: [
                 {
+                    //0
                     name: 'collection_status',
                     label: 'Status',
                     options: {
@@ -54,6 +66,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //1
                     name: 'notes',
                     label: 'Notes',
                     options: {
@@ -63,8 +76,15 @@ class TaskSiswa extends Component {
                             if(value){
                                 return (
                                 <div>
+                                    <span style={{backgroundColor:"#5bb1e4", padding:"5px", borderRadius:"25px"}}>{tableMeta.rowData[2] + " - " + this.props.accountState.roles[0].class_name}</span>
                                     <p>{value}</p>
-                                    <p>{tableMeta.rowData[3]}, {tableMeta.rowData[2]}</p>
+                                    <span style={{backgroundColor:"rgb(93, 228, 91)", padding:"5px", borderRadius:"25px"}}>
+                                        {"Published : " + moment(tableMeta.rowData[4]).format("DD-MM-YYYY").toString()}
+                                    </span><br/><br/>
+                                    <span style={{backgroundColor:"#5bb1e4", padding:"5px", borderRadius:"25px"}}>
+                                        {"Duration : " + moment(tableMeta.rowData[4]).format("DD-MM-YYYY").toString() + " - " + moment(tableMeta.rowData[5]).format("DD-MM-YYYY").toString()}
+                                    </span>
+                                    {/* <p>{tableMeta.rowData[3]}, </p> */}
                                 </div>
                                 );
                             }
@@ -72,6 +92,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //2
                     name: "subject_name",
                     label: "Mata Pelajaran",
                     options: {
@@ -79,6 +100,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //3
                     name: "title",
                     label: "Task",
                     options: {
@@ -86,6 +108,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //4
                     name: "start_date",
                     label: "Start",
                     options: {
@@ -102,6 +125,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //5
                     name: "finish_date",
                     label: "Finish",
                     options: {
@@ -118,6 +142,7 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //6
                     name: 'task_id',
                     label: 'Action',
                     options: {
@@ -129,7 +154,7 @@ class TaskSiswa extends Component {
                         customBodyRender: (value, tableMeta, updateValue) => {
                             return (
                               <div>
-                                <Button title="Download" color="info" style={{ color: "#fff" }}>Download</Button>&nbsp;
+                                <Button title="Download" color="info" style={{ color: "#fff" }} onClick={() => this.downloadModal(value)}>Download</Button>&nbsp;
                                 <Button title="Upload" color="primary" style={{ color: "#fff" }} onClick={() => this.uploadTask(tableMeta)}>Upload</Button>
                               </div>
                             );
@@ -137,6 +162,7 @@ class TaskSiswa extends Component {
                       }
                 },
                 {
+                    //7
                     name: "task_collection_id",
                     label: "Task",
                     options: {
@@ -144,18 +170,13 @@ class TaskSiswa extends Component {
                     }
                 },
                 {
+                    //8
                     name:"checkbox",
                     label:"Select",
                     options: {
                         filter:false,
                         sort:false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            let { taskSiswaState } = props;
-                            let data = taskSiswaState.data;
-                            console.log(value);
-                            // console.log(data, 'data checkbox')
-                            // console.log(tableMeta.rowData[8], 'data checkbox')
-                            // console.log(data.checkbox, 'data checkbox')
                             if(tableMeta.rowData[7] != 0){
                                 // console.log(value,'huh')
                                 return (                                
@@ -163,12 +184,8 @@ class TaskSiswa extends Component {
                                       <Checkbox
                                         onChange={(event) => {
                                             this.handleRowClick(tableMeta, event.target.checked);
-                                            // data[tableMeta.rowIndex].checkbox = val.value
-                                            // this.checked= val.target.checked
-                                            // console.log(val,"val")
                                         }}
                                         checked={value}
-                                        // checked={this.state.isChecked}
                                       />
                                     </div>
                                 );       
@@ -186,12 +203,29 @@ class TaskSiswa extends Component {
                         }
                     }
                 },
+                {
+                    //9
+                    name: "published_date",
+                    label: "published_date",
+                    options: {
+                        display: false
+                    }
+                },
+                {
+                    //10
+                    name: "class_name",
+                    label: "class_name",
+                    options: {
+                        display: false
+                    }
+                },
             ],               
             options : {
                 filterType: 'checkbox',
             },
             status:"all",
             isAddNew:false,
+            isDownload:false,
             uploadedFileName:[],
             fileObj:[],
             task_collection_ids: [],
@@ -199,6 +233,9 @@ class TaskSiswa extends Component {
         }
         this.getList = this.getList.bind(this);
         this.uploadTask = this.uploadTask.bind(this);
+        this.downloadModal = this.downloadModal.bind(this);
+        this.downloadFiles = this.downloadFiles.bind(this);
+        this.downloadFile = this.downloadFile.bind(this);
         this.submitTask = this.submitTask.bind(this);
         this.modalToggle = this.modalToggle.bind(this);
         this.openFileBrowser = this.openFileBrowser.bind(this);
@@ -206,6 +243,8 @@ class TaskSiswa extends Component {
         this.onClickSignOut = this.onClickSignOut.bind(this);
         this.save = this.save.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleMultiChange = this.handleMultiChange.bind(this);
+        this.validator = new SimpleReactValidator();
     }
 
     componentDidMount(){
@@ -213,22 +252,44 @@ class TaskSiswa extends Component {
     }
 
     getList(){
-        let { getTaskSiswaList } = this.props;
-        getTaskSiswaList();
+        let { studentGetTaskList } = this.props;
+        studentGetTaskList();
     }
 
     save() {
         const { studentPutCollectionFiles } = this.props;
-        // if (this.validator.allValid()) {
-            studentPutCollectionFiles();
-        // } else {
-        //   this.validator.showMessages();
-        //   this.formArea.current.forceUpdate();
-        // }
+        if (this.validator.allValid()) {
+            // studentPutCollectionFiles();
+            console.log("all valid")
+            // this.modalToggle();
+        } else {
+          this.validator.showMessages();
+        //   this.fileInput.current.clear();
+        }
+    }
+
+    downloadFiles() {
+        const { taskSiswaState, setStateModalFormDownload, studentDownloadFile, setStateModalForm } = this.props;
+        if(taskSiswaState.dataTaskFile.files != null || taskSiswaState.dataTaskFile.files != undefined){
+            for(let i=0;i<taskSiswaState.dataTaskFile.files.length;i++){
+                setStateModalForm("task_id", taskSiswaState.dataTaskFile.files[i].task_file_id);
+                setStateModalForm("filename", taskSiswaState.dataTaskFile.files[i].filename);
+                setStateModalForm("mime_type", taskSiswaState.dataTaskFile.files[i].mime_type);
+                studentDownloadFile();
+            }
+        }
+    }
+
+    downloadFile(task_file_id, filename, mime_type) {
+        const { studentDownloadFile, setStateModalForm } = this.props;
+        setStateModalForm("task_id", task_file_id);
+        setStateModalForm("filename", filename);
+        setStateModalForm("mime_type", mime_type);
+        studentDownloadFile();
     }
 
     uploadTask(tableMeta){
-        let {setModal, setStateModalForm, studentPutCollection, taskSiswaState} = this.props;
+        let {setModal, setStateModalForm, studentPutCollection, taskSiswaState, studentGetUploadedFileList} = this.props;
         if(taskSiswaState.form.task_collection_id == 0){
             if(tableMeta.rowData[7] == 0){
                 setStateModalForm('task_id', tableMeta.rowData[6]);
@@ -238,12 +299,14 @@ class TaskSiswa extends Component {
             else{
                 setStateModalForm("task_id", tableMeta.rowData[6]);
                 setStateModalForm("task_collection_id", tableMeta.rowData[7]);
+                studentGetUploadedFileList();
                 console.log('pakai lembar jawaban yg sudah dibuat');
             }
         }
         else{
             setStateModalForm("task_id", tableMeta.rowData[6]);
             setStateModalForm("task_collection_id", tableMeta.rowData[7]);
+            studentGetUploadedFileList();
             console.log('pakai lembar jawaban yg sudah dibuat else');
         }
         
@@ -254,6 +317,24 @@ class TaskSiswa extends Component {
         this.setState( prevState => ({
             ...prevState,
             isAddNew:true,
+            isDownload:false,
+        })
+        );
+    }
+
+    downloadModal(value){
+        let { studentGetTaskFileList, setModal, setStateModalForm } = this.props;
+        setStateModalForm("task_id", value);
+        studentGetTaskFileList();
+
+        setModal("type", "download")
+        setModal("title", "Download Files")
+        setModal("buttonText", "Download All")
+        setModal("show", true)
+        this.setState( prevState => ({
+            ...prevState,
+            isAddNew:false,
+            isDownload:true,
         })
         );
     }
@@ -268,6 +349,10 @@ class TaskSiswa extends Component {
     modalToggle() {
         const { taskSiswaState, setModal } = this.props;
         setModal("show", !taskSiswaState.modal.show)
+        this.setState( state => ({
+            ...state,
+            uploadedFileName: []
+        }))
     }
 
     openFileBrowser = () => {
@@ -355,8 +440,13 @@ class TaskSiswa extends Component {
         }));
     };
 
+    handleMultiChange(option) {
+        let { setStateTaskListFilter } = this.props;
+        setStateTaskListFilter("taskStatus", option);
+    }
+
     renderView (){
-        let { taskSiswaState, setStateTaskListFilter, getTaskSiswaList, accountState } = this.props;
+        let { taskSiswaState, setStateTaskListFilter, studentGetTaskList, accountState } = this.props;
 
         const options = {
             responsive:"scroll",
@@ -368,23 +458,10 @@ class TaskSiswa extends Component {
             print:false,
             viewColumns:false,
             selectableRows:'none',
-            // selectableRows:'multiple',
-            // selectableRowsOnClick: true,
-            // onRowClick: this.handleRowClick.bind(this),
-            // isRowSelectable:this.handleRowClick.bind(this)
-            // selectableRowsOnClick: true,
-            // rowsSelected: this.state.rowsSelected,
-            // onRowClick: (rowsSelected, allRows) => {
-            //     if (this.state.selectableRows === 'multiple') {
-            //         this.setState({ rowsSelected: allRows.map(row => row.dataIndex) });
-            //         console.log('auuuuuu');
-            //     }
-            //     console.log('xxxauuuuuu', this.tableState);
-            // }
         };
 
+        //menampilkan file/s yang dipilih untuk di upload(modal upload)
         let filesToUpload = this.state.uploadedFileName;
-        let filePreviews = null;
         let filePreview = [];
         if(filesToUpload.length != 0){
             for(let i=0;i<filesToUpload.length;i++){
@@ -392,9 +469,58 @@ class TaskSiswa extends Component {
                     <Input
                     type="text"
                     className="form-control"
+                    style={{marginBottom:"5px"}}
                     value={this.state.uploadedFileName[i]}
                     readOnly
                     />
+                )   
+            }
+        }
+
+        //menampilkan file/s untuk di download(modal download)
+        let listOfFile = [];
+        if(taskSiswaState.dataTaskFile.files != null || taskSiswaState.dataTaskFile.files != undefined){
+            for(let i=0;i<taskSiswaState.dataTaskFile.files.length;i++){
+                listOfFile.push(
+                    <InputGroup style={{marginBottom:"5px"}}>
+                            <Input
+                            type="text"
+                            className="form-control"
+                            value={taskSiswaState.dataTaskFile.files[i].filename}
+                            readOnly
+                            />
+                            <Button 
+                            inline
+                            color="primary" size="xs" 
+                            onClick={() => { 
+                                this.downloadFile(taskSiswaState.dataTaskFile.files[i].task_file_id, 
+                                taskSiswaState.dataTaskFile.files[i].filename,
+                                taskSiswaState.dataTaskFile.files[i].mime_type); 
+                                }}
+                            >Download</Button>
+                    </InputGroup>
+                )   
+            }
+        }
+
+        //menampilkan file/s yg sudah di upload. bisa delete(modal upload)
+        let listOfUploadedFile = [];
+        if(taskSiswaState.dataUploadedFile.files != null || taskSiswaState.dataUploadedFile.files != undefined){
+            for(let i=0;i<taskSiswaState.dataUploadedFile.files.length;i++){
+                listOfUploadedFile.push(
+                    <InputGroup style={{marginBottom:"5px"}}>
+                            <Input
+                            type="text"
+                            className="form-control"
+                            value={taskSiswaState.dataUploadedFile.files[i].filename}
+                            readOnly
+                            />
+                            <Button 
+                            inline
+                            title="Delete Uploaded File"
+                            color="danger" size="xs" 
+                            >X</Button>
+                    </InputGroup>
                 )   
             }
         }
@@ -426,9 +552,9 @@ class TaskSiswa extends Component {
                                     </div><br/>
                                     <form className="theme-form">
                                         <div className="form-group">
-                                        <label>Nama : {accountState.roles[0].student_name}</label><br/>
-                                        <label>Kelas : {accountState.roles[0].class_name}</label><br/>
-                                            <label>NIP : {accountState.roles[0].student_no}</label>
+                                        <label>Nama : {accountState.selectedRole[0].student_name}</label><br/>
+                                        <label>Kelas : {accountState.selectedRole[0].class_name}</label><br/>
+                                            <label>NIP : {accountState.selectedRole[0].student_no}</label>
                                         </div>
                                     </form>
                                 </div>
@@ -445,11 +571,11 @@ class TaskSiswa extends Component {
                                         placeholder="Pilih Status"
                                         defaultValue={taskSiswaState.dataSourceStatus.filter(option => option.value === taskSiswaState.filter.taskStatus)}
                                         options={taskSiswaState.dataSourceStatus} 
-                                        closeMenuOnSelect={false}
+                                        closeMenuOnSelect={true}
                                         onChange= { 
                                             this.handleMultiChange
                                         }
-                                        isMulti
+                                        // isMulti
                                     />
                                     </div>
                                     <div  className="col-md-4">
@@ -459,10 +585,10 @@ class TaskSiswa extends Component {
                                             isInline={true}
                                             colLabel={"col-md-1"}
                                             onChange={(a,b)=>{
-                                                setStateTaskListFilter("start_date", a);
+                                                setStateTaskListFilter("startDate", a);
                                             }}
                                             format={"DD/MMM/YYYY"}
-                                            value={taskSiswaState.filter.start_date}
+                                            value={taskSiswaState.filter.startDate}
                                         />
                                     
                                     </div>
@@ -473,17 +599,17 @@ class TaskSiswa extends Component {
                                             isInline={true}
                                             colLabel={"col-md-1"}
                                             onChange={(a,b)=>{
-                                                setStateTaskListFilter("end_date", a);
+                                                setStateTaskListFilter("endDate", a);
                                             }}
                                             format={"DD/MMM/YYYY"}
-                                            value={taskSiswaState.filter.end_date}
+                                            value={taskSiswaState.filter.endDate}
                                         />
                                     </div>
                                     
                                 </div>
                                 <div className="row">
                                     <div className="col-md-2">
-                                        <Button color="primary" onClick={getTaskSiswaList}>Filter</Button>
+                                        <Button color="primary" onClick={studentGetTaskList}>Filter</Button>
                                     </div>
                                 </div><br/>
 
@@ -520,9 +646,8 @@ class TaskSiswa extends Component {
                                 <Formik
                                 enableReinitialize={true}
                                 initialValues={taskSiswaState.form}
-                                // validationSchema={add_editSchema}
+                                // validationSchema={uploadFilesSiswaSchema}
                                 onSubmit={values => {
-                                    // same shape as initial values
                                     this.uploadTask()
                                 }}
                                 >
@@ -537,6 +662,12 @@ class TaskSiswa extends Component {
                                                 <div>
                                                 {filePreview}
                                                 </div>
+                                                <div>
+                                                {listOfUploadedFile}
+                                                </div>
+                                                <Field
+                                                name="files" 
+                                                render = {({field}) =>( 
                                                 <input
                                                     type="file"
                                                     hidden
@@ -549,6 +680,42 @@ class TaskSiswa extends Component {
                                                     style={{ padding: "10px" }}
                                                     multiple={true}
                                                 />
+                                                )}
+                                                />
+                                                {errors.files && touched.files ? <div className="form-error">{errors.files}</div> : null}
+                                            </FormGroup>
+                                        </Col>  
+                                        </Row>
+                                                                        
+                                        </ModalBody>
+                                        <ModalFooter>
+                                        </ModalFooter>
+                                    </Form>
+                                    </div>
+                                )}
+                                </Formik>
+                            }
+                            {this.state.isDownload &&
+                                <Formik
+                                enableReinitialize={true}
+                                initialValues={taskSiswaState.form}
+                                // validationSchema={add_editSchema}
+                                onSubmit={values => {
+                                    // same shape as initial values
+                                    // this.uploadTask()
+                                }}
+                                >
+                                {({ errors, touched, setFieldValue }) => (
+                                    <div>
+                                    <Form>
+                                        <ModalBody>
+                                        <Row form={true}>
+                                        <Col md={12}>
+                                            <FormGroup>
+                                                <p>Deskripsi Task : {taskSiswaState.dataTaskFile.notes}</p>
+                                                <div>
+                                                {listOfFile}
+                                                </div>
                                             </FormGroup>
                                         </Col>  
                                         </Row>
@@ -564,18 +731,20 @@ class TaskSiswa extends Component {
                         </ModalBody>
                         <ModalFooter>
                         <Button color="secondary" onClick={this.modalToggle}>Cancel</Button>{' '}
+                        {taskSiswaState.modal.type == "add" &&
                         <Button 
                             accept={".jpg,.jpeg,.png"}
                             color="primary" 
                             onClick={this.openFileBrowser.bind(this)}
                         >Add/Browse</Button>
+                        }
 
                         {' '}
                         {taskSiswaState.modal.type == "add" &&
-                            <Button color="primary" onClick={() => this.save()}>{taskSiswaState.modal.buttonText}</Button>
+                            <Button color="primary" type="submit" onClick={() => this.save()}>{taskSiswaState.modal.buttonText}</Button>
                         }
-                        {taskSiswaState.modal.type == "edit" &&
-                            <Button color="primary" onClick={() => this.update()}>{taskSiswaState.modal.buttonText}</Button>
+                        {taskSiswaState.modal.type == "download" && 
+                            <Button color="primary" onClick={() => this.downloadFiles()}>{taskSiswaState.modal.buttonText}</Button>
                         }
                         </ModalFooter>
                     </Modal>

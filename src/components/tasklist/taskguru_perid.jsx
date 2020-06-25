@@ -5,7 +5,7 @@ import BlockUi from "react-block-ui";
 import { Link, NavLink } from "react-router-dom";
 import { 
     Button, FormGroup, Modal, ModalHeader, 
-    ModalBody, ModalFooter, Col, Row, Label, Input } from "reactstrap";
+    ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import 'react-widgets/dist/css/react-widgets.css';
 import DateTimePicker from "../common/DatePicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,6 +18,7 @@ import * as messageBox from "../common/message-box";
 import SimpleReactValidator from "simple-react-validator";
 import { Formik, Form, Field } from 'formik';
 import Select from 'react-select'
+import Breadcrumb from "../common/breadcrumb";
 
 class TaskGuruPerId extends Component {
 
@@ -68,6 +69,18 @@ class TaskGuruPerId extends Component {
                 {
                     name: "submitted_date",
                     label: "Last Submit",
+                    options:{
+                        customBodyRender:(value) => {
+                            if(value != null || value != undefined){
+                                return(
+                                    <div>{moment(value).format("dddd YYYY-MM-DD").toString()}</div>
+                                )
+                            }
+                            else{
+                            return(<div>{""}</div>)
+                            }
+                        }
+                    }
                 },
                 {
                     name: 'task_collection_id',
@@ -78,11 +91,20 @@ class TaskGuruPerId extends Component {
                         print: false,
                         download: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            return (
-                                <div>
-                                    <Button color="primary" size="sm" onClick={() => this.OpenModal()}>OPEN</Button>
-                                </div>
-                            );
+                            if(tableMeta.rowData[0] == 4){
+                                return (
+                                    <div>
+                                        <Button color="primary" size="sm" onClick={() => this.openModal(value)}>OPEN</Button>
+                                    </div>
+                                );
+                            }
+                            else{
+                                return (
+                                    <div>
+                                        <Button disabled color="primary" size="sm">OPEN</Button>
+                                    </div>
+                                );
+                            }
                         }
                       }
                 },
@@ -94,6 +116,9 @@ class TaskGuruPerId extends Component {
         }
         this.modalToggle = this.modalToggle.bind(this);
         this.onClickSignOut = this.onClickSignOut.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.downloadFile = this.downloadFile.bind(this);
+        this.downloadFiles = this.downloadFiles.bind(this);
     }
 
     componentDidMount(){
@@ -108,13 +133,50 @@ class TaskGuruPerId extends Component {
         setModal("show", !taskGuruState.modal.show)
     }
 
+    openModal(value){
+        let { guruGetUploadedCollectionList, setStateModalFormUploadedCollection, setModal, taskGuruState } = this.props;
+        console.log('openmodal', value)
+        setStateModalFormUploadedCollection("task_collection_id", value);
+        guruGetUploadedCollectionList();
+        console.log('fgfg', taskGuruState)
+        setModal("type", "download")
+        setModal("title", "Uploaded Files")
+        setModal("buttonText", "Download All")
+        setModal("show", true)
+        this.setState(prevState => ({
+            ...prevState,
+            isDetail: true,
+        })
+        );
+    }
+
+    downloadFiles() {
+        const { taskGuruState, setStateModalFormUploadedCollection, guruDownloadCollection } = this.props;
+        if(taskGuruState.dataUploadedCollection.files != null || taskGuruState.dataUploadedCollection.files != undefined){
+            for(let i=0;i<taskGuruState.dataUploadedCollection.files.length;i++){
+                setStateModalFormUploadedCollection("task_collection_file_id", taskGuruState.dataUploadedCollection.files[i].task_collection_file_id);
+                setStateModalFormUploadedCollection("filename", taskGuruState.dataUploadedCollection.files[i].filename);
+                setStateModalFormUploadedCollection("mime_type", taskGuruState.dataUploadedCollection.files[i].mime_type);
+                guruDownloadCollection();
+            }
+        }
+    }
+
+    downloadFile(task_collection_file_id, filename, mime_type) {
+        const { guruDownloadCollection, setStateModalFormUploadedCollection } = this.props;
+        setStateModalFormUploadedCollection("task_collection_file_id", task_collection_file_id);
+        setStateModalFormUploadedCollection("filename", filename);
+        setStateModalFormUploadedCollection("mime_type", mime_type);
+        guruDownloadCollection();
+    }
+
     onClickSignOut(){
         localStorage.clear()
         window.location.href = process.env.PUBLIC_URL
     }
 
     renderView (){
-        let { taskGuruState, setStateTaskListFilter, setStateModalForm, getTaskGuruList } = this.props;
+        let { taskGuruState, setStateModalForm } = this.props;
 
         const options = {
             responsive:"scroll",
@@ -126,9 +188,35 @@ class TaskGuruPerId extends Component {
             selectableRows:'none',
         };
 
+        //menampilkan file/s untuk di download(modal download)
+        let listOfFile = [];
+        if(taskGuruState.dataUploadedCollection.files != null || taskGuruState.dataUploadedCollection.files != undefined){
+            for(let i=0;i<taskGuruState.dataUploadedCollection.files.length;i++){
+                listOfFile.push(
+                    <InputGroup style={{marginBottom:"5px"}}>
+                            <Input
+                            type="text"
+                            className="form-control"
+                            value={taskGuruState.dataUploadedCollection.files[i].filename}
+                            readOnly
+                            />
+                            <Button 
+                            inline={true}
+                            color="primary" size="xs" 
+                            onClick={() => { 
+                                this.downloadFile(taskGuruState.dataUploadedCollection.files[i].task_collection_file_id,
+                                    taskGuruState.dataUploadedCollection.files[i].filename,
+                                    taskGuruState.dataUploadedCollection.files[i].mime_type); 
+                                }}
+                            >Download</Button>
+                    </InputGroup>
+                )   
+            }
+        }
+
         return (
             <div>
-                
+                <Breadcrumb title={<Link to={`${process.env.PUBLIC_URL}/taskguru/`}>Back</Link>}/>
                 <section className="login-page section-b-space">
                     <div className="container">
                     <h3 className="text-left"><i className="mdi mdi-table-edit"/>Task List Guru</h3>
@@ -189,7 +277,7 @@ class TaskGuruPerId extends Component {
                                 // validationSchema={add_editSchema}
                                 onSubmit={values => {
                                     // same shape as initial values
-                                    this.uploadTask()
+                                    // this.uploadTask()
                                 }}
                                 >
                                 {({ errors, touched, setFieldValue }) => (
@@ -198,138 +286,9 @@ class TaskGuruPerId extends Component {
                                         <ModalBody>
                                         <Row form={true}>
                                         <Col md={12}>
-                                            <FormGroup>
-                                                <Field
-                                                name="Mata Pelajaran"
-                                                render={({ field }) => (
-                                                    <div>
-                                                    <Label for="kelas">Assign to</Label>
-                                                    <Select
-                                                        {...field}
-                                                        id={"kelas"}
-                                                        options={taskGuruState.dataSourceClass}
-                                                        onChange= { (e) => setStateModalForm("class_id", e.value)}
-                                                    />
-                                                    {errors[field.name] && touched[field.name] ? (
-                                                        <div className="form-error">{errors[field.name]}</div>
-                                                    ) : null}
-                                                    </div>
-                                                )}
-                                                />
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Field
-                                                name="Mata Pelajaran"
-                                                render={({ field }) => (
-                                                    <div>
-                                                    <Label for="subject">Mata Pelajaran</Label>
-                                                    <Select
-                                                        {...field}
-                                                        // id={"subject"}
-                                                        options={taskGuruState.dataSourceSubject}
-                                                        onChange= { (e) => setStateModalForm("subject_id", e.value)}
-                                                    />
-                                                    {errors[field.name] && touched[field.name] ? (
-                                                        <div className="form-error">{errors[field.name]}</div>
-                                                    ) : null}
-                                                    </div>
-                                                )}
-                                                />
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Label for="title">Nama Task</Label>
-                                                <Input
-                                                    name="title"
-                                                    id="title"
-                                                    defaultValue={taskGuruState.form.title}
-                                                    onChange= { (e) => setStateModalForm("title", e.target.value)}
-                                                />
-                                                {/* {validator.message(
-                                                    "area_description",
-                                                    areaState.master.form.area_description,
-                                                    "required"
-                                                )} */}
-                                                </FormGroup>
-                                            <FormGroup>
-                                                <Label for="notes">Notes</Label>
-                                                <Input
-                                                    type="textarea"
-                                                    name="notes"
-                                                    id="notes"
-                                                    onChange= { (e) => setStateModalForm("notes", e.target.value)}
-                                                />
-                                                {/* {validator.message(
-                                                    "area_description",
-                                                    areaState.master.form.area_description,
-                                                    "required"
-                                                )} */}
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Label for="">Periode Task</Label>
-                                                <DateTimePicker 
-                                                    min={new Date()}
-                                                    isInline={true}
-                                                    colLabel={"col-md-1"}
-                                                    onChange={(a,b)=>{
-                                                        setStateModalForm("start_date", a);
-                                                    }}
-                                                    format={"DD/MMM/YYYY"}
-                                                    // value={taskGuruState.form.start_date}
-                                                />
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Label for="">Sampai</Label>
-                                                <DateTimePicker 
-                                                    min={new Date()}
-                                                    isInline={true}
-                                                    colLabel={"col-md-1"}
-                                                    onChange={(a,b)=>{
-                                                        setStateModalForm("finish_date", a);
-                                                    }}
-                                                    format={"DD/MMM/YYYY"}
-                                                    // value={taskGuruState.form.finish_date}
-                                                />
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Label for="file">File Upload </Label>
-                                                {/* <Input
-                                                    type="file"
-                                                    name="file"
-                                                    id="file"
-                                                    multiple="true"
-                                                /> */}
-                                                {/* {validator.message(
-                                                    "area_description",
-                                                    areaState.master.form.area_description,
-                                                    "required"
-                                                )} */}
-                                                <Input
-                                                type="text"
-                                                className="form-control"
-                                                value={this.state.uploadedFileName}
-                                                readOnly
-                                                invalid={this.state.isFormInvalid}
-                                                />
-                                                <Button 
-                                                    accept={".jpg,.jpeg,.png"}
-                                                    onClick={this.openFileBrowser.bind(this)}
-                                                >
-                                                    {/* {translate('upload_pallet_and_wooden_box')} */}
-                                                    Browse
-                                                </Button>
-                                                <input
-                                                    type="file"
-                                                    hidden
-                                                    accept={".jpg,.jpeg,.png"}
-                                                    onChange={this.fileHandler.bind(this)}
-                                                    ref={this.fileInput}
-                                                    onClick={event => {
-                                                    event.target.value = null;
-                                                    }}
-                                                    style={{ padding: "10px" }}
-                                                    multiple={true}
-                                                />
-                                            </FormGroup>
+                                            <div>
+                                                {listOfFile}
+                                            </div>
                                         </Col>  
                                         </Row>
                                                                         
@@ -348,8 +307,11 @@ class TaskGuruPerId extends Component {
                         <Button size="sm" color="secondary" onClick={this.modalToggle}>Cancel</Button>{' '}
                         
                         {' '}
-                        {taskGuruState.modal.type == "edit" &&
-                            <Button size="sm" color="primary">{taskGuruState.modal.buttonText}</Button>
+                        {taskGuruState.modal.type == "download" &&
+                            <Button 
+                            size="sm" color="primary"
+                            onClick={() => this.downloadFiles()}
+                            >{taskGuruState.modal.buttonText}</Button>
                         }
                         </ModalFooter>
                     </Modal>

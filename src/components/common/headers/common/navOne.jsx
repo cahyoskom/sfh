@@ -50,7 +50,8 @@ class NavBar extends Component {
                                 Back<i className="fa fa-angle-right pl-2" aria-hidden="true"></i>
                             </div>
                         </li>
-                        <li className="mega"><Link to={`${process.env.PUBLIC_URL}/`}>{translate('home')}</Link></li>
+                        {/* <li className="mega"><Link to={`${process.env.PUBLIC_URL}/`}>{translate('home')}</Link></li> */}
+                        <li className="mega"> Hello, {localStorage.name != null ? localStorage.name.replace(/"/g,'') : ""}</li>
                     </ul>
                 </nav>
             </div>

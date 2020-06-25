@@ -4,6 +4,8 @@ import {
     GET_TASK_GURU_LIST_SUCCESS,
     GURU_GET_TASK_COLLECTION_LIST,
     GURU_GET_TASK_COLLECTION_LIST_SUCCESS,
+    GURU_GET_UPLOADED_COLLECTION_LIST,
+    GURU_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
     GET_SUBJECT_LIST,
     GET_SUBJECT_LIST_SUCCESS,
     GET_CLASS_LIST,
@@ -16,12 +18,13 @@ import {
     ARCHIVED_TASK,
     GET_TASK_GURU_BY_ID,
     GURU_DELETE_TASK_FILE,
-    SET_MODAL_EDIT_FORM_GURU
+    SET_MODAL_EDIT_FORM_GURU,
+    GURU_DOWNLOAD_COLLECTION
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
-import { Header, HeaderAuth } from "../services/header";
+import { HeaderFile, HeaderAuth } from "../services/header";
 import moment from 'moment'
 import { setStateModalForm, setModal } from "../actions";
 
@@ -37,7 +40,7 @@ export function* getTaskGuruList() {
           type: SET_LOADER,
           value: true
       });
-
+      //param class
       let classes = taskGuru.filter.class_id;
       let paramClass = "&class=";
       
@@ -50,16 +53,33 @@ export function* getTaskGuruList() {
         }
         paramClass = optional;
       }
+      //param subject
+      let subjects = taskGuru.filter.subject_id;
+      let paramSubject = subjects != "" ? "&subject=" + subjects : "&subject=";
       
-      let param = {
-          class: taskGuru.filter.class_id,
-          subject: taskGuru.filter.subject_id,
-          start_date: moment(taskGuru.filter.start_date).format("YYYY-MM-DD"),
-          end_date: moment(taskGuru.filter.end_date).format("YYYY-MM-DD"),
-      };
+      // if(subjects.length != 0){
+      //   let subject = [];
+      //   let optional = "";
+      //   for(let i=0; i<subjects.length; i++ ){
+      //       subject.push(subjects[i].value)
+      //       optional +="&subject=" + subject[i];
+      //   }
+      //   paramSubject = optional;
+      // }
+
+      let paramStartDate = taskGuru.filter.start_date == null ? "&start_date=" : "&start_date=" + moment(taskGuru.filter.start_date).format("YYYY-MM-DD")
+      let paramFinishDate = taskGuru.filter.finish_date == null ? "&finish_date=" : "&finish_date=" + moment(taskGuru.filter.finish_date).format("YYYY-MM-DD")
+      console.log('xxxxxx',taskGuru.filter)
+      // let param = {
+      //     class: taskGuru.filter.class_id,
+      //     subject: taskGuru.filter.subject_id,
+      //     start_date: moment(taskGuru.filter.start_date).format("YYYY-MM-DD"),
+      //     end_date: moment(taskGuru.filter.end_date).format("YYYY-MM-DD"),
+      // };
       // console.log("param",param);
       // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?class=" + param.class + "&subject=" + param.subject + optional, HeaderAuth());
-      const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject, HeaderAuth());
+      // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject, HeaderAuth());
+      const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + paramSubject + paramStartDate + paramFinishDate, HeaderAuth());
 
       if(response.status == 200){
         let datas = response.data;
@@ -79,7 +99,7 @@ export function* getTaskGuruList() {
             obj.finish_date = datas.data[i].finish_date;
             result.push(obj);
         }
-        console.log('ressss', result);
+        // console.log('ressss', result);
         yield put({ 
           type: GET_TASK_GURU_LIST_SUCCESS, 
           field: "data",
@@ -92,7 +112,7 @@ export function* getTaskGuruList() {
           value: false
         });          
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -111,12 +131,12 @@ export function* guruGetTaskCollectionList() {
     });
 
     let task_id = taskGuru.params;
-    console.log('par',task_id)
+    // console.log('par',task_id)
     const response = yield call(services.GET, API_BASE_URL_DEV + "/task/" + task_id + "/collection", HeaderAuth());
 
     if(response.status == 200){
       let datas = response.data;
-      console.log("L", datas)
+      // console.log("L", datas)
       let result = [];
       for (let i=0; i < datas.data.length; i++) {
           let obj = {};
@@ -125,9 +145,10 @@ export function* guruGetTaskCollectionList() {
           obj.student_no = datas.data[i].student_no;
           obj.submitted_date = datas.data[i].submitted_date;
           obj.task_collection_id = datas.data[i].task_collection_id;
+          // obj.task_progress = "";
           result.push(obj);
       }
-      console.log('ressss', result);
+      // console.log('ressss', result);
       yield put({ 
         type: GURU_GET_TASK_COLLECTION_LIST_SUCCESS, 
         field: "dataCollection",
@@ -140,7 +161,7 @@ export function* guruGetTaskCollectionList() {
         value: false
       });          
   } catch (error) {
-      console.log(error)
+      // console.log(error)
       fail(error);
       yield put({
           type: SET_LOADER,
@@ -171,6 +192,9 @@ export function* getTaskGuruById() {
         let files = [];
         for(let i=0; i<datas.data.files.length; i++){
           let obj = {};
+          if (datas.data.files[i].status == -1) {
+            continue;
+          }
           obj.task_file_id = datas.data.files[i].task_file_id;
           obj.filename = datas.data.files[i].filename;
           files.push(obj);
@@ -203,7 +227,7 @@ export function* getTaskGuruById() {
         value: false
       });          
   } catch (error) {
-      console.log(error)
+      // console.log(error)
       fail(error);
       yield put({
           type: SET_LOADER,
@@ -240,7 +264,7 @@ export function* getSubjectList() {
       });
     } 
     catch (error) {
-      console.log(error)
+      // console.log(error)
       fail(error);
       yield put({
         type: SET_LOADER,
@@ -280,7 +304,7 @@ export function* getClassList() {
           });
 
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -328,7 +352,7 @@ export function* postTask() {
 // console.log('ffaaaiill', form.files[0]);
         const response = yield call(services.PUT, API_BASE_URL_DEV + "/task/" + task_id + "/files", formData, HeaderAuth());
         if(response.status == 200){
-          console.log('respon formdata',response);
+          // console.log('respon formdata',response);
         }
       }
       success("New Task Added Successfully");
@@ -392,7 +416,7 @@ export function* updateTask() {
 // console.log('ffaaaiill', form.files[0]);
         const response = yield call(services.PUT, API_BASE_URL_DEV + "/task/" + task_id + "/files", formData, HeaderAuth());
         if(response.status == 200){
-          console.log('respon formdata',response);
+          // console.log('respon formdata',response);
         }
       }
       success("Task Updated Successfully");
@@ -492,7 +516,6 @@ export function* guruDeleteTaskFile() {
   try {
     const taskGuruState = yield select(getTaskGuruState);
     const form = taskGuruState.form;
-    // const task_file_ids = taskGuruState.form.deleteFileIds;
 
     yield put({
       type: SET_LOADER,
@@ -500,14 +523,13 @@ export function* guruDeleteTaskFile() {
     });
 
     let task_id = form.task_id;
-    if(form.deleFileIds.length != 0 || form.deleFileIds != undefined || form.deleFileIds != null){
-      for(let i=0; i<form.deleFileIds.length; i++){
-        let task_file_id = form.deleFileIds[i];
+    if(form.deleteFileIds != 0 || form.deleteFileIds != undefined || form.deleteFileIds != null){
+        let task_file_id = form.deleteFileIds;
         const _response = yield call(services.DELETE, API_BASE_URL_DEV + "/task/" + task_id + "/files/" + task_file_id, HeaderAuth());
         if (_response.status === 200) {
           success("File Deleted");
         }
-      }
+        yield* getTaskGuruById();
     }
     yield put({
       type: SET_LOADER,
@@ -523,10 +545,111 @@ export function* guruDeleteTaskFile() {
   }
 }
 
+// about collection
+export function* guruGetUploadedCollectionList() {
+  try {
+      yield put({
+          type: SET_LOADER,
+          value: true
+        });
+      const taskGuru = yield select(getTaskGuruState)
+      let task_collection_id = taskGuru.formUploadedCollection.task_collection_id;
+    // console.log('swsw', taskGuru)
+      const response = yield call(services.GET, API_BASE_URL_DEV + "/collection/" + task_collection_id, HeaderAuth());
+      // console.log('guru', response);
+      if(response.status == 200){
+          let datas = response.data;
+          let uploadedFiles = [];
+          if(datas.data.files != null || datas.data.files != undefined){
+              for(let i=0; i<datas.data.files.length; i++){
+                  let obj = {};
+                  obj.task_collection_file_id = datas.data.files[i].task_collection_file_id;
+                  obj.task_collection_id = datas.data.files[i].task_collection_id;
+                  obj.filename = datas.data.files[i].filename;
+                  obj.location = datas.data.files[i].location;
+                  obj.ext = datas.data.files[i].ext;
+                  obj.mime_type = datas.data.files[i].mime_type;
+                  uploadedFiles.push(obj);
+              }
+          }
+          let result = {
+            task_collection_id : datas.data.task_collection_id,
+            files : uploadedFiles
+          };
+
+          yield put({ 
+              type: GURU_GET_UPLOADED_COLLECTION_LIST_SUCCESS, 
+              field: "dataUploadedCollection",
+              value: result
+          });
+      }
+      
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  } 
+  catch(error) {
+      // console.log(error)
+      fail(error);
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  }
+}
+
+// about collection
+export function* guruDownloadCollection() {
+  try {
+      yield put({
+          type: SET_LOADER,
+          value: true
+        });
+      const taskGuru = yield select(getTaskGuruState)
+      let task_collection_file_id = taskGuru.formUploadedCollection.task_collection_file_id;
+      let filename = taskGuru.formUploadedCollection.filename;
+      let type = '"'+ taskGuru.formUploadedCollection.mime_type +'"';
+    
+      const response = yield call(services.GETFILE, API_BASE_URL_DEV + "/collection/download/" + task_collection_file_id, HeaderFile());
+      // console.log('gurudonlotcollection', response);
+      if(response.status == 200){
+          let fileDownload = response.data;
+          // console.log('tipe',type)
+          window.URL = window.URL || window.webkitURL;
+          const blob = new Blob([fileDownload], {type: type});
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', filename);
+          document.body.appendChild(link);
+          link.click();
+      }
+      else if(response.status == 404){
+          fail("File /s not found");
+      }
+      
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  } 
+  catch(error) {
+      // console.log(error)
+      fail(error);
+      yield put({
+          type: SET_LOADER,
+          value: false
+        });
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(GET_TASK_GURU_LIST, getTaskGuruList),
     takeEvery(GURU_GET_TASK_COLLECTION_LIST, guruGetTaskCollectionList),
+    takeEvery(GURU_GET_UPLOADED_COLLECTION_LIST, guruGetUploadedCollectionList),
+    takeEvery(GURU_DOWNLOAD_COLLECTION, guruDownloadCollection),
     takeEvery(GET_SUBJECT_LIST, getSubjectList),
     takeEvery(GET_CLASS_LIST, getClassList),
     takeEvery(POST_TASK, postTask),

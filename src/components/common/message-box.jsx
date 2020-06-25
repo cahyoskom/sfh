@@ -35,7 +35,8 @@ export function confirmArchive(ids, archiveFunction) {
 export function confirmSubmitCollection(length,submitFunction) {
   Swal.fire({
     title: 'Are you sure?',
-    html: "Submit " + length + " Task?",
+    // html: "Submit " + length + " Task?",
+    html: "Submit Task?",
     type: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',

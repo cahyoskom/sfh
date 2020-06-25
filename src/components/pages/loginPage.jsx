@@ -6,10 +6,19 @@ import BlockUi from "react-block-ui";
 import {
     postLogin,
     onChangeStateLogin,
-    resetStateLoginMenu
+    resetStateLoginMenu,
+    confirmLogin,
+    setStateModalFormLogin
   } from "../../actions";
+import { 
+Button, Form, FormGroup, Modal, ModalHeader, 
+ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
+import Select from 'react-select'
+import Recaptcha from 'react-recaptcha';
 
 import Breadcrumb from "../common/breadcrumb";
+
+const recaptchaRef = React.createRef();
 
 class SignIn extends Component {
 
@@ -17,12 +26,25 @@ class SignIn extends Component {
         super (props)
 
         this.validator = new SimpleReactValidator();
+        this.onConfirmLogin = this.onConfirmLogin.bind(this);
 
     }
 
     componentDidMount() {
         document.getElementById('footer').style.display = "none"
         document.getElementById('sticky').style.display = "none"
+    }
+
+    recaptchaLoaded(){
+    }
+
+    componentDidUpdate(){
+        let { accountState } = this.props
+        if (accountState.reset_captcha) {
+            // handleStateForm("recaptcha", "")
+            recaptchaRef.current.reset()
+            // handleState("reset_captcha", false)
+        }
     }
 
     componentWillMount() {
@@ -45,6 +67,11 @@ class SignIn extends Component {
         }
     }
 
+    onConfirmLogin(){
+        let { confirmLogin } = this.props;
+        confirmLogin();
+    }
+
     onEnterKeyPress(e) {
         if (e.charCode == 13) {
           this.onClickLogin();
@@ -52,7 +79,7 @@ class SignIn extends Component {
       }
 
     renderView (){
-        const { accountState, onChangeStateLogin } = this.props;
+        const { accountState, onChangeStateLogin, setStateModalFormLogin } = this.props;
 
         return (
             <div>
@@ -107,6 +134,26 @@ class SignIn extends Component {
                                                 "required"
                                             )}
                                         </div>
+                                        <div className="form-group">
+                                        <Recaptcha
+                                            ref={recaptchaRef}
+                                            value={accountState.login.recaptcha} 
+                                            sitekey={accountState.site_key}
+                                            render="explicit"
+                                            onloadCallback={this.recaptchaLoaded}
+                                            verifyCallback={(response) => { 
+                                                onChangeStateLogin("recaptcha",  response);
+                                            }}
+                                            expiredCallback={() => {
+                                                this.forceUpdate();
+                                            }}
+                                        />
+                                        {this.validator.message(
+                                            "recaptcha",
+                                            accountState.login.recaptcha,
+                                            "required"
+                                        )}
+                                        </div>
                                         <div className={"text-center"}>
                                             <a 
                                                 onClick={() => {
@@ -120,6 +167,30 @@ class SignIn extends Component {
                             </div>
                         </div>
                     </div>
+
+                    <Modal isOpen={accountState.modal.show} fade={false} backdrop={'static'} centered>
+                        <ModalHeader>{accountState.modal.title}</ModalHeader>
+                        <ModalBody>
+                            <Form>
+                                <Row form={true}>
+                                <Col md={12}>
+                                    <FormGroup>
+                                        {/* <Label for="kelas">Assign to</Label> */}
+                                        <Select
+                                            options={accountState.dataSourceRoleAccount}
+                                            onChange= { (e) => setStateModalFormLogin("group_id", e.value)}
+                                        />
+                                    </FormGroup>
+                                </Col>  
+                                </Row>
+                            </Form>
+                        </ModalBody>
+                        <ModalFooter>
+                        {accountState.modal.type == "switch" &&
+                            <Button size="sm" color="primary" onClick={() => { this.onConfirmLogin()}}>{accountState.modal.buttonText}</Button>
+                        }
+                        </ModalFooter>
+                    </Modal>
                 </section>
 
             </div>
@@ -155,5 +226,5 @@ const mapStateToProps = state => ({
   
   export default connect(
     mapStateToProps,
-    { postLogin, onChangeStateLogin, resetStateLoginMenu }
+    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin }
   )(SignIn);

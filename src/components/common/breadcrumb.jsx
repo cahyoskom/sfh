@@ -17,7 +17,7 @@ class Breadcrumb extends Component {
                             <nav aria-label="breadcrumb" className="theme-breadcrumb">
                                 <ol className="breadcrumb">
                                     <li className="breadcrumb-item"><Link to={`${process.env.PUBLIC_URL}`}>Home</Link></li>
-                                    <li className="breadcrumb-item active" aria-current="page">{title}</li>
+                                    {/* <li className="breadcrumb-item active" aria-current="page">{title}</li> */}
                                 </ol>
                             </nav>
                         </div>

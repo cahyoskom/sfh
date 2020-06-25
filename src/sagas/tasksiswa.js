@@ -1,11 +1,16 @@
 import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
 import {
-    GET_TASK_SISWA_LIST,
+    STUDENT_GET_TASK_LIST,
+    STUDENT_GET_TASK_FILE_LIST,
+    STUDENT_GET_TASK_FILE_LIST_SUCCESS,
+    STUDENT_GET_UPLOADED_FILE_LIST,
+    STUDENT_GET_UPLOADED_FILE_LIST_SUCCESS,
     GET_TASK_SISWA_LIST_SUCCESS,
     STUDENT_PUT_COLLECTION,
     STUDENT_PUT_COLLECTION_SUCCESS,
     STUDENT_PUT_COLLECTION_FILES,
     STUDENT_SUBMIT_COLLECTION,
+    STUDENT_DOWNLOAD_FILE,
     SET_LOADER,
     SET_MODAL
 } from "../constants/ActionTypes";
@@ -14,12 +19,13 @@ import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
 import * as actions from "../actions";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
-import { Header, HeaderLogout, HeaderAuth } from "../services/header";
+import { HeaderFile, HeaderLogout, HeaderAuth } from "../services/header";
+import moment from 'moment'
 
 const getTaskSiswaState = state => state.taskSiswa;
 const getAccountState = state => state.account;
 
-export function* getTaskSiswaList() {
+export function* studentGetTaskList() {
     try {
         yield put({
             type: SET_LOADER,
@@ -30,13 +36,14 @@ export function* getTaskSiswaList() {
                 type: SET_LOADER,
                 value: true
             });
-            let param = {
-                class: 1,
-                subject: 1
-        };
-      
-        // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?class=" + param.class + "&subject=" + param.subject, HeaderAuth());
-        const response = yield call(services.GET, API_BASE_URL_DEV + "/collection", HeaderAuth());
+
+        let status = taskSiswa.filter.taskStatus.value;
+        let paramStatus = status == "" || status == undefined ? "&status=" : "&status=" + status ;
+
+        let paramStartDate = taskSiswa.filter.startDate == null ? "&start_date=" : "&start_date=" + moment(taskSiswa.filter.startDate).format("YYYY-MM-DD")
+        let paramFinishDate = taskSiswa.filter.endDate == null ? "&finish_date=" : "&finish_date=" + moment(taskSiswa.filter.endDate).format("YYYY-MM-DD")
+// console.log('colcol', paramStatus, paramStartDate, paramFinishDate, status)
+        const response = yield call(services.GET, API_BASE_URL_DEV + "/collection?" + paramStatus + paramStartDate + paramFinishDate, HeaderAuth());
         if(response.status == 200){
             let datas = response.data;
             let result = [];
@@ -51,13 +58,15 @@ export function* getTaskSiswaList() {
                 obj.task_id = datas.data[i].task_id;
                 obj.title = datas.data[i].title;
                 obj.checkbox = false;
+                // obj.class_name = datas.data[i].class_name;
+                obj.publish_date = datas.data[i].publish_date;
                 result.push(obj);
             }
             yield put({ 
                 type: GET_TASK_SISWA_LIST_SUCCESS, 
                 field: "data",
                 value: result
-            });
+            });console.log(result,"resultll",datas)
         }
         
         yield put({
@@ -65,7 +74,7 @@ export function* getTaskSiswaList() {
             value: false
           });
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -91,7 +100,7 @@ export function* studentPutCollection() {
             };
       
         const response = yield call(services.PUT, API_BASE_URL_DEV + "/collection", param, HeaderAuth());
-        console.log('studentputcollection', response);
+        // console.log('studentputcollection', response);
         if(response.status == 200){
             let datas = response.data;
             let obj = {
@@ -120,7 +129,7 @@ export function* studentPutCollection() {
             value: false
           });
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -137,17 +146,14 @@ export function* studentPutCollectionFiles() {
             value: true
           });
         const taskSiswa = yield select(getTaskSiswaState)
-
         let param = taskSiswa.form.task_collection_id;
         const formData = new FormData();
-        // formData.append("files", form.files);
         if(taskSiswa.form.files.length != 0){
             for(let i = 0; i<taskSiswa.form.files.length; i++){
                 formData.append("files", taskSiswa.form.files[i])
             }
-        }
-        
-console.log('paramafiles'. param);
+        }        
+        // console.log('paramafiles'. param);
         const response = yield call(services.PUT, API_BASE_URL_DEV + "/collection/" + param + "/files", formData, HeaderAuth());
         if(response.status == 200){
             success("Files Uploaded Successfully");
@@ -156,6 +162,7 @@ console.log('paramafiles'. param);
                 field: "show",
                 value: false
             })
+            yield* studentGetTaskList();
         }
         
         yield put({
@@ -163,7 +170,7 @@ console.log('paramafiles'. param);
             value: false
           });
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -188,10 +195,10 @@ export function* studentSubmitCollection() {
                 }
                 const response = yield call(services.POST, API_BASE_URL_DEV + "/collection/submit", param, HeaderAuth());
                 if(response.status == 200){
-                    success("Files Uploaded Successfully");
+                    success("Task Submitted Successfully");
                 }
             }
-            yield* getTaskSiswaList();
+            yield* studentGetTaskList();
         }        
         yield put({
             type: SET_LOADER,
@@ -199,7 +206,160 @@ export function* studentSubmitCollection() {
         });
         
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        fail(error);
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    }
+}
+
+// about taskguru
+export function* studentGetTaskFileList() {
+    try {
+        yield put({
+            type: SET_LOADER,
+            value: true
+          });
+        const taskSiswa = yield select(getTaskSiswaState)
+        let task_id = taskSiswa.form.task_id;
+      
+        const response = yield call(services.GET, API_BASE_URL_DEV + "/task/" + task_id, HeaderAuth());
+        // console.log('studentgettaskfile', response);
+        if(response.status == 200){
+            let datas = response.data;
+            let files = [];
+            if(datas.data.files != null || datas.data.files != undefined){
+                for(let i=0; i<datas.data.files.length; i++){
+                    let obj = {};
+                    if (datas.data.files[i].status == -1) {
+                        continue;
+                    }
+                    obj.task_file_id = datas.data.files[i].task_file_id;
+                    obj.filename = datas.data.files[i].filename;
+                    obj.location = datas.data.files[i].location;
+                    obj.mime_type = datas.data.files[i].mime_type;
+                    files.push(obj);
+                }
+            }
+            let result = {
+                notes : datas.data.notes,
+                files : files
+            };
+
+            yield put({ 
+                type: STUDENT_GET_TASK_FILE_LIST_SUCCESS, 
+                field: "dataTaskFile",
+                value: result
+            });
+        }
+        
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    } 
+    catch(error) {
+        // console.log(error)
+        fail(error);
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    }
+}
+
+// about taskguru
+export function* studentDownloadFile() {
+    try {
+        yield put({
+            type: SET_LOADER,
+            value: true
+          });
+        const taskSiswa = yield select(getTaskSiswaState)
+        let task_file_id = taskSiswa.form.task_id;
+        let filename = taskSiswa.form.filename;
+        let type = '"'+ taskSiswa.form.mime_type +'"';
+      
+        const response = yield call(services.GETFILE, API_BASE_URL_DEV + "/task/download/" + task_file_id, HeaderFile());
+        // console.log('studentdownloadfile', response);
+        if(response.status == 200){
+            let fileDownload = response.data;
+            // console.log('tipe',type)
+            window.URL = window.URL || window.webkitURL;
+            const blob = new Blob([fileDownload], {type: type});
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+        }
+        else if(response.status == 404){
+            fail("File /s not found");
+        }
+        
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    } 
+    catch(error) {
+        // console.log(error)
+        fail(error);
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    }
+}
+
+// about collection
+export function* studentGetUploadedFileList() {
+    try {
+        yield put({
+            type: SET_LOADER,
+            value: true
+          });
+        const taskSiswa = yield select(getTaskSiswaState)
+        let task_collection_id = taskSiswa.form.task_collection_id;
+      
+        const response = yield call(services.GET, API_BASE_URL_DEV + "/collection/" + task_collection_id, HeaderAuth());
+        // console.log('studentgetuploadedfile', response);
+        if(response.status == 200){
+            let datas = response.data;
+            let uploadedFiles = [];
+            if(datas.data.files != null || datas.data.files != undefined){
+                for(let i=0; i<datas.data.files.length; i++){
+                    let obj = {};
+                    obj.task_collection_file_id = datas.data.files[i].task_collection_file_id;
+                    obj.task_collection_id = datas.data.files[i].task_collection_id;
+                    obj.filename = datas.data.files[i].filename;
+                    obj.location = datas.data.files[i].location;
+                    obj.ext = datas.data.files[i].ext;
+                    uploadedFiles.push(obj);
+                }
+            }
+            let result = {
+                task_id : datas.data.task_id,
+                files : uploadedFiles
+            };
+
+            yield put({ 
+                type: STUDENT_GET_UPLOADED_FILE_LIST_SUCCESS, 
+                field: "dataUploadedFile",
+                value: result
+            });
+        }
+        
+        yield put({
+            type: SET_LOADER,
+            value: false
+          });
+    } 
+    catch(error) {
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,
@@ -210,9 +370,12 @@ export function* studentSubmitCollection() {
 
 export default function* rootSaga() {
   yield all([
-      takeEvery(GET_TASK_SISWA_LIST, getTaskSiswaList),
+      takeEvery(STUDENT_GET_TASK_LIST, studentGetTaskList),
+      takeEvery(STUDENT_GET_TASK_FILE_LIST, studentGetTaskFileList),
+      takeEvery(STUDENT_GET_UPLOADED_FILE_LIST, studentGetUploadedFileList),
       takeEvery(STUDENT_PUT_COLLECTION, studentPutCollection),
       takeEvery(STUDENT_PUT_COLLECTION_FILES, studentPutCollectionFiles),
       takeEvery(STUDENT_SUBMIT_COLLECTION, studentSubmitCollection),
+      takeEvery(STUDENT_DOWNLOAD_FILE, studentDownloadFile),
     ]);
 }

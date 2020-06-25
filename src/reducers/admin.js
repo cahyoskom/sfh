@@ -1,7 +1,32 @@
 import {
     ADMIN_GET_GROUP_LIST,
     ADMIN_GET_GROUP_LIST_SUCCESS,
-    
+    ADMIN_GET_USER_LIST,
+    ADMIN_GET_USER_LIST_SUCCESS,
+    ADMIN_GET_CLASS_LIST,
+    ADMIN_GET_CLASS_LIST_SUCCESS,
+    ADMIN_GET_SUBJECT_LIST,
+    ADMIN_GET_SUBJECT_LIST_SUCCESS,
+    ADMIN_GET_STUDENT_LIST,
+    ADMIN_GET_STUDENT_LIST_SUCCESS,
+    ADMIN_GET_ROLE_LIST,
+    ADMIN_GET_ROLE_LIST_SUCCESS,
+    ADMIN_GET_DATASOURCE_CLASS,
+    ADMIN_GET_DATASOURCE_CLASS_SUCCESS,
+    ADMIN_GET_DATASOURCE_GROUP,
+    ADMIN_GET_DATASOURCE_GROUP_SUCCESS,
+    ADMIN_GET_DATASOURCE_SUBJECT,
+    ADMIN_GET_DATASOURCE_SUBJECT_SUCCESS,
+    ADMIN_GET_DATASOURCE_STUDENT,
+    ADMIN_GET_DATASOURCE_STUDENT_SUCCESS,
+    ADMIN_SET_MODAL_FORM_USER,
+    ADMIN_SET_MODAL_FORM_USER_ROLE,
+    ADMIN_SET_MODAL_FORM_GROUP,
+    ADMIN_SET_MODAL_FORM_CLASS,
+    ADMIN_SET_MODAL_FORM_SUBJECT,
+    ADMIN_SET_MODAL_FORM_STUDENT,
+
+
     GET_TASK_GURU_LIST,
     GET_TASK_GURU_LIST_SUCCESS,
     GET_SUBJECT_LIST,
@@ -20,15 +45,73 @@ import {
   
   const initialState = {
     group:{
-        dataGroup:[]
+        dataGroup:[],
+        form:{
+
+        },
+        dataSourceGroup:[]
+    },
+    user:{
+        dataUser:[],
+        dataUserById:{},
+        form:{
+            user_name:"",
+            email:"",
+            password:""
+        },
+        formRole:{
+            user_id:"",
+            group_id:"",
+            class_id:"",
+            subject_id:"",
+            student_id:"",
+        }
+    },
+    class:{
+        dataClass:[],
+        form:{
+            class_level:"",
+            class_parallel:"",
+            class_name:""
+        },
+        dataSourceClass:[]
+    },
+    subject:{
+        dataSubject:[],
+        form:{
+            subject_name:""
+        },
+        dataSourceSubject:[]
+    },
+    student:{
+        dataStudent:[],
+        form:{
+            student_name:"",
+            student_no:"",
+            sex:"",
+            class_id:""
+        },
+        sexOption:[
+            {label: "Laki-laki", value: "1"},
+            {label: "Perempuan", value: "2"},
+        ],
+        dataSourceStudent:[]
+    },
+    role:{
+        dataRole:[],
+        dataRoleById:[],
+        form:{
+            // subject_name:""
+        },
+        dataSourceRole:[]
+    },
+    formUploadCsv:{
+        files:null
     },
 
 
     data: [],
     filter: {
-        // startDate: new Date(),
-        // // endDate: new Date().setDate(new Date().getDate() + 7)
-        // endDate: new Date((new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 7))
         class_id:[],
         subject_id:[],
         start_date: new Date(),
@@ -41,57 +124,10 @@ import {
         title: "",
         buttonText: ""
       },
-    deletedIds:null,
-    taskDetail: {
-        assignTo: "",
-        matPel: "",
-        namaTask: "",
-        task: "",
-        startDateTask: "",
-        endDateTask: "",
-        file: null
-    },
-    dt: {
-        filter: {
-            status: "",
-            taskDateFrom: "",
-            taskDateTo: ""
-        },
-        table: {
-            offset: 0,
-            limit: 10,
-            page: 0,
-            count: 0,
-            search: null,
-            sortColumn: null,
-            sortDirection: null
-        },
-        selectedRows: null,
-        submitIds: null
-    },
-    // dataSourceClass : [
-    //     {label: "SD 1", value: "1"},
-    //     {label: "SD 2", value: "2"},
-    //     {label: "SD 3", value: "3"}
-    // ],
     dataSourceSubject:[],
     dataSourceClass:[],
-    form: {
-        assignor_id: "",
-        class_id: "",
-        subject_id: "",
-        title: "",
-        notes:"",
-        weight:0,
-        start_date: new Date(),
-        finish_date: new Date(),
-        publish_date: new Date(),
-        files:null
-    },
-    assignor_id: localStorage.getItem("user_id")
-      ? JSON.parse(localStorage.getItem("user_id"))
-      : undefined,
-    loader: false
+    loader: false,
+    key:Math.random()
   };
   
   export default function adminReducer(state = initialState, action) {
@@ -109,6 +145,188 @@ import {
                 }                
             };
         }
+        case ADMIN_GET_USER_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_USER_LIST_SUCCESS: {
+            return {
+                ...state,
+                user:{
+                    ...state.user,
+                    [action.field]: action.value
+                }                
+            };
+        }
+        case ADMIN_GET_CLASS_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_CLASS_LIST_SUCCESS: {
+            return {
+                ...state,
+                class:{
+                    ...state.class,
+                    [action.field]: action.value
+                }                
+            };
+        }
+        case ADMIN_GET_SUBJECT_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_SUBJECT_LIST_SUCCESS: {
+            return {
+                ...state,
+                subject:{
+                    ...state.subject,
+                    [action.field]: action.value
+                }                
+            };
+        }
+        case ADMIN_GET_STUDENT_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_STUDENT_LIST_SUCCESS: {
+            return {
+                ...state,
+                student:{
+                    ...state.student,
+                    [action.field]: action.value
+                }                
+            };
+        }
+        case ADMIN_GET_ROLE_LIST:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_ROLE_LIST_SUCCESS: {
+            return {
+                ...state,
+                role:{
+                    ...state.role,
+                    [action.field]: action.value
+                }                
+            };
+        }
+        case ADMIN_SET_MODAL_FORM_USER:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    form:{
+                        ...state.user.form,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_SET_MODAL_FORM_USER_ROLE:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    formRole:{
+                        ...state.user.formRole,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_SET_MODAL_FORM_GROUP:
+            return {
+                ...state,
+                group: {
+                    ...state.group,
+                    form:{
+                        ...state.group.form,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_SET_MODAL_FORM_CLASS:
+            return {
+                ...state,
+                class: {
+                    ...state.class,
+                    form:{
+                        ...state.class.form,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_SET_MODAL_FORM_SUBJECT:
+            return {
+                ...state,
+                subject: {
+                    ...state.subject,
+                    form:{
+                        ...state.subject.form,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_SET_MODAL_FORM_STUDENT:
+            return {
+                ...state,
+                student: {
+                    ...state.student,
+                    form:{
+                        ...state.student.form,
+                        [action.field]: action.value
+                    }
+                }
+            };
+        case ADMIN_GET_DATASOURCE_CLASS:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_DATASOURCE_CLASS_SUCCESS:
+            return {
+                ...state,
+                class:{
+                    ...state.class,
+                    [action.field]: action.value
+                }                
+            };
+        case ADMIN_GET_DATASOURCE_GROUP:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_DATASOURCE_GROUP_SUCCESS:
+            return {
+                ...state,
+                group:{
+                    ...state.group,
+                    [action.field]: action.value
+                }                
+            };
+        case ADMIN_GET_DATASOURCE_SUBJECT:
+            return {
+                ...state,
+            };
+        case ADMIN_GET_DATASOURCE_SUBJECT_SUCCESS:
+            return {
+                ...state,
+                subject:{
+                    ...state.subject,
+                    [action.field]: action.value
+                }                
+            };
+            case ADMIN_GET_DATASOURCE_STUDENT:
+                return {
+                    ...state,
+                };
+            case ADMIN_GET_DATASOURCE_STUDENT_SUCCESS:
+                return {
+                    ...state,
+                    student:{
+                        ...state.student,
+                        [action.field]: action.value
+                    }                
+                };
+
+
+
 
 
         case SET_TASK_LIST_FILTER:
@@ -193,16 +411,8 @@ import {
         case SET_MODAL_FORM:
             return {
                 ...state,
-                form: {
-                    ...state.form,
-                    [action.field]: action.value
-                }
-            };
-        case SET_MODAL_FORM:
-            return {
-                ...state,
-                form: {
-                    ...state.form,
+                formUploadCsv: {
+                    ...state.formUploadCsv,
                     [action.field]: action.value
                 }
             };

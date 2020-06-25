@@ -12,6 +12,10 @@ export const postLogin = () => ({
     type: types.SET_LOGIN
 });
 
+export const confirmLogin = () => ({
+    type: types.SET_CONFIRM_LOGIN
+});
+
 export const onChangeStateLogin = (field, value) => ({
     type: types.ON_CHANGE_STATE_LOGIN,
     value,
@@ -156,8 +160,8 @@ export const setDate = (field, value) => ({
     field
 });
 
-export const getTaskSiswaList = (data) => ({
-    type: types.GET_TASK_SISWA_LIST,
+export const studentGetTaskList = (data) => ({
+    type: types.STUDENT_GET_TASK_LIST,
     payload: data
 })
 
@@ -183,6 +187,24 @@ export const studentPutCollectionFiles = () => ({
 
 export const studentSubmitCollection = () => ({
     type: types.STUDENT_SUBMIT_COLLECTION
+})
+
+export const studentGetTaskFileList = () => ({
+    type: types.STUDENT_GET_TASK_FILE_LIST
+})
+
+export const studentGetUploadedFileList = () => ({
+    type: types.STUDENT_GET_UPLOADED_FILE_LIST
+})
+
+export const studentDownloadFile = () => ({
+    type: types.STUDENT_DOWNLOAD_FILE
+})
+
+export const setStateModalFormDownload = (field, value) => ({
+    type: types.SET_MODAL_FORM_DOWNLOAD,
+    value,
+    field
 })
 
 //ortu
@@ -214,6 +236,11 @@ export const getTaskGuruList = (data) => ({
 
 export const guruGetTaskCollectionList = (data) => ({
     type: types.GURU_GET_TASK_COLLECTION_LIST,
+    payload: data
+})
+
+export const guruGetUploadedCollectionList = (data) => ({
+    type: types.GURU_GET_UPLOADED_COLLECTION_LIST,
     payload: data
 })
 
@@ -256,6 +283,16 @@ export const getTaskGuruById = () => ({
     type: types.GET_TASK_GURU_BY_ID
 })
 
+export const setStateModalFormUploadedCollection = (field, value) => ({
+    type: types.SET_STATE_MODAL_FORM_UPLOADED_COLLECTION,
+    value,
+    field
+})
+
+export const guruDownloadCollection = () => ({
+    type: types.GURU_DOWNLOAD_COLLECTION
+})
+
 //kepsek
 export const kepsekGetTaskCollectionList = (data) => ({
     type: types.KEPSEK_GET_TASK_COLLECTION_LIST,
@@ -277,8 +314,134 @@ export const kepsekGetClassList = (data) => ({
     payload: data
 })
 
+export const kepsekGetUploadedCollectionList = (data) => ({
+    type: types.KEPSEK_GET_UPLOADED_COLLECTION_LIST,
+    payload: data
+})
+
+export const kepsekDownloadCollection = () => ({
+    type: types.KEPSEK_DOWNLOAD_COLLECTION
+})
+
 //admin
 export const adminGetGroupList = (data) => ({
     type: types.ADMIN_GET_GROUP_LIST,
+    payload: data
+})
+
+export const adminGetUserList = (data) => ({
+    type: types.ADMIN_GET_USER_LIST,
+    payload: data
+})
+
+export const adminGetClassList = (data) => ({
+    type: types.ADMIN_GET_CLASS_LIST,
+    payload: data
+})
+
+export const adminGetSubjectList = (data) => ({
+    type: types.ADMIN_GET_SUBJECT_LIST,
+    payload: data
+})
+
+export const adminGetStudentList = (data) => ({
+    type: types.ADMIN_GET_STUDENT_LIST,
+    payload: data
+})
+
+export const adminGetRoleList = (data) => ({
+    type: types.ADMIN_GET_ROLE_LIST,
+    payload: data
+})
+
+export const adminGetDataSourceClass = (data) => ({
+    type: types.ADMIN_GET_DATASOURCE_CLASS,
+    payload: data
+})
+
+export const adminGetDataSourceGroup = (data) => ({
+    type: types.ADMIN_GET_DATASOURCE_GROUP,
+    payload: data
+})
+
+export const adminGetDataSourceSubject = (data) => ({
+    type: types.ADMIN_GET_DATASOURCE_SUBJECT,
+    payload: data
+})
+
+export const adminGetDataSourceStudent = (data) => ({
+    type: types.ADMIN_GET_DATASOURCE_STUDENT,
+    payload: data
+})
+
+export const adminSetModalFormUser = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_USER,
+    value,
+    field
+})
+
+export const adminSetModalFormUserRole = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_USER_ROLE,
+    value,
+    field
+})
+
+export const adminSetModalFormGroup = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_GROUP,
+    value,
+    field
+})
+
+export const adminSetModalFormClass = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_CLASS,
+    value,
+    field
+})
+
+export const adminSetModalFormSubject = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_SUBJECT,
+    value,
+    field
+})
+
+export const adminSetModalFormStudent = (field, value) => ({
+    type: types.ADMIN_SET_MODAL_FORM_STUDENT,
+    value,
+    field
+})
+
+export const adminCreateUser = () => ({
+    type: types.ADMIN_CREATE_USER
+})
+
+export const adminCreateClass = () => ({
+    type: types.ADMIN_CREATE_CLASS
+})
+
+export const adminCreateSubject = () => ({
+    type: types.ADMIN_CREATE_SUBJECT
+})
+
+export const adminCreateStudent = () => ({
+    type: types.ADMIN_CREATE_STUDENT
+})
+
+export const adminSignUserRole = () => ({
+    type: types.ADMIN_SIGN_USER_ROLE
+})
+
+export const setStateModalFormLogin = (field, value) => ({
+    type: types.SET_MODAL_FORM_LOGIN,
+    value,
+    field
+})
+
+export const adminGetUserById = (data) => ({
+    type: types.ADMIN_GET_USER_BY_ID,
+    payload: data
+})
+
+export const adminGetRoleByUserId = (data) => ({
+    type: types.ADMIN_GET_ROLE_BY_USER_ID,
     payload: data
 })

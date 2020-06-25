@@ -1,5 +1,6 @@
 import {
     GURU_GET_TASK_COLLECTION_LIST_SUCCESS,
+    GURU_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
     GET_TASK_GURU_LIST,
     GET_TASK_GURU_LIST_SUCCESS,
     GET_SUBJECT_LIST,
@@ -15,14 +16,16 @@ import {
     SET_URL_PATH,
     SET_STATE_TASK_DETAIL,
     HANDLE_STATE_UPDATE_TASK,
-    SET_MODAL_EDIT_FORM_GURU
+    SET_MODAL_EDIT_FORM_GURU,
+    SET_STATE_MODAL_FORM_UPLOADED_COLLECTION
   } from "../constants/ActionTypes";
   
   const initialState = {
     data: [],
     filter: {
         class_id:[],
-        subject_id:[],
+        // subject_id:[],
+        subject_id:"",
         start_date: new Date(),
         finish_date: new Date()
     },
@@ -43,11 +46,6 @@ import {
         endDateTask: "",
         file: null
     },
-    // dataSourceClass : [
-    //     {label: "SD 1", value: "1"},
-    //     {label: "SD 2", value: "2"},
-    //     {label: "SD 3", value: "3"}
-    // ],
     dataSourceSubject:[],
     dataSourceClass:[],
     form: {
@@ -71,7 +69,14 @@ import {
     loader: false,
     params:0,
     // taskguru_perid
-    dataCollection: []
+    dataCollection: [],
+    dataUploadedCollection:[],
+    formUploadedCollection: {
+        task_collection_id:"",
+        task_collection_file_id:"",
+        filename:"",
+        mime_type:""
+    }
   };
   
   export default function taskGuruReducer(state = initialState, action) {
@@ -99,6 +104,12 @@ import {
             return {
                 ...state,
                 // data: action.value
+                [action.field]: action.value
+            };
+        }
+        case GURU_GET_UPLOADED_COLLECTION_LIST_SUCCESS: {
+            return {
+                ...state,
                 [action.field]: action.value
             };
         }
@@ -163,6 +174,15 @@ import {
                     form: action.payload
                 };
             }
+        case SET_STATE_MODAL_FORM_UPLOADED_COLLECTION: {
+            return {
+                ...state,
+                formUploadedCollection: {
+                    ...state.formUploadedCollection,
+                    [action.field]: action.value
+                }
+            };
+        }
         default:
     }
     return state;

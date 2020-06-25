@@ -5,7 +5,7 @@ import BlockUi from "react-block-ui";
 import { Link, NavLink } from "react-router-dom";
 import { 
     Button, FormGroup, Modal, ModalHeader, 
-    ModalBody, ModalFooter, Col, Row, Label, Input } from "reactstrap";
+    ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import CustomFooterGuru from "../common/customFooterGuru";
 // import Select from "../common/Select";
 import 'react-widgets/dist/css/react-widgets.css';
@@ -21,7 +21,7 @@ import * as messageBox from "../common/message-box";
 import SimpleReactValidator from "simple-react-validator";
 import { Formik, Form, Field } from 'formik';
 import Select from 'react-select'
-import zIndex from '@material-ui/core/styles/zIndex';
+import Breadcrumb from "../common/breadcrumb";
 
 class TaskKepsekPerId extends Component {
 
@@ -82,25 +82,34 @@ class TaskKepsekPerId extends Component {
                         print: false,
                         download: false,
                         customBodyRender: (value, tableMeta, updateValue) => {
-                            return (
-                                <div>
-                                    <Button color="primary" size="sm" onClick={() => this.OpenModal()}>OPEN</Button>
-                                </div>
-                            );
+                            if(tableMeta.rowData[0] == 4){
+                                return (
+                                    <div>
+                                        <Button color="primary" size="sm" onClick={() => this.openModal(value)}>OPEN</Button>
+                                    </div>
+                                );
+                            }
+                            else{
+                                return (
+                                    <div>
+                                        <Button disabled color="primary" size="sm">OPEN</Button>
+                                    </div>
+                                );
+                            }
                         }
                       }
                 },
             ], 
-            isAddNew:false,
-            isEdit:false,
             isDetail:false,
-            multiValueClass: [],
-            dataSourceClass:this.props.taskKepsekState.dataSourceClass,
         }
         this.getList = this.getList.bind(this);
         this.onClickSignOut = this.onClickSignOut.bind(this);
         this.validator = new SimpleReactValidator();
         this.handleMultiChange = this.handleMultiChange.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.modalToggle = this.modalToggle.bind(this);
+        this.downloadFile = this.downloadFile.bind(this);
+        this.downloadFiles = this.downloadFiles.bind(this);
     }
 
     componentDidMount(){
@@ -110,10 +119,51 @@ class TaskKepsekPerId extends Component {
         kepsekGetTaskCollectionList();
     }
     
+    modalToggle() {
+        const { taskKepsekState, setModal } = this.props;
+        setModal("show", !taskKepsekState.modal.show)
+    }
 
     getList(){
         let { kepsekGetTaskList } = this.props;
         kepsekGetTaskList();
+    }
+
+    openModal(value){
+        let { kepsekGetUploadedCollectionList, setStateModalFormUploadedCollection, setModal, taskKepsekState } = this.props;
+        console.log('openmodal', value)
+        setStateModalFormUploadedCollection("task_collection_id", value);
+        kepsekGetUploadedCollectionList();
+        console.log('fgfg', taskKepsekState)
+        setModal("type", "download")
+        setModal("title", "Uploaded Files")
+        setModal("buttonText", "Download All")
+        setModal("show", true)
+        this.setState(prevState => ({
+            ...prevState,
+            isDetail: true,
+        })
+        );
+    }
+
+    downloadFiles() {
+        const { taskKepsekState, setStateModalFormUploadedCollection, kepsekDownloadCollection } = this.props;
+        if(taskKepsekState.dataUploadedCollection.files != null || taskKepsekState.dataUploadedCollection.files != undefined){
+            for(let i=0;i<taskKepsekState.dataUploadedCollection.files.length;i++){
+                setStateModalFormUploadedCollection("task_collection_file_id", taskKepsekState.dataUploadedCollection.files[i].task_collection_file_id);
+                setStateModalFormUploadedCollection("filename", taskKepsekState.dataUploadedCollection.files[i].filename);
+                setStateModalFormUploadedCollection("mime_type", taskKepsekState.dataUploadedCollection.files[i].mime_type);
+                kepsekDownloadCollection();
+            }
+        }
+    }
+
+    downloadFile(task_collection_file_id, filename, mime_type) {
+        const { guruDownloadCollection, setStateModalFormUploadedCollection } = this.props;
+        setStateModalFormUploadedCollection("task_collection_file_id", task_collection_file_id);
+        setStateModalFormUploadedCollection("filename", filename);
+        setStateModalFormUploadedCollection("mime_type", mime_type);
+        guruDownloadCollection();
     }
 
     onClickSignOut(){
@@ -139,9 +189,35 @@ class TaskKepsekPerId extends Component {
             selectableRows:false,
         };
 
+        //menampilkan file/s untuk di download(modal download)
+        let listOfFile = [];
+        if(taskKepsekState.dataUploadedCollection.files != null || taskKepsekState.dataUploadedCollection.files != undefined){
+            for(let i=0;i<taskKepsekState.dataUploadedCollection.files.length;i++){
+                listOfFile.push(
+                    <InputGroup style={{marginBottom:"5px"}}>
+                            <Input
+                            type="text"
+                            className="form-control"
+                            value={taskKepsekState.dataUploadedCollection.files[i].filename}
+                            readOnly
+                            />
+                            <Button 
+                            inline={true}
+                            color="primary" size="xs" 
+                            onClick={() => { 
+                                this.downloadFile(taskKepsekState.dataUploadedCollection.files[i].task_collection_file_id,
+                                    taskKepsekState.dataUploadedCollection.files[i].filename,
+                                    taskKepsekState.dataUploadedCollection.files[i].mime_type); 
+                                }}
+                            >Download</Button>
+                    </InputGroup>
+                )   
+            }
+        }
+
         return (
             <div>
-                
+                <Breadcrumb title={<Link to={`${process.env.PUBLIC_URL}/taskkepsek/`}>Back</Link>}/>
                 <section className="login-page section-b-space">
                     <div className="container">
                     <h3 className="text-left"><i className="mdi mdi-table-edit"/>Kepala Sekolah</h3>
@@ -238,7 +314,6 @@ class TaskKepsekPerId extends Component {
                                         </div>
                                     </div>
 
-
                                     <MuiThemeProvider>
                                     <MUIDataTable
                                         // title={<div><Button onClick={this.submitTask}><i className="mdi mdi-plus"></i>&nbsp;Submit Selected Task</Button></div>}
@@ -257,6 +332,55 @@ class TaskKepsekPerId extends Component {
                             </div>
                         </div>
                     </div>
+
+                    <Modal isOpen={taskKepsekState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+                        <ModalHeader toggle={this.modalToggle}>{taskKepsekState.modal.title}</ModalHeader>
+                        <ModalBody>
+                            {this.state.isDetail &&
+                                <Formik
+                                enableReinitialize={true}
+                                initialValues={taskKepsekState.taskDetail}
+                                // validationSchema={add_editSchema}
+                                onSubmit={values => {
+                                    // same shape as initial values
+                                    // this.uploadTask()
+                                }}
+                                >
+                                {({ errors, touched, setFieldValue }) => (
+                                    <div>
+                                    <Form>
+                                        <ModalBody>
+                                        <Row form={true}>
+                                        <Col md={12}>
+                                            <div>
+                                                {listOfFile}
+                                            </div>
+                                        </Col>  
+                                        </Row>
+                                                                        
+                                        </ModalBody>
+                                        <ModalFooter>
+                                        {/* <Button color="secondary" onClick={this.modalToggle} style={{color: "#fff"}}>Cancel</Button>
+                                        <Button color="primary" type="submit">Add</Button> */}
+                                        </ModalFooter>
+                                    </Form>
+                                    </div>
+                                )}
+                                </Formik>
+                            }
+                        </ModalBody>
+                        <ModalFooter>
+                        <Button size="sm" color="secondary" onClick={this.modalToggle}>Cancel</Button>{' '}
+                        
+                        {' '}
+                        {taskKepsekState.modal.type == "download" &&
+                            <Button 
+                            size="sm" color="primary"
+                            onClick={() => this.downloadFiles()}
+                            >{taskKepsekState.modal.buttonText}</Button>
+                        }
+                        </ModalFooter>
+                    </Modal>
                 </section>
 
             </div>

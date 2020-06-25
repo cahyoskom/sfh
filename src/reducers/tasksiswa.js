@@ -1,9 +1,12 @@
 import {
-    GET_TASK_SISWA_LIST,
+    STUDENT_GET_TASK_LIST,
     GET_TASK_SISWA_LIST_SUCCESS,
     STUDENT_PUT_COLLECTION_SUCCESS,
+    STUDENT_GET_TASK_FILE_LIST_SUCCESS,
+    STUDENT_GET_UPLOADED_FILE_LIST_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM,
+    SET_MODAL_FORM_DOWNLOAD,
     SET_LOADER,
     SET_DATE,
     SET_TASK_LIST_FILTER,
@@ -14,12 +17,25 @@ import {
     data: [],
     key: Math.random(),
     dataCollection:{},
+    dataTaskFile:{},
+    dataUploadedFile:[],
     form: {
         task_id: 0,
         task_file:[],
         task_collection_id:0,
         task_collection_ids:[],
-        rows:[]
+        rows:[],
+        filename:"",
+        mime_type:""
+    },
+    formDownload: {
+        task_id: [],
+        // task_file:[],
+        // task_collection_id:0,
+        // task_collection_ids:[],
+        // rows:[],
+        filename:[],
+        mime_type:[]
     },
     filter: {
         startDate: new Date(),
@@ -34,9 +50,9 @@ import {
         buttonText: "",
       },
     dataSourceStatus : [
-        {label: "Submited", value: "submited"},
-        {label: "Belum Submit", value: "draft"},
-        {label: "Semua", value: "all"}
+        {label: "Submited", value: "4"},
+        {label: "Belum Submit", value: "1"},
+        {label: "Semua", value: ""}
     ],
     loader: false,
   };
@@ -52,7 +68,7 @@ import {
                     [action.field]: action.value
                 }
             };
-        case GET_TASK_SISWA_LIST:
+        case STUDENT_GET_TASK_LIST:
             return {
                 ...state,
             };
@@ -64,6 +80,18 @@ import {
             };
         }
         case STUDENT_PUT_COLLECTION_SUCCESS: {
+            return {
+                ...state,
+                [action.field]: action.value
+            };
+        }
+        case STUDENT_GET_TASK_FILE_LIST_SUCCESS: {
+            return {
+                ...state,
+                [action.field]: action.value
+            };
+        }
+        case STUDENT_GET_UPLOADED_FILE_LIST_SUCCESS: {
             return {
                 ...state,
                 [action.field]: action.value
@@ -92,6 +120,14 @@ import {
                 ...state,
                 form: {
                     ...state.form,
+                    [action.field]: action.value
+                }
+            };
+        case SET_MODAL_FORM_DOWNLOAD:
+            return {
+                ...state,
+                formDownload: {
+                    ...state.formDownload,
                     [action.field]: action.value
                 }
             };

@@ -30,8 +30,8 @@ class SideBar extends Component {
                         </div>
                     </div>
                     {/*Vertical Menu*/}
-                    <ul id="sub-menu" className="sm pixelstrap sm-vertical ">
-                        <li><a href="#">clothing</a>
+                    <ul id="sub-menu" className="sm pixelstrap sm-vertical " style={{zIndex:200}}>
+                        {/* <li><a href="#">clothing</a>
                             <ul className="mega-menu clothing-menu">
                                 <li>
                                     <div className="row m-0">
@@ -155,7 +155,7 @@ class SideBar extends Component {
                         <li><a href="#">home & decor</a>
                         </li>
                         <li><a href="#">kitchen</a>
-                        </li>
+                        </li> */}
                     </ul>
                 </nav>
             </div>

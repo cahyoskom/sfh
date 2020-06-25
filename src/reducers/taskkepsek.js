@@ -6,6 +6,7 @@ import {
     KEPSEK_GET_CLASS_LIST,
     KEPSEK_GET_CLASS_LIST_SUCCESS,
     KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS,
+    KEPSEK_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM,
     SET_LOADER,
@@ -14,7 +15,9 @@ import {
     DELETE_TASK,
     SET_STATE_TASK_DETAIL,
     HANDLE_STATE_UPDATE_TASK,
-    SET_URL_PATH
+    SET_URL_PATH,
+    SET_STATE_MODAL_FORM_UPLOADED_COLLECTION
+
   } from "../constants/ActionTypes";
   
   const initialState = {
@@ -67,7 +70,14 @@ import {
     loader: false,
     params:0,
     // taskkepsek_perid
-    dataCollection: []
+    dataCollection: [],
+    dataUploadedCollection:[],
+    formUploadedCollection: {
+        task_collection_id:"",
+        task_collection_file_id:"",
+        filename:"",
+        mime_type:""
+    }
   };
   
   export default function taskKepsekReducer(state = initialState, action) {
@@ -97,6 +107,12 @@ import {
             };
         }
         case KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS: {
+            return {
+                ...state,
+                [action.field]: action.value
+            };
+        }
+        case KEPSEK_GET_UPLOADED_COLLECTION_LIST_SUCCESS: {
             return {
                 ...state,
                 [action.field]: action.value
@@ -171,6 +187,15 @@ import {
                     [action.field]: action.value
                 }
             };
+        case SET_STATE_MODAL_FORM_UPLOADED_COLLECTION: {
+            return {
+                ...state,
+                formUploadedCollection: {
+                    ...state.formUploadedCollection,
+                    [action.field]: action.value
+                }
+            };
+        }
         default:
     }
     return state;

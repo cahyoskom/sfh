@@ -71,6 +71,13 @@ import TaskKepsekPerId from './components/tasklist/taskkepsek_perid';
 import TaskGuru from './components/tasklist/taskguru';
 import TaskGuruPerId from './components/tasklist/taskguru_perid';
 import Admin from './components/usermanagement/admin';
+import Group from './components/usermanagement/group';
+import User from './components/usermanagement/user';
+import UserPerId from './components/usermanagement/user_perid';
+import Subject from './components/usermanagement/subject';
+import Class from './components/usermanagement/class';
+import Student from './components/usermanagement/student';
+import Role from './components/usermanagement/role';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -95,7 +102,7 @@ class Root extends React.Component {
 			return false
 		}
 		else{
-			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 4){
+			if(account.roles == null || account.roles==undefined || account.selectedRole[0].group_id != 4){
 				return false
 			}
 			else{
@@ -110,7 +117,7 @@ class Root extends React.Component {
 			return false
 		}
 		else{
-			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 6){
+			if(account.roles == null || account.roles==undefined || account.selectedRole[0].group_id != 6){
 				return false
 			}
 			else{
@@ -125,7 +132,7 @@ class Root extends React.Component {
 			return false
 		}
 		else{
-			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 1){
+			if(account.roles == null || account.roles==undefined || account.selectedRole[0].group_id != 1){
 				return false
 			}
 			else{
@@ -140,7 +147,7 @@ class Root extends React.Component {
 			return false
 		}
 		else{
-			if(account.roles == null || account.roles==undefined || account.roles[0].group_id != 2){
+			if(account.roles == null || account.roles==undefined || account.selectedRole[0].group_id != 2){
 				return false
 			}
 			else{
@@ -212,6 +219,57 @@ class Root extends React.Component {
 									// authenticated={this.authCheck()}
 									role={this.roleGuruCheck()}
 									exact={true}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/group`}
+									component={Group}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/user/:id`}
+									component={UserPerId}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+									exact={true}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/user`}
+									component={User}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+									exact={true}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/subject`}
+									component={Subject}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+								/>
+								
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/class`}
+									component={Class}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/student`}
+									component={Student}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
+								/>
+
+								<PrivateRouteAdmin
+									path={`${process.env.PUBLIC_URL}/usermanagement/role`}
+									component={Role}
+									authenticated={this.authCheck()}
+									role={this.roleAdminCheck()}
 								/>
 
 								<PrivateRouteAdmin

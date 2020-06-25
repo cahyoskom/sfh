@@ -25,7 +25,7 @@ class TaskGuru extends Component {
         super (props)
         this.state = {
             columns: [
-                {
+                {//0
                     name: 'status',
                     label: 'Status',
                     options: {
@@ -51,7 +51,7 @@ class TaskGuru extends Component {
                         }
                     }
                 },
-                {
+                {//1
                     name: 'notes',
                     label: 'Notes',
                     options: {
@@ -61,68 +61,56 @@ class TaskGuru extends Component {
                             if(value){
                                 return (
                                 <div>
+                                    <span style={{backgroundColor:"#5bb1e4", padding:"5px", borderRadius:"25px"}}>{tableMeta.rowData[3] + " - " + tableMeta.rowData[2]}</span>
                                     <p>{value}</p>
-                                    <p>{tableMeta.rowData[3]}, {tableMeta.rowData[2]}</p>
+                                    <span style={{backgroundColor:"rgb(93, 228, 91)", padding:"5px", borderRadius:"25px"}}>
+                                        {"Published : " + moment(tableMeta.rowData[11]).format("DD-MM-YYYY").toString()}
+                                    </span><br/><br/>
+                                    <span style={{backgroundColor:"#5bb1e4", padding:"5px", borderRadius:"25px"}}>
+                                        {"Duration : " + moment(tableMeta.rowData[5]).format("DD-MM-YYYY").toString() + " - " + moment(tableMeta.rowData[6]).format("DD-MM-YYYY").toString()}
+                                    </span>
                                 </div>
                                 );
                             }
                         }
                     }
                 },
-                {
+                {//2
                     name: "class_name",
                     label: "Kelas",
                     options: {
                         display: false
                     }
                 },
-                {
+                {//3
                     name: "subject_name",
                     label: "Mata Pelajaran",
                     options: {
                         display: false
                     }
                 },
-                {
+                {//4
                     name: "title",
                     label: "Task",
                     options: {
                         display: false
                     }
                 },
-                {
+                {//5
                     name: "start_date",
                     label: "Start",
                     options: {
                         display: false,
-                        customBodyRender: (value) => {
-                            if(value){
-                                return (
-                                    <div>
-                                        <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
-                                    </div>
-                                );
-                            }
-                        }
                     }
                 },
-                {
+                {//6
                     name: "finish_date",
                     label: "Finish",
                     options: {
                         display: false,
-                        customBodyRender: (value) => {
-                            if(value){
-                                return (
-                                    <div>
-                                        <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
-                                    </div>
-                                );
-                            }
-                        }
                     }
                 },
-                {
+                {//7
                     name: 'task_id',
                     label: 'Action',
                     options: {
@@ -147,23 +135,30 @@ class TaskGuru extends Component {
                         }
                       }
                 },
-                {
+                {//8
                     name: "class_id",
                     label: "class_id",
                     options: {
                         display: false
                     }
                 },
-                {
+                {//9
                     name: "subject_id",
                     label: "subject_id",
                     options: {
                         display: false
                     }
                 },               
-                {
+                {//10
                     name: "assignor_id",
                     label: "assignor_id",
+                    options: {
+                        display: false
+                    }
+                },
+                {//11
+                    name: "publish_date",
+                    label: "publish_date",
                     options: {
                         display: false
                     }
@@ -196,6 +191,7 @@ class TaskGuru extends Component {
         this.update = this.update.bind(this);
         this.clearModal = this.clearModal.bind(this);
         this.deleteFile = this.deleteFile.bind(this);
+        this.clearFilter = this.clearFilter.bind(this);
     }
 
     componentDidMount(){
@@ -205,7 +201,7 @@ class TaskGuru extends Component {
         getClassList();
         getSubjectList();
         this.clearModal();
-        // console.log("acc state",accountState);
+        console.log("acc state",accountState);
     }
 
     clearModal(){
@@ -219,6 +215,14 @@ class TaskGuru extends Component {
         setStateModalForm("start_date", new Date())
         setStateModalForm("finish_date", new Date())
         setStateModalForm("files", null)
+    }
+
+    clearFilter(){
+        let { setStateTaskListFilter } = this.props;
+        setStateTaskListFilter("class_id", "")
+        setStateTaskListFilter("subject_id", "")
+        setStateTaskListFilter("start_date", new Date())
+        setStateTaskListFilter("finish_date", new Date())
     }
 
     getList(){
@@ -277,15 +281,6 @@ class TaskGuru extends Component {
         setStateModalForm("task_id", data.rowData[7])   
         getTaskGuruById();   
 
-        // setStateModalForm("task_id", data.rowData[7])
-        // setStateModalForm("class_id", data.rowData[8])
-        // setStateModalForm("subject_id", data.rowData[9])
-        // setStateModalForm("assignor_id", data.rowData[10])
-        // setStateModalForm("title", data.rowData[4])
-        // setStateModalForm("notes", data.rowData[1])
-        // setStateModalForm("start_date", data.rowData[5])
-        // setStateModalForm("finish_date", data.rowData[6])
-        
         setModal("type", "edit")
         setModal("title", "Edit Task")
         setModal("buttonText", "Update")
@@ -335,6 +330,10 @@ class TaskGuru extends Component {
     modalToggle() {
         const { taskGuruState, setModal } = this.props;
         setModal("show", !taskGuruState.modal.show)
+        this.setState( state => ({
+            ...state,
+            uploadedFileName: []
+        }))
     }
 
     openFileBrowser = () => {
@@ -419,37 +418,6 @@ class TaskGuru extends Component {
         guruDeleteTaskFile();
     }
 
-    // renderFiles() {
-    //     let { taskGuruState } = this.props;
-    //     if(taskGuruState.form.files != null || taskGuruState.form.files != undefined){
-    //         console.log(taskGuruState.form.files);
-    //         for(let i=0;i<taskGuruState.form.files.length;i++){
-    //             listOfFile.push(
-    //                 <InputGroup>
-    //                 <div className="row">
-    //                     <Input
-    //                     type="text"
-    //                     className="form-control"
-    //                     value={taskGuruState.form.files[i].filename}
-    //                     readOnly
-    //                     />
-    //                 </div>
-    //                 <div className="row">
-    //                     <Button onClick={this.deleteFile(taskGuruState.form.files[i].task_file_id)}>X</Button>
-    //                 </div>
-    //                 </InputGroup>
-    //             )   
-    //         }
-    //         if (this.state.listOfFile !== listOfFile) {
-    //             this.setState({
-    //                 ...this.state,
-    //                 listOfFile: listOfFile
-    //             })
-    //         }
-    //     }
-    // }
-
-
     renderView(){
         let { taskGuruState, setStateTaskListFilter, setStateModalForm, getTaskGuruList } = this.props;
 
@@ -472,6 +440,7 @@ class TaskGuru extends Component {
                     <Input
                     type="text"
                     className="form-control"
+                    style={{marginBottom:"5px"}}
                     value={this.state.uploadedFileName[i]}
                     readOnly
                     />
@@ -485,22 +454,20 @@ class TaskGuru extends Component {
         if(taskGuruState.form.files != null || taskGuruState.form.files != undefined){
             for(let i=0;i<taskGuruState.form.files.length;i++){
                 listOfFile.push(
-                    <InputGroup>
-                        <div className="row">
-                            <Input
-                            type="text"
-                            className="form-control"
-                            value={taskGuruState.form.files[i].filename}
-                            readOnly
-                            />
-                        </div>
-                        <div className="row">
-                            <Button onClick={() => { this.deleteFile(taskGuruState.form.files[i].task_file_id); }}>X</Button>
-                        </div>
+                    <InputGroup style={{marginBottom:"5px"}}>
+                        <Input
+                        type="text"
+                        className="form-control"
+                        value={taskGuruState.form.files[i].filename}
+                        readOnly
+                        />                        
+                        <Button 
+                        color="danger" 
+                        onClick={() => { this.deleteFile(taskGuruState.form.files[i].task_file_id); }}
+                        >X</Button>
                     </InputGroup>
                 )   
             }
-
         }
 
         return (
@@ -529,8 +496,8 @@ class TaskGuru extends Component {
                                     <form className="theme-form">
                                         <div className="form-group">
                                             <label>Nama : {localStorage.name.replace(/"/g,'')}</label><br/>
-                                            <label>Kelas : SD 5</label><br/>
-                                            <label>NIP : 011232001</label>
+                                            {/* <label>Kelas : SD 5</label><br/>
+                                            <label>NIP : 011232001</label> */}
                                         </div>
                                     </form>
                                 </div>
@@ -563,7 +530,6 @@ class TaskGuru extends Component {
                                             onChange= { 
                                                 (e) => setStateTaskListFilter("subject_id", e.value)
                                             }
-                                            multi
                                         />
                                         </div>
                                         <div  className="col-md-4">
@@ -584,14 +550,15 @@ class TaskGuru extends Component {
                                             isInline={true}
                                             colLabel={"col-md-1"}
                                             onChange={(a,b)=>{
-                                                setStateTaskListFilter("end_date", a);
+                                                setStateTaskListFilter("finish_date", a);
                                             }}
                                             format={"DD/MMM/YYYY"}
-                                            value={taskGuruState.filter.end_date}
+                                            value={taskGuruState.filter.finish_date}
                                         />
                                         </div>
-                                        <div className="col-md-2">
-                                            <Button color="primary" onClick={getTaskGuruList}>Filter</Button>
+                                        <div className="col-md-4">
+                                            <Button color="primary" onClick={getTaskGuruList}>Filter</Button>&nbsp;
+                                            {/* <Button color="warning" onClick={() => this.clearFilter()}>Reset</Button> */}
                                         </div>
                                     </div>
 

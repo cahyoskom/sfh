@@ -3,18 +3,23 @@ import {
     SET_ROLES_SUCCESS,
     SET_REGISTER_SUCCESS,
     SET_FORGOT_SUCCESS,
+    SET_CONFIRM_LOGIN_SUCCESS,
     SET_LOADER,
     ON_CHANGE_STATE_LOGIN,
     ON_CHANGE_STATE_FORGOT,
     ON_CHANGE_STATE_REGISTER,
     RESET_STATE_LOGIN,
-    SET_TOKEN_SUCCESS
+    SET_TOKEN_SUCCESS,
+    SET_MODAL,
+    SET_MODAL_FORM_LOGIN
   } from "../constants/ActionTypes";
+  import Config from "../constants/config";
   
   const initialState = {
     login: {
       username: "",
-      password: ""
+      password: "",
+      recaptcha: ""
     },
     forgotPassword: {
       email: "",
@@ -33,8 +38,15 @@ import {
     roles: localStorage.getItem("roles")
       ? JSON.parse(localStorage.getItem("roles"))
       : undefined,
+    dataSourceRoleAccount:[
+      // {label:"A",value:"A"},
+      // {label:"B",value:"B"}
+    ],
+    selectedRole: localStorage.getItem("role")
+      ? JSON.parse(localStorage.getItem("role"))
+      : undefined,
     role:{
-      group_id: 0,
+      group_id: "",
       group_name: "",
       class_id: 0,
       class_name: "",
@@ -50,7 +62,15 @@ import {
     profile: localStorage.getItem("profile")
       ? JSON.parse(localStorage.getItem("profile"))
       : undefined,
-    loader: false
+    loader: false,
+    modal: {
+      show: false,
+      type: "switch",
+      title: "Select Group",
+      buttonText: "OK",
+    },
+    site_key: Config.CAPTCHA_KEY,
+    reset_captcha: false
   };
   
   export default function loginReducer(state = initialState, action) {
@@ -121,6 +141,27 @@ import {
         return {
           ...state,
           roles: action.value
+        };
+      case SET_MODAL:
+        return {
+            ...state,
+            modal: {
+            ...state.modal,
+            [action.field]: action.value
+            }
+        };
+      case SET_CONFIRM_LOGIN_SUCCESS:
+        return {
+          ...state,
+          [action.field]: action.value
+        };
+      case SET_MODAL_FORM_LOGIN:
+        return {
+            ...state,
+            role: {
+                ...state.role,
+                [action.field]: action.value
+            }
         };
       default:
     }

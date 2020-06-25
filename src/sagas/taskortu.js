@@ -24,7 +24,7 @@ export function* getTaskOrtuList() {
             [false, "Membaca dan membuat rangkuman buku IPS halaman 19-28, foto hasil rangkuman lalu upload", 2],
             [false, "Membaca dan membuat rangkuman buku IPA halaman 30-40, foto hasil rangkuman lalu upload", 3]
         ]
-        console.log('ini sagas')
+        // console.log('ini sagas')
         yield put({ 
             type: GET_TASK_ORTU_LIST_SUCCESS, 
             field: "data",
@@ -36,7 +36,7 @@ export function* getTaskOrtuList() {
             value: false
           });
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         fail(error);
         yield put({
             type: SET_LOADER,

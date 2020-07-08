@@ -1,10 +1,8 @@
 const db = require('../database');
 
-const {
-  DataTypes
-} = require('sequelize');
+const { DataTypes } = require('sequelize');
 
-module.exports = sequelize => {
+module.exports = (sequelize) => {
   if (!sequelize) {
     sequelize = db.sequelize();
   }
@@ -16,7 +14,7 @@ module.exports = sequelize => {
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: "class_id"
+      field: 'class_id'
     },
     class_level: {
       type: DataTypes.INTEGER(11),
@@ -25,7 +23,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "class_level"
+      field: 'class_level'
     },
     class_parallel: {
       type: DataTypes.STRING(10),
@@ -34,7 +32,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "class_parallel"
+      field: 'class_parallel'
     },
     class_name: {
       type: DataTypes.STRING(100),
@@ -43,16 +41,16 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "class_name"
+      field: 'class_name'
     },
     status: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      defaultValue: "0",
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "status"
+      field: 'status'
     },
     created_date: {
       type: DataTypes.DATE,
@@ -61,7 +59,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_date"
+      field: 'created_date'
     },
     created_by: {
       type: DataTypes.STRING(100),
@@ -70,7 +68,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_by"
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -79,7 +77,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_date"
+      field: 'updated_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -88,15 +86,15 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_by"
+      field: 'updated_by'
     }
   };
   const options = {
-    tableName: "m_class",
+    tableName: 'm_class',
     timestamps: false,
-    comment: "",
+    comment: '',
     indexes: []
   };
-  const MClassModel = sequelize.define("m_class_model", attributes, options);
+  const MClassModel = sequelize.define('m_class_model', attributes, options);
   return MClassModel;
 };

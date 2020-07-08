@@ -1,1 +1,0 @@
-sequelize-automate -c .\sequelize-automate.config.json

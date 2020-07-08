@@ -1,8 +1,9 @@
 {
-  "name": "myapps",
-  "version": "0.0.0",
+  "name": "sfh-api",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
+    "generate-model": "sequelize-automate -c generate-model.config.js",
     "start": "node --inspect http.local.js",
     "debug": "nodemon --inspect http.local.js"
   },
@@ -16,10 +17,13 @@
     "express-async-errors": "^3.1.1",
     "express-convention-routes": "^1.0.6",
     "formidable": "^1.2.2",
-    "moment": "^2.26.0",
+    "moment": "^2.27.0",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
-    "sequelize": "^5.21.11",
+    "sequelize": "^5.22.3",
     "sequelize-automate": "^1.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

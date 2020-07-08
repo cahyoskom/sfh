@@ -1,86 +1,77 @@
-const db = require('../database');
-
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
-
   const attributes = {
-    user_role_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'user_role_id'
+      field: 'id'
     },
-    user_id: {
-      type: DataTypes.INTEGER(11),
+    t_task_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'user_id',
+      field: 't_task_id',
       references: {
-        key: 'user_id',
-        model: 'sec_user_model'
+        key: 'id',
+        model: 't_task_model'
       }
     },
-    group_id: {
-      type: DataTypes.INTEGER(11),
+    filename: {
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'group_id'
+      field: 'filename'
     },
-    class_id: {
-      type: DataTypes.INTEGER(11),
+    ext: {
+      type: DataTypes.STRING(10),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'class_id',
-      references: {
-        key: 'class_id',
-        model: 'm_class_model'
-      }
+      field: 'ext'
     },
-    subject_id: {
-      type: DataTypes.INTEGER(11),
+    mime_type: {
+      type: DataTypes.STRING(100),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'subject_id',
-      references: {
-        key: 'subject_id',
-        model: 'm_subject_model'
-      }
+      field: 'mime_type'
     },
-    student_id: {
-      type: DataTypes.INTEGER(11),
+    location: {
+      type: DataTypes.STRING(200),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'student_id',
-      references: {
-        key: 'student_id',
-        model: 't_student_model'
-      }
+      field: 'location'
+    },
+    sequence: {
+      type: DataTypes.INTEGER(8).UNSIGNED,
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sequence'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -89,8 +80,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -98,8 +89,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -125,40 +116,21 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'sec_user_role',
-    timestamps: false,
+    tableName: 't_task_file',
     comment: '',
     indexes: [
       {
-        name: 'fk_sec_user_role_sec_group',
+        name: 't_task_id',
         unique: false,
         type: 'BTREE',
-        fields: ['user_id']
-      },
-      {
-        name: 'fk_sec_user_role_m_class',
-        unique: false,
-        type: 'BTREE',
-        fields: ['class_id']
-      },
-      {
-        name: 'fk_sec_user_role_m_subject',
-        unique: false,
-        type: 'BTREE',
-        fields: ['subject_id']
-      },
-      {
-        name: 'fk_sec_user_role_t_student',
-        unique: false,
-        type: 'BTREE',
-        fields: ['student_id']
+        fields: ['t_task_id']
       }
     ]
   };
-  const SecUserRoleModel = sequelize.define(
-    'sec_user_role_model',
+  const TTaskFileModel = sequelize.define(
+    't_task_file_model',
     attributes,
     options
   );
-  return SecUserRoleModel;
+  return TTaskFileModel;
 };

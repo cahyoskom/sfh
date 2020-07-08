@@ -1,88 +1,82 @@
-const db = require('../database');
-
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
-
   const attributes = {
-    token_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'token_id'
+      field: 'id'
     },
-    token: {
-      type: DataTypes.TEXT,
-      allowNull: true,
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'token'
-    },
-    user_id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'user_id',
+      field: 'sec_user_id',
       references: {
-        key: 'user_id',
+        key: 'id',
         model: 'sec_user_model'
       }
     },
-    valid_until: {
-      type: DataTypes.DATE,
-      allowNull: true,
+    provider: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'provider'
+    },
+    profile_id: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'profile_id'
+    },
+    data: {
+      type: DataTypes.TEXT,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'valid_until'
+      field: 'data'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
       field: 'status'
     },
-    created_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_date'
-    },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
       field: 'created_by'
     },
-    updated_date: {
+    created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_date'
+      field: 'created_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -92,25 +86,33 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'updated_by'
+    },
+    updated_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_date'
     }
   };
   const options = {
-    tableName: 'sec_token',
-    timestamps: false,
+    tableName: 'sec_user_oauth',
     comment: '',
     indexes: [
       {
-        name: 'sec_token_sec_user',
+        name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
-        fields: ['user_id']
+        fields: ['sec_user_id']
       }
     ]
   };
-  const SecTokenModel = sequelize.define(
-    'sec_token_model',
+  const SecUserOauthModel = sequelize.define(
+    'sec_user_oauth_model',
     attributes,
     options
   );
-  return SecTokenModel;
+  return SecUserOauthModel;
 };

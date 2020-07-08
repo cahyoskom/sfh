@@ -1,56 +1,73 @@
-const db = require('../database');
-
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
-
   const attributes = {
-    token_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'token_id'
+      field: 'id'
     },
-    token: {
-      type: DataTypes.TEXT,
-      allowNull: true,
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'name'
+    },
+    username: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'username'
+    },
+    password: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'token'
+      field: 'password'
     },
-    user_id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'user_id',
-      references: {
-        key: 'user_id',
-        model: 'sec_user_model'
-      }
+      field: 'email'
     },
-    valid_until: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+    sex: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: '1',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'valid_until'
+      field: 'sex'
+    },
+    is_validated: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'is_validated'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -59,8 +76,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -68,8 +85,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -95,22 +112,14 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'sec_token',
-    timestamps: false,
+    tableName: 'sec_registrant',
     comment: '',
-    indexes: [
-      {
-        name: 'sec_token_sec_user',
-        unique: false,
-        type: 'BTREE',
-        fields: ['user_id']
-      }
-    ]
+    indexes: []
   };
-  const SecTokenModel = sequelize.define(
-    'sec_token_model',
+  const SecRegistrantModel = sequelize.define(
+    'sec_registrant_model',
     attributes,
     options
   );
-  return SecTokenModel;
+  return SecRegistrantModel;
 };

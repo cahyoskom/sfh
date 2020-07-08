@@ -1,86 +1,112 @@
-const db = require('../database');
-
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
-
   const attributes = {
-    user_role_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'user_role_id'
+      field: 'id'
     },
-    user_id: {
-      type: DataTypes.INTEGER(11),
+    m_subject_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'user_id',
+      field: 'm_subject_id',
       references: {
-        key: 'user_id',
-        model: 'sec_user_model'
-      }
-    },
-    group_id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'group_id'
-    },
-    class_id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'class_id',
-      references: {
-        key: 'class_id',
-        model: 'm_class_model'
-      }
-    },
-    subject_id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'subject_id',
-      references: {
-        key: 'subject_id',
+        key: 'id',
         model: 'm_subject_model'
       }
     },
-    student_id: {
-      type: DataTypes.INTEGER(11),
+    m_class_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'm_class_id',
+      references: {
+        key: 'id',
+        model: 'm_class_model'
+      }
+    },
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: 'user assignor a task, in this case a teacher',
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
+    title: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'title'
+    },
+    notes: {
+      type: DataTypes.STRING(200),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'student_id',
-      references: {
-        key: 'student_id',
-        model: 't_student_model'
-      }
+      field: 'notes'
+    },
+    weight: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: '0.00',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'weight'
+    },
+    start_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'start_date'
+    },
+    finish_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'finish_date'
+    },
+    publish_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'publish_date'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -89,8 +115,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -98,8 +124,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -125,40 +151,29 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'sec_user_role',
-    timestamps: false,
+    tableName: 't_task',
     comment: '',
     indexes: [
       {
-        name: 'fk_sec_user_role_sec_group',
+        name: 'm_subject_id',
         unique: false,
         type: 'BTREE',
-        fields: ['user_id']
+        fields: ['m_subject_id']
       },
       {
-        name: 'fk_sec_user_role_m_class',
+        name: 'm_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['class_id']
+        fields: ['m_class_id']
       },
       {
-        name: 'fk_sec_user_role_m_subject',
+        name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
-        fields: ['subject_id']
-      },
-      {
-        name: 'fk_sec_user_role_t_student',
-        unique: false,
-        type: 'BTREE',
-        fields: ['student_id']
+        fields: ['sec_user_id']
       }
     ]
   };
-  const SecUserRoleModel = sequelize.define(
-    'sec_user_role_model',
-    attributes,
-    options
-  );
-  return SecUserRoleModel;
+  const TTaskModel = sequelize.define('t_task_model', attributes, options);
+  return TTaskModel;
 };

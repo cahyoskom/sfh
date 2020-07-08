@@ -1,34 +1,50 @@
-const db = require('../database');
-
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
-
   const attributes = {
-    subject_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'subject_id'
+      field: 'id'
     },
-    subject_name: {
-      type: DataTypes.STRING(100),
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'subject_name'
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
+    token: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'token'
+    },
+    valid_until: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'valid_until'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -37,8 +53,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -46,8 +62,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -73,15 +89,21 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'm_subject',
-    timestamps: false,
+    tableName: 'sec_token',
     comment: '',
-    indexes: []
+    indexes: [
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
+      }
+    ]
   };
-  const MSubjectModel = sequelize.define(
-    'm_subject_model',
+  const SecTokenModel = sequelize.define(
+    'sec_token_model',
     attributes,
     options
   );
-  return MSubjectModel;
+  return SecTokenModel;
 };

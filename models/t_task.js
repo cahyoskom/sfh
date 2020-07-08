@@ -1,10 +1,8 @@
 const db = require('../database');
 
-const {
-  DataTypes
-} = require('sequelize');
+const { DataTypes } = require('sequelize');
 
-module.exports = sequelize => {
+module.exports = (sequelize) => {
   if (!sequelize) {
     sequelize = db.sequelize();
   }
@@ -16,7 +14,7 @@ module.exports = sequelize => {
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: "task_id"
+      field: 'task_id'
     },
     assignor_id: {
       type: DataTypes.INTEGER(11),
@@ -25,10 +23,10 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "assignor_id",
+      field: 'assignor_id',
       references: {
-        key: "user_id",
-        model: "sec_user_model"
+        key: 'user_id',
+        model: 'sec_user_model'
       }
     },
     class_id: {
@@ -38,10 +36,10 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "class_id",
+      field: 'class_id',
       references: {
-        key: "class_id",
-        model: "m_class_model"
+        key: 'class_id',
+        model: 'm_class_model'
       }
     },
     subject_id: {
@@ -51,10 +49,10 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "subject_id",
+      field: 'subject_id',
       references: {
-        key: "subject_id",
-        model: "m_subject_model"
+        key: 'subject_id',
+        model: 'm_subject_model'
       }
     },
     title: {
@@ -64,7 +62,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "title"
+      field: 'title'
     },
     notes: {
       type: DataTypes.STRING(200),
@@ -73,16 +71,16 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "notes"
+      field: 'notes'
     },
     weight: {
       type: DataTypes.DECIMAL,
       allowNull: true,
-      defaultValue: "0.00",
+      defaultValue: '0.00',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "weight"
+      field: 'weight'
     },
     start_date: {
       type: DataTypes.DATE,
@@ -91,7 +89,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "start_date"
+      field: 'start_date'
     },
     finish_date: {
       type: DataTypes.DATE,
@@ -100,7 +98,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "finish_date"
+      field: 'finish_date'
     },
     publish_date: {
       type: DataTypes.DATE,
@@ -109,16 +107,16 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "publish_date"
+      field: 'publish_date'
     },
     status: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      defaultValue: "0",
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "status"
+      field: 'status'
     },
     created_date: {
       type: DataTypes.DATE,
@@ -127,7 +125,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_date"
+      field: 'created_date'
     },
     created_by: {
       type: DataTypes.STRING(100),
@@ -136,7 +134,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_by"
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -145,7 +143,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_date"
+      field: 'updated_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -154,30 +152,34 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_by"
+      field: 'updated_by'
     }
   };
   const options = {
-    tableName: "t_task",
+    tableName: 't_task',
     timestamps: false,
-    comment: "",
-    indexes: [{
-      name: "fk_t_task_sec_user",
-      unique: false,
-      type: "BTREE",
-      fields: ["assignor_id"]
-    }, {
-      name: "fk_t_task_m_class",
-      unique: false,
-      type: "BTREE",
-      fields: ["class_id"]
-    }, {
-      name: "fk_t_task_m_subject",
-      unique: false,
-      type: "BTREE",
-      fields: ["subject_id"]
-    }]
+    comment: '',
+    indexes: [
+      {
+        name: 'fk_t_task_sec_user',
+        unique: false,
+        type: 'BTREE',
+        fields: ['assignor_id']
+      },
+      {
+        name: 'fk_t_task_m_class',
+        unique: false,
+        type: 'BTREE',
+        fields: ['class_id']
+      },
+      {
+        name: 'fk_t_task_m_subject',
+        unique: false,
+        type: 'BTREE',
+        fields: ['subject_id']
+      }
+    ]
   };
-  const TTaskModel = sequelize.define("t_task_model", attributes, options);
+  const TTaskModel = sequelize.define('t_task_model', attributes, options);
   return TTaskModel;
 };

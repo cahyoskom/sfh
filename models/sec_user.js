@@ -1,10 +1,8 @@
 const db = require('../database');
 
-const {
-  DataTypes
-} = require('sequelize');
+const { DataTypes } = require('sequelize');
 
-module.exports = sequelize => {
+module.exports = (sequelize) => {
   if (!sequelize) {
     sequelize = db.sequelize();
   }
@@ -17,7 +15,7 @@ module.exports = sequelize => {
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: "user_id"
+      field: 'user_id'
     },
     user_name: {
       type: DataTypes.STRING(100),
@@ -26,7 +24,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "user_name"
+      field: 'user_name'
     },
     email: {
       type: DataTypes.STRING(100),
@@ -35,7 +33,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "email"
+      field: 'email'
     },
     password: {
       type: DataTypes.STRING(100),
@@ -44,16 +42,16 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "password"
+      field: 'password'
     },
     status: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      defaultValue: "0",
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "status"
+      field: 'status'
     },
     created_date: {
       type: DataTypes.DATE,
@@ -62,7 +60,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_date"
+      field: 'created_date'
     },
     created_by: {
       type: DataTypes.STRING(100),
@@ -71,7 +69,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_by"
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -80,7 +78,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_date"
+      field: 'updated_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -89,15 +87,15 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_by"
+      field: 'updated_by'
     }
   };
   const options = {
-    tableName: "sec_user",
+    tableName: 'sec_user',
     timestamps: false,
-    comment: "",
+    comment: '',
     indexes: []
   };
-  const SecUserModel = sequelize.define("sec_user", attributes, options);
+  const SecUserModel = sequelize.define('sec_user', attributes, options);
   return SecUserModel;
 };

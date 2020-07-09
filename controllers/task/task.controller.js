@@ -38,14 +38,12 @@ module.exports = function (router) {
       );
     }
 
-    var sql = `
-            SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, publish_date,
-                    s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
-            FROM t_task t
-            JOIN m_subject s ON s.subject_id=t.subject_id
-            JOIN m_class c ON c.class_id=t.class_id
-            WHERE t.status = 1 AND s.status=1 AND c.status = 1
-        `;
+    var sql = `SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, 
+      publish_date, s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
+    FROM t_task t
+    JOIN m_subject s ON s.subject_id=t.subject_id
+    JOIN m_class c ON c.class_id=t.class_id
+    WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
 
     if (Object.keys(filter).length > 0) {
       sql = sql + ' AND ' + where.join(' AND ');
@@ -280,12 +278,10 @@ module.exports = function (router) {
       var upload_dir = FILE_UPLOAD_DIR + '/task_' + task_id + '/';
       var filename = upload_dir + file.filename;
       if (!fs.existsSync(filename)) {
-        res
-          .status(404)
-          .json({
-            error: 24,
-            message: 'File is missing. It shoud existed though.'
-          });
+        res.status(404).json({
+          error: 24,
+          message: 'File is missing. It shoud existed though.'
+        });
         return;
       }
       res.download(filename);

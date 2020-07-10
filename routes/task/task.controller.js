@@ -4,7 +4,7 @@ const t_task_collection = require('../../models/t_task_collection');
 const moment = require('moment');
 const fs = require('fs');
 const { sha256 } = require('../../common/sha');
-const { FILE_UPLOAD_DIR } = require('../../config/app.config');
+const { uploaddir } = require('../../config/app.config');
 const formidable = require('formidable');
 const MoveFile = require('../../common/move');
 const { query } = require('../../models/query');
@@ -213,7 +213,7 @@ module.exports = function (router) {
       res.status(421).json({ error: 21, message: 'Files not found' });
     }
 
-    var upload_dir = FILE_UPLOAD_DIR + '/task_' + task_id + '/';
+    var upload_dir = uploaddir + '/task_' + task_id + '/';
     if (!fs.existsSync(upload_dir)) {
       fs.mkdirSync(upload_dir);
     }
@@ -275,7 +275,7 @@ module.exports = function (router) {
 
     if (!!file) {
       var task_id = file.task_id;
-      var upload_dir = FILE_UPLOAD_DIR + '/task_' + task_id + '/';
+      var upload_dir = uploaddir + '/task_' + task_id + '/';
       var filename = upload_dir + file.filename;
       if (!fs.existsSync(filename)) {
         res.status(404).json({

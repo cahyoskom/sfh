@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "generate-model": "sequelize-automate -c generate-model.config.js",
-    "start": "node --inspect http.local.js",
-    "debug": "nodemon --inspect http.local.js"
+    "generate-model": "sequelize-automate -c ./config/sequelize-automate.config.js",
+    "start": "node --inspect http.js",
+    "debug": "nodemon --inspect http.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",

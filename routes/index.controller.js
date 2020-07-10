@@ -74,6 +74,7 @@ module.exports = function (router) {
     var token = await sec_token().findAll({ where: { user_id: user_id } });
     return token;
   }
+
   async function setToken(user_id) {
     var token = await getToken(user_id);
     var now = moment();

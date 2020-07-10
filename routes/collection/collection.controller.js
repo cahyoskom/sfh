@@ -4,7 +4,7 @@ const fs = require('fs');
 const { query } = require('../../models/query');
 const TASK_STATUS = require('../../enums/status.enums');
 const moment = require('moment');
-const { FILE_UPLOAD_DIR } = require('../../config/app.config');
+const { uploaddir } = require('../../config/app.config');
 const formidable = require('formidable');
 const GROUP_ENUMS = require('../../enums/group.enums');
 const MoveFile = require('../../common/move');
@@ -153,7 +153,7 @@ module.exports = function (router) {
 
     let task_id = task_collection.task_id;
     var upload_dir =
-      FILE_UPLOAD_DIR +
+      uploaddir +
       '/task_' +
       task_id +
       '/collection/' +
@@ -235,7 +235,7 @@ module.exports = function (router) {
       }
       var task_id = coll.task_id;
       var upload_dir =
-        FILE_UPLOAD_DIR +
+        uploaddir +
         '/task_' +
         task_id +
         '/collection/' +
@@ -243,12 +243,10 @@ module.exports = function (router) {
         '/';
       var filename = upload_dir + file.filename;
       if (!fs.existsSync(filename)) {
-        res
-          .status(404)
-          .json({
-            error: 24,
-            message: 'File is missing. It shoud existed though.'
-          });
+        res.status(404).json({
+          error: 24,
+          message: 'File is missing. It shoud existed though.'
+        });
         return;
       }
       res.download(filename);

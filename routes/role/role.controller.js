@@ -1,4 +1,4 @@
-const sec_user_role = require('../../models/sec_user_role');
+const m_class_member = require('../../models/m_class_member');
 const moment = require('moment');
 const TASK_STATUS = require('../../enums/status.enums');
 const ROLES = require('../../common/roles');
@@ -16,13 +16,13 @@ module.exports = function (router) {
       filter.group_id = req.query.group_id;
     }
 
-    var data = await sec_user_role().findAll({ where: filter });
+    var data = await m_class_member().findAll({ where: filter });
 
     res.json({ data: data });
   });
 
   router.get('/:id', async function (req, res) {
-    var datum = await sec_user_role().findOne({
+    var datum = await m_class_member().findOne({
       where: { user_role_id: req.params.id }
     });
     res.json({ data: datum });
@@ -46,7 +46,7 @@ module.exports = function (router) {
       created_by: req.user.user_name
     };
     try {
-      var datum = await sec_user_role().create(new_obj);
+      var datum = await m_class_member().create(new_obj);
       res.json({ data: datum });
     } catch (err) {
       res.status(411).json({ error: 11, message: err.message });
@@ -65,7 +65,7 @@ module.exports = function (router) {
       updated_by: req.user.user_name
     };
     try {
-      var datum = await sec_user_role().update(update_obj, {
+      var datum = await m_class_member().update(update_obj, {
         where: { user_role_id: req.params.id }
       });
       res.json({ message: 'Data has been updated.' });
@@ -75,7 +75,7 @@ module.exports = function (router) {
   });
 
   router.delete('/:id', async function (req, res) {
-    sec_user_role().update(
+    m_class_member().update(
       { status: TASK_STATUS.DELETED },
       { where: { user_role_id: req.params.id } }
     );

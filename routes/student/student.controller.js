@@ -1,4 +1,5 @@
-const t_student = require('../../models/t_student');
+// todo: delete file
+// const t_student = require('../../models/t_student');
 const moment = require('moment');
 
 module.exports = function (router) {

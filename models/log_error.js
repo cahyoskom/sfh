@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
+const db = require('../database');
 
 module.exports = (sequelize) => {
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
     id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
@@ -13,7 +16,7 @@ module.exports = (sequelize) => {
     },
     sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -24,32 +27,50 @@ module.exports = (sequelize) => {
         model: 'sec_user_model'
       }
     },
-    provider: {
-      type: DataTypes.STRING(30),
+    error_code: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'provider'
+      field: 'error_code'
     },
-    profile_id: {
+    error_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'error_date'
+    },
+    message: {
+      type: DataTypes.STRING(500),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'message'
+    },
+    tag: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'profile_id'
+      field: 'tag'
     },
-    data: {
+    content: {
       type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'data'
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -63,7 +84,7 @@ module.exports = (sequelize) => {
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -77,28 +98,10 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'created_date'
-    },
-    updated_by: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'updated_by'
-    },
-    updated_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'updated_date'
     }
   };
   const options = {
-    tableName: 'sec_user_oauth',
+    tableName: 'log_error',
     comment: '',
     indexes: [
       {
@@ -109,10 +112,10 @@ module.exports = (sequelize) => {
       }
     ]
   };
-  const SecUserOauthModel = sequelize.define(
-    'sec_user_oauth_model',
+  const LogErrorModel = sequelize.define(
+    'log_error_model',
     attributes,
     options
   );
-  return SecUserOauthModel;
+  return LogErrorModel;
 };

@@ -1,58 +1,56 @@
+const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
-    task_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'task_id'
+      field: 'id'
     },
-    assignor_id: {
-      type: DataTypes.INTEGER(11),
+    m_subject_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'assignor_id',
+      field: 'm_subject_id',
       references: {
-        key: 'user_id',
-        model: 'sec_user_model'
+        key: 'id',
+        model: 'm_subject_model'
       }
     },
-    class_id: {
-      type: DataTypes.INTEGER(11),
+    m_class_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'class_id',
+      field: 'm_class_id',
       references: {
-        key: 'class_id',
+        key: 'id',
         model: 'm_class_model'
       }
     },
-    subject_id: {
-      type: DataTypes.INTEGER(11),
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: null,
-      field: 'subject_id',
+      comment: 'user assignor a task, in this case a teacher',
+      field: 'sec_user_id',
       references: {
-        key: 'subject_id',
-        model: 'm_subject_model'
+        key: 'id',
+        model: 'sec_user_model'
       }
     },
     title: {
@@ -110,8 +108,8 @@ module.exports = (sequelize) => {
       field: 'publish_date'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -120,8 +118,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -129,8 +127,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -157,26 +155,25 @@ module.exports = (sequelize) => {
   };
   const options = {
     tableName: 't_task',
-    timestamps: false,
     comment: '',
     indexes: [
       {
-        name: 'fk_t_task_sec_user',
+        name: 'm_subject_id',
         unique: false,
         type: 'BTREE',
-        fields: ['assignor_id']
+        fields: ['m_subject_id']
       },
       {
-        name: 'fk_t_task_m_class',
+        name: 'm_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['class_id']
+        fields: ['m_class_id']
       },
       {
-        name: 'fk_t_task_m_subject',
+        name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
-        fields: ['subject_id']
+        fields: ['sec_user_id']
       }
     ]
   };

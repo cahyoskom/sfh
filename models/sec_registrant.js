@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
+const db = require('../database');
 
 module.exports = (sequelize) => {
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
     id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
@@ -19,6 +22,51 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'name'
+    },
+    username: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'username'
+    },
+    password: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'password'
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'email'
+    },
+    sex: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: '1',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sex'
+    },
+    is_validated: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'is_validated'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -67,14 +115,14 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'sec_group',
+    tableName: 'sec_registrant',
     comment: '',
     indexes: []
   };
-  const SecGroupModel = sequelize.define(
-    'sec_group_model',
+  const SecRegistrantModel = sequelize.define(
+    'sec_registrant_model',
     attributes,
     options
   );
-  return SecGroupModel;
+  return SecRegistrantModel;
 };

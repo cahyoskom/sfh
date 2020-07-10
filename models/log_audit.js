@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
+const db = require('../database');
 
 module.exports = (sequelize) => {
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
     id: {
       type: DataTypes.STRING(200),

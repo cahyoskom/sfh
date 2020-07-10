@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
+const db = require('../database');
 
 module.exports = (sequelize) => {
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
     id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
@@ -11,17 +14,17 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'id'
     },
-    m_class_id: {
-      type: DataTypes.INTEGER(10).UNSIGNED,
-      allowNull: false,
+    m_school_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 'm_school_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 'm_school_model'
       }
     },
     name: {
@@ -32,6 +35,15 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'name'
+    },
+    address: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'address'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -80,21 +92,17 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'm_subject',
+    tableName: 'm_school',
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 'm_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['m_school_id']
       }
     ]
   };
-  const MSubjectModel = sequelize.define(
-    'm_subject_model',
-    attributes,
-    options
-  );
-  return MSubjectModel;
+  const MSchoolModel = sequelize.define('m_school_model', attributes, options);
+  return MSchoolModel;
 };

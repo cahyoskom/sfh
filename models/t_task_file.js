@@ -1,31 +1,29 @@
+const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
-    task_file_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'task_file_id'
+      field: 'id'
     },
-    task_id: {
-      type: DataTypes.INTEGER(11),
+    t_task_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'task_id',
+      field: 't_task_id',
       references: {
-        key: 'task_id',
+        key: 'id',
         model: 't_task_model'
       }
     },
@@ -66,7 +64,7 @@ module.exports = (sequelize) => {
       field: 'location'
     },
     sequence: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER(8).UNSIGNED,
       allowNull: true,
       defaultValue: '0',
       primaryKey: false,
@@ -75,8 +73,8 @@ module.exports = (sequelize) => {
       field: 'sequence'
     },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -85,8 +83,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -94,8 +92,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -122,14 +120,13 @@ module.exports = (sequelize) => {
   };
   const options = {
     tableName: 't_task_file',
-    timestamps: false,
     comment: '',
     indexes: [
       {
-        name: 'fk_t_task_file_t_task',
+        name: 't_task_id',
         unique: false,
         type: 'BTREE',
-        fields: ['task_id']
+        fields: ['t_task_id']
       }
     ]
   };

@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
+const db = require('../database');
 
 module.exports = (sequelize) => {
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
     id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
@@ -11,63 +14,45 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'id'
     },
-    t_task_collection_id: {
+    sec_registrant_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_collection_id',
+      field: 'sec_registrant_id',
       references: {
         key: 'id',
-        model: 't_task_collection_model'
+        model: 'sec_registrant_model'
       }
     },
-    filename: {
-      type: DataTypes.STRING(100),
+    sender_addr: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'filename'
+      field: 'sender_addr'
     },
-    ext: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'ext'
-    },
-    mime_type: {
+    code: {
       type: DataTypes.STRING(100),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'mime_type'
+      field: 'code'
     },
-    location: {
-      type: DataTypes.STRING(200),
+    is_sent: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'location'
-    },
-    sequence: {
-      type: DataTypes.INTEGER(8).UNSIGNED,
-      allowNull: true,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sequence'
+      field: 'is_sent'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -78,15 +63,6 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'status'
     },
-    created_date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_date'
-    },
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -96,14 +72,14 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'created_by'
     },
-    updated_date: {
+    created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_date'
+      field: 'created_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -113,24 +89,33 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'updated_by'
+    },
+    updated_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_date'
     }
   };
   const options = {
-    tableName: 't_task_collection_file',
+    tableName: 'sec_verification',
     comment: '',
     indexes: [
       {
-        name: 't_task_collection_id',
+        name: 'sec_registrant_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_collection_id']
+        fields: ['sec_registrant_id']
       }
     ]
   };
-  const TTaskCollectionFileModel = sequelize.define(
-    't_task_collection_file_model',
+  const SecVerificationModel = sequelize.define(
+    'sec_verification_model',
     attributes,
     options
   );
-  return TTaskCollectionFileModel;
+  return SecVerificationModel;
 };

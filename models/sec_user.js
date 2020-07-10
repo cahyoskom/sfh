@@ -1,39 +1,36 @@
+const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize) => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
+  if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
-    user_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'user_id'
+      field: 'id'
     },
-    user_name: {
+    name: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'user_name'
+      field: 'name'
     },
-    email: {
+    username: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'email'
+      field: 'username'
     },
     password: {
       type: DataTypes.STRING(100),
@@ -44,9 +41,27 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'password'
     },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'email'
+    },
+    sex: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: '1',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sex'
+    },
     status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
@@ -55,8 +70,8 @@ module.exports = (sequelize) => {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -64,8 +79,8 @@ module.exports = (sequelize) => {
     },
     created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -83,7 +98,7 @@ module.exports = (sequelize) => {
     updated_by: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -92,10 +107,9 @@ module.exports = (sequelize) => {
   };
   const options = {
     tableName: 'sec_user',
-    timestamps: false,
     comment: '',
     indexes: []
   };
-  const SecUserModel = sequelize.define('sec_user', attributes, options);
+  const SecUserModel = sequelize.define('sec_user_model', attributes, options);
   return SecUserModel;
 };

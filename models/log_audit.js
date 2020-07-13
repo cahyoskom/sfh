@@ -3,7 +3,6 @@ const db = require('../database');
 
 module.exports = (sequelize) => {
   if (!sequelize) sequelize = db.sequelize();
-
   const attributes = {
     id: {
       type: DataTypes.STRING(200),
@@ -104,6 +103,15 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'old_value'
     },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'notes'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -130,15 +138,6 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'created_date'
-    },
-    notes: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'notes'
     }
   };
   const options = {

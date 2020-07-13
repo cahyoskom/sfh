@@ -42,22 +42,76 @@ module.exports = (sequelize) => {
       field: 'password'
     },
     email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
       field: 'email'
     },
-    sex: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
+    is_email_validated: {
+      type: DataTypes.INTEGER(4),
       allowNull: false,
-      defaultValue: '1',
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sex'
+      field: 'is_email_validated'
+    },
+    phone: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'phone'
+    },
+    is_phone_validated: {
+      type: DataTypes.INTEGER(4),
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'is_phone_validated'
+    },
+    avatar: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'avatar'
+    },
+    auth_provider: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'auth_provider'
+    },
+    auth_profile_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'auth_profile_id'
+    },
+    auth_data: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'auth_data'
     },
     status: {
       type: DataTypes.INTEGER(4),

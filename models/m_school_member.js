@@ -53,15 +53,6 @@ module.exports = (sequelize) => {
         model: 'sec_group_model'
       }
     },
-    reg_numb: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'reg_numb'
-    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

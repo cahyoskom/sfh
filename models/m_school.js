@@ -27,6 +27,15 @@ module.exports = (sequelize) => {
         model: 'm_school_model'
       }
     },
+    code: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'code'
+    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -44,6 +53,33 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'address'
+    },
+    zipcode: {
+      type: DataTypes.STRING(8),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'zipcode'
+    },
+    phone: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'phone'
+    },
+    avatar: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'avatar'
     },
     status: {
       type: DataTypes.INTEGER(4),

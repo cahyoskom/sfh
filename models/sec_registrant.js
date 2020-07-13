@@ -42,31 +42,31 @@ module.exports = (sequelize) => {
       field: 'password'
     },
     email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
       field: 'email'
     },
-    sex: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: false,
-      defaultValue: '1',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sex'
-    },
-    is_validated: {
+    is_email_validated: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_validated'
+      field: 'is_email_validated'
+    },
+    phone: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'phone'
     },
     status: {
       type: DataTypes.INTEGER(4),

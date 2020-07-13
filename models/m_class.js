@@ -27,23 +27,14 @@ module.exports = (sequelize) => {
         model: 'm_school_model'
       }
     },
-    level: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
+    code: {
+      type: DataTypes.STRING(10),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'level'
-    },
-    parallel: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'parallel'
+      field: 'code'
     },
     name: {
       type: DataTypes.STRING(100),
@@ -53,6 +44,24 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'name'
+    },
+    description: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'description'
+    },
+    avatar: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'avatar'
     },
     status: {
       type: DataTypes.INTEGER(4),

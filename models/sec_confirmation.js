@@ -14,6 +14,15 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'id'
     },
+    description: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: 'email verification, forgot passwprd, etc.',
+      field: 'description'
+    },
     sec_registrant_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
@@ -27,6 +36,19 @@ module.exports = (sequelize) => {
         model: 'sec_registrant_model'
       }
     },
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
     sender_addr: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -38,8 +60,8 @@ module.exports = (sequelize) => {
     },
     code: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -47,8 +69,8 @@ module.exports = (sequelize) => {
     },
     is_sent: {
       type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -101,7 +123,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
-    tableName: 'sec_verification',
+    tableName: 'sec_confirmation',
     comment: '',
     indexes: [
       {
@@ -109,13 +131,19 @@ module.exports = (sequelize) => {
         unique: false,
         type: 'BTREE',
         fields: ['sec_registrant_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
       }
     ]
   };
-  const SecVerificationModel = sequelize.define(
-    'sec_verification_model',
+  const SecConfirmationModel = sequelize.define(
+    'sec_confirmation_model',
     attributes,
     options
   );
-  return SecVerificationModel;
+  return SecConfirmationModel;
 };

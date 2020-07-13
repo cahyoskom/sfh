@@ -6,7 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('express-async-errors');
 
-const auth = require('./common/auth');
+const auth = require('./common/authorization');
 require('./database').connectDB();
 
 const app = express();

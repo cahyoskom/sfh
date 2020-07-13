@@ -154,6 +154,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 't_task',
     comment: '',
     indexes: [

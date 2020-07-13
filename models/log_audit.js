@@ -141,6 +141,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'log_audit',
     comment: '',
     indexes: []

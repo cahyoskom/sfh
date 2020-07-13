@@ -70,6 +70,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'sec_group',
     comment: '',
     indexes: []

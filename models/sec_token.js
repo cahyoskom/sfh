@@ -92,6 +92,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'sec_token',
     comment: '',
     indexes: [

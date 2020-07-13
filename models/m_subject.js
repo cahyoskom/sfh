@@ -83,6 +83,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'm_subject',
     comment: '',
     indexes: [

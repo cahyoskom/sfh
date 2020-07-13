@@ -110,6 +110,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'm_class',
     comment: '',
     indexes: [

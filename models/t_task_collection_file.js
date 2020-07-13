@@ -119,6 +119,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 't_task_collection_file',
     comment: '',
     indexes: [

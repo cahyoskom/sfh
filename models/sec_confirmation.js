@@ -123,6 +123,7 @@ module.exports = (sequelize) => {
     }
   };
   const options = {
+    timestamps: false,
     tableName: 'sec_confirmation',
     comment: '',
     indexes: [

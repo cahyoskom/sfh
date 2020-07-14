@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import SimpleReactValidator from "simple-react-validator";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import BlockUi from "react-block-ui";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { GoogleLogin } from 'react-google-login';
 import {
     postLogin,
     onChangeStateLogin,
@@ -11,7 +14,7 @@ import {
     setStateModalFormLogin
   } from "../../actions";
 import { 
-Button, Form, FormGroup, Modal, ModalHeader, 
+Button, Form, Modal, ModalHeader, 
 ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import Select from 'react-select'
 import Recaptcha from 'react-recaptcha';
@@ -90,19 +93,23 @@ class SignIn extends Component {
                 <section className="login-page section-b-space">
                     <div className="container">
                         <div className="row row d-flex justify-content-center">
+                            <div className="col-lg-8 text-center">
+                                <img src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`}></img>
+                            </div>
                             <div className="col-lg-4">
-                                <div className={"text-center"}>
-                                    <h5>Sign In Google</h5>
+                                <div>
+                                    <h4>Selamat Datang!</h4>
                                 </div>
-                                <div className="theme-card">
+                                {/* <div className="theme-card"> */}
+                                    <h5>Masuk ke SchoolFromHome</h5>
                                     <form className="theme-form">
                                         <div className="form-group">
-                                            <label htmlFor="email">Username</label>
+                                            <label htmlFor="email">Email</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
                                                 id="username"
-                                                placeholder="Username"
+                                                placeholder="johndoe@gmail.com"
                                                 onChange={e =>
                                                 onChangeStateLogin(e.target.id, e.target.value)
                                                 }
@@ -110,18 +117,18 @@ class SignIn extends Component {
                                                 autoComplete={"username"}
                                             />
                                             {this.validator.message(
-                                                "username",
+                                                "email",
                                                 accountState.login.username,
-                                                "required"
+                                                "required|email"
                                             )}
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="review">Password</label>
+                                            <label htmlFor="review">Kata Sandi</label>
                                             <input
                                                 type="password"
                                                 className="form-control"
                                                 id="password"
-                                                placeholder="Enter your password"
+                                                placeholder="Masukkan kata sandi"
                                                 onChange={e =>
                                                 onChangeStateLogin(e.target.id, e.target.value)
                                                 }
@@ -131,10 +138,28 @@ class SignIn extends Component {
                                             {this.validator.message(
                                                 "password",
                                                 accountState.login.password,
-                                                "required"
+                                                "required|min:6"
                                             )}
                                         </div>
-                                        <div className="form-group">
+                                        <div className="row">
+                                            <div className="col">
+                                            <FormControlLabel
+                                                control={
+                                                <Checkbox
+                                                    // checked={state.checkedB}
+                                                    // onChange={handleChange}
+                                                    name="checkedB"
+                                                    color="primary"
+                                                />
+                                                }
+                                                label="Ingat saya"
+                                            />
+                                            </div>
+                                            <div className="col text-right">
+                                                <a href="#" color="primary">Lupa kata sandi?</a>
+                                            </div>
+                                        </div>
+                                        {/* <div className="form-group">
                                         <Recaptcha
                                             ref={recaptchaRef}
                                             value={accountState.login.recaptcha} 
@@ -153,17 +178,27 @@ class SignIn extends Component {
                                             accountState.login.recaptcha,
                                             "required"
                                         )}
-                                        </div>
+                                        </div> */}
                                         <div className={"text-center"}>
                                             <a 
                                                 onClick={() => {
                                                     this.onClickLogin();
                                                 }}
-                                                className="btn btn-solid"
-                                            >Login</a>
+                                                className="btn btn-solid primary"
+                                            >Masuk</a>
                                         </div>
                                     </form>
-                                </div>
+                                    <div className="text-center">atau masuk dengan</div>
+                                    <div className="text-center"><GoogleLogin
+                                        clientId=""
+                                        buttonText='Google'
+                                        onSuccess=""
+                                        onFailure=""
+                                        cookiePolicy=""
+                                        responseType='code,token'/>
+                                    </div>
+                                    <div className="text-center">Belum punya akun SchoolFromHome? <a href="#">Daftar</a></div>
+                                {/* </div> */}
                             </div>
                         </div>
                     </div>

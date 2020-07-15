@@ -38,7 +38,7 @@ npm install
 Add your credentials:
 
 ```bash
-mv .env.example .env
+cp .env.example .env
 vi .env
 ```
 

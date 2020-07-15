@@ -23,7 +23,7 @@ exports.findOne = async function (req, res) {
 exports.create = async function (req, res) {
   const model_user = sec_user();
   var new_user = {
-    user_name: req.body.user_name,
+    username: req.body.user_name,
     email: req.body.email,
     password: sha256(req.body.user_name + req.body.password),
     status: 1,

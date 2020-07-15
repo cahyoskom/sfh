@@ -4,7 +4,6 @@ const sec_registrant = require('../models/sec_registrant')
 // const { sha256 } = require('../common/sha');
 const moment = require('moment');
 const USER_STATUS = require('../enums/status.enums');
-const ROLES = require('../common/roles');
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client("752194625258-unm4nd1ob7cfsudt0anb0creqqj298pd.apps.googleusercontent.com")
 
@@ -80,18 +79,20 @@ exports.googleLogin = async function (req, res){
                 user: {
                     user_id: user.id,
                     user_name: user.username,
-                    email: user.email
+                    email: user.email,
+                    is_email_validated : user.is_email_validated
                 },
                 token: token.token,
                 token_validity: token.valid_until
             };
             res.json(result);     
+        } 
+        else {
+            //can not login with google, email is used with password
+            res.status(401).json({message: "Cannot login with Google, email has been used"})
         }
-        //can not login with google, email is used with password
-        res.status(401).json({message: "Cannot login with Google, email has been used"})
-        return;
+    } else {
+        //if not verified?
+        res.status(401).json({message: "Email is not verified"})
     }
-    //if not verified?
-    res.status(401).json({message: "Email is not verified"})
-    return;
   }

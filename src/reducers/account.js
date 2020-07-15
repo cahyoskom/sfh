@@ -17,7 +17,7 @@ import {
   
   const initialState = {
     login: {
-      username: "",
+      email: "",
       password: "",
       recaptcha: ""
     },
@@ -35,29 +35,29 @@ import {
       rePassword: ""
     },
     // roles:[],
-    roles: localStorage.getItem("roles")
-      ? JSON.parse(localStorage.getItem("roles"))
-      : undefined,
-    dataSourceRoleAccount:[
-      // {label:"A",value:"A"},
-      // {label:"B",value:"B"}
-    ],
-    selectedRole: localStorage.getItem("role")
-      ? JSON.parse(localStorage.getItem("role"))
-      : undefined,
-    role:{
-      group_id: "",
-      group_name: "",
-      class_id: 0,
-      class_name: "",
-      subject_id: 0,
-      subject_name: "",
-      student_id: 0,
-      student_no: "",
-      student_name: "",
-      student_class_id: 0,
-      sex: ""
-    },
+    // roles: localStorage.getItem("roles")
+    //   ? JSON.parse(localStorage.getItem("roles"))
+    //   : undefined,
+    // dataSourceRoleAccount:[
+    //   // {label:"A",value:"A"},
+    //   // {label:"B",value:"B"}
+    // ],
+    // selectedRole: localStorage.getItem("role")
+    //   ? JSON.parse(localStorage.getItem("role"))
+    //   : undefined,
+    // role:{
+    //   group_id: "",
+    //   group_name: "",
+    //   class_id: 0,
+    //   class_name: "",
+    //   subject_id: 0,
+    //   subject_name: "",
+    //   student_id: 0,
+    //   student_no: "",
+    //   student_name: "",
+    //   student_class_id: 0,
+    //   sex: ""
+    // },
     token: localStorage.getItem("token"),
     profile: localStorage.getItem("profile")
       ? JSON.parse(localStorage.getItem("profile"))
@@ -79,7 +79,7 @@ import {
         return {
           ...state,
           login: {
-            username: "",
+            email: "",
             password: ""
           },
           forgotPassword: {

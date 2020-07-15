@@ -6,12 +6,14 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { GoogleLogin } from 'react-google-login';
+import {Credential} from '../../constants/google-key';
 import {
     postLogin,
     onChangeStateLogin,
     resetStateLoginMenu,
     confirmLogin,
-    setStateModalFormLogin
+    setStateModalFormLogin,
+    googleLogin
   } from "../../actions";
 import { 
 Button, Form, Modal, ModalHeader, 
@@ -80,6 +82,10 @@ class SignIn extends Component {
           this.onClickLogin();
         }
       }
+      
+    googleResponse = (response) =>{
+        this.props.googleLogin(response)
+    }
 
     renderView (){
         const { accountState, onChangeStateLogin, setStateModalFormLogin } = this.props;
@@ -108,17 +114,17 @@ class SignIn extends Component {
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                id="username"
+                                                id="email"
                                                 placeholder="johndoe@gmail.com"
                                                 onChange={e =>
                                                 onChangeStateLogin(e.target.id, e.target.value)
                                                 }
                                                 onKeyPress={e => this.onEnterKeyPress(e)}
-                                                autoComplete={"username"}
+                                                autoComplete={"email"}
                                             />
                                             {this.validator.message(
                                                 "email",
-                                                accountState.login.username,
+                                                accountState.login.email,
                                                 "required|email"
                                             )}
                                         </div>
@@ -189,10 +195,11 @@ class SignIn extends Component {
                                         </div>
                                     </form>
                                     <div className="text-center">atau masuk dengan</div>
-                                    <div className="text-center"><GoogleLogin
-                                        clientId=""
+                                    <div className="text-center">
+                                        <GoogleLogin
+                                        clientId={Credential}
                                         buttonText='Google'
-                                        onSuccess=""
+                                        onSuccess={this.googleResponse}
                                         onFailure=""
                                         cookiePolicy=""
                                         responseType='code,token'/>
@@ -261,5 +268,5 @@ const mapStateToProps = state => ({
   
   export default connect(
     mapStateToProps,
-    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin }
+    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin, googleLogin }
   )(SignIn);

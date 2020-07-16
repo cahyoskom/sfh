@@ -6,5 +6,5 @@ export const API_PATH = {
     login: "/login",
     table: "/table",
     logout: "/logout",
-    oauth: "/google-oauth"
+    oauth: "/login_google"
 }

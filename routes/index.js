@@ -7,6 +7,6 @@ module.exports = function (router) {
     res.end('v.' + config.version);
   });
   router.post('/login', authentication.login);
-  router.post('/google-oauth', googleAuth.googleLogin)
+  router.post('/login_google', googleAuth.googleLogin)
   router.get('/check_token/:token', authentication.checkToken);
 };

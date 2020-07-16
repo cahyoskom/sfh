@@ -5,6 +5,10 @@ const { sha256 } = require('../common/sha');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const USER_STATUS = require('../enums/status.enums');
+var nodemailer = require('nodemailer');
+const userController = require('./user');
+const sec_confirmation = require('../models/sec_confirmation');
+const crypto = require('crypto')
 
 async function getLogin(email, password) {
   const model_user = sec_user();
@@ -105,3 +109,99 @@ exports.checkToken = async function (req, res) {
   }
   res.json({ isValid: isValid, reason: reason });
 };
+
+exports.newPassword = async function (req, res) {
+  const email = req.body.email;
+  const model_user = sec_user();
+  const model_registrant = sec_registrant();
+  var user = await model_user.findOne({
+    where: {
+      email: email ,
+      status: USER_STATUS.ACTIVE
+    }
+  });
+  if(!user){
+    user = await model_registrant.findOne({
+      where: {
+        email: email ,
+        status: USER_STATUS.ACTIVE
+      }
+    });
+    if(!user){
+      return res.status(401).json({
+        error: 11, 
+        message: 'Email entered is wrong or not registered'
+      })
+    }
+    return res.status(200).json({
+      error: 12,
+      message: 'Verify your email to continue'
+    })
+  }
+  sendmail(user,req.headers.host)
+  return res.json({msh:'email sent'})
+}
+async function sendmail(user,url){
+  const model_user = sec_user();
+  //var user = model_user.findOne({where:{id:1}});
+  const model_confirmation = sec_confirmation();
+  const sender = 'sfh-dev@karpalabs.com'
+  var new_confirmation = {
+    description:"Forgot password",
+    sec_user_id: user.id,
+    code: crypto.randomBytes(16).toString('hex'),
+    created_by: user.username,
+    status: USER_STATUS.ACTIVE,
+    sender_addr:sender
+  }
+  var code = await model_confirmation.create(new_confirmation);
+  console.log("code is saved")
+
+  var transporter = nodemailer.createTransport({
+    host: 'mail.karpalabs.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: sender,
+      pass: 'LTni_N{3Svd)'
+    }
+  });
+  var mailOptions = { 
+    from: sender, 
+    to: user.email, 
+    subject: 'Password Change',
+    text: 'Hello,\n\n' + 'Here\'s your password change request: \nhttp:\/\/' + url + '\/changePassword\/' + code.code + '.\n' 
+  };
+
+  transporter.sendMail(mailOptions, function (err) {
+    if (err) { return console.log({ msg: err.message }); }
+    console.log('An email for password change has been sent to ' + user.email + '.');
+  });
+  return;
+}
+exports.updatePassword = async function (req,res) {
+  const model_user = sec_user();
+  const model_confirmation = sec_confirmation();
+  const code = req.params.code;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  const confirm = await model_confirmation.findOne({
+    where: {code:code}
+  });
+  if(!confirm) return res.status(444).send('token is not found please request another password change')
+  if(confirm.status !== USER_STATUS.ACTIVE) return res.send('this code is deleted')
+
+  const user = await model_user.findOne({
+    where: {id:confirm.sec_user_id}
+  });
+  if(!user) return res.send('user not found for this code')
+  if(user.email !== email) return res.send('this code is not for this account')
+  user.password = sha256(user.username + password);
+  user.save()
+  confirm.status = USER_STATUS.DELETED
+  confirm.save()
+
+  return res.status(200).send('password updated')
+}
+

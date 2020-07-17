@@ -8,7 +8,8 @@ const USER_STATUS = require('../enums/status.enums');
 var nodemailer = require('nodemailer');
 const userController = require('./user');
 const sec_confirmation = require('../models/sec_confirmation');
-const crypto = require('crypto')
+const crypto = require('crypto');
+const { time } = require('console');
 
 async function getLogin(email, password) {
   const model_user = sec_user();
@@ -114,6 +115,7 @@ exports.newPassword = async function (req, res) {
   const email = req.body.email;
   const model_user = sec_user();
   const model_registrant = sec_registrant();
+  const model_confirmation = sec_confirmation();
   var user = await model_user.findOne({
     where: {
       email: email ,
@@ -138,12 +140,49 @@ exports.newPassword = async function (req, res) {
       message: 'Verify your email to continue'
     })
   }
-  sendmail(user,req.headers.host)
+  const str = await checkCode(user)
+  if('aman' != str) return res.send(str)
+  await sendmail(user,req.headers.host)
   return res.json({msh:'email sent'})
 }
+
+async function checkCode(user){
+  const model_confirmation = sec_confirmation();
+  const confirmation = await model_confirmation.findOne({
+    where:{
+      sec_user_id:user.id,
+      status: USER_STATUS.ACTIVE
+    }
+  })
+  if(!confirmation) return 'aman';
+  const dateCr = confirmation.created_date;
+  dateCr.setDate(dateCr.getDate()+1); 
+  if(dateCr < new Date()) {
+    console.log('aman gan')
+    return 'aman';
+  }
+  var ret = `You need`;
+  const timeNow = new Date();
+  var duration = dateCr - timeNow;
+  var milliseconds = parseInt((duration % 1000) / 100),
+    seconds = Math.floor((duration / 1000) % 60),
+    minutes = Math.floor((duration / (1000 * 60)) % 60),
+    hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  hours = (hours < 10) ? "0" + hours : hours;
+  minutes = (minutes < 10) ? "0" + minutes : minutes;
+  seconds = (seconds < 10) ? "0" + seconds : seconds;
+  await console.log(hours,minutes,seconds)
+  if(hours >0){ ret = ret + ' ' + hours +' hours'}
+  if(minutes >0){ ret = ret + ' ' + minutes +' minutes'}
+  if(seconds >0){ ret = ret + ' ' + seconds +' seconds'}
+  ret = ret+ ' to resend mail.'
+  
+  return ret;
+}
+
 async function sendmail(user,url){
   const model_user = sec_user();
-  //var user = model_user.findOne({where:{id:1}});
   const model_confirmation = sec_confirmation();
   const sender = 'sfh-dev@karpalabs.com'
   var new_confirmation = {

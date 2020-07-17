@@ -10,7 +10,6 @@ async function checkUser(email) {
     var user = await model_user.findOne({
       where: {
         email: email,  
-        password:'',
         status: USER_STATUS.ACTIVE
       }
     });
@@ -34,7 +33,6 @@ async function setToken(tokenId, userId){
 
 exports.googleLogin = async function (req, res){
     const {tokenId} = req.body;
-  
     const response = await client.verifyIdToken({idToken: tokenId, audience: "752194625258-unm4nd1ob7cfsudt0anb0creqqj298pd.apps.googleusercontent.com"});
     const{email_verified, name, email, picture} = response.payload;
     if(email_verified){

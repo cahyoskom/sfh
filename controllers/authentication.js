@@ -56,8 +56,8 @@ async function setToken(user_id) {
 
 exports.login = async function (req, res) {
   var email = req.body.email;
-  // var password = sha256(email + req.body.password); //MAY CHANGE
-  var password = req.body.password
+  var password = sha256(email + req.body.password);
+  // var password = req.body.password
 
   var user = await getLogin(email, password);
 
@@ -66,7 +66,7 @@ exports.login = async function (req, res) {
     if (!registrant){
       res
       .status(401)
-      .json({ error: 10, message: 'Email or password is not correct' });
+      .json({ error: 10, message: 'Email atau kata sandi salah' });
       return;
     } else{
       user = registrant;

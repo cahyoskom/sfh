@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use((req, res, next) => {
-  if (req.url == '/' || req.url == '/login'|| req.url == '/google-oauth') {
+  if (req.url == '/' || req.url == '/login'|| req.url == '/login_google') {
     console.log("AAAAAAAAAAAAAA")
     return next();
   }

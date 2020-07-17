@@ -1,5 +1,6 @@
 import {
     SET_LOGIN_SUCCESS,
+    SET_LOGIN_FAILED,
     SET_ROLES_SUCCESS,
     SET_REGISTER_SUCCESS,
     SET_FORGOT_SUCCESS,
@@ -11,7 +12,8 @@ import {
     RESET_STATE_LOGIN,
     SET_TOKEN_SUCCESS,
     SET_MODAL,
-    SET_MODAL_FORM_LOGIN
+    SET_MODAL_FORM_LOGIN,
+    SET_CLOSE_ALERT
   } from "../constants/ActionTypes";
   import Config from "../constants/config";
   
@@ -70,7 +72,10 @@ import {
       buttonText: "OK",
     },
     site_key: Config.CAPTCHA_KEY,
-    reset_captcha: false
+    reset_captcha: false,
+    openLoginAlert: false,
+    alertMsg: "",
+    showSpinner: false
   };
   
   export default function loginReducer(state = initialState, action) {
@@ -130,8 +135,21 @@ import {
         return {
           ...state,
   
-          profile: action.value
+          profile: action.value,
+          showSpinner: false
         };
+      case SET_LOGIN_FAILED:
+        return {
+          ...state,
+          alertMsg: action.value,
+          openLoginAlert: true,
+          showSpinner: false
+        }
+      case SET_CLOSE_ALERT:
+        return{
+          ...state,
+          openLoginAlert: false
+        }
       case SET_TOKEN_SUCCESS:
         return {
           ...state,

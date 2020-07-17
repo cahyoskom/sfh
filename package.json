@@ -8,6 +8,7 @@
     "@babel/core": "7.1.0",
     "@material-ui/core": "^4.10.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@progress/kendo-dropdowns-react-wrapper": "^2019.4.1014",
     "@svgr/webpack": "2.4.1",
     "axios": "^0.19.2",

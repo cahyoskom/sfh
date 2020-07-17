@@ -2,6 +2,7 @@ import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
 import {
   SET_LOGIN,
   SET_LOGIN_SUCCESS,
+  SET_LOGIN_FAILED,
   SET_CONFIRM_LOGIN,
   SET_CONFIRM_LOGIN_SUCCESS,
   SET_ROLES_SUCCESS,
@@ -9,7 +10,8 @@ import {
   SET_LOGOUT,
   SET_LOADER,
   SET_MODAL,
-  SET_GOOGLE_LOGIN
+  SET_GOOGLE_LOGIN,
+  RESET_STATE_LOGIN
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
@@ -19,35 +21,48 @@ import group from "../components/usermanagement/group";
 
 const getAccountState = state => state.account;
 export function* googleLogin(action){
-  let param = {
-    tokenId : action.data.tokenId
-  }
-  const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.oauth, param, Header());
-  if (_response.status === 200){
-    let data = _response.data
-      let profile = {
-        user_id: data.user.user_id || "",
-        username: data.user.user_name || "",
-        email: data.user.email || "",
-      }
-      if (data.token && data.token != "") {
-        localStorage.setItem("profile", JSON.stringify(profile));
-        localStorage.setItem("token", data.token || null);
-        localStorage.setItem("name", JSON.stringify(data.user.user_name));
-        localStorage.setItem("user_id", JSON.stringify(data.user.user_id));
-        yield put({
-          type: SET_LOGIN_SUCCESS,
-          value: profile
-        });
-        
-        yield put({
-          type: SET_TOKEN_SUCCESS,
-          value: data.token
-        });
-        // window.location.href = process.env.PUBLIC_URL + "/usermanagement"
-      }
-  } else {
-
+  try {
+    let param = {
+      tokenId : action.data.tokenId
+    }
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.oauth, param, Header());
+    if (_response.status === 200){
+      let data = _response.data
+        let profile = {
+          user_id: data.user.user_id || "",
+          username: data.user.user_name || "",
+          email: data.user.email || "",
+        }
+        if (data.token && data.token != "") {
+          localStorage.setItem("profile", JSON.stringify(profile));
+          localStorage.setItem("token", data.token || null);
+          localStorage.setItem("name", JSON.stringify(data.user.user_name));
+          localStorage.setItem("user_id", JSON.stringify(data.user.user_id));
+          yield put({
+            type: SET_LOGIN_SUCCESS,
+            value: profile
+          });
+          
+          yield put({
+            type: SET_TOKEN_SUCCESS,
+            value: data.token
+          });
+          // window.location.href = process.env.PUBLIC_URL + "/usermanagement"
+        }
+    } else {
+      yield put({
+        type: SET_LOGIN_FAILED,
+        value: _response.data.message
+      })
+    }
+  } catch (error) {
+      yield put({
+        type: SET_LOGIN_FAILED,
+        value: error
+      })
+      yield put({
+        type: RESET_STATE_LOGIN
+      })
   }
   
 }
@@ -66,7 +81,6 @@ export function* login() {
     };
 
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.login, param, Header());
-
     if (_response.status === 200) {
 
       let data = _response.data
@@ -281,12 +295,20 @@ export function* login() {
       type: SET_LOADER,
       value: false
     });
+    yield put({
+      type: SET_LOGIN_FAILED,
+      value: _response.data.message
+    })
   } catch (error) {
     yield put({
       type: SET_LOADER,
       value: false
     });
-    fail(error);
+    yield put({
+      type: SET_LOGIN_FAILED,
+      value: error
+    })
+    // fail(error);
   }
 }
 

@@ -13,6 +13,10 @@ export const googleLogin = (data) =>({
     data
 })
 
+export const closeAlert = () => ({
+    type: types.SET_CLOSE_ALERT
+})
+
 export const postLogin = () => ({
     type: types.SET_LOGIN
 });

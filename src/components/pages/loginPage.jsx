@@ -5,6 +5,13 @@ import BlockUi from "react-block-ui";
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Alert from '@material-ui/lab/Alert';
+import Container from '@material-ui/core/Container';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { GoogleLogin } from 'react-google-login';
 import {Credential} from '../../constants/google-key';
 import {
@@ -13,24 +20,29 @@ import {
     resetStateLoginMenu,
     confirmLogin,
     setStateModalFormLogin,
-    googleLogin
+    googleLogin,
+    closeAlert
   } from "../../actions";
 import { 
-Button, Form, Modal, ModalHeader, 
-ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
+Form, Modal, ModalHeader, 
+ModalBody, ModalFooter, Col, Row, Spinner } from "reactstrap";
 import Select from 'react-select'
-import Recaptcha from 'react-recaptcha';
+import { Grid } from '@material-ui/core';
+// import Recaptcha from 'react-recaptcha';
 
-import Breadcrumb from "../common/breadcrumb";
-
-const recaptchaRef = React.createRef();
-
+// const recaptchaRef = React.createRef();
 class SignIn extends Component {
 
     constructor (props) {
         super (props)
 
-        this.validator = new SimpleReactValidator();
+        this.validator = new SimpleReactValidator({
+            messages:{
+                email: "Alamat email tidak valid",
+                required: "Harus diisi",
+                min: "Kata sandi harus diisi minimal 6 karakter"
+            }
+        });
         this.onConfirmLogin = this.onConfirmLogin.bind(this);
 
     }
@@ -40,17 +52,17 @@ class SignIn extends Component {
         document.getElementById('sticky').style.display = "none"
     }
 
-    recaptchaLoaded(){
-    }
+    // recaptchaLoaded(){
+    // }
 
-    componentDidUpdate(){
-        let { accountState } = this.props
-        if (accountState.reset_captcha) {
-            // handleStateForm("recaptcha", "")
-            recaptchaRef.current.reset()
-            // handleState("reset_captcha", false)
-        }
-    }
+    // componentDidUpdate(){
+    //     let { accountState } = this.props
+    //     if (accountState.reset_captcha) {
+    //         // handleStateForm("recaptcha", "")
+    //         recaptchaRef.current.reset()
+    //         // handleState("reset_captcha", false)
+    //     }
+    // }
 
     componentWillMount() {
         const { resetStateLoginMenu } = this.props;
@@ -58,13 +70,14 @@ class SignIn extends Component {
     }
 
     onClickLogin() {
-        const { accountState, postLogin } = this.props;
+        const { postLogin } = this.props;
         if (this.validator.allValid()) {
           // if (this.validateEmail(accountState.login.username)) {
           //   postLogin();
           // } else {
           //   fail("Email is not valid !");
           // }
+          this.props.accountState.showSpinner = true
           postLogin();
         } else {
             this.validator.showMessages();
@@ -84,35 +97,56 @@ class SignIn extends Component {
       }
       
     googleResponse = (response) =>{
+        console.log(response)
         this.props.googleLogin(response)
     }
 
-    renderView (){
-        const { accountState, onChangeStateLogin, setStateModalFormLogin } = this.props;
-
+    render() {
+        const { accountState, onChangeStateLogin, setStateModalFormLogin, closeAlert } = this.props;
+    
         return (
-            <div>
-                {/* <Breadcrumb title={'Login'}/> */}
-                
-                
+          <BlockUi
+            tag="div"
+            blocking={accountState.loader}
+            message={
+              <span>
+                <div id="preloader">
+                  <div id="loader" />
+                </div>
+              </span>
+            }
+          >
+            <div>               
                 {/*Login section*/}
                 <section className="login-page section-b-space">
-                    <div className="container">
-                        <div className="row row d-flex justify-content-center">
-                            <div className="col-lg-8 text-center">
-                                <img src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`}></img>
-                            </div>
-                            <div className="col-lg-4">
+                    <Container >
+                        <Grid container direction="row" justify="center" alignItems="center">
+                            <Grid item xs={12} lg={7}>
+                                <img src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`} alt="login-page-img"></img>
+                            </Grid>
+                            <Grid item sm={12} lg={3}>
                                 <div>
                                     <h4>Selamat Datang!</h4>
                                 </div>
                                 {/* <div className="theme-card"> */}
                                     <h5>Masuk ke SchoolFromHome</h5>
+                                    <Grid item>
+                                        <Collapse in={accountState.openLoginAlert}>
+                                            <Alert severity="error" action={
+                                            <IconButton
+                                                aria-label="close"
+                                                color="inherit"
+                                                size="small"
+                                                onClick={closeAlert}><CloseIcon fontSize="inherit" />
+                                                </IconButton>}>{accountState.alertMsg}
+                                            </Alert>
+                                        </Collapse>
+                                    </Grid>
                                     <form className="theme-form">
                                         <div className="form-group">
                                             <label htmlFor="email">Email</label>
                                             <input
-                                                type="text"
+                                                type="email"
                                                 className="form-control"
                                                 id="email"
                                                 placeholder="johndoe@gmail.com"
@@ -147,8 +181,8 @@ class SignIn extends Component {
                                                 "required|min:6"
                                             )}
                                         </div>
-                                        <div className="row">
-                                            <div className="col">
+                                        <Grid container direction="row" alignItems="center" justify="space-between">
+                                            <Grid item>
                                             <FormControlLabel
                                                 control={
                                                 <Checkbox
@@ -160,11 +194,11 @@ class SignIn extends Component {
                                                 }
                                                 label="Ingat saya"
                                             />
-                                            </div>
-                                            <div className="col text-right">
+                                            </Grid>
+                                            <Grid item>
                                                 <a href="#" color="primary">Lupa kata sandi?</a>
-                                            </div>
-                                        </div>
+                                            </Grid>
+                                        </Grid>
                                         {/* <div className="form-group">
                                         <Recaptcha
                                             ref={recaptchaRef}
@@ -185,31 +219,34 @@ class SignIn extends Component {
                                             "required"
                                         )}
                                         </div> */}
-                                        <div className={"text-center"}>
-                                            <a 
-                                                onClick={() => {
-                                                    this.onClickLogin();
-                                                }}
-                                                className="btn btn-solid primary"
-                                            >Masuk</a>
-                                        </div>
+                                        {/* <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}> */}
+                                        {/* </Snackbar> */}
+                                        <Grid container direction="column" alignItems="center" justify="space-around" spacing={2}>
+                                            {!accountState.showSpinner &&<Button variant="contained" disableElevation color="primary" onClick={() => {this.onClickLogin();}}>Masuk</Button>}
+                                            <Grid item>{accountState.showSpinner && <CircularProgress />}</Grid>
+                                        </Grid>
                                     </form>
-                                    <div className="text-center">atau masuk dengan</div>
-                                    <div className="text-center">
-                                        <GoogleLogin
-                                        clientId={Credential}
-                                        buttonText='Google'
-                                        onSuccess={this.googleResponse}
-                                        onFailure=""
-                                        cookiePolicy=""
-                                        responseType='code,token'/>
-                                    </div>
-                                    <div className="text-center">Belum punya akun SchoolFromHome? <a href="#">Daftar</a></div>
-                                {/* </div> */}
-                            </div>
-                        </div>
-                    </div>
-
+                                    <Grid container direction="column" alignItems="center" justify="space-around" spacing={2}>
+                                        <Grid item>atau masuk dengan</Grid>
+                                        <Grid item>
+                                            <div className="text-center">
+                                                <GoogleLogin
+                                                clientId={Credential}
+                                                buttonText='Google'
+                                                onSuccess={this.googleResponse}
+                                                onFailure={this.googleResponse}
+                                                cookiePolicy='single_host_origin'
+                                                responseType='code,token'/>
+                                            </div>
+                                        </Grid>
+                                        <Grid item>
+                                            <div className="text-center">Belum punya akun SchoolFromHome? <a href="#">Daftar</a></div>
+                                        </Grid>
+                                    </Grid>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                    
                     <Modal isOpen={accountState.modal.show} fade={false} backdrop={'static'} centered>
                         <ModalHeader>{accountState.modal.title}</ModalHeader>
                         <ModalBody>
@@ -236,25 +273,6 @@ class SignIn extends Component {
                 </section>
 
             </div>
-        )
-    }
-
-    render() {
-        const { accountState } = this.props;
-    
-        return (
-          <BlockUi
-            tag="div"
-            blocking={accountState.loader}
-            message={
-              <span>
-                <div id="preloader">
-                  <div id="loader" />
-                </div>
-              </span>
-            }
-          >
-            {this.renderView()}
           </BlockUi>
         );
       }
@@ -268,5 +286,5 @@ const mapStateToProps = state => ({
   
   export default connect(
     mapStateToProps,
-    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin, googleLogin }
+    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin, googleLogin, closeAlert }
   )(SignIn);

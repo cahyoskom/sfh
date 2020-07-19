@@ -7,7 +7,16 @@ import 'react-toastify/dist/ReactToastify.min.css';
 const optionToast = {
     autoClose: 1300
 };
-  
+
+export const googleLogin = (data) =>({
+    type: types.SET_GOOGLE_LOGIN,
+    data
+})
+
+export const closeAlert = () => ({
+    type: types.SET_CLOSE_ALERT
+})
+
 export const postLogin = () => ({
     type: types.SET_LOGIN
 });

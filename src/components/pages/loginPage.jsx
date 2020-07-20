@@ -10,8 +10,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
 import Collapse from '@material-ui/core/Collapse';
+import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import { GoogleLogin } from 'react-google-login';
 import {Credential} from '../../constants/google-key';
 import {
@@ -155,45 +157,47 @@ class SignIn extends Component {
                                         </Collapse>
                                     </Grid>
                                     <form className="theme-form">
+                                    <ValidatorForm onSubmit={() => {this.onClickLogin();}}>
                                         <div className="form-group">
-                                            <label htmlFor="email">Email</label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
+                                            <TextValidator
                                                 id="email"
-                                                placeholder="johndoe@gmail.com"
+                                                label="Email"
+                                                type="email"
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                margin="dense"
+                                                fullWidth
+                                                variant="outlined"
                                                 onChange={e =>
-                                                onChangeStateLogin(e.target.id, e.target.value)
-                                                }
+                                                    onChangeStateLogin(e.target.id, e.target.value)
+                                                    }
                                                 onKeyPress={e => this.onEnterKeyPress(e)}
-                                                autoComplete={"email"}
                                                 value ={accountState.login.email}
+                                                autoComplete={"email"}
+                                                validators={['required', 'isEmail']}
+                                                errorMessages={['masukkan email', 'email tidak valid']}
                                             />
-                                            {this.validator.message(
-                                                "email",
-                                                accountState.login.email,
-                                                "required|email"
-                                            )}
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="review">Kata Sandi</label>
-                                            <input
-                                                type="password"
-                                                className="form-control"
+                                            <TextValidator
                                                 id="password"
-                                                placeholder="Masukkan kata sandi"
+                                                type="password"
+                                                label="Kata sandi"
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                margin="dense"
+                                                fullWidth
+                                                variant="outlined"
                                                 onChange={e =>
                                                 onChangeStateLogin(e.target.id, e.target.value)
                                                 }
                                                 onKeyPress={e => this.onEnterKeyPress(e)}
-                                                autoComplete={"password"}
                                                 value = {accountState.login.password}
+                                                validators={['required']}
+                                                errorMessages={['masukkan kata sandi']}
                                             />
-                                            {this.validator.message(
-                                                "password",
-                                                accountState.login.password,
-                                                "required|min:6"
-                                            )}
                                         </div>
                                         <Grid container direction="row" alignItems="center" justify="space-between">
                                             <Grid item>
@@ -236,12 +240,11 @@ class SignIn extends Component {
                                             "required"
                                         )}
                                         </div> */}
-                                        {/* <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}> */}
-                                        {/* </Snackbar> */}
                                         <Grid container direction="column" alignItems="center" justify="space-around" spacing={2}>
-                                            {!accountState.showSpinner &&<Button variant="contained" disableElevation color="primary" onClick={() => {this.onClickLogin();}}>Masuk</Button>}
+                                            {!accountState.showSpinner &&<Button variant="contained" disableElevation color="primary" type="submit">Masuk</Button>}
                                             <Grid item>{accountState.showSpinner && <CircularProgress />}</Grid>
                                         </Grid>
+                                        </ValidatorForm>
                                     </form>
                                     <Grid container direction="column" alignItems="center" justify="space-around" spacing={2}>
                                         <Grid item>atau masuk dengan</Grid>

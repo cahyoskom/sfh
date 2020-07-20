@@ -17,14 +17,15 @@ async function checkUser(email) {
 }
 
 async function setToken(tokenId, userId){
-    var token = await sec_token().findAll({ where: { sec_user_id: userId } });
+    var token = await sec_token().findAll({ where: { sec_user_id: userId, status: USER_STATUS.ACTIVE} });
     if (token.length > 0) {
         // token exists, delete
-        sec_token().destroy({ where: { sec_user_id: userId } });
+        sec_token().update({status: USER_STATUS.DELETED}, { where: { sec_user_id: userId } });
     }
     var new_token = {
         token: tokenId,
         sec_user_id: userId,
+        status: USER_STATUS.ACTIVE,
         valid_until: moment().add(process.env.TOKEN_VALIDITY_TIME, 'm').format()
     };
     var curr_token = await sec_token().create(new_token);
@@ -43,13 +44,15 @@ exports.googleLogin = async function (req, res){
             var new_user =  {
                 name: name,
                 email: email,
-                username: email,
                 password: '',
                 avatar: picture,
                 status: USER_STATUS.ACTIVE,
                 is_email_validated: true,
                 created_date: moment().format(),
-                created_by: email
+                created_by: 'SYSTEM',
+                auth_provider: 1,
+                auth_profile_id: email,
+                auth_data: JSON.stringify(response)
             };
             try {
                 user = await model_user.create(new_user);
@@ -62,7 +65,6 @@ exports.googleLogin = async function (req, res){
         var result = {
             user: {
                 user_id: user.id,
-                user_name: user.username,
                 email: user.email,
                 is_email_validated : user.is_email_validated
             },

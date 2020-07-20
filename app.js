@@ -33,7 +33,6 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => {
   if (req.url == '/' || req.url == '/login'|| req.url == '/login_google') {
-    console.log("AAAAAAAAAAAAAA")
     return next();
   }
   auth(req, res, next);

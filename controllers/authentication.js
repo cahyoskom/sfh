@@ -31,7 +31,7 @@ async function checkRegistrant(email, password){
 }
 
 async function getToken(user_id) {
-  var token = await sec_token().findAll({ where: { sec_user_id: user_id } });
+  var token = await sec_token().findAll({ where: { sec_user_id: user_id, status: USER_STATUS.ACTIVE } });
   return token;
 }
 
@@ -41,12 +41,13 @@ async function setToken(user_id) {
 
   if (token.length > 0) {
     // token exists, delete
-    sec_token().destroy({ where: { sec_user_id: user_id } });
+    sec_token().update({status: USER_STATUS.DELETED}, { where: { sec_user_id: user_id } });
   }
   // create new token
   var new_token = {
     token: sha256(user_id + now.format()),
     sec_user_id: user_id,
+    status: USER_STATUS.ACTIVE,
     valid_until: moment().add(process.env.TOKEN_VALIDITY_TIME, 'm').format()
   };
 
@@ -56,8 +57,8 @@ async function setToken(user_id) {
 
 exports.login = async function (req, res) {
   var email = req.body.email;
-  var password = sha256(email + req.body.password);
-  // var password = req.body.password
+  // var password = sha256(email + req.body.password);
+  var password = req.body.password
 
   var user = await getLogin(email, password);
 
@@ -77,7 +78,6 @@ exports.login = async function (req, res) {
   var result = {
     user: {
       user_id: user.id,
-      user_name: user.username,
       email: user.email,
       is_email_validated : user.is_email_validated
     },

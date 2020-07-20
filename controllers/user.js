@@ -15,6 +15,7 @@ var passwordValidator = require('password-validator');
 const phoneValidator = require('validate-phone-number-node-js');
 var emailValidator = require("email-validator");
 const user = require('../routes/user/user');
+const { time } = require('console');
 
 var pwValidator = new passwordValidator()
 
@@ -47,7 +48,7 @@ exports.create = async function (req, res) {
 
   var new_user = {
     name: req.body.name,
-    username: req.body.username,
+    //username: req.body.username,
     email: req.body.email,
     password: sha256(req.body.user_name + req.body.password),
     phone: req.body.phone,
@@ -80,9 +81,7 @@ exports.create = async function (req, res) {
   }
 };
 
-async function verifyEmail(user,url,res){
-  const model_registrant = sec_reg();
-  //var user = model_registrant.findOne({where:{email:user.email}});
+async function verifyEmail(user, url, res){
   const model_confirmation = sec_confirm();
   const sender = 'sfh-dev@karpalabs.com'
   var new_confirmation = {
@@ -119,17 +118,67 @@ async function verifyEmail(user,url,res){
   });
   return;
 }
+
 exports.verifyEmail = verifyEmail;
+
+async function checkLink(reg){
+  const model_confirmation = sec_confirm();
+  const confirmation = await model_confirmation.findOne({
+    where:{
+      sec_registrant_id: reg.id,
+      status: USER_STATUS.ACTIVE
+    }
+  })
+
+  //checking attribute
+  if(!confirmation) return "Continue";
+  
+  //get created_date from table sec_confiramtion
+  const createDate = confirmation.created_date;
+
+  //initialization date to get current timestamp
+  var today = new Date();
+
+  //add 1 hour to created_date
+  var plus1 = moment(createDate).add(1, 'hours');
+
+  //get only time from created_date column
+  createdTime = moment(plus1).format(moment.HTML5_FMT.TIME_SECONDS);
+  console.log('Waktu Akun dibuat + 1: ' +createdTime);
+
+  //get only time from current time
+  timeNow = moment(today).format(moment.HTML5_FMT.TIME_SECONDS);
+  console.log('Waktu Sekarang: ' +timeNow);
+
+  //compare the added created date with current time
+  if(createdTime < timeNow){
+    return true;
+  }else{
+    return false;
+  }
+
+}
 
 exports.activation = async function (req, res) {
   const model_registrant = sec_reg();
   const model_confirmation = sec_confirm();
+  const model_user = sec_user();
+
   var confirmation = await model_confirmation.findOne({
     where:{code: req.params.token}
   });
   var regis = await model_registrant.findOne({
     where:{id: confirmation.sec_registrant_id}
   });
+
+  const checkActiveLink = await checkLink(regis);
+
+  console.log(checkActiveLink);
+
+  if(checkActiveLink == true)
+    return res.send(checkActiveLink)
+    await verifyEmail(regis, req.headers.host)
+  
   if(confirmation.status !== STATUS.ACTIVE) return res.status(400).send({type: 'link expired', msg: 'This link is already used'});
 
   if (regis.is_email_validated) return res.status(400).send({ type: 'already-verified', msg: 'This user has already been verified.' });
@@ -138,7 +187,25 @@ exports.activation = async function (req, res) {
   await regis.save();
   confirmation.status = STATUS.DELETED;
   await confirmation.save();
-  return res.status(200).send("The account is successfully verified. Please log in.");
+
+  if(confirmation.status == STATUS.DELETED){
+    var copy_to_user = {
+      name : regis.name,
+      //username: regis.username,
+      email: regis.email,
+      password: regis.password,
+      phone: regis.phone,
+      status: 1,
+      created_date: moment().format(),
+      created_by: 'SYSTEM',
+      is_email_validated: STATUS.ACTIVE
+
+    }
+    var copy = await model_user.create(copy_to_user);
+
+    return res.json({ data:copy, message: "The account is successfully verified. Please log in." });
+  }
+
 };
 
 exports.delete = async function(req, res){

@@ -6,8 +6,10 @@ const moment = require('moment');
 var config = require('../config/app.config');
 const m_school = require('../models/m_school');
 const m_class = require('../models/m_class');
+// const m_subject = require('../models/m_subject');
 const SCHOOL_STATUS = require('../enums/status.enums');
 const CLASS_STATUS = require('../enums/status.enums');
+// const SUBJECT_STATUS = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_school = m_school();
@@ -74,13 +76,18 @@ exports.update = async function (req, res) {
 exports.delete = async function (req, res) {
   const model_school = m_school();
   const model_class = m_class();
+  // const model_subject = m_subject();
   model_school.update(
     { status: SCHOOL_STATUS.DELETED },{ where: { id: req.params.id } }
   );
+
   model_class.update(
     { status: CLASS_STATUS.DELETED },{ where: { m_school_id: req.body.m_school_id } }
   );
 
+  // model_subject.update(
+  //   { status: SUBJECT_STATUS.DELETED },{ where: { m_class_id: req.body.m_class_id } }
+  // );
 
 
   res.json({ message: 'Data has been deleted.' });

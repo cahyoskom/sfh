@@ -25,7 +25,9 @@ exports.create = async function (req, res) {
   var new_user = {
     user_name: req.body.user_name,
     email: req.body.email,
-    password: sha256(req.body.user_name + req.body.password),
+    password: sha256(
+      req.body.email + req.body.password + process.env.USER_SECRET
+    ),
     status: 1,
     created_date: moment().format(),
     created_by: req.user.user_name

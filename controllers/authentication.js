@@ -43,7 +43,7 @@ async function setToken(user_id) {
 
 exports.login = async function (req, res) {
   var username = req.body.username;
-  var password = sha256(username + req.body.password);
+  var password = sha256(username + req.body.password + process.env.USER_SECRET);
 
   var user = await getLogin(username, password);
 

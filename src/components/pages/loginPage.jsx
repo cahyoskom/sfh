@@ -35,7 +35,11 @@ class SignIn extends Component {
 
     constructor (props) {
         super (props)
-
+        // this.state = { 
+        //     email: "",
+        //     isChecked: false,
+        //     password: ""
+        // };
         this.validator = new SimpleReactValidator({
             messages:{
                 email: "Alamat email tidak valid",
@@ -44,12 +48,19 @@ class SignIn extends Component {
             }
         });
         this.onConfirmLogin = this.onConfirmLogin.bind(this);
+        
 
     }
 
     componentDidMount() {
+        if (localStorage.getItem("isChecked")){
+            this.props.onChangeStateLogin("email", localStorage.getItem("email"));
+            this.props.onChangeStateLogin("isChecked", true);
+            this.props.onChangeStateLogin("password", localStorage.getItem("password"));
+        }
+
         document.getElementById('footer').style.display = "none"
-        document.getElementById('sticky').style.display = "none"
+        document.getElementById('sticky').style.display = "none" 
     }
 
     // recaptchaLoaded(){
@@ -95,7 +106,7 @@ class SignIn extends Component {
           this.onClickLogin();
         }
       }
-      
+
     googleResponse = (response) =>{
         console.log(response)
         this.props.googleLogin(response)
@@ -103,7 +114,8 @@ class SignIn extends Component {
 
     render() {
         const { accountState, onChangeStateLogin, setStateModalFormLogin, closeAlert } = this.props;
-    
+        console.log(accountState.login.email)
+        console.log(accountState.login.isChecked)
         return (
           <BlockUi
             tag="div"
@@ -155,6 +167,7 @@ class SignIn extends Component {
                                                 }
                                                 onKeyPress={e => this.onEnterKeyPress(e)}
                                                 autoComplete={"email"}
+                                                value ={accountState.login.email}
                                             />
                                             {this.validator.message(
                                                 "email",
@@ -174,6 +187,7 @@ class SignIn extends Component {
                                                 }
                                                 onKeyPress={e => this.onEnterKeyPress(e)}
                                                 autoComplete={"password"}
+                                                value = {accountState.login.password}
                                             />
                                             {this.validator.message(
                                                 "password",
@@ -186,9 +200,12 @@ class SignIn extends Component {
                                             <FormControlLabel
                                                 control={
                                                 <Checkbox
-                                                    // checked={state.checkedB}
-                                                    // onChange={handleChange}
-                                                    name="checkedB"
+                                                    checked={accountState.login.isChecked}
+                                                    onChange={e =>
+                                                        onChangeStateLogin(e.target.id, e.target.checked)
+                                                        }
+                                                    id= "isChecked"
+                                                    name="checked"
                                                     color="primary"
                                                 />
                                                 }

@@ -21,7 +21,7 @@ import group from "../components/usermanagement/group";
 
 const getAccountState = state => state.account;
 export function* googleLogin(action){
-  try {
+  if (action.data.tokenId){
     let param = {
       tokenId : action.data.tokenId
     }
@@ -55,10 +55,10 @@ export function* googleLogin(action){
         value: _response.data.message
       })
     }
-  } catch (error) {
+  } else {
       yield put({
         type: SET_LOGIN_FAILED,
-        value: error
+        value: action.data.error
       })
       yield put({
         type: RESET_STATE_LOGIN
@@ -71,15 +71,14 @@ export function* login() {
   try {
     const accountState = yield select(getAccountState);
     const loginState = accountState.login;
-    yield put({
-      type: SET_LOADER,
-      value: true
-    });
+    // yield put({
+    //   type: SET_LOADER,
+    //   value: true
+    // });
     let param = {
       email: loginState.email,
       password: loginState.password
     };
-
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.login, param, Header());
     if (_response.status === 200) {
 
@@ -94,6 +93,11 @@ export function* login() {
         localStorage.setItem("token", data.token || null);
         localStorage.setItem("name", JSON.stringify(data.user.user_name));
         localStorage.setItem("user_id", JSON.stringify(data.user.user_id));
+        if(loginState.isChecked) {
+          localStorage.setItem("isChecked", true);
+          localStorage.setItem("email", loginState.email);
+          localStorage.setItem("password", loginState.password)
+        }
         yield put({
           type: SET_LOGIN_SUCCESS,
           value: profile
@@ -289,21 +293,21 @@ export function* login() {
         // console.log('ini dia', roles[4][0].group_name)
       }
       // window.location.href = process.env.PUBLIC_URL +"/usermanagement";
+    } else {
+      yield put({
+        type: SET_LOGIN_FAILED,
+        value: _response.data.message
+      })
     }
-
-    yield put({
-      type: SET_LOADER,
-      value: false
-    });
-    yield put({
-      type: SET_LOGIN_FAILED,
-      value: _response.data.message
-    })
+    // yield put({
+    //   type: SET_LOADER,
+    //   value: false
+    // });
   } catch (error) {
-    yield put({
-      type: SET_LOADER,
-      value: false
-    });
+    // yield put({
+    //   type: SET_LOADER,
+    //   value: false
+    // });
     yield put({
       type: SET_LOGIN_FAILED,
       value: error

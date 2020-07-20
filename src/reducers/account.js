@@ -19,9 +19,10 @@ import {
   
   const initialState = {
     login: {
+      isChecked: false,
       email: "",
       password: "",
-      recaptcha: ""
+      // recaptcha: ""
     },
     forgotPassword: {
       email: "",

@@ -1,24 +1,39 @@
 const sec_user = require('../models/sec_user');
+const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
 const { sha256 } = require('../common/sha');
 const { Op } = require('sequelize');
 const moment = require('moment');
-const ROLES = require('../common/roles');
+const USER_STATUS = require('../enums/status.enums');
 
-async function getLogin(username, password) {
+async function getLogin(email, password) {
   const model_user = sec_user();
   var user = await model_user.findOne({
     where: {
-      [Op.or]: { user_name: username, email: username },
+      email: email,
       password: password,
-      status: 1
+      status: USER_STATUS.ACTIVE
     }
   });
   return user;
 }
 
+async function checkRegistrant(email, password) {
+  const model_registrant = sec_registrant();
+  var registrant = await model_registrant.findOne({
+    where: {
+      email: email,
+      password: password,
+      status: USER_STATUS.ACTIVE
+    }
+  });
+  return registrant;
+}
+
 async function getToken(user_id) {
-  var token = await sec_token().findAll({ where: { user_id: user_id } });
+  var token = await sec_token().findAll({
+    where: { sec_user_id: user_id, status: USER_STATUS.ACTIVE }
+  });
   return token;
 }
 
@@ -28,12 +43,16 @@ async function setToken(user_id) {
 
   if (token.length > 0) {
     // token exists, delete
-    sec_token().destroy({ where: { user_id: user_id } });
+    sec_token().update(
+      { status: USER_STATUS.DELETED },
+      { where: { sec_user_id: user_id } }
+    );
   }
   // create new token
   var new_token = {
     token: sha256(user_id + now.format()),
-    user_id: user_id,
+    sec_user_id: user_id,
+    status: USER_STATUS.ACTIVE,
     valid_until: moment().add(process.env.TOKEN_VALIDITY_TIME, 'm').format()
   };
 
@@ -42,27 +61,29 @@ async function setToken(user_id) {
 }
 
 exports.login = async function (req, res) {
-  var username = req.body.username;
-  var password = sha256(username + req.body.password + process.env.USER_SECRET);
-
-  var user = await getLogin(username, password);
+  var email = req.body.email;
+  var password = sha256(email + req.body.password + process.env.USER_SECRET);
+  var user = await getLogin(email, password);
 
   if (!user) {
-    res
-      .status(401)
-      .json({ error: 10, message: 'Username or password not exist' });
-    return;
+    var registrant = await checkRegistrant(email, password);
+    if (!registrant) {
+      res
+        .status(401)
+        .json({ error: 10, message: 'Email atau kata sandi salah' });
+      return;
+    } else {
+      user = registrant;
+    }
   }
 
-  var roles = await ROLES.get(user.user_id);
-  var token = await setToken(user.user_id);
+  var token = await setToken(user.id);
   var result = {
     user: {
-      user_id: user.user_id,
-      user_name: user.user_name,
-      email: user.email
+      user_id: user.id,
+      email: user.email,
+      is_email_validated: user.is_email_validated
     },
-    roles: await ROLES.set(roles),
     token: token.token,
     token_validity: token.valid_until
   };

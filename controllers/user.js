@@ -57,6 +57,12 @@ exports.create = async function (req, res) {
     created_by: req.body.username
   };
 
+  //check phone number is filled or not
+  if( !new_user.phone ){
+    new_user.phone == "";
+  }
+
+  //try to check all component of form
   try {
   
     var checkPW = pwValidator.validate(req.body.password);
@@ -65,8 +71,10 @@ exports.create = async function (req, res) {
     
     if(checkPW == false ){
       return res.status(400).send({ message: "Password yang dimasukkan tidak sesuai kriteria" });
-    }else if(checkPhone == false){
-      return res.status(400).send({ message: "Nomor Telepon yang dimasukkan tidak sesuai kriteria" });
+    }else if(new_user.phone){
+      if(checkPhone == false){
+        return res.status(400).send({ message: "Nomor Telepon yang dimasukkan tidak sesuai kriteria" });
+      }
     }else if(checkEmail == false){
       return res.status(400).send({ message: "Email yang dimasukkan tidak sesuai kriteria" });
     }
@@ -75,6 +83,7 @@ exports.create = async function (req, res) {
       verifyEmail(user,req.headers.host, res);
       return res.json({ data: user });
     }
+
 
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
@@ -175,19 +184,24 @@ exports.activation = async function (req, res) {
 
   console.log(checkActiveLink);
 
+  //check link already used or not
+  if(confirmation.status !== STATUS.ACTIVE) return res.status(400).send({type: 'link expired', msg: 'This link is already used'});
+
+  //check link is verified
+  if (regis.is_email_validated) return res.status(400).send({ type: 'already-verified', msg: 'This user has already been verified.' });
+
+  //check active link from id
   if(checkActiveLink == true)
     return res.send(checkActiveLink)
     await verifyEmail(regis, req.headers.host)
-  
-  if(confirmation.status !== STATUS.ACTIVE) return res.status(400).send({type: 'link expired', msg: 'This link is already used'});
 
-  if (regis.is_email_validated) return res.status(400).send({ type: 'already-verified', msg: 'This user has already been verified.' });
   // Verify and save the user
   regis.is_email_validated = true;
   await regis.save();
   confirmation.status = STATUS.DELETED;
   await confirmation.save();
 
+  //copy data from regis to user
   if(confirmation.status == STATUS.DELETED){
     var copy_to_user = {
       name : regis.name,

@@ -97,7 +97,7 @@ exports.create = async function (req, res) {
     const to_addr = registrant.email;
     const content =
       'Hello,\n\nPlease verify your account by clicking the link:\n' +
-      `http://${req.headers.host}/activation/${code}`;
+      `http://${req.headers.host}/activating/${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION',
       sec_registrant_id: registrant.id,
@@ -208,7 +208,7 @@ exports.requestActivation = async function (req, res) {
     const to_addr = registrant.email;
     const content =
       'Hello,\n\nPlease verify your account by clicking the link:\n' +
-      `http://${req.headers.host}/activation/${code}`;
+      `http://${req.headers.host}/activating/${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION_RE',
       sec_registrant_id: registrant.id,

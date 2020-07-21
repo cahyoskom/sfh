@@ -2,8 +2,31 @@ const sec_token = require('../models/sec_token');
 const moment = require('moment');
 const roles = require('./roles');
 const sec_user = require('../models/sec_user');
+const urlAndMethodMapping = {
+  '/': '*',
+  '/login': 'POST',
+  '/login_google': 'POST',
+  '/check_token/[a-f0-9]{32}': 'GET',
+  '/forgot_password': 'POST',
+  '/update_password/[a-f0-9]{32}': 'POST',
+  '/activating/[a-f0-9]{32}': 'GET',
+  '/request_activation': 'POST',
+  '/registration': 'PUT'
+};
 
 module.exports = async (req, res, next) => {
+  const url = req._parsedUrl.pathname;
+
+  for (let pattern in urlAndMethodMapping) {
+    let method = urlAndMethodMapping[pattern];
+    let postfix = pattern === '/' ? '$' : '/?$';
+    let regex = new RegExp('^' + pattern + postfix, 'gi');
+    let matchUrl = url.match(regex) ? true : false;
+    let matchMethod = method === '*' ? true : method === req.method;
+
+    if (matchUrl && matchMethod) return next();
+  }
+
   if (!req.headers.authorization) {
     return res.status(401).send({ message: 'Token not found!' });
   }

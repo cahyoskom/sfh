@@ -19,11 +19,10 @@ module.exports = async function ({ to, subject, text }) {
 
     transporter.sendMail(options, function (error, info) {
       if (error) {
-        console.log('Failed sending email with error: ' + error);
-        reject(false); // or use resolve(false) if you won't to have error handling.
+        // or use resolve(false) if you won't to have error handling.
+        reject(error);
       } else {
-        console.log('Email sent: ' + info.response);
-        resolve(true);
+        resolve(info);
       }
     });
   });

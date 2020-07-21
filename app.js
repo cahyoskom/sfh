@@ -33,15 +33,7 @@ app.use((req, res, next) => {
   console.log('Query : ' + JSON.stringify(req.query));
   next();
 });
-app.use((req, res, next) => {
-  // first, bypass root, login, forgot password and reset new password
-  const url = req._parsedUrl.pathname.match(
-    /^\/(login\/?|login_google\/?|new_password\/?|update_password\/[a-f0-9]{32})$/gi
-  );
-  if (url || req.url == '/') return next();
-
-  auth(req, res, next);
-});
+app.use(auth);
 
 const router = require('express-convention-routes');
 router.load(app, {

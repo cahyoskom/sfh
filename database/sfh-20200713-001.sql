@@ -8,7 +8,6 @@ ALTER TABLE `log_audit` CHANGE `sec_user_username` `sec_user_email` VARCHAR(100)
 ALTER TABLE `log_audit` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
 ALTER TABLE `m_class` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
 ALTER TABLE `m_class_member` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
-ALTER TABLE `m_param` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
 ALTER TABLE `m_school` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
 ALTER TABLE `m_school_member` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';
 ALTER TABLE `m_subject` CHANGE `created_by` `created_by` VARCHAR(100)  CHARACTER SET utf32  BINARY  NOT NULL  DEFAULT 'SYSTEM';

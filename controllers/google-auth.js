@@ -65,7 +65,7 @@ exports.googleLogin = async function (req, res) {
       try {
         user = await model_user.create(new_user);
       } catch (err) {
-        res.status(411).json({ error: 11, message: err.message });
+        res.status(401).json({ error: null, message: err.message });
         return;
       }
     }

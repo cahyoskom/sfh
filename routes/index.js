@@ -1,14 +1,18 @@
-const authentication = require('../controllers/authentication');
 const config = require('../config/app.config');
-const googleAuth = require('../controllers/google-auth');
+const auth = require('../controllers/authentication');
+const authGoogle = require('../controllers/google-auth');
+const registration = require('../controllers/registration');
 
 module.exports = function (router) {
-  router.get('/', function (req, res) {
+  router.all('/', function (req, res) {
     res.end('v.' + config.version);
   });
-  router.post('/login', authentication.login);
-  router.post('/login_google', googleAuth.googleLogin);
-  router.get('/check_token/:token', authentication.checkToken);
-  router.post('/new_password', authentication.newPassword);
-  router.post('/update_password/:code', authentication.updatePassword);
+  router.post('/login', auth.login);
+  router.post('/login_google', authGoogle.googleLogin);
+  router.get('/check_token/:token', auth.checkToken);
+  router.put('/registration', registration.create);
+  router.get('/activating/:code', registration.activating);
+  router.post('/request_activation', registration.requestActivation);
+  router.post('/forgot_password', registration.forgotPassword);
+  router.post('/update_password/:code', registration.updatePassword);
 };

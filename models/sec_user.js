@@ -79,7 +79,7 @@ module.exports = (sequelize) => {
     },
     avatar: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,

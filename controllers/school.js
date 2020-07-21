@@ -5,11 +5,15 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 var config = require('../config/app.config');
 const m_school = require('../models/m_school');
+const m_school_member = require('../models/m_school_member');
 const m_class = require('../models/m_class');
-// const m_subject = require('../models/m_subject');
-const SCHOOL_STATUS = require('../enums/status.enums');
-const CLASS_STATUS = require('../enums/status.enums');
-// const SUBJECT_STATUS = require('../enums/status.enums');
+const m_class_member = require('../models/m_class_member');
+const m_subject = require('../models/m_subject');
+const t_task = require('../models/t_task');
+const t_task_file = require('../models/t_task_file');
+const t_task_collection = require('../models/t_task_collection');
+const t_task_collection_file = require('../models/t_task_collection_file');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_school = m_school();
@@ -74,21 +78,111 @@ exports.update = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
+
+  // delete school within id from req.params.id
   const model_school = m_school();
-  const model_class = m_class();
-  // const model_subject = m_subject();
-  model_school.update(
-    { status: SCHOOL_STATUS.DELETED },{ where: { id: req.params.id } }
-  );
-
-  model_class.update(
-    { status: CLASS_STATUS.DELETED },{ where: { m_school_id: req.body.m_school_id } }
-  );
-
-  // model_subject.update(
-  //   { status: SUBJECT_STATUS.DELETED },{ where: { m_class_id: req.body.m_class_id } }
-  // );
-
+  const schoolId = req.params.id;
+  await model_school.update({status: DELETED}, {where: {id: schoolId}});
+//----------------------------------------------------------------------------------------------
+ // delete related school member within m_school_id from req.params.id
+ const model_school_member = m_school_member();
+ const schoolmemberFilter = {m_school_id: schoolId};
+ const schoolmemberIds = await model_school_member
+   .findAll({
+     attributes: ['id'],
+     where: schoolmemberFilter
+   })
+   .map((el) => el.dataValues.id);
+ console.log('>> Getting school member ids for next process:', schoolmemberIds);
+ await model_school_member.update({status: DELETED}, {where: schoolmemberFilter});  
+//----------------------------------------------------------------------------------------------
+ 
+// delete related class within m_school_id from req.params.id
+const model_class = m_class();
+const classFilter = {m_school_id: schoolId};
+const classIds = await model_class
+  .findAll({
+    attributes: ['id'],
+    where: classFilter
+  })
+  .map((el) => el.dataValues.id);
+console.log('>> Getting class ids for next process:', classIds);
+await model_class.update({status: DELETED}, {where: classFilter});
+//-----------------------------------------------------------------------------------------------
+  // delete related class member within m_class_id from previous process when getting class ids
+  const model_class_member = m_class_member();
+  const classmemberFilter = {m_class_id: {[Op.in]: classIds}};
+  const classmembertIds = await model_class_member
+  .findAll({
+    attributes: ['id'],
+    where: classmemberFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting class member ids for next process:', classmembertIds);
+  await model_class_member.update({status: DELETED}, {where: classmemberFilter});
+//-----------------------------------------------------------------------------------------------
+  // delete related subject within m_class_id from previous process when getting class ids
+  const model_subject = m_subject();
+  const subjectFilter = {m_class_id: {[Op.in]: classIds}};
+  const subjectIds = await model_subject
+  .findAll({
+    attributes: ['id'],
+    where: subjectFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting subject ids for next process:', subjectIds);
+  await model_subject.update({status: DELETED}, {where: subjectFilter});
+//-----------------------------------------------------------------------------------------------
+  // delete related task within m_subject_id from previous process when getting subject ids
+  const model_task = t_task();
+  const taskFilter = {m_subject_id: {[Op.in]: subjectIds}};
+  const taskIds = await model_task
+  .findAll({
+    attributes: ['id'],
+    where: taskFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting task ids for next process:', taskIds);
+  await model_task.update({status: DELETED}, {where: taskFilter});
+//-----------------------------------------------------------------------------------------------
+  // delete related task file within t_task_id from previous process when getting task ids
+  const model_task_file = t_task_file();
+  const taskfileFilter = {t_task_id: {[Op.in]: taskIds}};
+  const taskfileIds = await model_task_file
+  .findAll({
+    attributes: ['id'],
+    where: taskfileFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting task file ids for next process:', taskfileIds);
+  await model_task_file.update({status: DELETED}, {where: taskfileFilter});
+  //-----------------------------------------------------------------------------------------------
+  // delete related task collection within t_task_id from previous process when getting task ids
+  const model_task_collection = t_task_collection();
+  const taskcollectionFilter = {t_task_id: {[Op.in]: taskIds}};
+  const taskcollectionIds = await model_task_collection
+  .findAll({
+    attributes: ['id'],
+    where: taskcollectionFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting task collection ids for next process:', taskcollectionIds);
+  await model_task_collection.update({status: DELETED}, {where: taskcollectionFilter});
+  //-----------------------------------------------------------------------------------------------
+  // delete related task collection file within t_task_id from previous process when getting task ids
+  const model_task_collection_file = t_task_collection_file();
+  const taskcollectionfileFilter = {t_task_collection_id: {[Op.in]: taskcollectionIds}};
+  const taskcollectionfileIds = await model_task_collection_file
+  .findAll({
+    attributes: ['id'],
+    where: taskcollectionfileFilter
+  })
+  .map((el) => el.dataValues.id);
+  console.log('>> Getting task collection file ids for next process:', taskcollectionfileIds);
+  await model_task_collection_file.update({status: DELETED}, {where: taskcollectionfileFilter});
 
   res.json({ message: 'Data has been deleted.' });
 };
+
+
+

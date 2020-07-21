@@ -30,13 +30,13 @@ export function* googleLogin(action){
       let data = _response.data
         let profile = {
           user_id: data.user.user_id || "",
-          username: data.user.user_name || "",
+          name: data.user.name || "",
           email: data.user.email || "",
         }
         if (data.token && data.token != "") {
           localStorage.setItem("profile", JSON.stringify(profile));
           localStorage.setItem("token", data.token || null);
-          localStorage.setItem("name", JSON.stringify(data.user.user_name));
+          localStorage.setItem("name", JSON.stringify(data.user.name));
           localStorage.setItem("user_id", JSON.stringify(data.user.user_id));
           yield put({
             type: SET_LOGIN_SUCCESS,
@@ -47,7 +47,7 @@ export function* googleLogin(action){
             type: SET_TOKEN_SUCCESS,
             value: data.token
           });
-          // window.location.href = process.env.PUBLIC_URL + "/usermanagement"
+          window.location.href = process.env.PUBLIC_URL + "/home"
         }
     } else {
       yield put({
@@ -85,13 +85,13 @@ export function* login() {
       let data = _response.data
       let profile = {
         user_id: data.user.user_id || "",
-        username: data.user.user_name || "",
+        username: data.user.name || "",
         email: data.user.email || "",
       }
       if (data.token && data.token != "") {
         localStorage.setItem("profile", JSON.stringify(profile));
         localStorage.setItem("token", data.token || null);
-        localStorage.setItem("name", JSON.stringify(data.user.user_name));
+        localStorage.setItem("name", JSON.stringify(data.user.name));
         localStorage.setItem("user_id", JSON.stringify(data.user.user_id));
         if(loginState.isChecked) {
           localStorage.setItem("isChecked", true);
@@ -292,7 +292,7 @@ export function* login() {
         // }
         // console.log('ini dia', roles[4][0].group_name)
       }
-      // window.location.href = process.env.PUBLIC_URL +"/usermanagement";
+      window.location.href = process.env.PUBLIC_URL +"/home";
     } else {
       yield put({
         type: SET_LOGIN_FAILED,

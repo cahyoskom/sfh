@@ -79,6 +79,7 @@ exports.login = async function (req, res) {
     user: {
       user_id: user.id,
       email: user.email,
+      name: user.name,
       is_email_validated : user.is_email_validated
     },
     token: token.token,

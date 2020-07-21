@@ -30,6 +30,7 @@ import {
       rePassword: ""
     },
     register: {
+      isChecked: false,
       email: "",
       fullname: "",
       noHP: "",
@@ -97,7 +98,6 @@ import {
             email: "",
             fullName: "",
             noHP: "",
-            alamat: "",
             password: "",
             rePassword: ""
           },

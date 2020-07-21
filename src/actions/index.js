@@ -8,6 +8,7 @@ const optionToast = {
     autoClose: 1300
 };
 
+//LOGIN
 export const googleLogin = (data) =>({
     type: types.SET_GOOGLE_LOGIN,
     data
@@ -39,7 +40,16 @@ export const postLogout = () => ({
     type: types.SET_LOGOUT
 });
 
-//////////
+
+//REGISTER
+export const onChangeStateRegister = (field, value) => ({
+    type: types.ON_CHANGE_STATE_REGISTER,
+    value,
+    field
+});
+
+
+/////////////
 
 export const fetchProductsBegin = () => ({
     type: types.FETCH_PRODUCTS_BEGIN

@@ -170,7 +170,7 @@ class Root extends React.Component {
                             <Switch>
 								<PrivateRoute
 									exact
-									path={`${process.env.PUBLIC_URL}/home`}
+									path={`${process.env.PUBLIC_URL}/`}
 									component={Home}
 									authenticated={this.authCheck()}
 								/>

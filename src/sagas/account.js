@@ -47,7 +47,7 @@ export function* googleLogin(action){
             type: SET_TOKEN_SUCCESS,
             value: data.token
           });
-          window.location.href = process.env.PUBLIC_URL + "/home"
+          window.location.href = process.env.PUBLIC_URL + "/"
         }
     } else {
       yield put({
@@ -292,7 +292,7 @@ export function* login() {
         // }
         // console.log('ini dia', roles[4][0].group_name)
       }
-      window.location.href = process.env.PUBLIC_URL +"/home";
+      window.location.href = process.env.PUBLIC_URL +"/";
     } else {
       yield put({
         type: SET_LOGIN_FAILED,

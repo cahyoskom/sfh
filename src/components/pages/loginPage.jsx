@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import SimpleReactValidator from "simple-react-validator";
 import { connect } from "react-redux";
+import HeaderOne from '../common/headers/header-one';
+import FooterTwo from '../common/footers/footer-two';
 import BlockUi from "react-block-ui";
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
 import Collapse from '@material-ui/core/Collapse';
-import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
@@ -35,24 +36,13 @@ import { Grid } from '@material-ui/core';
 // const recaptchaRef = React.createRef();
 class SignIn extends Component {
 
-    constructor (props) {
-        super (props)
-        // this.state = { 
-        //     email: "",
-        //     isChecked: false,
-        //     password: ""
-        // };
-        this.validator = new SimpleReactValidator({
-            messages:{
-                email: "Alamat email tidak valid",
-                required: "Harus diisi",
-                min: "Kata sandi harus diisi minimal 6 karakter"
-            }
-        });
-        this.onConfirmLogin = this.onConfirmLogin.bind(this);
+    // constructor (props) {
+    //     super (props)
+
+    //     this.onConfirmLogin = this.onConfirmLogin.bind(this);
         
 
-    }
+    // }
 
     componentDidMount() {
         if (localStorage.getItem("isChecked")){
@@ -84,7 +74,7 @@ class SignIn extends Component {
 
     onClickLogin() {
         const { postLogin } = this.props;
-        if (this.validator.allValid()) {
+        // if (this.validator.allValid()) {
           // if (this.validateEmail(accountState.login.username)) {
           //   postLogin();
           // } else {
@@ -92,16 +82,16 @@ class SignIn extends Component {
           // }
           this.props.accountState.showSpinner = true
           postLogin();
-        } else {
-            this.validator.showMessages();
-            this.forceUpdate();
-        }
+        // // } else {
+        //     this.validator.showMessages();
+        //     this.forceUpdate();
+        // }
     }
 
-    onConfirmLogin(){
-        let { confirmLogin } = this.props;
-        confirmLogin();
-    }
+    // onConfirmLogin(){
+    //     let { confirmLogin } = this.props;
+    //     confirmLogin();
+    // }
 
     onEnterKeyPress(e) {
         if (e.charCode == 13) {
@@ -130,7 +120,8 @@ class SignIn extends Component {
               </span>
             }
           >
-            <div>               
+            <div>           
+            <HeaderOne />    
                 {/*Login section*/}
                 <section className="login-page section-b-space">
                     <Container >
@@ -267,7 +258,7 @@ class SignIn extends Component {
                         </Grid>
                     </Container>
                     
-                    <Modal isOpen={accountState.modal.show} fade={false} backdrop={'static'} centered>
+                    {/* <Modal isOpen={accountState.modal.show} fade={false} backdrop={'static'} centered>
                         <ModalHeader>{accountState.modal.title}</ModalHeader>
                         <ModalBody>
                             <Form>
@@ -275,7 +266,7 @@ class SignIn extends Component {
                                 <Col md={12}>
                                     <FormGroup>
                                         {/* <Label for="kelas">Assign to</Label> */}
-                                        <Select
+                                        {/* <Select
                                             options={accountState.dataSourceRoleAccount}
                                             onChange= { (e) => setStateModalFormLogin("group_id", e.value)}
                                         />
@@ -288,10 +279,10 @@ class SignIn extends Component {
                         {accountState.modal.type == "switch" &&
                             <Button size="sm" color="primary" onClick={() => { this.onConfirmLogin()}}>{accountState.modal.buttonText}</Button>
                         }
-                        </ModalFooter>
-                    </Modal>
+                        </ModalFooter> */}
+                    {/* </Modal> */}
                 </section>
-
+                <FooterTwo/>
             </div>
           </BlockUi>
         );

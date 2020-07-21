@@ -111,30 +111,33 @@ async function shouldSendingMail(user) {
 async function sendEmailJob(user, url) {
   const model_user = sec_user();
   const model_confirmation = sec_confirmation();
+  const code = crypto.randomBytes(16).toString('hex');
   const confirmation = await model_confirmation.create({
     description: 'FORGOT_PASSWORD',
     sec_user_id: user.id,
-    code: crypto.randomBytes(16).toString('hex'),
-    created_by: user.username,
+    code: code,
+    created_by: user.email,
     status: USER_STATUS.ACTIVE,
     sender_addr: env.MAIL_USERNAME
   });
 
   if (!confirmation) return confirmation;
+  const text =
+    'Hello,\n\n' +
+    "Here's your password change request: \nhttp://" +
+    url +
+    '/update_password/' +
+    code;
 
   const email = await mailer({
     to: user.email,
     subject: 'Password Change',
-    text:
-      'Hello,\n\n' +
-      "Here's your password change request: \nhttp://" +
-      url +
-      '/changePassword/' +
-      code.code +
-      '.\n'
+    text
   });
-
   if (!email) return email;
+
+  confirmation.is_sent = 1;
+  await confirmation.save();
 
   return true;
 }

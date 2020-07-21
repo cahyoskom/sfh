@@ -5,7 +5,7 @@ module.exports = async function ({ to, subject, text }) {
   return new Promise((resolve, reject) => {
     let transporter = nodemailer.createTransport({
       host: env.MAIL_HOST,
-      port: env_MAIL_PORT,
+      port: env.MAIL_PORT,
       secure: env.MAIL_SECURE,
       auth: { user: env.MAIL_USERNAME, pass: env.MAIL_PASSWORD }
     });

@@ -1,3 +1,10 @@
+const { sha256 } = require('../common/sha');
+const query = require('../models/query');
+const { Op } = require('sequelize');
+const moment = require('moment');
+var config = require('../config/app.config');
+const m_school = require('../models/m_school');
+const m_school_member = require('../models/m_school_member');
 const m_class = require('../models/m_class');
 const m_class_member = require('../models/m_class_member');
 const m_subject = require('../models/m_subject');
@@ -5,23 +12,18 @@ const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
-const { sha256 } = require('../common/sha');
-const query = require('../models/query');
-const { Op } = require('sequelize');
-const moment = require('moment');
-var config = require('../config/app.config');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
-  const model_class = m_class();
-  var data = await model_class.findAll();
+  const model_school = m_school();
+  var data = await model_school.findAll();
 
   res.json({ data: data });
 };
 
 exports.findOne = async function (req, res) {
-  const model_class = m_class();
-  var datum = await model_class.findOne({
+  const model_school = m_school();
+  var datum = await model_school.findOne({
     where: { id: req.params.id }
   });
 
@@ -29,18 +31,21 @@ exports.findOne = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
-  const model_class = m_class();
+  const model_school = m_school();
   var new_obj = {
     m_school_id: req.body.m_school_id,
     code: req.body.code,
     name: req.body.name,
-    description: req.body.description,
+    address: req.body.address,
+    zipcode: req.body.zipcode,
+    phone: req.body.phone,
+    avatar: req.body.avatar,
     status: 1,
     created_date: moment().format(),
     created_by: req.body.name
   };
   try {
-    var datum = await model_class.create(new_obj);
+    var datum = await model_school.create(new_obj);
     res.json({ data: datum });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
@@ -48,18 +53,21 @@ exports.create = async function (req, res) {
 };
 
 exports.update = async function (req, res) {
-  const model_class = m_class();
+  const model_school = m_school();
   var update_obj = {
     m_school_id: req.body.m_school_id,
     code: req.body.code,
     name: req.body.name,
-    description: req.body.description,
-    status: req.body.status,
+    address: req.body.address,
+    zipcode: req.body.zipcode,
+    phone: req.body.phone,
+    avatar: req.body.avatar,
+    status: SCHOOL_STATUS.ACTIVE,
     updated_date: moment().format(),
     updated_by: req.body.name
   };
   try {
-    var datum = await model_class.update(update_obj, {
+    var datum = await model_school.update(update_obj, {
       where: { id: req.params.id }
     });
     res.json({ message: 'Data has been updated.' });
@@ -69,34 +77,70 @@ exports.update = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
-  // delete class within id from req.params.id
-  const model_class = m_class();
-  const classId = req.params.id;
-  await model_class.update({ status: DELETED }, { where: { id: classId } });
+  // delete school within id from req.params.id
+  const model_school = m_school();
+  const schoolId = req.params.id;
+  await model_school.update({ status: DELETED }, { where: { id: schoolId } });
   //------------------------------------------------------------------------
 
-  // delete related class member within m_class_id from req.params.id
+  // delete related school member within m_school_id from req.params.id
+  const model_school_member = m_school_member();
+  const schoolmemberFilter = {
+    m_school_id: schoolId
+  };
+  const schoolmemberIds = await model_school_member
+    .findAll({
+      attributes: ['id'],
+      where: schoolmemberFilter
+    })
+    .map((el) => el.dataValues.id);
+  console.log(
+    '>> Getting school member ids for next process:',
+    schoolmemberIds
+  );
+  await model_school_member.update(
+    { status: DELETED },
+    { where: schoolmemberFilter }
+  );
+  //------------------------------------------------------------------------
+
+  // delete related class within m_school_id from req.params.id
+  const model_class = m_class();
+  const classFilter = {
+    m_school_id: schoolId
+  };
+  const classIds = await model_class
+    .findAll({
+      attributes: ['id'],
+      where: classFilter
+    })
+    .map((el) => el.dataValues.id);
+  console.log('>> Getting class ids for next process:', classIds);
+  await model_class.update({ status: DELETED }, { where: classFilter });
+  //------------------------------------------------------------------------
+
+  // delete related class member within m_class_id from previous process when getting class ids
   const model_class_member = m_class_member();
   const classmemberFilter = {
-    m_class_id: classId
+    m_class_id: { [Op.in]: classIds }
   };
-  const classmemberIds = await model_class_member
+  const classmembertIds = await model_class_member
     .findAll({
       attributes: ['id'],
       where: classmemberFilter
     })
     .map((el) => el.dataValues.id);
-  console.log('>> Getting class member ids for next process:', classmemberIds);
+  console.log('>> Getting class member ids for next process:', classmembertIds);
   await model_class_member.update(
     { status: DELETED },
     { where: classmemberFilter }
   );
   //------------------------------------------------------------------------
 
-  // delete related subject within m_class_id from req.params.id
+  // delete related subject within m_class_id from previous process when getting class ids
   const model_subject = m_subject();
   const subjectFilter = {
-    m_class_id: classId
+    m_class_id: { [Op.in]: classIds }
   };
   const subjectIds = await model_subject
     .findAll({
@@ -108,10 +152,12 @@ exports.delete = async function (req, res) {
   await model_subject.update({ status: DELETED }, { where: subjectFilter });
   //------------------------------------------------------------------------
 
-  // delete related task within m_class_id from req.params.id
+  // delete related task within m_subject_id from previous process when getting subject ids
   const model_task = t_task();
   const taskFilter = {
-    m_class_id: classId
+    m_subject_id: {
+      [Op.in]: subjectIds
+    }
   };
   const taskIds = await model_task
     .findAll({

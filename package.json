@@ -11,8 +11,10 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
+    "email-validator": "^2.0.4",
     "express": "~4.16.1",
     "express-async-errors": "^3.1.1",
     "express-convention-routes": "^1.0.6",
@@ -21,8 +23,11 @@
     "moment": "^2.27.0",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
+    "nodemailer": "^6.4.10",
+    "password-validator": "^5.0.3",
     "sequelize": "^5.22.3",
-    "sequelize-automate": "^1.2.2"
+    "sequelize-automate": "^1.2.2",
+    "validate-phone-number-node-js": "0.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

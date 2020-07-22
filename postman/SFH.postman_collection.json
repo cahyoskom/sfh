@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "ffc54757-c267-4830-9874-0a4dc4d15bd5",
+		"name": "SFH",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/login",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "d26b25eeb9c5ce379d5b80b15fa4dd6ed54a958aafb63fd20dcc491c5c40a8a8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@sakola.co.id\",\n    \"password\": \"Adminus123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/registration",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@sakola.co.id\",\n    \"password\": \"Adminus123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/registration",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/activating/:code",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/activating/0e53d2d1af0ca86baebbe6384e15d2ba",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"activating",
+						"0e53d2d1af0ca86baebbe6384e15d2ba"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/request_activation",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@sakola.co.id\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/request_activation",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"request_activation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/update_password/:code",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@sakola.co.id\",\n    \"password\": \"AAdminus123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/update_password/bd8bb41a5a4341acc1f3828029673b91",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"update_password",
+						"bd8bb41a5a4341acc1f3828029673b91"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/forgot_password",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@sakola.co.id\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/forgot_password",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"forgot_password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/check_token/:token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1b",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/check_token/638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"check_token",
+						"638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "40bf2b1eb486ef7827d1448df29d48cfa06010cc5915978d6be630f6247d88c8",
+				"type": "string"
+			}
+		]
+	},
+	"protocolProfileBehavior": {}
+}

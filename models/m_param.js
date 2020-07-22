@@ -14,28 +14,6 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'm_school_id',
-      references: {
-        key: 'id',
-        model: 'm_school_model'
-      }
-    },
-    code: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'code'
-    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -45,41 +23,14 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'name'
     },
-    address: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'address'
-    },
-    zipcode: {
-      type: DataTypes.STRING(8),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'zipcode'
-    },
-    phone: {
-      type: DataTypes.STRING(15),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'phone'
-    },
-    avatar: {
+    value: {
       type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'avatar'
+      field: 'value'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -129,17 +80,17 @@ module.exports = (sequelize) => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school',
+    tableName: 'm_param',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
-        unique: false,
+        name: 'name',
+        unique: true,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['name']
       }
     ]
   };
-  const MSchoolModel = sequelize.define('m_school_model', attributes, options);
-  return MSchoolModel;
+  const MParamModel = sequelize.define('m_param_model', attributes, options);
+  return MParamModel;
 };

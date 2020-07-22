@@ -1,6 +1,8 @@
 require('dotenv').config();
+
+const { name, version } = require('../package.json');
 module.exports = {
-  name: process.env.npm_package_name,
-  version: process.env.npm_package_version,
+  name,
+  version,
   uploaddir: './files'
 };

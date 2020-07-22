@@ -23,9 +23,18 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'name'
     },
+    email: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'email'
+    },
     username: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
@@ -40,15 +49,6 @@ module.exports = (sequelize) => {
       autoIncrement: false,
       comment: null,
       field: 'password'
-    },
-    email: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'email'
     },
     is_email_validated: {
       type: DataTypes.INTEGER(4),
@@ -89,7 +89,7 @@ module.exports = (sequelize) => {
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,

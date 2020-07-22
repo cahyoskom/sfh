@@ -70,7 +70,7 @@ module.exports = (sequelize) => {
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,

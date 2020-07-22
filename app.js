@@ -26,17 +26,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
+  console.log('');
   console.log('URL : ' + req.url);
   console.log('Header : ' + JSON.stringify(req.headers));
   console.log('Body : ' + JSON.stringify(req.body));
+  console.log('Query : ' + JSON.stringify(req.query));
   next();
 });
-app.use((req, res, next) => {
-  if (req.url == '/' || req.url == '/login'|| req.url == '/login_google') {
-    return next();
-  }
-  auth(req, res, next);
-});
+app.use(auth);
 
 const router = require('express-convention-routes');
 router.load(app, {

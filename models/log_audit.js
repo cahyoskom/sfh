@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
       comment: null,
       field: 'id'
     },
-    sec_user_username: {
+    sec_user_email: {
       type: DataTypes.STRING(100),
       allowNull: true,
       defaultValue: null,
@@ -124,7 +124,7 @@ module.exports = (sequelize) => {
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,

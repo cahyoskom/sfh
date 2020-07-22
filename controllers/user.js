@@ -1,9 +1,5 @@
 const sec_user = require('../models/sec_user');
-const { sha256 } = require('../common/sha');
-const query = require('../models/query');
-const { Op } = require('sequelize');
-const moment = require('moment');
-var config = require('../config/app.config');
+const STATUS = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_user = sec_user();
@@ -11,29 +7,24 @@ exports.findAll = async function (req, res) {
 
   res.json({ data: users });
 };
+
 exports.findOne = async function (req, res) {
   const model_user = sec_user();
   var user = await model_user.findOne({
-    where: { user_id: req.params.user_id }
+    where: { id: req.params.id }
   });
 
   res.json({ data: user });
 };
 
-exports.create = async function (req, res) {
+exports.delete = async function (req, res) {
   const model_user = sec_user();
-  var new_user = {
-    username: req.body.user_name,
-    email: req.body.email,
-    password: sha256(req.body.user_name + req.body.password),
-    status: 1,
-    created_date: moment().format(),
-    created_by: req.user.user_name
-  };
-  try {
-    var user = await model_user.create(new_user);
-    res.json({ data: user });
-  } catch (err) {
-    res.status(411).json({ error: 11, message: err.message });
-  }
+  var user = await model_user.update(
+    {
+      status: STATUS.DELETED
+    },
+    { where: { id: req.params.id } }
+  );
+
+  res.json({ message: 'Data berhasil dihapus' });
 };

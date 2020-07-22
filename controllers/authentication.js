@@ -1,37 +1,40 @@
+const moment = require('moment');
+const { env } = process;
+
 const sec_user = require('../models/sec_user');
-const sec_registrant = require('../models/sec_registrant')
+const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
 const { sha256 } = require('../common/sha');
-const { Op } = require('sequelize');
-const moment = require('moment');
-const USER_STATUS = require('../enums/status.enums');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 async function getLogin(email, password) {
   const model_user = sec_user();
   var user = await model_user.findOne({
     where: {
-      email: email ,
+      email: email,
       password: password,
-      status: USER_STATUS.ACTIVE
+      status: ACTIVE
     }
   });
   return user;
 }
 
-async function checkRegistrant(email, password){
+async function checkRegistrant(email, password) {
   const model_registrant = sec_registrant();
   var registrant = await model_registrant.findOne({
-    where:{
-      email : email,
-      password : password,
-      status: USER_STATUS.ACTIVE
+    where: {
+      email: email,
+      password: password,
+      status: ACTIVE
     }
   });
-  return registrant
+  return registrant;
 }
 
 async function getToken(user_id) {
-  var token = await sec_token().findAll({ where: { sec_user_id: user_id, status: USER_STATUS.ACTIVE } });
+  var token = await sec_token().findAll({
+    where: { sec_user_id: user_id, status: ACTIVE }
+  });
   return token;
 }
 
@@ -41,14 +44,17 @@ async function setToken(user_id) {
 
   if (token.length > 0) {
     // token exists, delete
-    sec_token().update({status: USER_STATUS.DELETED}, { where: { sec_user_id: user_id } });
+    sec_token().update(
+      { status: DELETED },
+      { where: { sec_user_id: user_id } }
+    );
   }
   // create new token
   var new_token = {
     token: sha256(user_id + now.format()),
     sec_user_id: user_id,
-    status: USER_STATUS.ACTIVE,
-    valid_until: moment().add(process.env.TOKEN_VALIDITY_TIME, 'm').format()
+    status: ACTIVE,
+    valid_until: moment().add(env.TOKEN_VALIDITY_TIME, 'm').format()
   };
 
   var curr_token = await sec_token().create(new_token);
@@ -57,19 +63,17 @@ async function setToken(user_id) {
 
 exports.login = async function (req, res) {
   var email = req.body.email;
-  // var password = sha256(email + req.body.password);
-  var password = req.body.password
-
+  var password = sha256(email + req.body.password + env.USER_SECRET);
   var user = await getLogin(email, password);
 
   if (!user) {
     var registrant = await checkRegistrant(email, password);
-    if (!registrant){
+    if (!registrant) {
       res
-      .status(401)
-      .json({ error: 10, message: 'Email atau kata sandi salah' });
+        .status(401)
+        .json({ error: 10, message: 'Email atau kata sandi salah' });
       return;
-    } else{
+    } else {
       user = registrant;
     }
   }

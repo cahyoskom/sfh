@@ -52,11 +52,15 @@ Run app with:
 npm start
 ```
 
-Try login with this account:
+Try registering with this way:
 
 ```text
-username: admin@sakola.co.id
-password: admin123
+POST /registration
+{
+  "email": "your.emailaddr@domain.com",
+  "password": "yourPassword123!"
+}
+
 ```
 
-Don't forget to delete this after installation
+Then visit `your.emailaddr@domain.com` mail inbox, for activating.

@@ -139,9 +139,10 @@ exports.create = async function (req, res) {
     const code = crypto.randomBytes(16).toString('hex');
     const subject = 'Account activation';
     const to_addr = registrant.email;
+    const url = env.APP_BASEURL || req.headers.host;
     const content =
       'Hello,\n\nPlease verify your account by clicking the link:\n' +
-      `http://${req.headers.host}/activating/${code}`;
+      `${url}/confirmation?q=activating&code=${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION',
       sec_registrant_id: registrant.id,
@@ -252,9 +253,10 @@ exports.requestActivation = async function (req, res) {
     const code = crypto.randomBytes(16).toString('hex');
     const subject = 'Account activation (resend)';
     const to_addr = registrant.email;
+    const url = env.APP_BASEURL || req.headers.host;
     const content =
       'Hello,\n\nPlease verify your account by clicking the link:\n' +
-      `http://${req.headers.host}/activating/${code}`;
+      `${url}/confirmation?q=activating&code=${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION_RE',
       sec_registrant_id: registrant.id,
@@ -317,9 +319,10 @@ exports.forgotPassword = async function (req, res) {
     const code = crypto.randomBytes(16).toString('hex');
     const subject = 'Password change request';
     const to_addr = user.email;
+    const url = env.APP_BASEURL || req.headers.host;
     const content =
       "Hello,\n\nHere's your password change request:\n" +
-      `http://${req.headers.host}/update_password/${code}`;
+      `${url}/confirmation?q=update_password&code=${code}`;
     const datum = {
       description: 'FORGOT_PASSWORD',
       sec_user_id: user.id,

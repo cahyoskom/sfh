@@ -4,6 +4,7 @@ const { env } = process;
 const sec_user = require('../models/sec_user');
 const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
+const sec_confirmation = require('../models/sec_confirmation')
 const { sha256 } = require('../common/sha');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 
@@ -61,6 +62,25 @@ async function setToken(user_id) {
   return curr_token;
 }
 
+async function allowResendActivation(registrant_id){
+  var confirmation = await sec_confirmation().findOne({
+    where: {sec_registrant_id: registrant_id, status: ACTIVE}
+  })
+  if (confirmation){
+    var now = moment();
+    var createdPlusOne = moment(confirmation.created_date).add(1, 'hours');
+    console.log(now)
+    console.log(moment(confirmation.created_date))
+    console.log(createdPlusOne)
+    if (moment(now).isAfter(moment(createdPlusOne))){
+      return true;
+    }
+    return false;
+  }
+  return true;
+
+}
+
 exports.login = async function (req, res) {
   var email = req.body.email;
   var password = sha256(email + req.body.password + env.USER_SECRET);
@@ -74,7 +94,16 @@ exports.login = async function (req, res) {
         .json({ error: 10, message: 'Email atau kata sandi salah' });
       return;
     } else {
-      user = registrant;
+      var resendActivation = await allowResendActivation(registrant.id);
+      console.log(resendActivation)
+      res
+        .status(401)
+        .json({ 
+          error: null, 
+          message: 'Silakan verifikasi email Anda terlebih dahulu',
+          resendActivation: resendActivation
+        });
+      return;
     }
   }
 
@@ -83,7 +112,8 @@ exports.login = async function (req, res) {
     user: {
       user_id: user.id,
       email: user.email,
-      is_email_validated: user.is_email_validated
+      name: user.name,
+      is_email_validated : user.is_email_validated
     },
     token: token.token,
     token_validity: token.valid_until

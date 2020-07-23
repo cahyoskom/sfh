@@ -74,7 +74,8 @@ exports.googleLogin = async function (req, res) {
       user: {
         user_id: user.id,
         email: user.email,
-        is_email_validated: user.is_email_validated
+        is_email_validated: user.is_email_validated,
+        name: user.name
       },
       token: token.token,
       token_validity: token.valid_until

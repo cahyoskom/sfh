@@ -11,6 +11,17 @@ export const newPassword = () => ({
     type: types.SET_NEW_PASSWORD
 })
   
+
+//LOGIN
+export const googleLogin = (data) =>({
+    type: types.SET_GOOGLE_LOGIN,
+    data
+})
+
+export const closeAlert = () => ({
+    type: types.SET_CLOSE_ALERT
+})
+
 export const postLogin = () => ({
     type: types.SET_LOGIN
 });
@@ -55,7 +66,16 @@ export const postLogout = () => ({
     type: types.SET_LOGOUT
 });
 
-//////////
+
+//REGISTER
+export const onChangeStateRegister = (field, value) => ({
+    type: types.ON_CHANGE_STATE_REGISTER,
+    value,
+    field
+});
+
+
+/////////////
 
 export const fetchProductsBegin = () => ({
     type: types.FETCH_PRODUCTS_BEGIN

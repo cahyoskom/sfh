@@ -176,7 +176,17 @@ class Root extends React.Component {
 								/>
 
 								{/* Custom Routes */}
-								<PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn}/>
+								<PublicRoute 
+									path={`${process.env.PUBLIC_URL}/login`} 
+									component={SignIn}
+									authenticated={this.authCheck()}
+								/>
+
+								<PublicRoute 
+									path={`${process.env.PUBLIC_URL}/register`} 
+									component={Register}
+									authenticated={this.authCheck()}
+								/>
 
 								<PublicRoute
 									path = {`${process.env.PUBLIC_URL}/update_password/:code`}

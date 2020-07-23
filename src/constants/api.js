@@ -7,5 +7,6 @@ export const API_PATH = {
     table: "/table",
     logout: "/logout",
     newPassword: "/forgot_password",
-    updatePassword: "/update_password/"
+    updatePassword: "/update_password/",
+    oauth: "/login_google"
 }

@@ -146,7 +146,7 @@ class FooterTwo extends Component {
                         <div className="row">
                             <div className="col-xl-6 col-md-6 col-sm-12">
                                 <div className="footer-end">
-                                    <p><i className="fa fa-copyright" aria-hidden="true"></i> 2020 SFHWFH
+                                    <p><i className="fa fa-copyright" aria-hidden="true"></i> 2020 SinauNgomah
                                         powered by KarpaLabs</p>
                                 </div>
                             </div>

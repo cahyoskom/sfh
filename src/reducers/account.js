@@ -1,5 +1,6 @@
 import {
     SET_LOGIN_SUCCESS,
+    SET_LOGIN_FAILED,
     SET_ROLES_SUCCESS,
     SET_REGISTER_SUCCESS,
     SET_FORGOT_SUCCESS,
@@ -12,19 +13,24 @@ import {
     SET_TOKEN_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM_LOGIN,
+<<<<<<< HEAD
     SET_NEW_PASSWORD,
     SET_NEW_PASSWORD_SUCCESS,
     ON_CHANGE_STATE_NEW_PASSWORD,
     ON_CHANGE_STATE_UPDATE_PASSWORD,
     SET_UPDATE_PASSWORD_CODE
+=======
+    SET_CLOSE_ALERT
+>>>>>>> bbdf11605f08c9b5a7f64de456a1200a4f882e72
   } from "../constants/ActionTypes";
   import Config from "../constants/config";
   
   const initialState = {
     login: {
-      username: "",
+      isChecked: false,
+      email: "",
       password: "",
-      recaptcha: ""
+      // recaptcha: ""
     },
     forgotPassword: {
       email: "",
@@ -32,6 +38,7 @@ import {
       rePassword: ""
     },
     register: {
+      isChecked: false,
       email: "",
       fullname: "",
       noHP: "",
@@ -49,29 +56,29 @@ import {
       code: ""
     },
     // roles:[],
-    roles: localStorage.getItem("roles")
-      ? JSON.parse(localStorage.getItem("roles"))
-      : undefined,
-    dataSourceRoleAccount:[
-      // {label:"A",value:"A"},
-      // {label:"B",value:"B"}
-    ],
-    selectedRole: localStorage.getItem("role")
-      ? JSON.parse(localStorage.getItem("role"))
-      : undefined,
-    role:{
-      group_id: "",
-      group_name: "",
-      class_id: 0,
-      class_name: "",
-      subject_id: 0,
-      subject_name: "",
-      student_id: 0,
-      student_no: "",
-      student_name: "",
-      student_class_id: 0,
-      sex: ""
-    },
+    // roles: localStorage.getItem("roles")
+    //   ? JSON.parse(localStorage.getItem("roles"))
+    //   : undefined,
+    // dataSourceRoleAccount:[
+    //   // {label:"A",value:"A"},
+    //   // {label:"B",value:"B"}
+    // ],
+    // selectedRole: localStorage.getItem("role")
+    //   ? JSON.parse(localStorage.getItem("role"))
+    //   : undefined,
+    // role:{
+    //   group_id: "",
+    //   group_name: "",
+    //   class_id: 0,
+    //   class_name: "",
+    //   subject_id: 0,
+    //   subject_name: "",
+    //   student_id: 0,
+    //   student_no: "",
+    //   student_name: "",
+    //   student_class_id: 0,
+    //   sex: ""
+    // },
     token: localStorage.getItem("token"),
     profile: localStorage.getItem("profile")
       ? JSON.parse(localStorage.getItem("profile"))
@@ -84,7 +91,10 @@ import {
       buttonText: "OK",
     },
     site_key: Config.CAPTCHA_KEY,
-    reset_captcha: false
+    reset_captcha: false,
+    openLoginAlert: false,
+    alertMsg: "",
+    showSpinner: false
   };
   
   export default function loginReducer(state = initialState, action) {
@@ -93,7 +103,7 @@ import {
         return {
           ...state,
           login: {
-            username: "",
+            email: "",
             password: ""
           },
           forgotPassword: {
@@ -105,7 +115,6 @@ import {
             email: "",
             fullName: "",
             noHP: "",
-            alamat: "",
             password: "",
             rePassword: ""
           },
@@ -168,8 +177,21 @@ import {
         return {
           ...state,
   
-          profile: action.value
+          profile: action.value,
+          showSpinner: false
         };
+      case SET_LOGIN_FAILED:
+        return {
+          ...state,
+          alertMsg: action.value,
+          openLoginAlert: true,
+          showSpinner: false
+        }
+      case SET_CLOSE_ALERT:
+        return{
+          ...state,
+          openLoginAlert: false
+        }
       case SET_TOKEN_SUCCESS:
         return {
           ...state,

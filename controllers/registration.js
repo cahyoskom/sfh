@@ -45,7 +45,7 @@ async function shouldSendingMail(people, type) {
   const timeNow = new Date();
   const dateCr = confirmation.created_date;
 
-  dateCr.setDate(dateCr.getDate() + 1);
+  dateCr.setDate(dateCr.getHours() + 1);
   if (dateCr < timeNow) {
     return false;
   }
@@ -77,10 +77,10 @@ exports.create = async function (req, res) {
       throw new Error('Email yang dimasukkan tidak sesuai kriteria');
     }
 
-    var checkPW = pwValidator.validate(req.body.password);
-    if (checkPW == false) {
-      throw new Error('Password yang dimasukkan tidak sesuai kriteria');
-    }
+    // var checkPW = pwValidator.validate(req.body.password);
+    // if (checkPW == false) {
+    //   throw new Error('Password yang dimasukkan tidak sesuai kriteria');
+    // }
 
     var checkPhone = req.body.phone
       ? phoneValidator.validate(req.body.phone)

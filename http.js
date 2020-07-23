@@ -5,8 +5,8 @@
  */
 require('dotenv').config();
 const app = require('./app');
-const config_app = require('./config/app.config');
-const debug = require('debug')(`${config_app.name}:server`);
+const { name } = require('./package.json');
+const debug = require('debug')(`${name}:server`);
 const http = require('http');
 
 /**

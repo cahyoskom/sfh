@@ -1,11 +1,16 @@
-const config = require('../config/app.config');
+const { version } = require('../package.json');
 const auth = require('../controllers/authentication');
 const authGoogle = require('../controllers/google-auth');
 const registration = require('../controllers/registration');
 
 module.exports = function (router) {
-  router.all('/', function (req, res) {
-    res.end('v.' + config.version);
+  router.all('/', async function (req, res) {
+    const param = require('../models/m_param')();
+    const slug = await param.findOne({
+      attributes: ['value', 'description'],
+      where: { name: 'SLUG' }
+    });
+    res.end(slug.value + ' v.' + version);
   });
   router.post('/login', auth.login);
   router.post('/login_google', authGoogle.googleLogin);

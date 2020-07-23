@@ -1,8 +1,9 @@
+const moment = require('moment');
+const { OAuth2Client } = require('google-auth-library');
 const sec_user = require('../models/sec_user');
 const sec_token = require('../models/sec_token');
-const moment = require('moment');
+const m_param = require('../models/m_param');
 const USER_STATUS = require('../enums/status.enums');
-const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function checkUser(email) {
@@ -27,11 +28,17 @@ async function setToken(tokenId, userId) {
       { where: { sec_user_id: userId } }
     );
   }
+
+  var parameter = m_param();
+  var TOKEN_VALIDITY = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'TOKEN_VALIDITY' }
+  });
   var new_token = {
     token: tokenId,
     sec_user_id: userId,
     status: USER_STATUS.ACTIVE,
-    valid_until: moment().add(process.env.TOKEN_VALIDITY_TIME, 'm').format()
+    valid_until: moment().add(TOKEN_VALIDITY.value, 'hours').format()
   };
   var curr_token = await sec_token().create(new_token);
   return curr_token;

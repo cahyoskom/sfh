@@ -4,7 +4,8 @@ const { env } = process;
 const sec_user = require('../models/sec_user');
 const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
-const sec_confirmation = require('../models/sec_confirmation')
+const sec_confirmation = require('../models/sec_confirmation');
+const m_param = require('../models/m_param');
 const { sha256 } = require('../common/sha');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 
@@ -51,34 +52,43 @@ async function setToken(user_id) {
     );
   }
   // create new token
+  const parameter = m_param();
+  const TOKEN_VALIDITY = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'TOKEN_VALIDITY' }
+  });
   var new_token = {
     token: sha256(user_id + now.format()),
     sec_user_id: user_id,
     status: ACTIVE,
-    valid_until: moment().add(env.TOKEN_VALIDITY_TIME, 'm').format()
+    valid_until: moment().add(TOKEN_VALIDITY.value, 'hours').format()
   };
 
   var curr_token = await sec_token().create(new_token);
   return curr_token;
 }
 
-async function allowResendActivation(registrant_id){
+async function allowResendActivation(registrant_id) {
   var confirmation = await sec_confirmation().findOne({
-    where: {sec_registrant_id: registrant_id, status: ACTIVE}
-  })
-  if (confirmation){
+    where: { sec_registrant_id: registrant_id, status: ACTIVE }
+  });
+  if (confirmation) {
     var now = moment();
-    var createdPlusOne = moment(confirmation.created_date).add(1, 'hours');
-    console.log(now)
-    console.log(moment(confirmation.created_date))
-    console.log(createdPlusOne)
-    if (moment(now).isAfter(moment(createdPlusOne))){
+    var parameter = m_param();
+    var MAIL_INTERVAL_VERIFICATION = await parameter.findOne({
+      attributes: ['value'],
+      where: { name: 'MAIL_INTERVAL_VERIFICATION' }
+    });
+    var validUntil = moment(confirmation.created_date).add(
+      MAIL_INTERVAL_VERIFICATION.value,
+      'hours'
+    );
+    if (moment(now).isAfter(moment(validUntil))) {
       return true;
     }
     return false;
   }
   return true;
-
 }
 
 exports.login = async function (req, res) {
@@ -95,14 +105,12 @@ exports.login = async function (req, res) {
       return;
     } else {
       var resendActivation = await allowResendActivation(registrant.id);
-      console.log(resendActivation)
-      res
-        .status(401)
-        .json({ 
-          error: null, 
-          message: 'Silakan verifikasi email Anda terlebih dahulu',
-          resendActivation: resendActivation
-        });
+      console.log(resendActivation);
+      res.status(401).json({
+        error: null,
+        message: 'Silakan verifikasi email Anda terlebih dahulu',
+        resendActivation: resendActivation
+      });
       return;
     }
   }
@@ -113,7 +121,7 @@ exports.login = async function (req, res) {
       user_id: user.id,
       email: user.email,
       name: user.name,
-      is_email_validated : user.is_email_validated
+      is_email_validated: user.is_email_validated
     },
     token: token.token,
     token_validity: token.valid_until

@@ -1,17 +1,19 @@
 require('dotenv').config();
+
+const { env } = process;
 module.exports = {
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD == '' ? null : process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  dialect: process.env.DB_DIALECT,
+  host: env.DB_HOST,
+  port: parseInt(env.DB_PORT),
+  username: env.DB_USERNAME,
+  password: env.DB_PASSWORD == '' ? null : env.DB_PASSWORD,
+  database: env.DB_DATABASE,
+  dialect: env.DB_DIALECT,
   timestamps: false,
-  logging: process.env.NODE_ENV == 'production' ? false : console.log,
+  logging: env.NODE_ENV == 'production' ? false : console.log,
   pool: {
-    max: parseInt(process.env.DB_POOL_MAX),
-    min: parseInt(process.env.DB_POOL_MIN),
-    acquire: parseInt(process.env.DB_POOL_ACQUIRE),
-    idle: parseInt(process.env.DB_POOL_IDLE)
+    max: parseInt(env.DB_POOL_MAX || 5),
+    min: parseInt(env.DB_POOL_MIN || 0),
+    acquire: parseInt(env.DB_POOL_ACQUIRE || 30000),
+    idle: parseInt(env.DB_POOL_IDLE || 10000)
   }
 };

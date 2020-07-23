@@ -11,34 +11,43 @@ const sec_user = require('../models/sec_user');
 const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
 const sec_confirmation = require('../models/sec_confirmation');
+const m_param = require('../models/m_param');
 const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DEACTIVE, DELETED } = require('../enums/status.enums');
 const userController = require('./user');
 // const pwValidator = new passwordValidator().is().min(8).is().max(100)
 //   .has().uppercase().has().lowercase().has().digits().has().not().spaces();
 
-async function shouldSendingMail(people, type) {
+async function shouldSendingMail(flag, filtering, disabling = false) {
   const model_confirmation = sec_confirmation();
-  const field = type === 'user' ? 'sec_user_id' : 'sec_registrant_id';
   const confirmation = await model_confirmation.findOne({
     where: {
-      [field]: people.id,
+      ...filtering,
       status: ACTIVE
     }
   });
   if (!confirmation) return false;
 
-  const timeNow = new Date();
-  const dateCr = confirmation.created_date;
-
-  dateCr.setDate(dateCr.getHours() + 1);
+  const timeNow = moment();
+  const dateCr = moment(confirmation.created_date);
+  const parameter = m_param();
+  const DURATION = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: flag }
+  });
+  dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
+    if (disabling) {
+      confirmation.status = DEACTIVE;
+      await confirmation.save();
+    }
+
     return false;
   }
 
-  const diffTime = moment(dateCr).diff(timeNow);
+  const diffTime = dateCr.diff(timeNow);
   const duration = moment.duration(diffTime);
   const durationStr = moment.utc(duration.asMilliseconds()).format('HH:mm:ss');
 
@@ -62,39 +71,47 @@ exports.create = async function (req, res) {
   };
 
   try {
-    const checkReg = await model_registrant.findOne({
+    const checkUser = await model_user.findOne({
       where: {
         email: new_user.email
-      },
-      order: [['id', 'DESC']]
+      }
     });
 
-    if (checkReg) {
-      if (checkReg.status == ACTIVE) {
-        const checkConfirmation = await model_confirmation.findOne({
-          where: {
-            sec_registrant_id: checkReg.id
-          }
-        });
+    if (checkUser) {
+      // note this! we don't care about sec_user status flag, because email should be unique list
+      throw new Error('Your mail already registered, please log in');
+    } else {
+      const checkReg = await model_registrant.findOne({
+        where: {
+          email: new_user.email
+        },
+        order: [['id', 'DESC']]
+      });
 
-        if (checkConfirmation) {
-          if (checkConfirmation.status == ACTIVE) {
-            throw new Error(
-              'Please check mail box for visit our activation link'
-            );
-          } else if (checkConfirmation.status == DELETED) {
+      if (checkReg) {
+        if (checkReg.status == ACTIVE) {
+          const checkConfirmation = await model_confirmation.findOne({
+            where: {
+              sec_registrant_id: checkReg.id
+            }
+          });
+
+          if (checkConfirmation) {
+            if (checkConfirmation.status == ACTIVE) {
+              const alreadyValidLink = await shouldSendingMail(
+                'MAIL_INTERVAL_VERIFICATION',
+                { sec_registrant_id: checkReg.id },
+                false
+              );
+
+              if (alreadyValidLink) {
+                throw new Error(
+                  'Please check mail box for visit our activation link'
+                );
+              }
+            }
             throw new Error('Please do request activation link');
           }
-        }
-      } else if (checkReg.status == DELETED) {
-        const checkUser = await model_user.findOne({
-          where: {
-            email: checkReg.email
-          }
-        });
-        if (checkUser) {
-          // note this! we don't care about sec_user status flag, because email should be unique list
-          throw new Error('Your mail already registered');
         }
       }
     }
@@ -227,7 +244,9 @@ exports.requestActivation = async function (req, res) {
       throw new Error('Email entered is wrong');
     }
 
-    const countdownMsg = await shouldSendingMail(registrant, 'registrant');
+    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_VERIFICATION', {
+      sec_registrant_id: registrant.id
+    });
     if (countdownMsg) throw new Error(countdownMsg);
 
     const code = crypto.randomBytes(16).toString('hex');
@@ -289,7 +308,10 @@ exports.forgotPassword = async function (req, res) {
       throw new Error('Verify your email to continue');
     }
 
-    const countdownMsg = await shouldSendingMail(user, 'user');
+    const countdownMsg = await shouldSendingMail(
+      'MAIL_INTERVAL_FORGOT_PASSWORD',
+      { sec_user_id: user.id }
+    );
     if (countdownMsg) throw new Error(countdownMsg);
 
     const code = crypto.randomBytes(16).toString('hex');

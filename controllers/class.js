@@ -9,7 +9,6 @@ const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
-var config = require('../config/app.config');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {

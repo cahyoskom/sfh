@@ -4,7 +4,7 @@ const fs = require('fs');
 const { query } = require('../models/query');
 const TASK_STATUS = require('../enums/status.enums');
 const moment = require('moment');
-const { uploaddir } = require('../config/app.config');
+const m_param = require('../models/m_param');
 const formidable = require('formidable');
 const GROUP_ENUMS = require('../enums/group.enums');
 const MoveFile = require('../common/move');
@@ -191,8 +191,18 @@ exports.upload = async function (req, res) {
   }
 
   let task_id = task_collection.task_id;
+  var parameter = m_param();
+  var UPLOAD_DIR = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'UPLOAD_DIR' }
+  });
   var upload_dir =
-    uploaddir + '/task_' + task_id + '/collection/' + task_collection_id + '/';
+    UPLOAD_DIR.value +
+    '/task_' +
+    task_id +
+    '/collection/' +
+    task_collection_id +
+    '/';
   if (!fs.existsSync(upload_dir)) {
     fs.mkdirSync(upload_dir, {
       recursive: true
@@ -257,7 +267,7 @@ exports.download = async function (req, res) {
     }
     var task_id = coll.task_id;
     var upload_dir =
-      uploaddir +
+      UPLOAD_DIR +
       '/task_' +
       task_id +
       '/collection/' +

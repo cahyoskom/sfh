@@ -1,7 +1,8 @@
-const sec_token = require('../models/sec_token');
 const moment = require('moment');
 const roles = require('./roles');
+const sec_token = require('../models/sec_token');
 const sec_user = require('../models/sec_user');
+const m_param = require('../models/m_param');
 const urlAndMethodMapping = {
   '/': '*',
   '/login': 'POST',
@@ -65,9 +66,14 @@ module.exports = async (req, res, next) => {
   req.user = user;
 
   // extend token
+  const parameter = m_param();
+  const TOKEN_VALIDITY = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'TOKEN_VALIDITY' }
+  });
   token.updated_date = now.format();
   token.updated_by = user.email;
-  token.valid_until = now.add(process.env.TOKEN_VALIDITY_TIME, 'm').format();
+  token.valid_until = now.add(TOKEN_VALIDITY.value, 'hours').format();
   await token.save();
 
   return next();

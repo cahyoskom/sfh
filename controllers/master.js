@@ -3,7 +3,6 @@ const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
-var config = require('../config/app.config');
 var tablename;
 
 exports.preFindAll = async function (req, res, next) {

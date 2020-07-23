@@ -2,7 +2,6 @@ const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
-var config = require('../config/app.config');
 const m_school = require('../models/m_school');
 const m_school_member = require('../models/m_school_member');
 const m_class = require('../models/m_class');

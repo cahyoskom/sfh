@@ -21,16 +21,26 @@ module.exports = (sequelize) => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'name'
+      field: 'name',
+      unique: 'name'
     },
     value: {
       type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: '',
+      allowNull: true,
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
       field: 'value'
+    },
+    description: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'description'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -82,14 +92,7 @@ module.exports = (sequelize) => {
     timestamps: false,
     tableName: 'm_param',
     comment: '',
-    indexes: [
-      {
-        name: 'name',
-        unique: true,
-        type: 'BTREE',
-        fields: ['name']
-      }
-    ]
+    indexes: []
   };
   const MParamModel = sequelize.define('m_param_model', attributes, options);
   return MParamModel;

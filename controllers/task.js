@@ -1,13 +1,13 @@
+const moment = require('moment');
+const fs = require('fs');
+const formidable = require('formidable');
 const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
-const moment = require('moment');
-const fs = require('fs');
-const { sha256 } = require('../common/sha');
-const { uploaddir } = require('../config/app.config');
-const formidable = require('formidable');
-const MoveFile = require('../common/move');
+const m_param = require('../models/m_param');
 const { query } = require('../models/query');
+const { sha256 } = require('../common/sha');
+const MoveFile = require('../common/move');
 const TASK_STATUS = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
@@ -210,7 +210,12 @@ exports.upload = async function (req, res) {
     res.status(421).json({ error: 21, message: 'Files not found' });
   }
 
-  var upload_dir = uploaddir + '/task_' + task_id + '/';
+  var parameter = m_param();
+  var UPLOAD_DIR = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'UPLOAD_DIR' }
+  });
+  var upload_dir = UPLOAD_DIR.value + '/task_' + task_id + '/';
   if (!fs.existsSync(upload_dir)) {
     fs.mkdirSync(upload_dir);
   }
@@ -272,7 +277,12 @@ exports.download = async function (req, res) {
 
   if (!!file) {
     var task_id = file.task_id;
-    var upload_dir = uploaddir + '/task_' + task_id + '/';
+    var parameter = m_param();
+    var UPLOAD_DIR = await parameter.findOne({
+      attributes: ['value'],
+      where: { name: 'UPLOAD_DIR' }
+    });
+    var upload_dir = UPLOAD_DIR.value + '/task_' + task_id + '/';
     var filename = upload_dir + file.filename;
     if (!fs.existsSync(filename)) {
       res.status(404).json({

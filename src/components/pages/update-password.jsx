@@ -1,22 +1,14 @@
 import React, {Component} from 'react';
 import SimpleReactValidator from "simple-react-validator";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import BlockUi from "react-block-ui";
 import {
     onChangeStateUpdatePassword,
     updatePassword,
     setUpdatePasswordCode
   } from "../../actions";
-import { 
-Button, Form, FormGroup, Modal, ModalHeader, 
-ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
-import Select from 'react-select'
 import Recaptcha from 'react-recaptcha';
 
-
-
-import Breadcrumb from "../common/breadcrumb";
 
 const recaptchaRef = React.createRef();
 
@@ -47,7 +39,7 @@ class UpdatePassword extends Component {
     }
 
     onClickUpdatePassword() {
-        let {setUpdatePasswordCode, updatePassword, onChangeStateUpdatePassword} = this.props
+        let {updatePassword, onChangeStateUpdatePassword} = this.props
         onChangeStateUpdatePassword("code",this.props.match.params.code)
         updatePassword()
     }
@@ -56,14 +48,12 @@ class UpdatePassword extends Component {
     
 
     renderView (){
-        const { accountState, onChangeStateUpdatePassword, updatePassword } = this.props;
+        const { accountState, onChangeStateUpdatePassword } = this.props;
         
 
         return (
             <div>
-                {/* <Breadcrumb title={'Login'}/> */}
                 
-                {/*Login section*/}
                 <section className="login-page section-b-space">
                     <div className="container">
                         <div className="row row d-flex justify-content-center">
@@ -106,7 +96,7 @@ class UpdatePassword extends Component {
                                             />
                                             {this.validator.message(
                                                 "password",
-                                                accountState.login.password,
+                                                accountState.updatePassword.password,
                                                 "required"
                                             )}
                                         </div>
@@ -124,7 +114,7 @@ class UpdatePassword extends Component {
                                             />
                                             {this.validator.message(
                                                 "password",
-                                                accountState.login.password,
+                                                accountState.updatePassword.password,
                                                 "required"
                                             )}
                                         </div>
@@ -132,7 +122,7 @@ class UpdatePassword extends Component {
                                         <div className="form-group">
                                         <Recaptcha
                                             ref={recaptchaRef}
-                                            value={accountState.login.recaptcha} 
+                                            value={accountState.updatePassword.recaptcha} 
                                             sitekey={accountState.site_key}
                                             render="explicit"
                                             onloadCallback={this.recaptchaLoaded}
@@ -155,7 +145,7 @@ class UpdatePassword extends Component {
                                                     this.onClickUpdatePassword();
                                                 }}
                                                 className="btn btn-solid"
-                                            >Login</a>
+                                            >Ganti kata sandi</a>
                                         </div>
                                     </form>
                                 </div>

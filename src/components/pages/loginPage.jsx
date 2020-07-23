@@ -30,7 +30,7 @@ import {
   } from "../../actions";
 import { 
 Form, Modal, ModalHeader, 
-ModalBody, ModalFooter, Col, Row, Spinner } from "reactstrap";
+ModalBody, ModalFooter, Col, Row, Spinner, Input } from "reactstrap";
 import Select from 'react-select'
 import Recaptcha from 'react-recaptcha';
 import { Grid } from '@material-ui/core';
@@ -218,29 +218,6 @@ class SignIn extends Component {
                                                 errorMessages={['masukkan kata sandi']}
                                             />
                                         </div>
-                                        <div>
-                                            {/* <ModalExample onClick={()=>{this.newPassword}}></ModalExample> */}
-                                            <label onClick={this.openModalNewPassword}>Lupa kata sandi?</label>
-                                            <Modal isOpen={this.state.newPasswordModal} className={className}>
-                                                <ModalHeader >Ganti kata sandi</ModalHeader>
-                                                <ModalBody>
-                                                    <label>Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan mengirimkan email yang berisi link untuk melakukan reset password ke alamat ini.</label>
-                                                    <label>Email: </label>
-                                                    <Input 
-                                                        type="textarea" 
-                                                        placeholder="Contoh: janedoe@mail.com" 
-                                                        onChange={e =>
-                                                        onChangeStateNewPassword("email", e.target.value)
-                                                        }
-                                                    />
-                                                </ModalBody>
-                                                <ModalFooter>
-                                                <Button color="primary" onClick={newPassword}>Do Something</Button>
-                                                <Button color="secondary" onClick={this.closeModalNewPassword}>Cancel</Button>
-                                                </ModalFooter>
-                                            </Modal>
-
-                                        </div>
                                         <Grid container direction="row" alignItems="center" justify="space-between">
                                             <Grid item>
                                             <FormControlLabel
@@ -259,7 +236,25 @@ class SignIn extends Component {
                                             />
                                             </Grid>
                                             <Grid item>
-                                                <a href="#" color="primary">Lupa kata sandi?</a>
+                                                <a onClick={this.openModalNewPassword} color="primary">Lupa kata sandi?</a>
+                                                <Modal isOpen={this.state.newPasswordModal} className={className}>
+                                                <ModalHeader >Ganti kata sandi</ModalHeader>
+                                                <ModalBody>
+                                                    <label>Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan mengirimkan email yang berisi link untuk melakukan reset password ke alamat ini.</label>
+                                                    <label>Email: </label>
+                                                    <Input 
+                                                        type="textarea" 
+                                                        placeholder="Contoh: janedoe@mail.com" 
+                                                        onChange={e =>
+                                                        onChangeStateNewPassword("email", e.target.value)
+                                                        }
+                                                    />
+                                                </ModalBody>
+                                                <ModalFooter>
+                                                <Button color="primary" onClick={newPassword}>Kirim email</Button>
+                                                <Button color="secondary" onClick={this.closeModalNewPassword}>Cancel</Button>
+                                                </ModalFooter>
+                                            </Modal>
                                             </Grid>
                                         </Grid>
                                         {/* <div className="form-group">
@@ -349,5 +344,5 @@ const mapStateToProps = state => ({
   export default connect(
     mapStateToProps,
     { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin, 
-        googleLogin, closeAlertnewPassword, onChangeStateNewPassword }
+        googleLogin, closeAlert, newPassword, onChangeStateNewPassword }
   )(SignIn);

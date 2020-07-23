@@ -13,15 +13,12 @@ import {
     SET_TOKEN_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM_LOGIN,
-<<<<<<< HEAD
     SET_NEW_PASSWORD,
     SET_NEW_PASSWORD_SUCCESS,
     ON_CHANGE_STATE_NEW_PASSWORD,
     ON_CHANGE_STATE_UPDATE_PASSWORD,
-    SET_UPDATE_PASSWORD_CODE
-=======
+    SET_UPDATE_PASSWORD_CODE,
     SET_CLOSE_ALERT
->>>>>>> bbdf11605f08c9b5a7f64de456a1200a4f882e72
   } from "../constants/ActionTypes";
   import Config from "../constants/config";
   

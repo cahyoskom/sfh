@@ -8,13 +8,17 @@ import {
   SET_TOKEN_SUCCESS,
   SET_LOGOUT,
   SET_LOADER,
-  SET_MODAL
+  SET_MODAL,
+  SET_NEW_PASSWORD,
+  SET_NEW_PASSWORD_SUCCESS,
+  SET_UPDATE_PASSWORD
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
 import { Header, HeaderAuth } from "../services/header";
 import group from "../components/usermanagement/group";
+//import updatePassword from "../components/pages/update-password";
 
 const getAccountState = state => state.account;
 
@@ -255,6 +259,82 @@ export function* login() {
   }
 }
 
+
+export function* newPassword() {
+  console.log("new Password clicked")
+  try {
+    const accountState = yield select(getAccountState);
+    const newPasswordState = accountState.newPassword;
+    
+    let param = {
+      email: newPasswordState.email
+    };
+
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.newPassword, param, Header());
+
+    if (_response.status == 200) {
+
+      let data = _response.data
+      console.log(_response)
+      let message = data.message
+
+      yield put({
+        type: SET_NEW_PASSWORD_SUCCESS,
+      });
+      success(message)
+    }
+  }
+  catch (error) {
+    yield put({
+      type: SET_LOADER,
+      value: false
+    });
+    fail(error);
+  }
+
+}
+
+export function* updatePassword() {
+  console.log("update Password")
+  try {
+    const accountState = yield select(getAccountState);
+    const updatePasswordState = accountState.updatePassword;
+
+    if(updatePasswordState.password != updatePasswordState.repeatPassword) {
+      console.log("password tidak sama")
+      fail("password tidak sama")
+      return;
+    }
+    
+    let param = {
+      email: updatePasswordState.email,
+      password: updatePasswordState.password
+    };
+
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.updatePassword + updatePasswordState.code, param, Header());
+
+    if (_response.status == 200) {
+
+      let data = _response.data
+      console.log(_response)
+      let message = data.message
+
+      yield put({
+        type: SET_NEW_PASSWORD_SUCCESS,
+      });
+      success(message)
+    }
+  }
+  catch (error) {
+    yield put({
+      type: SET_LOADER,
+      value: false
+    });
+    fail(error);
+  }
+
+}
+
 export function* confirmLogin() {
   try {
     const accountState = yield select(getAccountState);
@@ -357,7 +437,9 @@ export function* logout() {
 export default function* rootSaga() {
   yield all([
     takeEvery(SET_LOGIN, login),
+    takeEvery(SET_NEW_PASSWORD, newPassword),
     takeEvery(SET_CONFIRM_LOGIN, confirmLogin),
-    takeEvery(SET_LOGOUT, logout)
+    takeEvery(SET_LOGOUT, logout),
+    takeEvery(SET_UPDATE_PASSWORD, updatePassword),
   ]);
 }

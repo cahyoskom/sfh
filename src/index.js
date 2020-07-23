@@ -50,6 +50,7 @@ import ForgetPassword from './components/pages/forget-password'
 import Contact from './components/pages/contact'
 import Dashboard from './components/pages/dashboard'
 import Faq from './components/pages/faq'
+import UpdatePassword from './components/pages/update-password'
 
 // Blog Pages
 import RightSide from './components/blogs/right-sidebar'
@@ -176,6 +177,11 @@ class Root extends React.Component {
 
 								{/* Custom Routes */}
 								<PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn}/>
+
+								<PublicRoute
+									path = {`${process.env.PUBLIC_URL}/update_password/:code`}
+									component = {UpdatePassword}
+								/>
 
 								<PrivateRouteSiswa
 									path={`${process.env.PUBLIC_URL}/tasksiswa`}

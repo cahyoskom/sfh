@@ -7,6 +7,9 @@ import 'react-toastify/dist/ReactToastify.min.css';
 const optionToast = {
     autoClose: 1300
 };
+export const newPassword = () => ({
+    type: types.SET_NEW_PASSWORD
+})
   
 export const postLogin = () => ({
     type: types.SET_LOGIN
@@ -16,8 +19,30 @@ export const confirmLogin = () => ({
     type: types.SET_CONFIRM_LOGIN
 });
 
+export const updatePassword = () => ({
+    type: types.SET_UPDATE_PASSWORD
+});
+
+export const setUpdatePasswordCode = (value) => ({
+    type: types.SET_UPDATE_PASSWORD_CODE,
+    value
+});
+
+
 export const onChangeStateLogin = (field, value) => ({
     type: types.ON_CHANGE_STATE_LOGIN,
+    value,
+    field
+});
+
+export const onChangeStateNewPassword = (field, value) => ({
+    type: types.ON_CHANGE_STATE_NEW_PASSWORD,
+    value,
+    field
+});
+
+export const onChangeStateUpdatePassword = (field, value) => ({
+    type: types.ON_CHANGE_STATE_UPDATE_PASSWORD,
     value,
     field
 });

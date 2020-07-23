@@ -8,7 +8,9 @@ import {
     onChangeStateLogin,
     resetStateLoginMenu,
     confirmLogin,
-    setStateModalFormLogin
+    setStateModalFormLogin,
+    newPassword,
+    onChangeStateNewPassword
   } from "../../actions";
 import { 
 Button, Form, FormGroup, Modal, ModalHeader, 
@@ -16,11 +18,19 @@ ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from "reactstrap";
 import Select from 'react-select'
 import Recaptcha from 'react-recaptcha';
 
+
+
 import Breadcrumb from "../common/breadcrumb";
 
 const recaptchaRef = React.createRef();
 
+
+
 class SignIn extends Component {
+
+    state = {
+        newPasswordModal: false
+    }
 
     constructor (props) {
         super (props)
@@ -29,6 +39,7 @@ class SignIn extends Component {
         this.onConfirmLogin = this.onConfirmLogin.bind(this);
 
     }
+
 
     componentDidMount() {
         document.getElementById('footer').style.display = "none"
@@ -76,10 +87,24 @@ class SignIn extends Component {
         if (e.charCode == 13) {
           this.onClickLogin();
         }
-      }
+    }
+    openModalNewPassword = () => {
+        this.setState({
+            newPasswordModal:true
+        })
+    }
+    closeModalNewPassword = () => {
+        this.setState({
+            newPasswordModal:false
+        })
+    }
+    
+    
 
     renderView (){
-        const { accountState, onChangeStateLogin, setStateModalFormLogin } = this.props;
+        const { accountState, onChangeStateLogin, setStateModalFormLogin, buttonLabel,
+            className, onChangeStateNewPassword, newPassword } = this.props;
+        
 
         return (
             <div>
@@ -133,6 +158,29 @@ class SignIn extends Component {
                                                 accountState.login.password,
                                                 "required"
                                             )}
+                                        </div>
+                                        <div>
+                                            {/* <ModalExample onClick={()=>{this.newPassword}}></ModalExample> */}
+                                            <label onClick={this.openModalNewPassword}>Lupa kata sandi?</label>
+                                            <Modal isOpen={this.state.newPasswordModal} className={className}>
+                                                <ModalHeader >Ganti kata sandi</ModalHeader>
+                                                <ModalBody>
+                                                    <label>Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan mengirimkan email yang berisi link untuk melakukan reset password ke alamat ini.</label>
+                                                    <label>Email: </label>
+                                                    <Input 
+                                                        type="textarea" 
+                                                        placeholder="Contoh: janedoe@mail.com" 
+                                                        onChange={e =>
+                                                        onChangeStateNewPassword("email", e.target.value)
+                                                        }
+                                                    />
+                                                </ModalBody>
+                                                <ModalFooter>
+                                                <Button color="primary" onClick={newPassword}>Do Something</Button>
+                                                <Button color="secondary" onClick={this.closeModalNewPassword}>Cancel</Button>
+                                                </ModalFooter>
+                                            </Modal>
+
                                         </div>
                                         <div className="form-group">
                                         <Recaptcha
@@ -226,5 +274,6 @@ const mapStateToProps = state => ({
   
   export default connect(
     mapStateToProps,
-    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin }
+    { postLogin, onChangeStateLogin, resetStateLoginMenu, confirmLogin, setStateModalFormLogin, 
+        newPassword, onChangeStateNewPassword }
   )(SignIn);

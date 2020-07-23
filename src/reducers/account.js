@@ -11,7 +11,12 @@ import {
     RESET_STATE_LOGIN,
     SET_TOKEN_SUCCESS,
     SET_MODAL,
-    SET_MODAL_FORM_LOGIN
+    SET_MODAL_FORM_LOGIN,
+    SET_NEW_PASSWORD,
+    SET_NEW_PASSWORD_SUCCESS,
+    ON_CHANGE_STATE_NEW_PASSWORD,
+    ON_CHANGE_STATE_UPDATE_PASSWORD,
+    SET_UPDATE_PASSWORD_CODE
   } from "../constants/ActionTypes";
   import Config from "../constants/config";
   
@@ -33,6 +38,15 @@ import {
       alamat: "",
       password: "",
       rePassword: ""
+    },
+    newPassword: {
+      email: ""
+    },
+    updatePassword: {
+      password: "",
+      repeatPassword: "",
+      recaptcha: "",
+      code: ""
     },
     // roles:[],
     roles: localStorage.getItem("roles")
@@ -96,6 +110,30 @@ import {
             rePassword: ""
           },
           loader: false
+        };
+      case ON_CHANGE_STATE_NEW_PASSWORD:
+        return {
+          ...state,
+          newPassword: {
+            ...state.newPassword,
+            [action.field]: action.value
+          }
+        };
+      case ON_CHANGE_STATE_UPDATE_PASSWORD:
+        return {
+          ...state,
+          updatePassword: {
+            ...state.updatePassword,
+            [action.field]: action.value
+          }
+        };
+      case SET_UPDATE_PASSWORD_CODE:
+        return {
+          ...state,
+          updatePassword: {
+            ...state.updatePassword,
+            code: action.value
+          }
         };
       case ON_CHANGE_STATE_LOGIN:
         return {

@@ -16,20 +16,8 @@ const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const userController = require('./user');
-const pwValidator = new passwordValidator()
-  .is()
-  .min(8)
-  .is()
-  .max(100)
-  .has()
-  .uppercase()
-  .has()
-  .lowercase()
-  .has()
-  .digits()
-  .has()
-  .not()
-  .spaces();
+// const pwValidator = new passwordValidator().is().min(8).is().max(100)
+//   .has().uppercase().has().lowercase().has().digits().has().not().spaces();
 
 async function shouldSendingMail(people, type) {
   const model_confirmation = sec_confirmation();
@@ -59,6 +47,8 @@ async function shouldSendingMail(people, type) {
 
 exports.create = async function (req, res) {
   const model_registrant = sec_registrant();
+  const model_confirmation = sec_confirmation();
+  const model_user = sec_user();
 
   var new_user = {
     name: req.body.name,
@@ -72,6 +62,43 @@ exports.create = async function (req, res) {
   };
 
   try {
+    const checkReg = await model_registrant.findOne({
+      where: {
+        email: new_user.email
+      },
+      order: [['id', 'DESC']]
+    });
+
+    if (checkReg) {
+      if (checkReg.status == ACTIVE) {
+        const checkConfirmation = await model_confirmation.findOne({
+          where: {
+            sec_registrant_id: checkReg.id
+          }
+        });
+
+        if (checkConfirmation) {
+          if (checkConfirmation.status == ACTIVE) {
+            throw new Error(
+              'Please check mail box for visit our activation link'
+            );
+          } else if (checkConfirmation.status == DELETED) {
+            throw new Error('Please do request activation link');
+          }
+        }
+      } else if (checkReg.status == DELETED) {
+        const checkUser = await model_user.findOne({
+          where: {
+            email: checkReg.email
+          }
+        });
+        if (checkUser) {
+          // note this! we don't care about sec_user status flag, because email should be unique list
+          throw new Error('Your mail already registered');
+        }
+      }
+    }
+
     var checkEmail = emailValidator.validate(req.body.email);
     if (checkEmail == false) {
       throw new Error('Email yang dimasukkan tidak sesuai kriteria');

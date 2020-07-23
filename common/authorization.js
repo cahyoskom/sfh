@@ -12,7 +12,8 @@ const urlAndMethodMapping = {
   '/update_password/[a-f0-9]{32}': 'POST',
   '/activating/[a-f0-9]{32}': 'GET',
   '/request_activation': 'POST',
-  '/registration': 'PUT'
+  '/registration': 'PUT',
+  '/confirmation': 'GET'
 };
 
 module.exports = async (req, res, next) => {

@@ -20,4 +20,14 @@ module.exports = function (router) {
   router.post('/request_activation', registration.requestActivation);
   router.post('/forgot_password', registration.forgotPassword);
   router.post('/update_password/:code', registration.updatePassword);
+  router.get('/confirmation', function (req, res) {
+    // When you missing react app url that setted in env.APP_BASEURL,
+    // this path url used for fallback a link that sent to email.
+    // But, another /activating will blocked because POST method.
+    const { q, code } = req.query;
+    if (q == 'activating' && code) {
+      return res.redirect(`/activating/${code}`);
+    }
+    res.status(401).end();
+  });
 };

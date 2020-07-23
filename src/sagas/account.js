@@ -9,9 +9,17 @@ import {
   SET_TOKEN_SUCCESS,
   SET_LOGOUT,
   SET_LOADER,
+  SET_SPINNER,
   SET_MODAL,
   SET_GOOGLE_LOGIN,
-  RESET_STATE_LOGIN
+  RESET_STATE_LOGIN,
+  SET_REGISTER,
+  SET_REGISTER_FAILED,
+  SET_REGISTER_SUCCESS,
+  SET_RESEND_ACTIVATION,
+  EMAIL_ACTIVATION,
+  EMAIL_ACTIVATION_SUCCESS,
+  SET_MODAL_ACTIVATION
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
@@ -71,10 +79,10 @@ export function* login() {
   try {
     const accountState = yield select(getAccountState);
     const loginState = accountState.login;
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: true
-    // });
+    yield put({
+      type: SET_SPINNER,
+      value: true
+    });
     let param = {
       email: loginState.email,
       password: loginState.password
@@ -102,207 +110,35 @@ export function* login() {
           type: SET_LOGIN_SUCCESS,
           value: profile
         });
-        
+        yield put({
+          type: RESET_STATE_LOGIN
+        })
         yield put({
           type: SET_TOKEN_SUCCESS,
           value: data.token
         });
-        
-//         let roles = data.roles;
-//         var size = Object.keys(roles).length;
-// // Object.keys(roles).forEach(obj=>{
-//   console.log("Key-> ",obj, " value-> ", roles[obj]);
-// });
-// console.log('ini d0i', roles)     
-// console.log('ini size', size)        
-        // if(size == 1){
-        //   if(!! roles[1]){
-        //     let result = [];
-        //     for(var i = 0; i < roles[1].length; i++){
-        //       let role = {};
-        //       role.group_id = roles[1][i].group_id;
-        //       role.group_name = roles[1][i].group_name;
-        //       role.class_id = roles[1][i].class_id;
-        //       role.class_name = roles[1][i].class_name;
-        //       role.subject_id = roles[1][i].subject_id;
-        //       role.subject_name = roles[1][i].subject_name;
-        //       role.student_id = roles[1][i].student_id;
-        //       role.student_no = roles[1][i].student_no;
-        //       role.student_name = roles[1][i].student_name;
-        //       role.student_class_id = roles[1][i].student_class_id;
-        //       role.sex = roles[1][i].sex;
-        //       result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/usermanagement";
-        //   }
-
-        //   if(!! roles[2]){
-        //     let result = [];
-        //     for(var i = 0; i < roles[2].length; i++){
-        //       let role = {};
-        //       role.group_id = roles[2][i].group_id;
-        //       role.group_name = roles[2][i].group_name;
-        //       role.class_id = roles[2][i].class_id;
-        //       role.class_name = roles[2][i].class_name;
-        //       role.subject_id = roles[2][i].subject_id;
-        //       role.subject_name = roles[2][i].subject_name;
-        //       role.student_id = roles[2][i].student_id;
-        //       role.student_no = roles[2][i].student_no;
-        //       role.student_name = roles[2][i].student_name;
-        //       role.student_class_id = roles[2][i].student_class_id;
-        //       role.sex = roles[2][i].sex;
-        //       result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/taskkepsek";
-        //   }
-
-        //   if(!! roles[3]){
-        //     let result = [];
-        //     for(var i = 0; i < roles[3].length; i++){
-        //         let role = {};
-        //         role.group_id = roles[3][i].group_id;
-        //         role.group_name = roles[3][i].group_name;
-        //         role.class_id = roles[3][i].class_id;
-        //         role.class_name = roles[3][i].class_name;
-        //         role.subject_id = roles[3][i].subject_id;
-        //         role.subject_name = roles[3][i].subject_name;
-        //         role.student_id = roles[3][i].student_id;
-        //         role.student_no = roles[3][i].student_no;
-        //         role.student_name = roles[3][i].student_name;
-        //         role.student_class_id = roles[3][i].student_class_id;
-        //         role.sex = roles[3][i].sex;
-        //         result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/taskortu";
-        //   }
-
-        //   if(!! roles[4]){
-        //     let result = [];
-        //     for(var i = 0; i < roles[4].length; i++){
-        //       let role = {};
-        //       role.group_id = roles[4][i].group_id;
-        //       role.group_name = roles[4][i].group_name;
-        //       role.class_id = roles[4][i].class_id;
-        //       role.class_name = roles[4][i].class_name;
-        //       role.subject_id = roles[4][i].subject_id;
-        //       role.subject_name = roles[4][i].subject_name;
-        //       role.student_id = roles[4][i].student_id;
-        //       role.student_no = roles[4][i].student_no;
-        //       role.student_name = roles[4][i].student_name;
-        //       role.student_class_id = roles[4][i].student_class_id;
-        //       role.sex = roles[4][i].sex;
-        //       result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/taskguru";
-        //   }
-
-        //   if(!! roles[5]){
-        //     let result = [];
-        //     for(var i = 0; i < roles[5].length; i++){
-        //       let role = {};
-        //       role.group_id = roles[5][i].group_id;
-        //       role.group_name = roles[5][i].group_name;
-        //       role.class_id = roles[5][i].class_id;
-        //       role.class_name = roles[5][i].class_name;
-        //       role.subject_id = roles[5][i].subject_id;
-        //       role.subject_name = roles[5][i].subject_name;
-        //       role.student_id = roles[5][i].student_id;
-        //       role.student_no = roles[5][i].student_no;
-        //       role.student_name = roles[5][i].student_name;
-        //       role.student_class_id = roles[5][i].student_class_id;
-        //       role.sex = roles[5][i].sex;
-        //       result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/taskguardian";
-        //   }
-
-        //   if(!! roles[6]){ 
-        //     let result = [];
-        //     for(var i = 0; i < roles[6].length; i++){
-        //       let role = {};
-        //       role.group_id = roles[6][i].group_id;
-        //       role.group_name = roles[6][i].group_name;
-        //       role.class_id = roles[6][i].class_id;
-        //       role.class_name = roles[6][i].class_name;
-        //       role.subject_id = roles[6][i].subject_id;
-        //       role.subject_name = roles[6][i].subject_name;
-        //       role.student_id = roles[6][i].student_id;
-        //       role.student_no = roles[6][i].student_no;
-        //       role.student_name = roles[6][i].student_name;
-        //       role.student_class_id = roles[6][i].student_class_id;
-        //       role.sex = roles[6][i].sex;
-        //       result.push(role);
-        //     }
-        //     localStorage.setItem("roles", JSON.stringify(result));
-        //     localStorage.setItem("role", JSON.stringify(result));
-        //     window.location.href = process.env.PUBLIC_URL + "/tasksiswa";
-        //   }
-        // }
-        // else{
-        //   // console.log("msk situ 1",roles[2])
-        //   // console.log("msk situ 2",roles[4])
-        //   let result = [];
-        //   let res = [];
-        //   Object.keys(roles).forEach(obj=>{
-        //     // console.log("Key-> ",obj, " value-> ", roles[obj][0].group_name, roles[obj][0].group_id);
-        //     let ob = {};
-        //     ob.label = roles[obj][0].group_name;
-        //     ob.value = roles[obj][0].group_id;
-        //     result.push(ob);
-
-        //     let role = {};
-        //     role.group_id = roles[obj][0].group_id;
-        //     role.group_name = roles[obj][0].group_name;
-        //     role.class_id = roles[obj][0].class_id;
-        //     role.class_name = roles[obj][0].class_name;
-        //     role.subject_id = roles[obj][0].subject_id;
-        //     role.subject_name = roles[obj][0].subject_name;
-        //     role.student_id = roles[obj][0].student_id;
-        //     role.student_no = roles[obj][0].student_no;
-        //     role.student_name = roles[obj][0].student_name;
-        //     role.student_class_id = roles[obj][0].student_class_id;
-        //     role.sex = roles[obj][0].sex;
-        //     res.push(role);
-        //   });
-        //   localStorage.setItem("roles", JSON.stringify(res));
-        //   localStorage.setItem("role", JSON.stringify(res));
-
-        //   console.log("ser", result, res)
-        //   console.log('cap', accountState.login)
-        //   yield put({ 
-        //     type: SET_CONFIRM_LOGIN_SUCCESS, 
-        //     field: "dataSourceRoleAccount",
-        //     value: result
-        //   });
-        //   yield put({
-        //     type: SET_MODAL,
-        //     field: "show",
-        //     value: true
-        //   })
-        // }
-        // console.log('ini dia', roles[4][0].group_name)
       }
       window.location.href = process.env.PUBLIC_URL +"/";
-    } else {
+    } else if (_response.data.resendActivation){
+      yield put({
+        type: SET_LOGIN_FAILED,
+        value: _response.data.message
+      })
+      yield put({
+        type: SET_RESEND_ACTIVATION,
+        value: _response.data.resendActivation
+      })
+    }
+    else {
       yield put({
         type: SET_LOGIN_FAILED,
         value: _response.data.message
       })
     }
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: false
-    // });
+    yield put({
+      type: SET_SPINNER,
+      value: false
+    });
   } catch (error) {
     // yield put({
     //   type: SET_LOADER,
@@ -312,6 +148,10 @@ export function* login() {
       type: SET_LOGIN_FAILED,
       value: error
     })
+    yield put({
+      type: SET_SPINNER,
+      value: false
+    });
     // fail(error);
   }
 }
@@ -415,11 +255,86 @@ export function* logout() {
   }
 }
 
+export function* registration(){
+  try {
+    const accountState = yield select(getAccountState);
+    const registState = accountState.register;
+    let param ={
+      email: registState.email,
+      password: registState.password,
+      phone: registState.noHP,
+      name: registState.fullname
+    }
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + API_PATH.register, param, Header());
+    if (_response.status === 200){
+      yield put({
+        type: SET_REGISTER_SUCCESS
+      });
+      yield put({
+        type: RESET_STATE_LOGIN
+      })
+    } else {
+      yield put({
+        type: SET_REGISTER_FAILED,
+        value: _response.data.message
+      });
+    }
+  } catch (error){
+    yield put({
+      type: SET_REGISTER_FAILED,
+      value: error
+    });
+  }
+}
+export function* sendEmail(){
+  try{
+    const accountState = yield select(getAccountState);
+    let param ={
+      email: accountState.modalActivation.email,
+    }
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.requestActivation, param, Header());
+    if (_response.status ===200){
+      yield put({
+        type: RESET_STATE_LOGIN
+      })
+      yield put({
+        type: EMAIL_ACTIVATION_SUCCESS,
+        value: _response.data.message
+      })
+    } else {
+      console.log(_response)
+      yield put({
+        type: SET_MODAL_ACTIVATION,
+        value: _response.data.message,
+        field: "errormsg"
+      })
+      yield put({
+        type: SET_MODAL_ACTIVATION,
+        value: true,
+        field: "openAlert"
+      })
+    }
+  } catch (error){
+    yield put({
+      type: SET_MODAL_ACTIVATION,
+      value: error,
+      field: "errormsg"
+    })
+    yield put({
+      type: SET_MODAL_ACTIVATION,
+      value: true,
+      field: "openAlert"
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(SET_LOGIN, login),
     takeEvery(SET_GOOGLE_LOGIN, googleLogin),
     takeEvery(SET_CONFIRM_LOGIN, confirmLogin),
-    takeEvery(SET_LOGOUT, logout)
+    takeEvery(SET_LOGOUT, logout),
+    takeEvery(SET_REGISTER, registration),
+    takeEvery(EMAIL_ACTIVATION, sendEmail)
   ]);
 }

@@ -16,20 +16,20 @@ const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const userController = require('./user');
-const pwValidator = new passwordValidator()
-  .is()
-  .min(8)
-  .is()
-  .max(100)
-  .has()
-  .uppercase()
-  .has()
-  .lowercase()
-  .has()
-  .digits()
-  .has()
-  .not()
-  .spaces();
+// const pwValidator = new passwordValidator()
+//   .is()
+//   .min(8)
+//   .is()
+//   .max(100)
+//   .has()
+//   .uppercase()
+//   .has()
+//   .lowercase()
+//   .has()
+//   .digits()
+//   .has()
+//   .not()
+//   .spaces();
 
 async function shouldSendingMail(people, type) {
   const model_confirmation = sec_confirmation();
@@ -59,6 +59,8 @@ async function shouldSendingMail(people, type) {
 
 exports.create = async function (req, res) {
   const model_registrant = sec_registrant();
+  const model_confirmation = sec_confirmation();
+  const model_user = sec_user();
 
   var new_user = {
     name: req.body.name,
@@ -71,16 +73,56 @@ exports.create = async function (req, res) {
     created_date: moment().format()
   };
 
+  const checkReg = await model_registrant.findOne({
+    where: {
+     email: new_user.email
+    }
+  })
+
+  if(checkReg){
+    const checkConfirmation = await model_confirmation.findOne({
+      where: {
+        sec_registrant_id: checkReg.id
+      }
+    })
+
+    const checkUser = await model_user.findOne({
+      where: {
+        email: checkReg.email
+      }
+    })
+
+    if(checkReg){
+      if(checkReg.status == ACTIVE){
+        if(checkConfirmation){
+          if(checkConfirmation.status == ACTIVE){
+            throw new Error('Harap Aktivasi Email');
+          }else if(checkConfirmation.status == DELETED){
+            throw new Error('Resend Email Activasion');
+          }
+        }
+      }else if(checkReg.status == DELETED){
+        if(checkUser.is_email_validated == ACTIVE){
+          throw new Error('User Sudah Terdaftar');
+        }
+      }
+    }
+  }
+  
+ 
+  const registrant = await model_registrant.create(new_user);
+  if (!registrant) throw registrant;
+
   try {
     var checkEmail = emailValidator.validate(req.body.email);
     if (checkEmail == false) {
       throw new Error('Email yang dimasukkan tidak sesuai kriteria');
     }
 
-    var checkPW = pwValidator.validate(req.body.password);
-    if (checkPW == false) {
-      throw new Error('Password yang dimasukkan tidak sesuai kriteria');
-    }
+    // var checkPW = pwValidator.validate(req.body.password);
+    // if (checkPW == false) {
+    //   throw new Error('Password yang dimasukkan tidak sesuai kriteria');
+    // }
 
     var checkPhone = req.body.phone
       ? phoneValidator.validate(req.body.phone)
@@ -89,8 +131,6 @@ exports.create = async function (req, res) {
       throw new Error('Nomor Telepon yang dimasukkan tidak sesuai kriteria');
     }
 
-    const registrant = await model_registrant.create(new_user);
-    if (!registrant) throw registrant;
 
     const code = crypto.randomBytes(16).toString('hex');
     const subject = 'Account activation';

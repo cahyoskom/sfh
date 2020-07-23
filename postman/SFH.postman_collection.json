@@ -6,6 +6,39 @@
 	},
 	"item": [
 		{
+			"name": "/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"mail.vudin@gmail.com\",\n    \"password\": \"Adminus123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/login",
 			"request": {
 				"auth": {
@@ -30,11 +63,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/login",
+					"raw": "localhost:3000/login",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"login"
 					]
@@ -60,11 +93,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/registration",
+					"raw": "localhost:3000/registration",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"registration"
 					]
@@ -81,14 +114,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:5000/activating/0e53d2d1af0ca86baebbe6384e15d2ba",
+					"raw": "localhost:3000/activating/faaa184c11a2862c62945b37326ef8e2",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"activating",
-						"0e53d2d1af0ca86baebbe6384e15d2ba"
+						"faaa184c11a2862c62945b37326ef8e2"
 					]
 				}
 			},
@@ -112,11 +145,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/request_activation",
+					"raw": "localhost:3000/request_activation",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"request_activation"
 					]
@@ -134,7 +167,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"admin@sakola.co.id\",\n    \"password\": \"AAdminus123\"\n}",
+					"raw": "{\n    \"email\": \"admins@sakola.co.id\",\n    \"password\": \"xAdminus123\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -142,14 +175,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/update_password/bd8bb41a5a4341acc1f3828029673b91",
+					"raw": "localhost:3000/update_password/d9afd2948dbab7358593b5d912e9ca77",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"update_password",
-						"bd8bb41a5a4341acc1f3828029673b91"
+						"d9afd2948dbab7358593b5d912e9ca77"
 					]
 				}
 			},
@@ -173,11 +206,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/forgot_password",
+					"raw": "localhost:3000/forgot_password",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"forgot_password"
 					]
@@ -193,7 +226,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1b",
+							"value": "565f065534f52023f01aa1709711dce4424c76685f4366d617e67de5d3c1fa21",
 							"type": "string"
 						}
 					]
@@ -201,14 +234,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:5000/check_token/638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1",
+					"raw": "localhost:3000/check_token/565f065534f52023f01aa1709711dce4424c76685f4366d617e67de5d3c1fa21",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "3000",
 					"path": [
 						"check_token",
-						"638c7ede31c6ed995043a21e0f9f03b5e33c86c034e92b959993de9530d28b1"
+						"565f065534f52023f01aa1709711dce4424c76685f4366d617e67de5d3c1fa21"
 					]
 				}
 			},

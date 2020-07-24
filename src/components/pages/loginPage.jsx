@@ -72,13 +72,11 @@ class SignIn extends Component {
       }
 
     googleResponse = (response) =>{
-        console.log(response)
         this.props.googleLogin(response)
     }
 
     render() {
         const { accountState, onChangeStateLogin, setStateModalFormLogin, closeAlert, setModalActivation, resendEmail } = this.props;
-        console.log("SUKSEESSS GA SIHH" + accountState.modalActivation.success)
         return (
           <BlockUi
             tag="div"
@@ -106,7 +104,7 @@ class SignIn extends Component {
                                 </div>
                                 {/* <div className="theme-card"> */}
                                     <h5>Masuk ke SchoolFromHome</h5>
-                                    <Grid container direction="column" justify="space-between" alignItems="center">
+                                    <Grid container direction="column" justify="space-between">
                                     <Grid item>
                                         <Collapse in={accountState.openLoginAlert}>
                                             <Alert severity="error" action={

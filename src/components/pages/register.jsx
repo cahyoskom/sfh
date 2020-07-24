@@ -6,15 +6,19 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import { Grid, Checkbox, Button, IconButton,
 Dialog, DialogActions, DialogContent, DialogContentText,Collapse } from '@material-ui/core';
+import {default as MaterialLink} from '@material-ui/core/Link';
 import Alert from '@material-ui/lab/Alert';
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import CloseIcon from '@material-ui/icons/Close';
-import { Col, Input, Row } from 'reactstrap';
+import { Input, Modal, ModalHeader, 
+    ModalBody, ModalFooter, } from 'reactstrap';
 import {
     onChangeStateRegister, 
     googleLogin,
     closeRegistAlert,
-    saveRegister
+    saveRegister,
+    setModalActivation,
+    resendEmail
 } from "../../actions"
 import { GoogleLogin } from 'react-google-login';
 import {Credential} from '../../constants/google-key';
@@ -56,7 +60,7 @@ class Register extends Component {
     }
 
     render(){
-        const { accountState, onChangeStateRegister, closeRegistAlert } = this.props;
+        const { accountState, onChangeStateRegister, closeRegistAlert, setModalActivation, resendEmail } = this.props;
 
         return (
             <div>
@@ -67,7 +71,8 @@ class Register extends Component {
                             <Grid item xs={12} lg={4}>
                                 <div><h4><strong>Daftar Akun SinauNgomah</strong></h4></div>
                                 <Card variant="outlined">
-                                <Grid item>
+                                <Grid container direction="col" justify="space-around">
+                                    <Grid item>
                                         <Collapse in={accountState.register.showErrorRegister}>
                                             <Alert severity="error" action={
                                             <IconButton
@@ -78,6 +83,15 @@ class Register extends Component {
                                                 </IconButton>}>{accountState.register.errorMessage}
                                             </Alert>
                                         </Collapse>
+                                    </Grid>
+                                    <Grid item>
+                                    {accountState.resendActivationRegist && <MaterialLink
+                                        component="button"
+                                        variant="body2"
+                                        onClick={() => setModalActivation("show", true)}>
+                                        Kirim ulang verifikasi email
+                                        </MaterialLink>}
+                                    </Grid>
                                 </Grid>
                                 <ValidatorForm onSubmit={this.handleSubmit}>
                                     <CardContent>
@@ -268,6 +282,44 @@ class Register extends Component {
                         </Grid>
                     </DialogActions>
                 </Dialog>
+
+                {/* modal resend email activation */}
+                <Modal isOpen={accountState.modalActivation.show}>
+                    <ModalHeader toggle={() => setModalActivation("show", false)}><strong>Kirim ulang verifikasi email</strong></ModalHeader>
+                        {!accountState.modalActivation.success && <ModalBody>
+                            <label>Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan mengirimkan email yang berisi link untuk melakukan verifikasi.</label>
+                            <label>Email: </label>
+                            <Input 
+                                type="email" 
+                                id="email"
+                                placeholder="Contoh: janedoe@mail.com" 
+                                value={accountState.modalActivation.email}
+                                onChange={e =>
+                                setModalActivation(e.target.id, e.target.value)
+                                }
+                            />
+                            <Collapse in={accountState.modalActivation.openAlert}>
+                                <Alert severity="error" action={
+                                <IconButton
+                                    aria-label="close"
+                                    color="inherit"
+                                    size="small"
+                                    onClick={() => setModalActivation("openAlert", false)}><CloseIcon fontSize="inherit" />
+                                    </IconButton>}>{accountState.modalActivation.errormsg}
+                                </Alert>
+                            </Collapse>
+                        </ModalBody>}
+                        {accountState.modalActivation.success &&
+                        <ModalBody>
+                            <Alert severity="success">
+                                <p><strong>Email berhasil dikirim!</strong></p>
+                                <p>{accountState.modalActivation.successmsg}</p>
+                            </Alert>
+                        </ModalBody>}
+                        {!accountState.modalActivation.success && <ModalFooter>
+                        <Button color="primary" variant="contained" disableElevation onClick={resendEmail}>Kirim email</Button>
+                        </ModalFooter>}
+                    </Modal>
             </div>
         )
     }
@@ -277,5 +329,5 @@ const mapStateToProps = state => ({
     accountState: state.account
   });
 export default connect(
-    mapStateToProps, {onChangeStateRegister, googleLogin, closeRegistAlert, saveRegister}
+    mapStateToProps, {onChangeStateRegister, googleLogin, closeRegistAlert, saveRegister, setModalActivation, resendEmail}
 )(Register);

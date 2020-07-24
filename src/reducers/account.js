@@ -19,7 +19,8 @@ import {
     SET_CLOSE_ALERT,
     SET_SPINNER,
     SET_MODAL_ACTIVATION,
-    EMAIL_ACTIVATION_SUCCESS
+    EMAIL_ACTIVATION_SUCCESS,
+    SET_RESEND_ACTIVATION_REGIST,
   } from "../constants/ActionTypes";
   import Config from "../constants/config";
 import { ErrorMessage } from "formik";
@@ -82,12 +83,11 @@ import { ErrorMessage } from "formik";
       title: "Select Group",
       buttonText: "OK",
     },
-    site_key: Config.CAPTCHA_KEY,
-    reset_captcha: false,
     openLoginAlert: false,
     alertMsg: "",
     showSpinner: false,
     resendActivation: false,
+    resendActivationRegist : false,
     modalActivation:{
       show: false,
       errormsg: "",
@@ -129,6 +129,7 @@ import { ErrorMessage } from "formik";
           alertMsg: "",
           showSpinner: false,
           resendActivation: false,
+          resendActivationRegist : false,
           modalActivation: {
             show: false,
             errormsg: "",
@@ -173,13 +174,40 @@ import { ErrorMessage } from "formik";
       case EMAIL_ACTIVATION_SUCCESS:
         return {
           ...state,
-          modalActivation:{
-            ...state.modalActivation,
+          login: {
+            isChecked: false,
+            email: "",
+            password: ""
+          },
+          forgotPassword: {
+            email: "",
+            password: "",
+            rePassword: ""
+          },
+          register: {
+            isChecked: false,
+            email: "",
+            fullname: "",
+            noHP: "",
+            password: "",
+            rePassword: "",
+            showErrorRegister: false,
+            errorMessage: "",
+            success: false
+          },
+          loader: false,
+          openLoginAlert: false,
+          alertMsg: "",
+          showSpinner: false,
+          resendActivation: false,
+          resendActivationRegist : false,
+          modalActivation: {
             show: true,
-            success: true,
+            errormsg: "",
             openAlert: false,
-            successmsg: action.value,
-            
+            email:"",
+            success: true,
+            successmsg: action.value
           }
       };
       case SET_LOADER:
@@ -210,6 +238,11 @@ import { ErrorMessage } from "formik";
         return {
           ...state,
           resendActivation: action.value
+      };
+      case SET_RESEND_ACTIVATION_REGIST:
+        return {
+          ...state,
+          resendActivationRegist: action.value
       };
       case SET_CLOSE_ALERT:
         return{

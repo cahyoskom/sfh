@@ -19,7 +19,8 @@ import {
   SET_RESEND_ACTIVATION,
   EMAIL_ACTIVATION,
   EMAIL_ACTIVATION_SUCCESS,
-  SET_MODAL_ACTIVATION
+  SET_MODAL_ACTIVATION,
+  SET_RESEND_ACTIVATION_REGIST
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
@@ -268,10 +269,19 @@ export function* registration(){
     const _response = yield call(services.PUT, API_BASE_URL_DEV + API_PATH.register, param, Header());
     if (_response.status === 200){
       yield put({
+        type: RESET_STATE_LOGIN
+      })
+      yield put({
         type: SET_REGISTER_SUCCESS
       });
+    } else if ( _response.data.error === 401001){
       yield put({
-        type: RESET_STATE_LOGIN
+        type: SET_REGISTER_FAILED,
+        value: _response.data.message
+      });
+      yield put({
+        type: SET_RESEND_ACTIVATION_REGIST,
+        value: true
       })
     } else {
       yield put({
@@ -295,14 +305,10 @@ export function* sendEmail(){
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.requestActivation, param, Header());
     if (_response.status ===200){
       yield put({
-        type: RESET_STATE_LOGIN
-      })
-      yield put({
         type: EMAIL_ACTIVATION_SUCCESS,
         value: _response.data.message
       })
     } else {
-      console.log(_response)
       yield put({
         type: SET_MODAL_ACTIVATION,
         value: _response.data.message,

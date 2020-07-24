@@ -51,7 +51,7 @@ class NavBar extends Component {
                             </div>
                         </li>
                         {/* <li className="mega"><Link to={`${process.env.PUBLIC_URL}/`}>{translate('home')}</Link></li> */}
-                        <li className="mega"> Hello, {localStorage.name != null ? localStorage.name.replace(/"/g,'') : ""}</li>
+                        {localStorage.name != null && <li className="mega"> Hello, {localStorage.name.replace(/"/g,'')}</li>}
                     </ul>
                 </nav>
             </div>

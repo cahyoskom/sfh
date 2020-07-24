@@ -1,47 +1,89 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
+import {Link} from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import { Grid, Checkbox, Button } from '@material-ui/core';
+import { Grid, Checkbox, Button, IconButton,
+Dialog, DialogActions, DialogContent, DialogContentText,Collapse } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
-import {onChangeStateRegister, googleLogin} from "../../actions"
+import CloseIcon from '@material-ui/icons/Close';
+import { Col, Input, Row } from 'reactstrap';
+import {
+    onChangeStateRegister, 
+    googleLogin,
+    closeRegistAlert,
+    saveRegister
+} from "../../actions"
 import { GoogleLogin } from 'react-google-login';
 import {Credential} from '../../constants/google-key';
 
 class Register extends Component {
 
-    // constructor (props) {
-    //     super (props)
+    constructor (props) {
+        super (props)
 
-    // }
-    componentDidMount (){
-        ValidatorForm.addValidationRule('isChecked', value => value)
+        this.state = {
+            openDialog: false
+        }
+    }
+    handleClose = () =>{
+        this.setState({openDialog : false})
+    }
+
+    componentDidMount(){
+        ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
+            if (value !== this.props.accountState.register.password) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    handleSubmit=()=>{
+        this.setState({openDialog: true})
+    }
+    postRegister=()=>{
+        this.setState({openDialog : false})
+        if(this.props.accountState.register.isChecked){
+            this.props.saveRegister()
+        }
     }
 
     googleResponse = (response) =>{
-        console.log(response)
         this.props.googleLogin(response)
     }
 
-    render (){
-        const {accountState} = this.props
+    render(){
+        const { accountState, onChangeStateRegister, closeRegistAlert } = this.props;
 
         return (
             <div>
-                        
                 {/*Regsiter section*/}
                 <section className="register-page section-b-space">
-                    <div className="container">
+                    {!accountState.register.success && <div className="container">
                         <Grid container justify="center" alignItems="center">
                             <Grid item xs={12} lg={4}>
-                                <h4>Daftar Akun SinauNgomah</h4>
+                                <div><h4><strong>Daftar Akun SinauNgomah</strong></h4></div>
                                 <Card variant="outlined">
+                                <Grid item>
+                                        <Collapse in={accountState.register.showErrorRegister}>
+                                            <Alert severity="error" action={
+                                            <IconButton
+                                                aria-label="close"
+                                                color="inherit"
+                                                size="small"
+                                                onClick={closeRegistAlert}><CloseIcon fontSize="inherit" />
+                                                </IconButton>}>{accountState.register.errorMessage}
+                                            </Alert>
+                                        </Collapse>
+                                </Grid>
+                                <ValidatorForm onSubmit={this.handleSubmit}>
                                     <CardContent>
-                                        <ValidatorForm onSubmit="GANTI">
                                             <div className="form-group">
                                                 <TextValidator
-                                                    id="fullName"
+                                                    id="fullname"
                                                     label="Nama lengkap"
                                                     type="text"
                                                     InputLabelProps={{
@@ -49,12 +91,15 @@ class Register extends Component {
                                                     }}
                                                     margin="dense"
                                                     fullWidth
+                                                    required
                                                     variant="outlined"
                                                     onChange={e =>
                                                         onChangeStateRegister(e.target.id, e.target.value)
                                                         }
-                                                    value ={accountState.register.fullName}
+                                                    value ={accountState.register.fullname}
                                                     autoComplete={"name"}
+                                                    validators={['required']}
+                                                    errorMessages={['masukkan nama']}
                                                 />
                                             </div>
                                             <div className="form-group">
@@ -94,13 +139,13 @@ class Register extends Component {
                                                     onChangeStateRegister(e.target.id, e.target.value)
                                                     }
                                                     value = {accountState.register.password}
-                                                    validators={['required']}
-                                                    errorMessages={['masukkan kata sandi']}
+                                                    validators={['required', 'minStringLength:6']}
+                                                    errorMessages={['masukkan kata sandi', 'kata sandi minimal 6 karakter']}
                                                 />
                                             </div>
                                             <div className="form-group">
                                                 <TextValidator
-                                                    id="repassword"
+                                                    id="rePassword"
                                                     type="password"
                                                     label="Ulangi kata sandi"
                                                     InputLabelProps={{
@@ -113,9 +158,9 @@ class Register extends Component {
                                                     onChange={e =>
                                                     onChangeStateRegister(e.target.id, e.target.value)
                                                     }
-                                                    value = {accountState.register.repassword}
-                                                    validators={['required']}
-                                                    errorMessages={['masukkan kata sandi']}
+                                                    value = {accountState.register.rePassword}
+                                                    validators={['isPasswordMatch', 'required']}
+                                                    errorMessages={['kata sandi tidak sama', 'masukkan kata sandi']}
                                                 />
                                             </div>
                                             <div className="form-group">
@@ -138,22 +183,24 @@ class Register extends Component {
                                             <Grid container direction="row" alignItems="center" justify="space-around">
                                                 <Grid item xs={2} lg={2}>
                                                     <Checkbox
-                                                        validators={['isChecked']}
-                                                        errorMessages={['this field is required']}
+                                                        id= "isChecked"
+                                                        name="checked"
+                                                        color="primary"
                                                         checked={accountState.register.isChecked}
-                                                        value={accountState.register.isChecked}
+                                                        onChange={e =>
+                                                            onChangeStateRegister(e.target.id, e.target.checked)
+                                                        }
                                                     />
                                                 </Grid>
                                                 <Grid item xs={10} lg={10}>
                                                     <p>Saya telah memahami dan menyetujui Ketentuan & Kebijakan SinauNgomah</p>
                                                 </Grid>
                                             </Grid>
-                                        </ValidatorForm>
                                     </CardContent>
                                     <CardActions>
                                         <Grid container direction="column" alignItems="center" justify="space-around" spacing={2}>
                                             <Grid item>
-                                                <Button variant="contained" disableElevation color="primary" type="submit">Buat Akun</Button>
+                                                <Button variant="contained" disableElevation color="primary" type="submit" disabled={!accountState.register.isChecked}>Buat Akun</Button>
                                             </Grid>
                                             <Grid item>atau masuk dengan</Grid>
                                             <Grid item>
@@ -167,15 +214,60 @@ class Register extends Component {
                                                     responseType='code,token'/>
                                                 </div>
                                             </Grid>
+                                            <Grid item>
+                                                Sudah punya akun? <Link to={`${process.env.PUBLIC_URL}/login`}>Silakan masuk</Link>
+                                            </Grid>
                                         </Grid>
-
                                     </CardActions>
+                                    </ValidatorForm>
                                 </Card>
                             </Grid>
                         </Grid>
-                    </div>
+                    </div>}
+                    {accountState.register.success && <div className="container">
+                        <Grid container direction="column" alignItems="center" justify="space-between" spacing={1}>
+                            <Grid item xs={12} lg={5}>
+                                <img src={`${process.env.PUBLIC_URL}/assets/images/success-img.png`} alt="login-page-img"></img>
+                            </Grid>
+                            <Grid item alignItems="center">
+                                <strong>Pengguna berhasil didaftarkan!</strong>
+                            </Grid>
+                            <Grid item>
+                                Silakan cek email Anda untuk verifikasi email
+                            </Grid>
+                            <Grid item>
+                                <Link to={`${process.env.PUBLIC_URL}/login`}><Button variant="contained" disableElevation color="primary">Masuk</Button></Link>
+                            </Grid>
+                        </Grid>
+                    </div>}
                 </section>
-
+                 
+                <Dialog
+                    open={this.state.openDialog}
+                    onClose={this.handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Apakah kamu sudah yakin dengan data yang kamu isi dan ingin melanjutkan?
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Grid container direction="row" alignItems="center" justify="space-around">
+                            <Grid item>
+                            <Button onClick={this.handleClose} variant="contained" disableElevation color="default">
+                                Kembali
+                            </Button>
+                            </Grid>
+                            <Grid item>
+                            <Button onClick={this.postRegister} variant="contained" disableElevation color="primary" autoFocus>
+                                Ya, sudah yakin
+                            </Button>
+                            </Grid>
+                        </Grid>
+                    </DialogActions>
+                </Dialog>
             </div>
         )
     }
@@ -185,5 +277,5 @@ const mapStateToProps = state => ({
     accountState: state.account
   });
 export default connect(
-    mapStateToProps, {onChangeStateRegister, googleLogin}
+    mapStateToProps, {onChangeStateRegister, googleLogin, closeRegistAlert, saveRegister}
 )(Register);

@@ -65,6 +65,14 @@ export const resetStateLoginMenu = () => ({
 export const postLogout = () => ({
     type: types.SET_LOGOUT
 });
+export const setModalActivation = (field, value) =>({
+    type: types.SET_MODAL_ACTIVATION,
+    value,
+    field
+});
+export const resendEmail = () => ({
+    type: types.EMAIL_ACTIVATION,
+});
 
 
 //REGISTER
@@ -73,7 +81,12 @@ export const onChangeStateRegister = (field, value) => ({
     value,
     field
 });
-
+export const closeRegistAlert = () => ({
+    type: types.SET_CLOSE_REGIST_ALERT
+});
+export const saveRegister = ()=>({
+    type: types.SET_REGISTER
+});
 
 /////////////
 

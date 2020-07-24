@@ -58,7 +58,8 @@ import Details from './components/blogs/details'
 import BlogPage from './components/blogs/blog-page'
 
 //customme
-import SignIn from './components/pages/loginPage'
+import Home from './components/pages/home';
+import SignIn from './components/pages/loginPage';
 import PrivateRoute from './PrivateRoute';
 import PrivateRouteGuru from './PrivateRouteGuru';
 import PrivateRouteSiswa from './PrivateRouteSiswa';
@@ -171,7 +172,7 @@ class Root extends React.Component {
 								<PrivateRoute
 									exact
 									path={`${process.env.PUBLIC_URL}/`}
-									component={SignIn}
+									component={Home}
 									authenticated={this.authCheck()}
 								/>
 

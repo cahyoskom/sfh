@@ -24,42 +24,42 @@ import {
   SET_CLOSE_ALERT,
   SET_SPINNER,
   SET_MODAL_ACTIVATION,
-  EMAIL_ACTIVATION_SUCCESS
-} from '../constants/ActionTypes';
-import Config from '../constants/config';
-import { ErrorMessage } from 'formik';
+  EMAIL_ACTIVATION_SUCCESS,
+} from "../constants/ActionTypes";
+import Config from "../constants/config";
+import { ErrorMessage } from "formik";
 
 const initialState = {
   login: {
     isChecked: false,
-    email: '',
-    password: ''
+    email: "",
+    password: "",
     // recaptcha: ""
   },
   forgotPassword: {
-    email: '',
-    password: '',
-    rePassword: ''
+    email: "",
+    password: "",
+    rePassword: "",
   },
   register: {
     isChecked: false,
-    email: '',
-    fullname: '',
-    noHP: '',
-    password: '',
-    rePassword: '',
+    email: "",
+    fullname: "",
+    noHP: "",
+    password: "",
+    rePassword: "",
     showErrorRegister: false,
-    errorMessage: '',
-    success: false
+    errorMessage: "",
+    success: false,
   },
   newPassword: {
-    email: ''
+    email: "",
   },
   updatePassword: {
-    password: '',
-    repeatPassword: '',
-    recaptcha: '',
-    code: ''
+    password: "",
+    repeatPassword: "",
+    recaptcha: "",
+    code: "",
   },
   // roles:[],
   // roles: localStorage.getItem("roles")
@@ -85,31 +85,31 @@ const initialState = {
   //   student_class_id: 0,
   //   sex: ""
   // },
-  token: localStorage.getItem('token'),
-  profile: localStorage.getItem('profile')
-    ? JSON.parse(localStorage.getItem('profile'))
+  token: localStorage.getItem("token"),
+  profile: localStorage.getItem("profile")
+    ? JSON.parse(localStorage.getItem("profile"))
     : undefined,
   loader: false,
   modal: {
     show: false,
-    type: 'switch',
-    title: 'Select Group',
-    buttonText: 'OK'
+    type: "switch",
+    title: "Select Group",
+    buttonText: "OK",
   },
   site_key: Config.CAPTCHA_KEY,
   reset_captcha: false,
   openLoginAlert: false,
-  alertMsg: '',
+  alertMsg: "",
   showSpinner: false,
   resendActivation: false,
   modalActivation: {
     show: false,
-    errormsg: '',
+    errormsg: "",
     openAlert: false,
-    email: '',
+    email: "",
     success: false,
-    successmsg: ''
-  }
+    successmsg: "",
+  },
 };
 
 export default function loginReducer(state = initialState, action) {
@@ -119,94 +119,94 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         login: {
           isChecked: false,
-          email: '',
-          password: ''
+          email: "",
+          password: "",
         },
         forgotPassword: {
-          email: '',
-          password: '',
-          rePassword: ''
+          email: "",
+          password: "",
+          rePassword: "",
         },
         register: {
           isChecked: false,
-          email: '',
-          fullname: '',
-          noHP: '',
-          password: '',
-          rePassword: '',
+          email: "",
+          fullname: "",
+          noHP: "",
+          password: "",
+          rePassword: "",
           showErrorRegister: false,
-          errorMessage: '',
-          success: false
+          errorMessage: "",
+          success: false,
         },
         loader: false,
         openLoginAlert: false,
-        alertMsg: '',
+        alertMsg: "",
         showSpinner: false,
         resendActivation: false,
         modalActivation: {
           show: false,
-          errormsg: '',
+          errormsg: "",
           openAlert: false,
-          email: '',
+          email: "",
           success: false,
-          successmsg: ''
-        }
+          successmsg: "",
+        },
       };
     case ON_CHANGE_STATE_NEW_PASSWORD:
       return {
         ...state,
         newPassword: {
           ...state.newPassword,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case ON_CHANGE_STATE_UPDATE_PASSWORD:
       return {
         ...state,
         updatePassword: {
           ...state.updatePassword,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case SET_UPDATE_PASSWORD_CODE:
       return {
         ...state,
         updatePassword: {
           ...state.updatePassword,
-          code: action.value
-        }
+          code: action.value,
+        },
       };
     case ON_CHANGE_STATE_LOGIN:
       return {
         ...state,
         login: {
           ...state.login,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case ON_CHANGE_STATE_REGISTER:
       return {
         ...state,
         register: {
           ...state.register,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case ON_CHANGE_STATE_FORGOT:
       return {
         ...state,
         forgotPassword: {
           ...state.forgotPassword,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case SET_MODAL_ACTIVATION:
       return {
         ...state,
         modalActivation: {
           ...state.modalActivation,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case EMAIL_ACTIVATION_SUCCESS:
       return {
@@ -216,42 +216,42 @@ export default function loginReducer(state = initialState, action) {
           show: true,
           success: true,
           openAlert: false,
-          successmsg: action.value
-        }
+          successmsg: action.value,
+        },
       };
     case SET_LOADER:
       return {
         ...state,
-        loader: action.value
+        loader: action.value,
       };
     case SET_SPINNER:
       return {
         ...state,
-        showSpinner: action.value
+        showSpinner: action.value,
       };
     case SET_LOGIN_SUCCESS:
       return {
         ...state,
 
         profile: action.value,
-        showSpinner: false
+        showSpinner: false,
       };
     case SET_LOGIN_FAILED:
       return {
         ...state,
         alertMsg: action.value,
         openLoginAlert: true,
-        showSpinner: false
+        showSpinner: false,
       };
     case SET_RESEND_ACTIVATION:
       return {
         ...state,
-        resendActivation: action.value
+        resendActivation: action.value,
       };
     case SET_CLOSE_ALERT:
       return {
         ...state,
-        openLoginAlert: false
+        openLoginAlert: false,
       };
     case SET_CLOSE_REGIST_ALERT:
       return {
@@ -259,8 +259,8 @@ export default function loginReducer(state = initialState, action) {
         register: {
           ...state.register,
           showErrorRegister: false,
-          errorMessage: ''
-        }
+          errorMessage: "",
+        },
       };
     case SET_REGISTER_FAILED:
       return {
@@ -268,47 +268,47 @@ export default function loginReducer(state = initialState, action) {
         register: {
           ...state.register,
           errorMessage: action.value,
-          showErrorRegister: true
-        }
+          showErrorRegister: true,
+        },
       };
     case SET_REGISTER_SUCCESS:
       return {
         ...state,
         register: {
           ...state.register,
-          success: true
-        }
+          success: true,
+        },
       };
     case SET_TOKEN_SUCCESS:
       return {
         ...state,
-        token: action.value
+        token: action.value,
       };
     case SET_ROLES_SUCCESS:
       return {
         ...state,
-        roles: action.value
+        roles: action.value,
       };
     case SET_MODAL:
       return {
         ...state,
         modal: {
           ...state.modal,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     case SET_CONFIRM_LOGIN_SUCCESS:
       return {
         ...state,
-        [action.field]: action.value
+        [action.field]: action.value,
       };
     case SET_MODAL_FORM_LOGIN:
       return {
         ...state,
         role: {
           ...state.role,
-          [action.field]: action.value
-        }
+          [action.field]: action.value,
+        },
       };
     default:
   }

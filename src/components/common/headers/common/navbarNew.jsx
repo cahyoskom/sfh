@@ -12,15 +12,15 @@ class NavbarTMS extends Component {
     super(props);
 
     this.state = {
-      navClose: { right: "0px" }
+      navClose: { right: "0px" },
     };
   }
 
   componentWillMount() {
-    $(function() {
+    $(function () {
       $("#main-menu").smartmenus({
         subMenusSubOffsetX: 1,
-        subMenusSubOffsetY: -8
+        subMenusSubOffsetY: -8,
       });
     });
     if (window.innerWidth < 750) {
@@ -65,7 +65,8 @@ class NavbarTMS extends Component {
                 className="mobile-back text-right"
                 onClick={this.closeNav.bind(this)}
               >
-                Back<i className="fa fa-angle-right pl-2" aria-hidden="true" />
+                Back
+                <i className="fa fa-angle-right pl-2" aria-hidden="true" />
               </div>
             </li>
             <li className="mega">
@@ -105,11 +106,10 @@ class NavbarTMS extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  accountState: state.account
+const mapStateToProps = (state) => ({
+  accountState: state.account,
 });
 
-export default connect(
-  mapStateToProps,
-  { postLogout }
-)(withTranslate(NavbarTMS));
+export default connect(mapStateToProps, { postLogout })(
+  withTranslate(NavbarTMS)
+);

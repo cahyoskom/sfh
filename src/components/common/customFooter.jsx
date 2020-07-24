@@ -12,9 +12,9 @@ import { Button } from "@material-ui/core";
 const defaultFooterStyles = {
   root: {
     "&:last-child": {
-      padding: "0px 0px 0px 590px"
-    }
-  }
+      padding: "0px 0px 0px 590px",
+    },
+  },
 };
 
 class CustomFooter extends React.Component {
@@ -35,7 +35,13 @@ class CustomFooter extends React.Component {
                   className={classes.iconButton}
                   onClick={this.handleClick}
                 >
-                    <Button color="primary" size="small" style={{ color: "blue" }}>Submit Selected Task</Button>
+                  <Button
+                    color="primary"
+                    size="small"
+                    style={{ color: "blue" }}
+                  >
+                    Submit Selected Task
+                  </Button>
                   {/* <AddIcon className={classes.deleteIcon} /> */}
                 </IconButton>
               </Tooltip>

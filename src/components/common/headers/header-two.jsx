@@ -17,7 +17,7 @@ class HeaderTwo extends Component {
     super(props);
 
     this.state = {
-      isLoading: false
+      isLoading: false,
     };
   }
 
@@ -110,7 +110,6 @@ class HeaderTwo extends Component {
                 <div className="menu-right pull-right">
                   {/*Top Navigation Bar Component*/}
                   {/* <NavbarTMS /> */}
-
                 </div>
               </div>
             </div>
@@ -121,7 +120,4 @@ class HeaderTwo extends Component {
   }
 }
 
-export default connect(
-  null,
-  { changeCurrency }
-)(HeaderTwo);
+export default connect(null, { changeCurrency })(HeaderTwo);

@@ -10,39 +10,45 @@ import AddIcon from "@material-ui/icons/Add";
 import { Button } from "@material-ui/core";
 
 const defaultFooterStyles = {
-    root: {
-        "&:last-child": {
-        padding: "0px 0px 0px 590px"
-        }
-    }
+  root: {
+    "&:last-child": {
+      padding: "0px 0px 0px 590px",
+    },
+  },
 };
 
 class CustomFooterGuru extends React.Component {
-    handleClick = () => {
-        alert("Custom toolbar add button clicked");
-    };
+  handleClick = () => {
+    alert("Custom toolbar add button clicked");
+  };
 
-    render() {
-        const { classes } = this.props;
+  render() {
+    const { classes } = this.props;
 
-        return (
-        <TableFooter>
-            <TableRow>
-            <TableCell>
-                <React.Fragment>
-                <Tooltip title={"custom icon"}>
-                    <IconButton
-                    className={classes.iconButton}
-                    onClick={this.handleClick}
-                    >
-                        <Button color="primary" size="small" style={{ color: "blue" }}>Add New Task</Button>
-                    {/* <AddIcon className={classes.deleteIcon} /> */}
-                    </IconButton>
-                </Tooltip>
-                </React.Fragment>
-            </TableCell>
+    return (
+      <TableFooter>
+        <TableRow>
+          <TableCell>
+            <React.Fragment>
+              <Tooltip title={"custom icon"}>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={this.handleClick}
+                >
+                  <Button
+                    color="primary"
+                    size="small"
+                    style={{ color: "blue" }}
+                  >
+                    Add New Task
+                  </Button>
+                  {/* <AddIcon className={classes.deleteIcon} /> */}
+                </IconButton>
+              </Tooltip>
+            </React.Fragment>
+          </TableCell>
 
-            {/* <TableCell>
+          {/* <TableCell>
                 <TablePagination
                 className={classes.root}
                 count={this.props.count}
@@ -52,10 +58,10 @@ class CustomFooterGuru extends React.Component {
                 onChangeRowsPerPage={this.props.onChangeRowsPerPage}
                 />
             </TableCell> */}
-            </TableRow>
-        </TableFooter>
-        );
-    }
+        </TableRow>
+      </TableFooter>
+    );
+  }
 }
 
 export default withStyles(defaultFooterStyles, { name: "CustomFooter" })(

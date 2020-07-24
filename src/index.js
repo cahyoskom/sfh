@@ -78,6 +78,7 @@ import Subject from './components/usermanagement/subject';
 import Class from './components/usermanagement/class';
 import Student from './components/usermanagement/student';
 import Role from './components/usermanagement/role';
+import Confirmation from './components/pages/confirmation';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -176,6 +177,8 @@ class Root extends React.Component {
 
 								{/* Custom Routes */}
 								<PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn}/>
+
+								<PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation}/>
 
 								<PrivateRouteSiswa
 									path={`${process.env.PUBLIC_URL}/tasksiswa`}

@@ -110,7 +110,9 @@ exports.create = async function (req, res) {
                 );
               }
             }
-            throw new Error('Please do request activation link');
+            res.status(401)
+            .json({error:401001, message:'Please do request activation link'});
+            return;
           }
         }
       }

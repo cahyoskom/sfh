@@ -99,14 +99,14 @@ class SignIn extends Component {
                                 <img src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`} alt="login-page-img"></img>
                             </Grid>
                             <Grid item sm={12} lg={3}>
+                            <Grid container direction="column" justify="space-between" spacing={2}>
                                 <div>
                                     <h4><strong>Selamat Datang!</strong></h4>
                                 </div>
                                 {/* <div className="theme-card"> */}
-                                    <h5>Masuk ke SchoolFromHome</h5>
-                                    <Grid container direction="column" justify="space-between">
-                                    <Grid item>
+                                    <h5>Masuk ke SinauNgomah</h5>
                                         <Collapse in={accountState.openLoginAlert}>
+                                        <Grid item>
                                             <Alert severity="error" action={
                                             <IconButton
                                                 aria-label="close"
@@ -115,17 +115,16 @@ class SignIn extends Component {
                                                 onClick={closeAlert}><CloseIcon fontSize="inherit" />
                                                 </IconButton>}><strong>{accountState.alertMsg}</strong>
                                             </Alert>
-                                        </Collapse>
-                                    </Grid>
-                                    <Grid item>
-                                    {accountState.resendActivation && <MaterialLink
+                                            </Grid>
+                                        </Collapse> 
+                                    {accountState.resendActivation && <Grid item>
+                                    <MaterialLink
                                         component="button"
                                         variant="body2"
                                         onClick={() => setModalActivation("show", true)}>
                                         Kirim ulang verifikasi email
-                                        </MaterialLink>}
-                                    </Grid>
-                                    </Grid>
+                                        </MaterialLink>       
+                                    </Grid>} 
                                     <form className="theme-form">
                                     <ValidatorForm onSubmit={() => {this.onClickLogin();}}>
                                         <div className="form-group">
@@ -215,6 +214,7 @@ class SignIn extends Component {
                                             <div className="text-center">Belum punya akun SinauNgomah? <Link to={`${process.env.PUBLIC_URL}/register`}>Daftar</Link></div>
                                         </Grid>
                                     </Grid>
+                            </Grid>
                             </Grid>
                         </Grid>
                     </Container>

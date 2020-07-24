@@ -212,7 +212,7 @@ class SignIn extends Component {
                                             </div>
                                         </Grid>
                                         <Grid item>
-                                            <div className="text-center">Belum punya akun SchoolFromHome? <Link to={`${process.env.PUBLIC_URL}/register`}>Daftar</Link></div>
+                                            <div className="text-center">Belum punya akun SinauNgomah? <Link to={`${process.env.PUBLIC_URL}/register`}>Daftar</Link></div>
                                         </Grid>
                                     </Grid>
                             </Grid>

@@ -6,7 +6,7 @@ import {
     SET_REGISTER_SUCCESS,
     SET_REGISTER_FAILED,
     SET_CLOSE_REGIST_ALERT,
-    SET_FORGOT_SUCCESS,
+    // SET_FORGOT_SUCCESS,
     SET_CONFIRM_LOGIN_SUCCESS,
     SET_LOADER,
     ON_CHANGE_STATE_LOGIN,
@@ -16,6 +16,11 @@ import {
     SET_TOKEN_SUCCESS,
     SET_MODAL,
     SET_MODAL_FORM_LOGIN,
+    // SET_NEW_PASSWORD,
+    // SET_NEW_PASSWORD_SUCCESS,
+    ON_CHANGE_STATE_NEW_PASSWORD,
+    ON_CHANGE_STATE_UPDATE_PASSWORD,
+    SET_UPDATE_PASSWORD_CODE,
     SET_CLOSE_ALERT,
     SET_SPINNER,
     SET_MODAL_ACTIVATION,
@@ -35,7 +40,7 @@ import { ErrorMessage } from "formik";
     forgotPassword: {
       email: "",
       password: "",
-      rePassword: ""
+      rePassword: "",
     },
     register: {
       isChecked: false,
@@ -46,7 +51,16 @@ import { ErrorMessage } from "formik";
       rePassword: "",
       showErrorRegister: false,
       errorMessage: "",
-      success: false
+      success: false,
+    },
+    newPassword: {
+      email: "",
+    },
+    updatePassword: {
+      password: "",
+      repeatPassword: "",
+      recaptcha: "",
+      code: "",
     },
     // roles:[],
     // roles: localStorage.getItem("roles")
@@ -94,8 +108,8 @@ import { ErrorMessage } from "formik";
       openAlert: false,
       email:"",
       success: false,
-      successmsg: ""
-    }
+      successmsg: "",
+    },
   };
   
   export default function loginReducer(state = initialState, action) {
@@ -106,12 +120,12 @@ import { ErrorMessage } from "formik";
           login: {
             isChecked: false,
             email: "",
-            password: ""
+            password: "",
           },
           forgotPassword: {
             email: "",
             password: "",
-            rePassword: ""
+            rePassword: "",
           },
           register: {
             isChecked: false,
@@ -122,7 +136,7 @@ import { ErrorMessage } from "formik";
             rePassword: "",
             showErrorRegister: false,
             errorMessage: "",
-            success: false
+            success: false,
           },
           loader: false,
           openLoginAlert: false,
@@ -134,11 +148,19 @@ import { ErrorMessage } from "formik";
             show: false,
             errormsg: "",
             openAlert: false,
-            email:"",
+            email: "",
             success: false,
-            successmsg: ""
-          }
+            successmsg: "",
+          },
         };
+      case ON_CHANGE_STATE_NEW_PASSWORD:
+        return {
+          ...state,
+          newPassword: {
+            ...state.newPassword,
+            [action.field]: action.value,
+          },
+      };
       case ON_CHANGE_STATE_LOGIN:
         return {
           ...state,
@@ -168,7 +190,7 @@ import { ErrorMessage } from "formik";
           ...state,
           modalActivation:{
             ...state.modalActivation,
-            [action.field]: action.value
+            [action.field]: action.value,
           }
       };
       case EMAIL_ACTIVATION_SUCCESS:
@@ -210,104 +232,119 @@ import { ErrorMessage } from "formik";
             successmsg: action.value
           }
       };
-      case SET_LOADER:
-        return {
-          ...state,
-          loader: action.value
+    case ON_CHANGE_STATE_UPDATE_PASSWORD:
+      return {
+        ...state,
+        updatePassword: {
+          ...state.updatePassword,
+          [action.field]: action.value,
+        },
       };
-      case SET_SPINNER:
-        return {
-          ...state,
-          showSpinner: action.value
+    case SET_UPDATE_PASSWORD_CODE:
+      return {
+        ...state,
+        updatePassword: {
+          ...state.updatePassword,
+          code: action.value,
+        },
       };
-      case SET_LOGIN_SUCCESS:
-        return {
-          ...state,
-  
-          profile: action.value,
-          showSpinner: false
-      };
-      case SET_LOGIN_FAILED:
-        return {
-          ...state,
-          alertMsg: action.value,
-          openLoginAlert: true,
-          showSpinner: false
-      };
-      case SET_RESEND_ACTIVATION:
-        return {
-          ...state,
-          resendActivation: action.value
-      };
-      case SET_RESEND_ACTIVATION_REGIST:
-        return {
-          ...state,
-          resendActivationRegist: action.value
-      };
-      case SET_CLOSE_ALERT:
-        return{
-          ...state,
-          openLoginAlert: false
+    case SET_RESEND_ACTIVATION_REGIST:
+      return {
+        ...state,
+        resendActivationRegist: action.value
+    };
+    case SET_CLOSE_ALERT:
+      return{
+        ...state,
+        openLoginAlert: false
+      }
+    case SET_CLOSE_REGIST_ALERT:
+      return{
+        ...state,
+        register:{
+          ...state.register,
+          showErrorRegister: false,
+          errorMessage: ""
         }
-      case SET_CLOSE_REGIST_ALERT:
-        return{
-          ...state,
-          register:{
-            ...state.register,
-            showErrorRegister: false,
-            errorMessage: ""
-          }
+    };
+    case SET_LOADER:
+      return {
+        ...state,
+        loader: action.value,
       };
-      case SET_REGISTER_FAILED:
-        return{
-          ...state,
-          register:{
-            ...state.register,
-            errorMessage: action.value,
-            showErrorRegister: true
-          }
+    case SET_SPINNER:
+      return {
+        ...state,
+        showSpinner: action.value,
       };
-      case SET_REGISTER_SUCCESS:
-        return{
-          ...state,
-          register:{
-            ...state.register,
-            success: true
-          }
-        }
-      case SET_TOKEN_SUCCESS:
-        return {
-          ...state,
-          token: action.value
-        };
-      case SET_ROLES_SUCCESS:
-        return {
-          ...state,
-          roles: action.value
-        };
-      case SET_MODAL:
-        return {
-            ...state,
-            modal: {
-            ...state.modal,
-            [action.field]: action.value
-            }
-        };
-      case SET_CONFIRM_LOGIN_SUCCESS:
-        return {
-          ...state,
-          [action.field]: action.value
-        };
-      case SET_MODAL_FORM_LOGIN:
-        return {
-            ...state,
-            role: {
-                ...state.role,
-                [action.field]: action.value
-            }
-        };
-      default:
-    }
-    return state;
+    case SET_LOGIN_SUCCESS:
+      return {
+        ...state,
+
+        profile: action.value,
+        showSpinner: false,
+      };
+    case SET_LOGIN_FAILED:
+      return {
+        ...state,
+        alertMsg: action.value,
+        openLoginAlert: true,
+        showSpinner: false,
+      };
+    case SET_RESEND_ACTIVATION:
+      return {
+        ...state,
+        resendActivation: action.value,
+      };
+    case SET_REGISTER_FAILED:
+      return {
+        ...state,
+        register: {
+          ...state.register,
+          errorMessage: action.value,
+          showErrorRegister: true,
+        },
+      };
+    case SET_REGISTER_SUCCESS:
+      return {
+        ...state,
+        register: {
+          ...state.register,
+          success: true,
+        },
+      };
+    case SET_TOKEN_SUCCESS:
+      return {
+        ...state,
+        token: action.value,
+      };
+    case SET_ROLES_SUCCESS:
+      return {
+        ...state,
+        roles: action.value,
+      };
+    case SET_MODAL:
+      return {
+        ...state,
+        modal: {
+          ...state.modal,
+          [action.field]: action.value,
+        },
+      };
+    case SET_CONFIRM_LOGIN_SUCCESS:
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    case SET_MODAL_FORM_LOGIN:
+      return {
+        ...state,
+        role: {
+          ...state.role,
+          [action.field]: action.value,
+        },
+      };
+    default:
   }
-  
+  return state;
+}

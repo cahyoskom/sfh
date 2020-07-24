@@ -1,13 +1,13 @@
 @media screen and (min-width: 600px) {
-    .row{
-        flex-wrap: inherit!important;
-    }
+  .row {
+    flex-wrap: inherit !important;
+  }
 }
 
-#subject{
-    z-index: 120;
+#subject {
+  z-index: 120;
 }
 
-#class{
-    z-index: 121;
+#class {
+  z-index: 121;
 }

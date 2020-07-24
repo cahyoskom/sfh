@@ -1,24 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Route, Redirect } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { Route, Redirect } from "react-router-dom";
 
 const PrivateRouteAdmin = ({ component, exact = true, path, role }) => {
-  return(
+  return (
     <Route
       exact={exact}
       path={path}
-      render={props => (
+      render={(props) =>
         // authenticated ? (
-          role ? (
+        role ? (
           React.createElement(component, props)
         ) : (
-            <Redirect to={`${process.env.PUBLIC_URL}/login`}
-            />
-          )
-      )}
+          <Redirect to={`${process.env.PUBLIC_URL}/login`} />
+        )
+      }
     />
-  )
+  );
 };
-
 
 export default PrivateRouteAdmin;

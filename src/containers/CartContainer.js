@@ -34,7 +34,6 @@
 //     </li>
 // )
 
-
 // function mapStateToProps(state) {
 //     return {
 //         cartList: state.cartList.cart,

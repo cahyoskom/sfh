@@ -1,37 +1,43 @@
-import React, {Component} from 'react';
-import $ from 'jquery';
-import 'smartmenus';
+import React, { Component } from "react";
+import $ from "jquery";
+import "smartmenus";
 
 class SideBar extends Component {
+  componentWillMount() {
+    $(function () {
+      $("#sub-menu").smartmenus({
+        subMenusSubOffsetX: 1,
+        subMenusSubOffsetY: -8,
+      });
+    });
+  }
 
-    componentWillMount (){
-        $(function() {
-            $('#sub-menu').smartmenus({
-                subMenusSubOffsetX: 1,
-                subMenusSubOffsetY: -8
-            });
-        });
-    }
+  closeNav() {
+    var closemyslide = document.getElementById("mySidenav");
+    if (closemyslide) closemyslide.classList.remove("open-side");
+  }
 
-    closeNav() {
-        var closemyslide = document.getElementById("mySidenav");
-        if(closemyslide)
-            closemyslide.classList.remove('open-side');
-    }
-
-    render() {
-        return (
-            <div id="mySidenav" className="sidenav">
-                <a href="javascript:void(0)" className="sidebar-overlay" onClick={this.closeNav}></a>
-                <nav>
-                    <div onClick={this.closeNav}>
-                        <div className="sidebar-back text-left"  style={{zIndex:200}}>
-                            <i className="fa fa-angle-left pr-2" aria-hidden="true"></i> Back
-                        </div>
-                    </div>
-                    {/*Vertical Menu*/}
-                    <ul id="sub-menu" className="sm pixelstrap sm-vertical " style={{zIndex:200}}>
-                        {/* <li><a href="#">clothing</a>
+  render() {
+    return (
+      <div id="mySidenav" className="sidenav">
+        <a
+          href="javascript:void(0)"
+          className="sidebar-overlay"
+          onClick={this.closeNav}
+        ></a>
+        <nav>
+          <div onClick={this.closeNav}>
+            <div className="sidebar-back text-left" style={{ zIndex: 200 }}>
+              <i className="fa fa-angle-left pr-2" aria-hidden="true"></i> Back
+            </div>
+          </div>
+          {/*Vertical Menu*/}
+          <ul
+            id="sub-menu"
+            className="sm pixelstrap sm-vertical "
+            style={{ zIndex: 200 }}
+          >
+            {/* <li><a href="#">clothing</a>
                             <ul className="mega-menu clothing-menu">
                                 <li>
                                     <div className="row m-0">
@@ -156,12 +162,11 @@ class SideBar extends Component {
                         </li>
                         <li><a href="#">kitchen</a>
                         </li> */}
-                    </ul>
-                </nav>
-            </div>
-        )
-    }
+          </ul>
+        </nav>
+      </div>
+    );
+  }
 }
-
 
 export default SideBar;

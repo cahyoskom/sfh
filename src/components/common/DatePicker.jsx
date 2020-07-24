@@ -12,7 +12,7 @@
 // 		state = {
 // 		  event: moment().format('YYYY-MM-DD 00:00:00')
 //     }
-    
+
 //     render() {
 //         let { value, id='', name = '', disabled, label = '', help = '', invalidClass, initialValid} = this.props
 // 				const { event } = this.state;
@@ -26,7 +26,7 @@
 //         if(value==''){
 //           value = this.state.event
 //         }
-        
+
 //         return (
 //           <FormGroup >
 //               <Label>{label}</Label>
@@ -54,13 +54,10 @@
 import React, { Component } from "react";
 import moment from "moment";
 import momentLocalizer from "react-widgets-moment";
-import {
-  FormGroup,
-  FormFeedback
-} from "reactstrap";
-import { DateTimePicker } from 'react-widgets'
+import { FormGroup, FormFeedback } from "reactstrap";
+import { DateTimePicker } from "react-widgets";
 import "react-widgets/dist/css/react-widgets.css";
-import '../tasklist/tasksiswa.css';
+import "../tasklist/tasksiswa.css";
 
 moment.locale("id");
 momentLocalizer();
@@ -69,7 +66,7 @@ export default class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      event: moment().format("YYYY-MM-DD")
+      event: moment().format("YYYY-MM-DD"),
     };
   }
 
@@ -86,7 +83,7 @@ export default class DatePicker extends Component {
       isInline,
       colLabel = "col-md-4",
       colInput = "col-md-8",
-      onChange
+      onChange,
     } = this.props;
     const { event } = this.state;
 
@@ -94,8 +91,10 @@ export default class DatePicker extends Component {
       value = this.state.event;
     }
 
-    let labels = isInline ? colLabel + " label-title-small bold default" : "col-md-12  label-title-small bold default"
-    let inputs = isInline ? colInput : "col-md-12"
+    let labels = isInline
+      ? colLabel + " label-title-small bold default"
+      : "col-md-12  label-title-small bold default";
+    let inputs = isInline ? colInput : "col-md-12";
 
     return (
       <FormGroup className={"row"}>
@@ -116,6 +115,6 @@ export default class DatePicker extends Component {
     );
   }
   setValue(property, event) {
-    this.props.onChange(property, event.target.value)
+    this.props.onChange(property, event.target.value);
   }
 }

@@ -11,12 +11,10 @@
 
 //     render (){
 
-
 //         return (
 //             <div>
 //                 <Breadcrumb title={'Login'}/>
-                
-                
+
 //                 {/*Login section*/}
 //                 <section className="login-page section-b-space">
 //                     <div className="container">

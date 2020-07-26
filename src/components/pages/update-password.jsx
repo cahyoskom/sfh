@@ -130,7 +130,7 @@ class UpdatePassword extends Component {
                                                 onChangeStateUpdatePassword("recaptcha",  response);
                                             }}
                                             expiredCallback={() => {
-                                                this.forceUpdate();
+                                                onChangeStateUpdatePassword("recaptcha", "")
                                             }}
                                         />
                                         {this.validator.message(

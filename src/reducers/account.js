@@ -44,7 +44,12 @@ import {
       rePassword: ""
     },
     newPassword: {
-      email: ""
+      errormsg: "",
+      openAlert: false,
+      email: "",
+      success: false,
+      successmsg: "",
+
     },
     updatePassword: {
       password: "",

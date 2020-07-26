@@ -14,7 +14,8 @@ import {
   SET_NEW_PASSWORD_SUCCESS,
   SET_UPDATE_PASSWORD,
   SET_GOOGLE_LOGIN,
-  RESET_STATE_LOGIN
+  RESET_STATE_LOGIN,
+  ON_CHANGE_STATE_NEW_PASSWORD
 } from "../constants/ActionTypes";
 import { fail, success } from "../components/common/toast-message";
 import * as services from "../services";
@@ -340,9 +341,28 @@ export function* newPassword() {
       let message = data.message
 
       yield put({
-        type: SET_NEW_PASSWORD_SUCCESS,
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: message,
+        field: "successmsg"
+      });
+      yield put({
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: true,
+        field: "success"
       });
       success(message)
+    }else {
+      yield put({
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: true,
+        field: "openAlert",
+      });
+      yield put({
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: _response.data.message,
+        field: "errormsg",
+      });
+
     }
   }
   catch (error) {
@@ -350,6 +370,18 @@ export function* newPassword() {
       type: SET_LOADER,
       value: false
     });
+
+    yield put({
+      type: ON_CHANGE_STATE_NEW_PASSWORD,
+      value: true,
+      field: "openAlert",
+    });
+    yield put({
+      type: ON_CHANGE_STATE_NEW_PASSWORD,
+      value: error,
+      field: "errormsg",
+    });
+
     fail(error);
   }
 
@@ -361,6 +393,10 @@ export function* updatePassword() {
     const accountState = yield select(getAccountState);
     const updatePasswordState = accountState.updatePassword;
 
+    if(updatePasswordState.recaptcha == "") {
+      fail("lakukan captcha")
+      return
+    }
     if(updatePasswordState.password != updatePasswordState.repeatPassword) {
       console.log("password tidak sama")
       fail("password tidak sama")
@@ -380,11 +416,9 @@ export function* updatePassword() {
       console.log(_response)
       let message = data.message
 
-      yield put({
-        type: SET_NEW_PASSWORD_SUCCESS,
-      });
+      
       success(message)
-    }
+    } 
   }
   catch (error) {
     yield put({
@@ -392,6 +426,7 @@ export function* updatePassword() {
       value: false
     });
     fail(error);
+    
   }
 
 }

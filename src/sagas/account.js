@@ -96,6 +96,7 @@ export function* login() {
       email: loginState.email,
       password: loginState.password,
     };
+    console.log(param)
     const _response = yield call(
       services.POST,
       API_BASE_URL_DEV + API_PATH.login,
@@ -325,28 +326,35 @@ export function* confirmLogin() {
 
 export function* logout() {
   try {
-    yield put({
-      type: SET_LOADER,
-      value: true,
-    });
-    const _response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + API_PATH.logout,
-      HeaderAuth()
-    );
-    yield put({
-      type: SET_LOADER,
-      value: false,
-    });
-    localStorage.clear();
+    localStorage.clear()
     window.location.href = process.env.PUBLIC_URL + "/login";
-  } catch (error) {
-    yield put({
-      type: SET_LOADER,
-      value: false,
-    });
-    fail(error);
+  }catch (error) {
+    fail(error)
   }
+  // try {
+  //   yield put({
+  //     type: SET_LOADER,
+  //     value: true,
+  //   });
+  //   const _response = yield call(
+  //     services.GET,
+  //     API_BASE_URL_DEV + API_PATH.logout,
+  //     HeaderAuth()
+  //   );
+    
+  //   yield put({
+  //     type: SET_LOADER,
+  //     value: false,
+  //   });
+  //   localStorage.clear();
+  //   window.location.href = process.env.PUBLIC_URL + "/login";
+  // } catch (error) {
+  //   yield put({
+  //     type: SET_LOADER,
+  //     value: false,
+  //   });
+  //   fail(error);
+  // }
 }
 
 export function* registration() {

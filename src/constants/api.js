@@ -10,5 +10,6 @@ export const API_PATH = {
   updatePassword: '/update_password/',
   oauth: '/login_google',
   register: '/registration',
-  requestActivation: '/request_activation'
+  requestActivation: '/request_activation',
+  activating: '/activating'
 };

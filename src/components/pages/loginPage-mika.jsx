@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import SimpleReactValidator from 'simple-react-validator';
 import { connect } from 'react-redux';
 import HeaderOne from '../common/headers/header-one';
@@ -9,7 +8,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-import { default as MaterialLink } from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
@@ -28,9 +26,7 @@ import {
   newPassword,
   onChangeStateNewPassword,
   googleLogin,
-  closeAlert,
-  setModalActivation,
-  resendEmail
+  closeAlert
 } from '../../actions';
 import {
   Form,
@@ -146,10 +142,11 @@ class SignIn extends Component {
       className,
       onChangeStateNewPassword,
       newPassword,
-      closeAlert,
-      setModalActivation,
-      resendEmail
+      closeAlert
     } = this.props;
+    console.log(accountState.login.email);
+    console.log(accountState.login.isChecked);
+
     return (
       <BlockUi
         tag='div'
@@ -351,25 +348,25 @@ class SignIn extends Component {
                         </Grid>
                       </Grid>
                       {/* <div className="form-group">
-                        <Recaptcha
-                            ref={recaptchaRef}
-                            value={accountState.login.recaptcha} 
-                            sitekey={accountState.site_key}
-                            render="explicit"
-                            onloadCallback={this.recaptchaLoaded}
-                            verifyCallback={(response) => { 
-                                onChangeStateLogin("recaptcha",  response);
-                            }}
-                            expiredCallback={() => {
-                                this.forceUpdate();
-                            }}
-                        />
-                        {this.validator.message(
-                            "recaptcha",
-                            accountState.login.recaptcha,
-                            "required"
-                        )}
-                      </div> */}
+                                        <Recaptcha
+                                            ref={recaptchaRef}
+                                            value={accountState.login.recaptcha} 
+                                            sitekey={accountState.site_key}
+                                            render="explicit"
+                                            onloadCallback={this.recaptchaLoaded}
+                                            verifyCallback={(response) => { 
+                                                onChangeStateLogin("recaptcha",  response);
+                                            }}
+                                            expiredCallback={() => {
+                                                this.forceUpdate();
+                                            }}
+                                        />
+                                        {this.validator.message(
+                                            "recaptcha",
+                                            accountState.login.recaptcha,
+                                            "required"
+                                        )}
+                                        </div> */}
                       <Grid
                         container
                         direction='column'
@@ -420,7 +417,7 @@ class SignIn extends Component {
               </Grid>
             </Container>
 
-            <Modal
+            {/* <Modal
               isOpen={accountState.modal.show}
               fade={false}
               backdrop={'static'}
@@ -431,7 +428,7 @@ class SignIn extends Component {
                   <Row form={true}>
                     <Col md={12}>
                       <FormGroup>
-                        {/* <Label for="kelas">Assign to</Label> */}
+                        <Label for="kelas">Assign to</Label>
                         <Select
                           options={accountState.dataSourceRoleAccount}
                           onChange={(e) =>
@@ -455,7 +452,7 @@ class SignIn extends Component {
                   </Button>
                 )}
               </ModalFooter>
-            </Modal>
+            </Modal> */}
           </section>
           <FooterTwo />
         </div>
@@ -478,7 +475,5 @@ export default connect(mapStateToProps, {
   googleLogin,
   closeAlert,
   newPassword,
-  onChangeStateNewPassword,
-  setModalActivation,
-  resendEmail
+  onChangeStateNewPassword
 })(SignIn);

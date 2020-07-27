@@ -97,8 +97,10 @@ class Confirmation extends Component {
                 )
             }
             
-        }else if(queryStringObj.q == "forgot_password"){
-            return "redirect";
+        }else if(queryStringObj.q == "update_password"){
+            return(
+                <Link to={`${process.env.PUBLIC_URL}/update_password/:code`}></Link>
+            )
         }
         
         return "invalid query";

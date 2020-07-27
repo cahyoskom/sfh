@@ -71,6 +71,27 @@ export const setModalActivation = (field, value) => ({
 export const resendEmail = () => ({
   type: types.EMAIL_ACTIVATION,
 });
+// CLASS
+export const onChangeStateNewClass = (field,value) => ({
+  type: types.ON_CHANGE_STATE_NEW_CLASS,
+  value,
+  field
+});
+export const setNewClassSuccess = () => ({
+  type: types.SET_NEW_CLASS_SUCCESS
+});
+
+
+// SCHOOL
+export const onChangeStateNewSchool = (field,value) => ({
+  type: types.ON_CHANGE_STATE_NEW_SCHOOL,
+  value,
+  field
+});
+export const setNewSchoolSuccess = () => ({
+  type: types.SET_NEW_SCHOOL_SUCCESS
+});
+
 
 //REGISTER
 export const onChangeStateRegister = (field, value) => ({

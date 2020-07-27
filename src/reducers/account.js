@@ -25,6 +25,10 @@ import {
   SET_SPINNER,
   SET_MODAL_ACTIVATION,
   EMAIL_ACTIVATION_SUCCESS,
+  ON_CHANGE_STATE_NEW_CLASS,
+  SET_NEW_CLASS_SUCCESS,
+  SET_NEW_SCHOOL_SUCCESS,
+  ON_CHANGE_STATE_NEW_SCHOOL,
 } from "../constants/ActionTypes";
 import Config from "../constants/config";
 import { ErrorMessage } from "formik";
@@ -60,6 +64,26 @@ const initialState = {
     repeatPassword: "",
     recaptcha: "",
     code: "",
+  },
+  newClass: {
+    name: "",
+    description: "",
+    school: "",
+    success: false,
+    successmsg:"",
+    openAlert: false,
+    errormsg: ""
+  },
+  newSchool: {
+    name: "",
+    address: "",
+    postalCode: "",
+    phoneNumber: "",
+    picture: "",
+    success: false,
+    successmsg:"",
+    openAlert: false,
+    errormsg: ""
   },
   // roles:[],
   // roles: localStorage.getItem("roles")
@@ -150,6 +174,38 @@ export default function loginReducer(state = initialState, action) {
           email: "",
           success: false,
           successmsg: "",
+        },
+      };
+    case ON_CHANGE_STATE_NEW_CLASS:
+      return {
+        ...state,
+        newClass: {
+          ...state.newClass,
+          [action.field]: action.value,
+        },
+      };
+    case SET_NEW_CLASS_SUCCESS:
+      return {
+        ...state,
+        newClass: {
+          ...state.newClass,
+          success: true,
+        },
+      };
+    case ON_CHANGE_STATE_NEW_SCHOOL:
+      return {
+        ...state,
+        newSchool: {
+          ...state.newSchool,
+          [action.field]: action.value,
+        },
+      };
+    case SET_NEW_SCHOOL_SUCCESS:
+      return {
+        ...state,
+        newSchool: {
+          ...state.newSchool,
+          success: true,
         },
       };
     case ON_CHANGE_STATE_NEW_PASSWORD:

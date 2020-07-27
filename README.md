@@ -19,11 +19,13 @@ mysql -u root -p
 ```mysql
 -- localhost
 CREATE USER 'sfh_user'@'localhost' IDENTIFIED BY 'myPassword123';
-GRANT ALL PRIVILEGES ON sfh.* TO 'sfh_user'@'localhost' WITH GRANT OPTION;
+-- REVOKE ALL PRIVILEGES ON `sfh`.* FROM 'sfh_user'@'localhost';
+GRANT ALL PRIVILEGES ON `sfh`.* TO 'sfh_user'@'localhost' WITH GRANT OPTION;
 
 -- non localhost
 CREATE USER 'sfh_user'@'%' IDENTIFIED BY 'myPassword123';
-GRANT ALL PRIVILEGES ON sfh.* TO 'sfh_user'@'%' WITH GRANT OPTION;
+-- REVOKE ALL PRIVILEGES ON `sfh`.* FROM 'sfh_user'@'%';
+GRANT ALL PRIVILEGES ON `sfh`.* TO 'sfh_user'@'%' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 ```

@@ -12,7 +12,7 @@ module.exports = {
   apps: [
     {
       name,
-      script: 'index.js',
+      script: 'http.js',
       env: {
         PORT: 30200,
         NODE_ENV: 'development'

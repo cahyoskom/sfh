@@ -336,21 +336,21 @@ class Root extends React.Component {
 
                   {/*Routes For Extra Pages*/}
                   {/* <Route path={`${process.env.PUBLIC_URL}/pages/about-us`} component={aboutUs}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/404`} component={PageNotFound}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/lookbook`} component={lookbook}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/login`} component={Login}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/register`} component={Register}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/search`} component={Search}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/collection`} component={Collection}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/forget-password`} component={ForgetPassword}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/contact`} component={Contact}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/dashboard`} component={Dashboard}/>
-                                <Route path={`${process.env.PUBLIC_URL}/pages/faq`} component={Faq}/> */}
+                  <Route path={`${process.env.PUBLIC_URL}/pages/404`} component={PageNotFound}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/lookbook`} component={lookbook}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/login`} component={Login}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/register`} component={Register}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/search`} component={Search}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/collection`} component={Collection}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/forget-password`} component={ForgetPassword}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/contact`} component={Contact}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/dashboard`} component={Dashboard}/>
+                  <Route path={`${process.env.PUBLIC_URL}/pages/faq`} component={Faq}/> */}
 
                   {/*Blog Pages*/}
                   {/* <Route path={`${process.env.PUBLIC_URL}/blog/right-sidebar`} component={RightSide}/>
-                                <Route path={`${process.env.PUBLIC_URL}/blog/details`} component={Details}/>
-                                <Route path={`${process.env.PUBLIC_URL}/blog/blog-page`} component={BlogPage}/> */}
+                  <Route path={`${process.env.PUBLIC_URL}/blog/details`} component={Details}/>
+                  <Route path={`${process.env.PUBLIC_URL}/blog/blog-page`} component={BlogPage}/> */}
 
                   <Route component={PageNotFound} />
                 </Switch>

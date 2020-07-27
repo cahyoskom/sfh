@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/karpalabs/sfh/api.git"
+    "url": "git+ssh://git@gitlab.com:karpalabs/sfh/api.git"
   },
   "author": "@karplabs",
   "bugs": {

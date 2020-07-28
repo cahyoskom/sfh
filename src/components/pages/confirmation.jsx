@@ -87,7 +87,7 @@ class Confirmation extends Component {
                                     </Grid>
                                     <Grid item xs={12} container direction="column" alignItems="center" justify="center">
                                         <Link to={`${process.env.PUBLIC_URL}/login`}>
-                                        <Button variant="contained" color="primary">Masuk</Button>
+                                        <Button variant="contained" color="primary">Masuk </Button>
                                         </Link>
                                     </Grid>
                                 </Grid>
@@ -97,8 +97,10 @@ class Confirmation extends Component {
                 )
             }
             
-        }else if(queryStringObj.q == "forgot_password"){
-            return "redirect";
+        }else if(queryStringObj.q == "update_password"){
+            return(
+                <Link to={`${process.env.PUBLIC_URL}/update_password/:code`}></Link>
+            )
         }
         
         return "invalid query";

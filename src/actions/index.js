@@ -85,6 +85,12 @@ export const saveRegister = () => ({
   type: types.SET_REGISTER,
 });
 
+//SCHOOL INFO
+export const getSchool = (value) => ({
+  type: types.GET_SCHOOL,
+  value,
+});
+
 /////////////
 
 export const fetchProductsBegin = () => ({

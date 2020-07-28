@@ -5,6 +5,7 @@ import taskSiswa from "./tasksiswa";
 import taskOrtu from "./taskortu";
 import taskKepsek from "./taskkepsek";
 import taskGuru from "./taskguru";
+import school from "./school";
 
 export default function* rootSaga(getState) {
   yield all([
@@ -14,5 +15,6 @@ export default function* rootSaga(getState) {
     taskKepsek(),
     taskGuru(),
     admin(),
+    school(),
   ]);
 }

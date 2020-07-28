@@ -9,6 +9,11 @@ stages:
 
 deploy_dev:
   stage: deploy
+  variables:
+    APP_NAME: sfh-api-dev
+    DEPLOY_USER: deploy
+    DEPLOY_HOST: 144.91.77.116
+    DEPLOY_PATH: /home/$DEPLOY_USER/$APP_NAME
   before_script:
     - apk update && apk upgrade
     - apk add git openssh bash
@@ -17,6 +22,7 @@ deploy_dev:
     - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
     - ssh -o StrictHostKeyChecking=no -T "$DEPLOY_USER@$DEPLOY_HOST"
   script:
+    - scp "$DOT_ENV" "$DEPLOY_USER@$DEPLOY_HOST:~/.env"
     - pm2 deploy ecosystem.config.js development setup 2>&1 || true
     - pm2 deploy ecosystem.config.js development
   environment:

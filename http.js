@@ -4,7 +4,6 @@
  * Module dependencies.
  */
 require('dotenv').config();
-console.log(JSON.stringify(process.env, 0, 2));
 const app = require('./app');
 const { name } = require('./package.json');
 const debug = require('debug')(`${name}:server`);

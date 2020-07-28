@@ -7,9 +7,6 @@ import {
   updatePassword,
   setUpdatePasswordCode
 } from '../../actions';
-import Recaptcha from 'react-recaptcha';
-
-const recaptchaRef = React.createRef();
 
 class UpdatePassword extends Component {
   state = {
@@ -17,6 +14,7 @@ class UpdatePassword extends Component {
   };
 
   constructor(props) {
+    console.log("update-password called")
     super(props);
 
     this.validator = new SimpleReactValidator();
@@ -29,7 +27,6 @@ class UpdatePassword extends Component {
     document.getElementById('sticky').style.display = 'none';
   }
 
-  recaptchaLoaded() {}
 
   onClickUpdatePassword() {
     let { updatePassword, onChangeStateUpdatePassword } = this.props;
@@ -116,26 +113,7 @@ class UpdatePassword extends Component {
                       )}
                     </div>
 
-                    <div className='form-group'>
-                      <Recaptcha
-                        ref={recaptchaRef}
-                        value={accountState.updatePassword.recaptcha}
-                        sitekey={accountState.site_key}
-                        render='explicit'
-                        onloadCallback={this.recaptchaLoaded}
-                        verifyCallback={(response) => {
-                          onChangeStateUpdatePassword('recaptcha', response);
-                        }}
-                        expiredCallback={() => {
-                          onChangeStateUpdatePassword('recaptcha', '');
-                        }}
-                      />
-                      {this.validator.message(
-                        'recaptcha',
-                        accountState.updatePassword.recaptcha,
-                        'required'
-                      )}
-                    </div>
+                    
                     <div className={'text-center'}>
                       <a
                         onClick={() => {

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { Grid } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import { API_BASE_URL_DEV, API_PATH } from "../../constants/api";
-import axios from "axios";
+import React, { Component } from 'react';
+import { Grid } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import { API_BASE_URL_DEV, API_PATH } from '../../constants/api';
+import axios from 'axios';
 
 class Confirmation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      check: false,
+      check: false
     };
   }
 
@@ -26,12 +26,12 @@ class Confirmation extends Component {
     );
 
     console.log(code);
-    console.log(API_BASE_URL_DEV + API_PATH.activating + "/" + code.code);
+    console.log(API_BASE_URL_DEV + API_PATH.activating + '/' + code.code);
 
     axios
-      .get(API_BASE_URL_DEV + API_PATH.activating + "/" + code.code)
+      .get(API_BASE_URL_DEV + API_PATH.activating + '/' + code.code)
       .then((res) => {
-        console.log("test");
+        console.log('test');
         if (res.status == 200) {
           this.setState({ check: true });
         } else {
@@ -53,7 +53,7 @@ class Confirmation extends Component {
         '"}'
     );
 
-    if (queryStringObj.q == "activating") {
+    if (queryStringObj.q == 'activating') {
       if (this.state.check == true) {
         return (
           <div>
@@ -90,9 +90,11 @@ class Confirmation extends Component {
                     alignItems="center"
                     justify="center"
                   >
-                    <Button variant="contained" color="primary">
-                      Masuk
-                    </Button>
+                    <Link to={`${process.env.PUBLIC_URL}/login`}>
+                      <Button variant="contained" color="primary">
+                        Masuk
+                      </Button>
+                    </Link>
                   </Grid>
                 </Grid>
               </Container>
@@ -137,7 +139,7 @@ class Confirmation extends Component {
                   >
                     <Link to={`${process.env.PUBLIC_URL}/login`}>
                       <Button variant="contained" color="primary">
-                        Masuk{" "}
+                        Masuk{' '}
                       </Button>
                     </Link>
                   </Grid>
@@ -147,7 +149,7 @@ class Confirmation extends Component {
           </div>
         );
       }
-    } else if (queryStringObj.q == "update_password") {
+    } else if (queryStringObj.q == 'update_password') {
       return (
         <Link
           to={`${process.env.PUBLIC_URL}/update_password/${queryStringObj.code}`}
@@ -159,7 +161,7 @@ class Confirmation extends Component {
       );
     }
 
-    return "invalid query";
+    return 'invalid query';
   }
 }
 

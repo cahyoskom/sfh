@@ -4,11 +4,11 @@ stages:
   - build
   - deploy
 
-build_dev:  # A job to build the static website - replace it with your build methods
+build_dev: # A job to build the static website - replace it with your build methods
   image: weltn24/up-docker-node-chrome-headless
   stage: build
   variables:
-    FILE_NAME: sfh_web.zip
+    FILE_NAME: sfh-dev.zip
   before_script:
     - apt-get install zip unzip
   script:
@@ -17,38 +17,34 @@ build_dev:  # A job to build the static website - replace it with your build met
     - cd build; zip -r ../${FILE_NAME} .
   artifacts:
     paths:
-      - ${FILE_NAME}  # This is what we want to publish, replace with your `dist` directory
+      - ${FILE_NAME} # This is what we want to publish, replace with your `dist` directory
   only:
     - dev
 
 deploy_dev:
   stage: deploy
   variables:
-    FILE_NAME: sfh_web.zip
-    ZIP_PATH: /home/deploy/
-    #DEPLOY_USER: deploy@188.165.197.19
-    #DEPLOY_PATH: /usr/share/nginx/html/jotun-backoffice/
-    DEPLOY_USER: deploy@144.91.77.116
-    DEPLOY_PATH: /var/www/karpadev.karpalabs.com/public_html/sfh_web/
+    DEPLOY_USER: deploy
+    DEPLOY_HOST: 144.91.77.116
+    DEPLOY_PATH: /var/www/karpadev.karpalabs.com/public_html/sfh-dev/
+    FILE_NAME: sfh-dev.zip
+    ZIP_PATH: /home/$DEPLOY_USER/$FILE_NAME
     ENV_NAME: dev
-    #ENV_URL: http://188.165.197.19/jotun-backoffice
-    ENV_URL: http://karpadev.karpalabs.com/sfh_web
+    ENV_URL: https://karpadev.karpalabs.com/sfh-dev
   before_script:
     - apt-get update -qq
     - apt-get install -qq git
-    # Setup SSH deploy keys
     - 'which ssh-agent || ( apt-get install -qq openssh-client )'
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${SSH_PRIVATE_KEY}")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh ${DEPLOY_USER} rm -rf ${DEPLOY_PATH}*
-    - ssh ${DEPLOY_USER} rm -rf ${ZIP_PATH}${FILE_NAME}
-    - scp ${FILE_NAME} ${DEPLOY_USER}:${ZIP_PATH}
-    - ssh ${DEPLOY_USER} unzip -o ${FILE_NAME} -d ${DEPLOY_PATH}
-    #- ssh ${DEPLOY_USER} 'sed -i "s/\/assets/\/jotun-backoffice\/assets/g" /usr/share/nginx/html/jotun-backoffice/static/css/main.*.chunk.css'
-    - ssh ${DEPLOY_USER} 'sed -i "s/\/assets/\/sfh_web\/assets/g" /var/www/karpadev.karpalabs.com/public_html/sfh_web/static/css/main.*.chunk.css'
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} rm -rf ${DEPLOY_PATH}*
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} rm -rf ${ZIP_PATH}${FILE_NAME}
+    - scp ${FILE_NAME} ${DEPLOY_USER}@${DEPLOY_HOST}:${ZIP_PATH}
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} unzip -o ${FILE_NAME} -d ${DEPLOY_PATH}
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'sed -i "s/\/assets/\/sfh-dev\/assets/g" /var/www/karpadev.karpalabs.com/public_html/sfh-dev/static/css/main.*.chunk.css'
   environment:
     name: ${ENV_NAME}
     url: ${ENV_URL}

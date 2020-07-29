@@ -11,6 +11,19 @@ export const newPassword = () => ({
   type: types.SET_NEW_PASSWORD,
 });
 
+//CLASS
+export const getDataClassInfo = () => ({
+  type: types.SET_CLASS_INFO,
+});
+export const onChangeStateClassInfo = (field, value) => ({
+  type: types.ON_CHANGE_STATE_CLASS_INFO,
+  value,
+  field,
+});
+export const postDeleteClass = () => ({
+  type: types.SET_CLASS_DELETE,
+});
+
 //LOGIN
 export const googleLogin = (data) => ({
   type: types.SET_GOOGLE_LOGIN,

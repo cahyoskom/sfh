@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { postLogout } from "../../actions";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 //
@@ -13,40 +12,30 @@ import Avatar from "@material-ui/core/Avatar";
 import ClassIcon from "@material-ui/icons/Class";
 import AddIcon from "@material-ui/icons/Add";
 
+import {
+  getDataClassInfo,
+  postLogout,
+  onChangeStateClassInfo,
+  postDeleteClass,
+} from "../../actions";
+
 class ClassInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listClass: [
-        {
-          name: "Kelas 2A",
-          username: "Budi",
-          tahun: "Tahun ajaran 2020",
-          statusnya: "Belum Terverifikasi",
-        },
-        {
-          name: "Kelas 5A",
-          username: "Andi",
-          tahun: "Tahun ajaran 2020",
-          statusnya: "Belum Terverifikasi",
-        },
-      ],
-      classInfo: {
-        name: "12 IPA 2",
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis explicabo impedit cum possimus. Ratione provident assumenda voluptates libero velit ad necessitatibus molestiae, illo repellat optio nemo eum voluptatem perferendis nostrum!",
-        school: "SMAN 99 Jakarta",
-        code: "mpKtB20",
-        note: "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-      },
       cardClass: {
         maxWidth: 200,
       },
     };
   }
+  componentDidMount() {
+    const { getDataClassInfo, onChangeStateClassInfo } = this.props;
+    onChangeStateClassInfo("id", this.props.match.params.id);
+    getDataClassInfo();
+  }
 
   render() {
-    const { postLogout } = this.props;
+    const { classState, postDeleteClass } = this.props;
     return (
       <section className="home-page section-b-space">
         <Container>
@@ -82,7 +71,7 @@ class ClassInfo extends Component {
                           </h4>
                         </Grid>
                         <Grid item xs={12} lg={8}>
-                          <h4>{this.state.classInfo.name}</h4>
+                          <h4>{classState.classInfo.name}</h4>
                         </Grid>
                       </Grid>
                       <Grid
@@ -97,7 +86,7 @@ class ClassInfo extends Component {
                           </h4>
                         </Grid>
                         <Grid item xs={12} lg={8}>
-                          <h4>{this.state.classInfo.description}</h4>
+                          <h4>{classState.classInfo.description}</h4>
                         </Grid>
                       </Grid>
                       <Grid
@@ -112,7 +101,12 @@ class ClassInfo extends Component {
                           </h4>
                         </Grid>
                         <Grid item xs={12} lg={8}>
-                          <h4>{this.state.classInfo.school}</h4>
+                          {classState.classInfo.school == "" && (
+                            <p>Belum disambungkan</p>
+                          )}
+                          {!classState.classInfo.school == "" && (
+                            <h4>{classState.classInfo.school}</h4>
+                          )}
                         </Grid>
                       </Grid>
                       <Grid
@@ -127,7 +121,7 @@ class ClassInfo extends Component {
                           </h4>
                         </Grid>
                         <Grid item xs={12} lg={8}>
-                          <h4>{this.state.classInfo.code}</h4>
+                          <h4>{classState.classInfo.code}</h4>
                         </Grid>
                       </Grid>
                       <Grid
@@ -142,7 +136,10 @@ class ClassInfo extends Component {
                           </h4>
                         </Grid>
                         <Grid item xs={12} lg={8}>
-                          <h4>{this.state.classInfo.note}</h4>
+                          {classState.classInfo.note == "" && (
+                            <p>Belum mengisi catatan kelas</p>
+                          )}
+                          {!classState.classInfo.note == "" && <h4>halo</h4>}
                         </Grid>
                       </Grid>
                       <Grid
@@ -152,7 +149,11 @@ class ClassInfo extends Component {
                         alignItems="flex-end"
                       >
                         <Grid item xs={12} lg={4}>
-                          <Button variant="contained" color="secondary">
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={postDeleteClass}
+                          >
                             Hapus Kelas
                           </Button>
                         </Grid>
@@ -184,10 +185,14 @@ class ClassInfo extends Component {
   }
 }
 const mapStateToProps = (state) => ({
-  accountState: state.class,
+  accountState: state.account,
+  classState: state.class,
 });
 
 // export default ClassInfo;
 export default connect(mapStateToProps, {
   postLogout,
+  getDataClassInfo,
+  onChangeStateClassInfo,
+  postDeleteClass,
 })(ClassInfo);

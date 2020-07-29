@@ -6,34 +6,55 @@ import {
   Paper,
   Button,
   Container,
-  Divider,
   Box,
+  Collapse,
+  TextField,
+  IconButton,
 } from "@material-ui/core";
-import { Image, Col } from "react-bootstrap";
-import { getSchool } from "../../actions";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import Alert from "@material-ui/lab/Alert";
+import CloseIcon from "@material-ui/icons/Close";
+import { Image } from "react-bootstrap";
+import { Input, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import {
+  getSchool,
+  setModalSchool,
+  onUpdateSchool,
+  saveUpdateSchool,
+  deleteSchool,
+} from "../../actions";
 
 class SchoolInfo extends Component {
-  //   constructor(props) {
-  //     super(props);
-
-  //     this.state = {
-  //       schoolData: {
-  //           name: '',
-  //           address: '',
-  //           phone: '',
-
-  //       },
-  //     };
-  //   }
-
   componentDidMount = () => {
-    console.log(this.props.match.params.id);
     this.props.getSchool(this.props.match.params.id);
-    console.log("DONE");
+  };
+
+  getBase64 = (file, cb) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function() {
+      cb(reader.result);
+    };
+    reader.onerror = function(error) {
+      console.log("Error: ", error);
+    };
+  };
+
+  uploadImage = (e) => {
+    const file = e.target.files[0];
+    this.getBase64(file, (result) => {
+      this.props.setModalSchool("avatar", result);
+    });
   };
 
   render() {
-    const { schoolState } = this.props;
+    const {
+      schoolState,
+      onUpdateSchool,
+      setModalSchool,
+      saveUpdateSchool,
+      deleteSchool,
+    } = this.props;
     return (
       <div>
         <section className="school-page section-b-space">
@@ -53,7 +74,7 @@ class SchoolInfo extends Component {
                         <Image
                           className="school-logo"
                           style={{ height: "140px", width: "140px" }}
-                          src={`${process.env.PUBLIC_URL}/assets/images/size-chart.jpg`}
+                          src={schoolState.data.avatar}
                           roundedCircle
                         ></Image>
                       </Grid>
@@ -74,7 +95,7 @@ class SchoolInfo extends Component {
                           <strong>Alamat</strong>
                         </Grid>
                         <Grid item xs={7} lg={7}>
-                          {schoolState.data.address}
+                          {schoolState.data.address}, {schoolState.data.zipcode}
                         </Grid>
                       </Grid>
                       <Grid item container direction="row">
@@ -85,13 +106,13 @@ class SchoolInfo extends Component {
                           {schoolState.data.phone}
                         </Grid>
                       </Grid>
-                      {/* ONLY SHOW FOR SCHOOL OWNER */}
+                      {/* ONLY SHOW FOR SCHOOL MEMBER */}
                       <Grid item container direction="row">
                         <Grid item xs={5} lg={5}>
-                          <strong>Kode Sekolah</strong>
+                          <strong>Kode sekolah</strong>
                         </Grid>
                         <Grid item xs={7} lg={7}>
-                          {schoolState.data.code}
+                          <strong>{schoolState.data.code}</strong>
                         </Grid>
                       </Grid>
                       {/* <Grid item container direction="row">
@@ -103,6 +124,7 @@ class SchoolInfo extends Component {
                           "Belum mengisi catatan sekolah"}
                       </Grid>
                     </Grid> */}
+                      {/* ONLY SHOW FOR SCHOOL MEMBER */}
                       <Grid
                         item
                         container
@@ -114,6 +136,7 @@ class SchoolInfo extends Component {
                             color="secondary"
                             variant="contained"
                             disableElevation
+                            onClick={deleteSchool}
                           >
                             Hapus Sekolah
                           </Button>
@@ -123,8 +146,9 @@ class SchoolInfo extends Component {
                             color="primary"
                             variant="contained"
                             disableElevation
+                            onClick={onUpdateSchool}
                           >
-                            Edit
+                            Ubah
                           </Button>
                         </Grid>
                       </Grid>
@@ -134,6 +158,148 @@ class SchoolInfo extends Component {
               </Grid>
             </Grid>
           </Container>
+
+          {/*Modal edit school */}
+          <Modal isOpen={schoolState.modal.show}>
+            <ModalHeader toggle={() => setModalSchool("show", false)}>
+              <strong>Ubah Sekolah</strong>
+            </ModalHeader>
+            <ValidatorForm onSubmit={saveUpdateSchool}>
+              <ModalBody>
+                <div className="form-group">
+                  <span>Nama sekolah*</span>
+
+                  <TextValidator
+                    id="name"
+                    type="text"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    placeholder="Contoh: SD Negeri 1 Depok"
+                    margin="dense"
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e) =>
+                      setModalSchool(e.target.id, e.target.value)
+                    }
+                    value={schoolState.modal.name}
+                    validators={["required"]}
+                    errorMessages={["masukkan nama sekolah"]}
+                  />
+                </div>
+                <div className="form-group">
+                  <span>Alamat sekolah</span>
+                  <TextField
+                    id="address"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    margin="dense"
+                    placeholder="Contoh alamat: Jl KH Wahid Hasyim 80, Kebon Sirih"
+                    multiline
+                    fullWidth
+                    rows={4}
+                    variant="outlined"
+                    onChange={(e) =>
+                      setModalSchool(e.target.id, e.target.value)
+                    }
+                    value={schoolState.modal.address}
+                  />
+                </div>
+                <div className="form-group">
+                  <span>Kode pos</span>
+                  <TextField
+                    id="zipcode"
+                    type="text"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    placeholder="Contoh: 13720"
+                    margin="dense"
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e) =>
+                      setModalSchool(e.target.id, e.target.value)
+                    }
+                    value={schoolState.modal.zipcode}
+                  />
+                </div>
+                <div className="form-group">
+                  <span>Nomor telepon</span>
+                  <TextField
+                    id="phone"
+                    type="text"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    margin="dense"
+                    placeholder="Contoh: 0212894203"
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e) =>
+                      setModalSchool(e.target.id, e.target.value)
+                    }
+                    value={schoolState.modal.phone}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Logo sekolah</label>
+                  <div>
+                    {/* <Button
+                    variant="contained"
+                    disableElevation
+                    component="label"
+                    style={{ background: "#4AA0B5", color: "white" }}
+                  >
+                  Pilih Gambar */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      label="Pilih gambar"
+                      onChange={this.uploadImage}
+                    />
+                    {/* </Button> */}
+                  </div>
+                </div>
+
+                <Collapse in={schoolState.modal.failed}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => setModalSchool("failed", false)}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {schoolState.modal.errormsg}
+                  </Alert>
+                </Collapse>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="default"
+                  variant="contained"
+                  disableElevation
+                  onClick={() => setModalSchool("show", false)}
+                >
+                  Batal
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  disableElevation
+                  type="submit"
+                >
+                  Simpan
+                </Button>
+              </ModalFooter>
+            </ValidatorForm>
+          </Modal>
         </section>
       </div>
     );
@@ -145,4 +311,8 @@ const mapStateToProps = (state) => ({
 });
 export default connect(mapStateToProps, {
   getSchool,
+  setModalSchool,
+  onUpdateSchool,
+  saveUpdateSchool,
+  deleteSchool,
 })(SchoolInfo);

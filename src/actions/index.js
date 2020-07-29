@@ -3,6 +3,7 @@ import * as types from "../constants/ActionTypes";
 import store from "../store";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import { type } from "jquery";
 
 const optionToast = {
   autoClose: 1300,
@@ -89,6 +90,20 @@ export const saveRegister = () => ({
 export const getSchool = (value) => ({
   type: types.GET_SCHOOL,
   value,
+});
+export const onUpdateSchool = () => ({
+  type: types.ON_UPDATE_SCHOOL,
+});
+export const setModalSchool = (field, value) => ({
+  type: types.SET_SCHOOL_MODAL,
+  field,
+  value,
+});
+export const saveUpdateSchool = () => ({
+  type: types.SAVE_UPDATE_SCHOOL,
+});
+export const deleteSchool = () => ({
+  type: types.DELETE_SCHOOL,
 });
 
 /////////////

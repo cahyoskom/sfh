@@ -17,6 +17,7 @@ import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import * as EmailValidator from "email-validator";
 import { GoogleLogin } from "react-google-login";
 import { Credential } from "../../constants/google-key";
 import {
@@ -51,6 +52,8 @@ import Breadcrumb from "../common/breadcrumb";
 class SignIn extends Component {
   state = {
     newPasswordModal: false,
+    isEmailValid: true,
+    emailErrorText: "",
   };
   // const recaptchaRef = React.createRef();
 
@@ -79,8 +82,10 @@ class SignIn extends Component {
   }
 
   onClickLogin() {
-    const { postLogin } = this.props;
-    postLogin();
+    if (this.state.isEmailValid) {
+      const { postLogin } = this.props;
+      postLogin();
+    }
   }
 
   onEnterKeyPress(e) {
@@ -101,6 +106,20 @@ class SignIn extends Component {
 
   googleResponse = (response) => {
     this.props.googleLogin(response);
+  };
+
+  validateEmail = () => {
+    if (!EmailValidator.validate(this.props.accountState.login.email)) {
+      this.setState({
+        isEmailValid: false,
+        emailErrorText: "email tidak valid",
+      });
+    } else {
+      this.setState({
+        isEmailValid: true,
+        emailErrorText: "",
+      });
+    }
   };
 
   render() {
@@ -210,13 +229,13 @@ class SignIn extends Component {
                               onChangeStateLogin(e.target.id, e.target.value)
                             }
                             onKeyPress={(e) => this.onEnterKeyPress(e)}
+                            onBlur={this.validateEmail}
+                            error={!this.state.isEmailValid}
+                            helperText={this.state.emailErrorText}
                             value={accountState.login.email}
                             autoComplete={"email"}
-                            validators={["required", "isEmail"]}
-                            errorMessages={[
-                              "masukkan email",
-                              "email tidak valid",
-                            ]}
+                            validators={["required"]}
+                            errorMessages={["masukkan email"]}
                           />
                         </div>
                         <div className="form-group">
@@ -239,67 +258,67 @@ class SignIn extends Component {
                             errorMessages={["masukkan kata sandi"]}
                           />
                         </div>
-                        <Grid
-                          container
-                          direction="row"
-                          alignItems="center"
-                          justify="space-between"
-                        >
-                          <Grid item>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={accountState.login.isChecked}
-                                  onChange={(e) =>
-                                    onChangeStateLogin(
-                                      e.target.id,
-                                      e.target.checked
-                                    )
-                                  }
-                                  id="isChecked"
-                                  name="checked"
-                                  color="primary"
-                                />
-                              }
-                              label="Ingat saya"
-                            />
-                          </Grid>
-                          <Grid item>
-                            <MaterialLink
-                              component="button"
-                              variant="body2"
-                              onClick={this.openModalNewPassword}
-                              color="primary"
-                            >
-                              Lupa kata sandi?
-                            </MaterialLink>
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          direction="column"
-                          alignItems="center"
-                          justify="space-around"
-                          spacing={2}
-                        >
-                          <Grid item>
-                            {!accountState.showSpinner && (
-                              <Button
-                                variant="contained"
-                                disableElevation
-                                color="primary"
-                                type="submit"
-                              >
-                                Masuk
-                              </Button>
-                            )}
-                          </Grid>
-                          <Grid item>
-                            {accountState.showSpinner && <CircularProgress />}
-                          </Grid>
-                        </Grid>
                       </ValidatorForm>
                     </form>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={accountState.login.isChecked}
+                              onChange={(e) =>
+                                onChangeStateLogin(
+                                  e.target.id,
+                                  e.target.checked
+                                )
+                              }
+                              id="isChecked"
+                              name="checked"
+                              color="primary"
+                            />
+                          }
+                          label="Ingat saya"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <MaterialLink
+                          component="button"
+                          variant="body2"
+                          onClick={this.openModalNewPassword}
+                          color="primary"
+                        >
+                          Lupa kata sandi?
+                        </MaterialLink>
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      direction="column"
+                      alignItems="center"
+                      justify="space-around"
+                      spacing={2}
+                    >
+                      <Grid item>
+                        {!accountState.showSpinner && (
+                          <Button
+                            variant="contained"
+                            disableElevation
+                            color="primary"
+                            type="submit"
+                          >
+                            Masuk
+                          </Button>
+                        )}
+                      </Grid>
+                      <Grid item>
+                        {accountState.showSpinner && <CircularProgress />}
+                      </Grid>
+                    </Grid>
                     <Grid
                       container
                       direction="column"
@@ -338,114 +357,33 @@ class SignIn extends Component {
               <ModalHeader toggle={() => setModalActivation("show", false)}>
                 <strong>Kirim ulang verifikasi email</strong>
               </ModalHeader>
-              {!accountState.modalActivation.success && (
-                <ModalBody>
-                  <label>
-                    Silahkan masukkan alamat email yang digunakan untuk
-                    registrasi akun anda. Kami akan mengirimkan email yang
-                    berisi link untuk melakukan verifikasi.
-                  </label>
-                  <label>Email: </label>
-                  <Input
-                    type="email"
-                    id="email"
-                    placeholder="Contoh: janedoe@mail.com"
-                    value={accountState.modalActivation.email}
-                    onChange={(e) =>
-                      setModalActivation(e.target.id, e.target.value)
-                    }
-                  />
-                  <Collapse in={accountState.modalActivation.openAlert}>
-                    <Alert
-                      severity="error"
-                      action={
-                        <IconButton
-                          aria-label="close"
-                          color="inherit"
-                          size="small"
-                          onClick={() => setModalActivation("openAlert", false)}
-                        >
-                          <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                      }
-                    >
-                      {accountState.modalActivation.errormsg}
-                    </Alert>
-                  </Collapse>
-                </ModalBody>
-              )}
-              {accountState.modalActivation.success && (
-                <ModalBody>
-                  <Alert severity="success">
-                    <p>
-                      <strong>Email berhasil dikirim!</strong>
-                    </p>
-                    <p>{accountState.modalActivation.successmsg}</p>
-                  </Alert>
-                </ModalBody>
-              )}
-              {!accountState.modalActivation.success && (
-                <ModalFooter>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disableElevation
-                    onClick={resendEmail}
-                  >
-                    Kirim email
-                  </Button>
-                </ModalFooter>
-              )}
-            </Modal>
-
-            {/* modal lupa kata sandi */}
-            <Modal isOpen={this.state.newPasswordModal}>
-              <ValidatorForm
-                ref="form"
-                onSubmit={newPassword}
-                onError={(errors) => console.log(errors)}
-              >
-                <ModalHeader toggle={this.closeModalNewPassword}>
-                  <strong>Ganti kata sandi</strong>
-                </ModalHeader>
-                {!accountState.newPassword.success && (
+              <ValidatorForm onSubmit={resendEmail}>
+                {!accountState.modalActivation.success && (
                   <ModalBody>
                     <label>
                       Silahkan masukkan alamat email yang digunakan untuk
                       registrasi akun anda. Kami akan mengirimkan email yang
-                      berisi link untuk melakukan reset password ke alamat ini.
+                      berisi link untuk melakukan verifikasi.
                     </label>
                     <label>Email: </label>
-                    {/* <Input
-                    type="email"
-                    id="email"
-                    placeholder="Contoh: janedoe@mail.com"
-                    value={accountState.newPassword.email}
-                    onChange={(e) =>
-                      onChangeStateNewPassword("email", e.target.value)
-                    }
-                  /> */}
-
                     <TextValidator
-                      id="email"
-                      label="Email"
                       type="email"
+                      id="email"
                       InputLabelProps={{
                         shrink: true,
                       }}
                       margin="dense"
                       fullWidth
                       variant="outlined"
+                      placeholder="Contoh: janedoe@mail.com"
+                      value={accountState.modalActivation.email}
                       onChange={(e) =>
-                        onChangeStateNewPassword("email", e.target.value)
+                        setModalActivation(e.target.id, e.target.value)
                       }
-                      value={accountState.newPassword.email}
-                      autoComplete={"email"}
-                      validators={["required", "isEmail"]}
-                      errorMessages={["masukkan email", "email tidak valid"]}
+                      validators={["required"]}
+                      errorMessages={["masukkan email"]}
                     />
-
-                    <Collapse in={accountState.newPassword.openAlert}>
+                    <Collapse in={accountState.modalActivation.openAlert}>
                       <Alert
                         severity="error"
                         action={
@@ -454,41 +392,108 @@ class SignIn extends Component {
                             color="inherit"
                             size="small"
                             onClick={() =>
-                              onChangeStateNewPassword("openAlert", false)
+                              setModalActivation("openAlert", false)
                             }
                           >
                             <CloseIcon fontSize="inherit" />
                           </IconButton>
                         }
                       >
-                        {accountState.newPassword.errormsg}
+                        {accountState.modalActivation.errormsg}
                       </Alert>
                     </Collapse>
                   </ModalBody>
                 )}
-                {accountState.newPassword.success && (
+                {accountState.modalActivation.success && (
                   <ModalBody>
                     <Alert severity="success">
                       <p>
                         <strong>Email berhasil dikirim!</strong>
                       </p>
-                      <p>{accountState.newPassword.successmsg}</p>
+                      <p>{accountState.modalActivation.successmsg}</p>
                     </Alert>
                   </ModalBody>
                 )}
-                {!accountState.newPassword.success && (
+                {!accountState.modalActivation.success && (
                   <ModalFooter>
                     <Button
                       color="primary"
                       variant="contained"
                       disableElevation
-                      onClick={newPassword}
+                      type="submit"
                     >
                       Kirim email
                     </Button>
                   </ModalFooter>
                 )}
               </ValidatorForm>
+            </Modal>
+
+            {/* modal lupa kata sandi */}
+            <Modal isOpen={this.state.newPasswordModal}>
+              <ModalHeader toggle={this.closeModalNewPassword}>
+                <strong>Ganti kata sandi</strong>
+              </ModalHeader>
+              {!accountState.newPassword.success && (
+                <ModalBody>
+                  <label>
+                    Silahkan masukkan alamat email yang digunakan untuk
+                    registrasi akun anda. Kami akan mengirimkan email yang
+                    berisi link untuk melakukan reset password ke alamat ini.
+                  </label>
+                  <label>Email: </label>
+                  <Input
+                    type="email"
+                    id="email"
+                    placeholder="Contoh: janedoe@mail.com"
+                    value={accountState.newPassword.email}
+                    onChange={(e) =>
+                      onChangeStateNewPassword("email", e.target.value)
+                    }
+                  />
+                  <Collapse in={accountState.newPassword.openAlert}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() =>
+                            onChangeStateNewPassword("openAlert", false)
+                          }
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {accountState.newPassword.errormsg}
+                    </Alert>
+                  </Collapse>
+                </ModalBody>
+              )}
+              {accountState.newPassword.success && (
+                <ModalBody>
+                  <Alert severity="success">
+                    <p>
+                      <strong>Email berhasil dikirim!</strong>
+                    </p>
+                    <p>{accountState.newPassword.successmsg}</p>
+                  </Alert>
+                </ModalBody>
+              )}
+              {!accountState.newPassword.success && (
+                <ModalFooter>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    disableElevation
+                    onClick={newPassword}
+                  >
+                    Kirim email
+                  </Button>
+                </ModalFooter>
+              )}
             </Modal>
           </section>
           <FooterTwo />

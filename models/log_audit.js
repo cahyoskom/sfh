@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
   const attributes = {
     id: {
@@ -146,10 +146,6 @@ module.exports = (sequelize) => {
     comment: '',
     indexes: []
   };
-  const LogAuditModel = sequelize.define(
-    'log_audit_model',
-    attributes,
-    options
-  );
+  const LogAuditModel = sequelize.define('log_audit_model', attributes, options);
   return LogAuditModel;
 };

@@ -252,10 +252,7 @@ exports.upload = async function (req, res) {
 
 exports.delete = async function (req, res) {
   const model_task = t_task();
-  model_task.update(
-    { status: TASK_STATUS.DELETED },
-    { where: { task_id: req.params.id } }
-  );
+  model_task.update({ status: TASK_STATUS.DELETED }, { where: { task_id: req.params.id } });
 
   res.json({ message: 'Data has been deleted.' });
 };

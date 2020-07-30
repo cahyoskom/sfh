@@ -36,9 +36,7 @@ module.exports = async (req, res, next) => {
 
   let split = req.headers.authorization.split('Bearer');
   if (!split[1]) {
-    return res
-      .status(401)
-      .send({ message: 'Invalid authorization Bearer token' });
+    return res.status(401).send({ message: 'Invalid authorization Bearer token' });
   }
 
   let sent_token = split[1].trim();

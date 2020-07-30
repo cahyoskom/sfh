@@ -77,7 +77,7 @@ exports.create = async function (req, res) {
 
     if (checkUser) {
       // note this! we don't care about sec_user status flag, because email should be unique list
-      // throw new Error("Your mail already registered, please log in");
+      // throw new Error('Your mail already registered, please log in');
       throw new Error('Email sudah terdaftar, silakan login.');
     } else {
       const checkReg = await model_registrant.findOne({
@@ -104,13 +104,15 @@ exports.create = async function (req, res) {
               );
 
               if (alreadyValidLink) {
-                // throw new Error("Please check mail box for visit our activation link")
-                throw new Error('Email sudah terdaftar. Silakan cek email untuk melakukan aktivasi link.');
+                // throw new Error('Please check mail box for visit our activation link')
+                throw new Error(
+                  'Email sudah terdaftar. Silakan cek email untuk melakukan aktivasi link.'
+                );
               }
             }
             res.status(401).json({
               error: 401001,
-              // message: "Please do request activation link",
+              // message: 'Please do request activation link',
               message: 'Harap melakukan aktivasi link.'
             });
             return;
@@ -142,7 +144,8 @@ exports.create = async function (req, res) {
     const to_addr = registrant.email;
     const url = env.APP_BASEURL || req.headers.host;
     const content =
-      'Hello,\n\nPlease verify your account by clicking the link:\n' + `${url}/confirmation?q=activating&code=${code}`;
+      'Hello,\n\nPlease verify your account by clicking the link:\n' +
+      `${url}/confirmation?q=activating&code=${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION',
       sec_registrant_id: registrant.id,
@@ -179,7 +182,7 @@ exports.activating = async function (req, res) {
       where: { code: req.params.code }
     });
     if (confirmation.status !== ACTIVE) {
-      // throw new Error("This link is already used");
+      // throw new Error('This link is already used');
       throw new Error('Link sudah digunakan.');
     }
 
@@ -187,7 +190,7 @@ exports.activating = async function (req, res) {
       where: { id: confirmation.sec_registrant_id }
     });
     if (registrant.is_email_validated) {
-      // throw new Error("This user has already been verified");
+      // throw new Error('This user has already been verified');
       throw new Error('Pengguna sudah diverifikasi.');
     }
 
@@ -219,7 +222,7 @@ exports.activating = async function (req, res) {
       var copy = await model_user.create(copy_to_user);
 
       return res.json({
-        // message: "The account is successfully verified. Please log in.",
+        // message: 'The account is successfully verified. Please log in.',
         message: 'Akun berhasil diverifikasi. silakan login.',
         data: copy
       });
@@ -246,7 +249,7 @@ exports.requestActivation = async function (req, res) {
       }
     });
     if (!registrant) {
-      // throw new Error("Email entered is wrong");
+      // throw new Error('Email entered is wrong');
       throw new Error('Email yang dimasukkan salah.');
     }
 
@@ -260,7 +263,8 @@ exports.requestActivation = async function (req, res) {
     const to_addr = registrant.email;
     const url = env.APP_BASEURL || req.headers.host;
     const content =
-      'Hello,\n\nPlease verify your account by clicking the link:\n' + `${url}/confirmation?q=activating&code=${code}`;
+      'Hello,\n\nPlease verify your account by clicking the link:\n' +
+      `${url}/confirmation?q=activating&code=${code}`;
     const datum = {
       description: 'ACCOUNT_ACTIVATION_RE',
       sec_registrant_id: registrant.id,
@@ -309,24 +313,28 @@ exports.forgotPassword = async function (req, res) {
       });
 
       if (!registrant) {
-        // throw new Error("Email entered is wrong or not registered");
-        // throw new Error("Email yang dimasukkan salah atau belum terdaftar.");
+        // throw new Error('Email entered is wrong or not registered');
+        // throw new Error('Email yang dimasukkan salah atau belum terdaftar.');
         throw new Error('Email yang anda masukkan salah');
       }
 
-      // throw new Error("Verify your email to continue");
-      // throw new Error("Harap Verifikasi Email Terlebih Dahulu.");
+      // throw new Error('Verify your email to continue');
+      // throw new Error('Harap Verifikasi Email Terlebih Dahulu.');
       throw new Error('Email akan terkirim apabila telah terdaftar');
     }
 
-    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_FORGOT_PASSWORD', { sec_user_id: user.id });
+    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_FORGOT_PASSWORD', {
+      sec_user_id: user.id
+    });
     if (countdownMsg) throw new Error(countdownMsg);
 
     const code = crypto.randomBytes(16).toString('hex');
     const subject = 'Password change request';
     const to_addr = user.email;
     const url = env.APP_BASEURL || req.headers.host;
-    const content = "Hello,\n\nHere's your password change request:\n" + `${url}/confirmation?q=update_password&code=${code}`;
+    const content =
+      "Hello,\n\nHere's your password change request:\n" +
+      `${url}/confirmation?q=update_password&code=${code}`;
     const datum = {
       description: 'FORGOT_PASSWORD',
       sec_user_id: user.id,
@@ -366,7 +374,7 @@ exports.updatePassword = async function (req, res) {
   if (!confirm) {
     return res.status(401).json({
       error: null,
-      // message: "Code is not found please request another password change.",
+      // message: 'Code is not found please request another password change.',
       message: 'Token tidak ditemukan, harap request perubahan password lagi.'
     });
   }
@@ -403,7 +411,7 @@ exports.updatePassword = async function (req, res) {
   await confirm.save();
 
   return res.json({
-    // message: "Your password updated",
+    // message: 'Your password updated',
     message: 'Password berhasil diperbarui.'
   });
 };

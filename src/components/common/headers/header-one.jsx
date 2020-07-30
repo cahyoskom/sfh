@@ -97,9 +97,24 @@ class HeaderOne extends Component {
                     <SideBar />
                   </div>
                   <div className="brand-logo">
-                    {/* <Link to={`${process.env.PUBLIC_URL}/`}>
-											<img src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`} className="img-fluid" alt="" />
-										</Link> */}
+                    <span>
+                      <Link to={`${process.env.PUBLIC_URL}/`}>
+                        <img
+                          src={`${process.env.PUBLIC_URL}/assets/images/logo-sinaungomah.svg`}
+                          width="30"
+                          height="30"
+                          className="img-fluid"
+                          alt="logo"
+                        />
+                      </Link>
+                    </span>
+                    <span style={{ marginLeft: "5px" }}>
+                      <img
+                        src={`${process.env.PUBLIC_URL}/assets/images/SinauNgomah.svg`}
+                        alt="login-page-img"
+                        height="30"
+                      ></img>
+                    </span>
                   </div>
                 </div>
                 <div className="menu-right pull-right">

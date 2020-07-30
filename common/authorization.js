@@ -13,7 +13,8 @@ const urlAndMethodMapping = {
   '/activating/[a-f0-9]{32}': 'GET',
   '/request_activation': 'POST',
   '/registration': 'PUT',
-  '/confirmation': 'GET'
+  '/confirmation': 'GET',
+  '/check_email': 'GET'
 };
 
 module.exports = async (req, res, next) => {

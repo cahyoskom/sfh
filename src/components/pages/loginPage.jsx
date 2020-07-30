@@ -357,64 +357,76 @@ class SignIn extends Component {
               <ModalHeader toggle={() => setModalActivation("show", false)}>
                 <strong>Kirim ulang verifikasi email</strong>
               </ModalHeader>
-              {!accountState.modalActivation.success && (
-                <ModalBody>
-                  <label>
-                    Silahkan masukkan alamat email yang digunakan untuk
-                    registrasi akun anda. Kami akan mengirimkan email yang
-                    berisi link untuk melakukan verifikasi.
-                  </label>
-                  <label>Email: </label>
-                  <Input
-                    type="email"
-                    id="email"
-                    placeholder="Contoh: janedoe@mail.com"
-                    value={accountState.modalActivation.email}
-                    onChange={(e) =>
-                      setModalActivation(e.target.id, e.target.value)
-                    }
-                  />
-                  <Collapse in={accountState.modalActivation.openAlert}>
-                    <Alert
-                      severity="error"
-                      action={
-                        <IconButton
-                          aria-label="close"
-                          color="inherit"
-                          size="small"
-                          onClick={() => setModalActivation("openAlert", false)}
-                        >
-                          <CloseIcon fontSize="inherit" />
-                        </IconButton>
+              <ValidatorForm onSubmit={resendEmail}>
+                {!accountState.modalActivation.success && (
+                  <ModalBody>
+                    <label>
+                      Silahkan masukkan alamat email yang digunakan untuk
+                      registrasi akun anda. Kami akan mengirimkan email yang
+                      berisi link untuk melakukan verifikasi.
+                    </label>
+                    <label>Email: </label>
+                    <TextValidator
+                      type="email"
+                      id="email"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      margin="dense"
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Contoh: janedoe@mail.com"
+                      value={accountState.modalActivation.email}
+                      onChange={(e) =>
+                        setModalActivation(e.target.id, e.target.value)
                       }
-                    >
-                      {accountState.modalActivation.errormsg}
+                      validators={["required"]}
+                      errorMessages={["masukkan email"]}
+                    />
+                    <Collapse in={accountState.modalActivation.openAlert}>
+                      <Alert
+                        severity="error"
+                        action={
+                          <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() =>
+                              setModalActivation("openAlert", false)
+                            }
+                          >
+                            <CloseIcon fontSize="inherit" />
+                          </IconButton>
+                        }
+                      >
+                        {accountState.modalActivation.errormsg}
+                      </Alert>
+                    </Collapse>
+                  </ModalBody>
+                )}
+                {accountState.modalActivation.success && (
+                  <ModalBody>
+                    <Alert severity="success">
+                      <p>
+                        <strong>Email berhasil dikirim!</strong>
+                      </p>
+                      <p>{accountState.modalActivation.successmsg}</p>
                     </Alert>
-                  </Collapse>
-                </ModalBody>
-              )}
-              {accountState.modalActivation.success && (
-                <ModalBody>
-                  <Alert severity="success">
-                    <p>
-                      <strong>Email berhasil dikirim!</strong>
-                    </p>
-                    <p>{accountState.modalActivation.successmsg}</p>
-                  </Alert>
-                </ModalBody>
-              )}
-              {!accountState.modalActivation.success && (
-                <ModalFooter>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disableElevation
-                    onClick={resendEmail}
-                  >
-                    Kirim email
-                  </Button>
-                </ModalFooter>
-              )}
+                  </ModalBody>
+                )}
+                {!accountState.modalActivation.success && (
+                  <ModalFooter>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disableElevation
+                      type="submit"
+                    >
+                      Kirim email
+                    </Button>
+                  </ModalFooter>
+                )}
+              </ValidatorForm>
             </Modal>
 
             {/* modal lupa kata sandi */}

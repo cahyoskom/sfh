@@ -258,67 +258,67 @@ class SignIn extends Component {
                             errorMessages={["masukkan kata sandi"]}
                           />
                         </div>
-                        <Grid
-                          container
-                          direction="row"
-                          alignItems="center"
-                          justify="space-between"
-                        >
-                          <Grid item>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={accountState.login.isChecked}
-                                  onChange={(e) =>
-                                    onChangeStateLogin(
-                                      e.target.id,
-                                      e.target.checked
-                                    )
-                                  }
-                                  id="isChecked"
-                                  name="checked"
-                                  color="primary"
-                                />
-                              }
-                              label="Ingat saya"
-                            />
-                          </Grid>
-                          <Grid item>
-                            <MaterialLink
-                              component="button"
-                              variant="body2"
-                              onClick={this.openModalNewPassword}
-                              color="primary"
-                            >
-                              Lupa kata sandi?
-                            </MaterialLink>
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          direction="column"
-                          alignItems="center"
-                          justify="space-around"
-                          spacing={2}
-                        >
-                          <Grid item>
-                            {!accountState.showSpinner && (
-                              <Button
-                                variant="contained"
-                                disableElevation
-                                color="primary"
-                                type="submit"
-                              >
-                                Masuk
-                              </Button>
-                            )}
-                          </Grid>
-                          <Grid item>
-                            {accountState.showSpinner && <CircularProgress />}
-                          </Grid>
-                        </Grid>
                       </ValidatorForm>
                     </form>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={accountState.login.isChecked}
+                              onChange={(e) =>
+                                onChangeStateLogin(
+                                  e.target.id,
+                                  e.target.checked
+                                )
+                              }
+                              id="isChecked"
+                              name="checked"
+                              color="primary"
+                            />
+                          }
+                          label="Ingat saya"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <MaterialLink
+                          component="button"
+                          variant="body2"
+                          onClick={this.openModalNewPassword}
+                          color="primary"
+                        >
+                          Lupa kata sandi?
+                        </MaterialLink>
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      direction="column"
+                      alignItems="center"
+                      justify="space-around"
+                      spacing={2}
+                    >
+                      <Grid item>
+                        {!accountState.showSpinner && (
+                          <Button
+                            variant="contained"
+                            disableElevation
+                            color="primary"
+                            type="submit"
+                          >
+                            Masuk
+                          </Button>
+                        )}
+                      </Grid>
+                      <Grid item>
+                        {accountState.showSpinner && <CircularProgress />}
+                      </Grid>
+                    </Grid>
                     <Grid
                       container
                       direction="column"

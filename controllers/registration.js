@@ -403,3 +403,35 @@ exports.updatePassword = async function (req, res) {
     message: 'Your password updated'
   });
 };
+
+exports.checkEmail = async function (req, res) {
+  var email = req.query.email;
+  const model_user = sec_user();
+  var user = await model_user.findOne({
+    where: {
+      email: email,
+    },
+  });
+  if (user) {
+    return res.status(401).json({
+      message: "email sudah terdaftar",
+    });
+  } else {
+    const model_registrant = sec_registrant();
+    var registrant = await model_registrant.findOne({
+      where: {
+        email: email,
+        status: ACTIVE,
+      },
+    });
+    if (registrant) {
+      return res.status(401).json({
+        message: "email sudah terdaftar",
+      });
+    }
+  }
+  console.log("SUCCESS")
+  return res.status(200).json({
+    message: "email dapat digunakan",
+  });
+}

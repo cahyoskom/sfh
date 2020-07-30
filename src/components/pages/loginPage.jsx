@@ -17,6 +17,7 @@ import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import * as EmailValidator from "email-validator";
 import { GoogleLogin } from "react-google-login";
 import { Credential } from "../../constants/google-key";
 import {
@@ -48,10 +49,11 @@ import { Grid } from "@material-ui/core";
 
 import Breadcrumb from "../common/breadcrumb";
 
-
 class SignIn extends Component {
   state = {
     newPasswordModal: false,
+    isEmailValid: true,
+    emailErrorText: "",
   };
   // const recaptchaRef = React.createRef();
 
@@ -80,8 +82,10 @@ class SignIn extends Component {
   }
 
   onClickLogin() {
-    const { postLogin } = this.props;
-    postLogin();
+    if (this.state.isEmailValid) {
+      const { postLogin } = this.props;
+      postLogin();
+    }
   }
 
   onEnterKeyPress(e) {
@@ -102,6 +106,20 @@ class SignIn extends Component {
 
   googleResponse = (response) => {
     this.props.googleLogin(response);
+  };
+
+  validateEmail = () => {
+    if (!EmailValidator.validate(this.props.accountState.login.email)) {
+      this.setState({
+        isEmailValid: false,
+        emailErrorText: "email tidak valid",
+      });
+    } else {
+      this.setState({
+        isEmailValid: true,
+        emailErrorText: "",
+      });
+    }
   };
 
   render() {
@@ -147,183 +165,188 @@ class SignIn extends Component {
                   ></img>
                 </Grid>
                 <Grid item sm={12} lg={3}>
-                <Grid container direction="column" justify="space-between" spacing={1}>
+                  <Grid
+                    container
+                    direction="column"
+                    justify="space-between"
+                    spacing={1}
+                  >
                     <div>
-                        <h4>
+                      <h4>
                         <strong>Selamat Datang!</strong>
-                        </h4>
+                      </h4>
                     </div>
                     {/* <div className="theme-card"> */}
                     <h5>Masuk ke SinauNgomah</h5>
-                        <Collapse in={accountState.openLoginAlert}>
-                            <Grid item>
-                                <Alert
-                                    severity="error"
-                                    action={
-                                        <IconButton
-                                        aria-label="close"
-                                        color="inherit"
-                                        size="small"
-                                        onClick={closeAlert}
-                                        >
-                                        <CloseIcon fontSize="inherit" />
-                                        </IconButton>
-                                    }
-                                >
-                                <strong>{accountState.alertMsg}</strong>
-                                </Alert>
-                            </Grid>
-                        </Collapse>
-                        <Grid item>
-                        {accountState.resendActivation && (
-                            <MaterialLink
-                            component="button"
-                            variant="body2"
-                            onClick={() => setModalActivation("show", true)}
+                    <Collapse in={accountState.openLoginAlert}>
+                      <Grid item>
+                        <Alert
+                          severity="error"
+                          action={
+                            <IconButton
+                              aria-label="close"
+                              color="inherit"
+                              size="small"
+                              onClick={closeAlert}
                             >
-                            Kirim ulang verifikasi email
-                            </MaterialLink>
-                        )}
-                        </Grid>
-                    <form className="theme-form">
-                        <ValidatorForm
-                        onSubmit={() => {
-                            this.onClickLogin();
-                        }}
+                              <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                          }
                         >
+                          <strong>{accountState.alertMsg}</strong>
+                        </Alert>
+                      </Grid>
+                    </Collapse>
+                    <Grid item>
+                      {accountState.resendActivation && (
+                        <MaterialLink
+                          component="button"
+                          variant="body2"
+                          onClick={() => setModalActivation("show", true)}
+                        >
+                          Kirim ulang verifikasi email
+                        </MaterialLink>
+                      )}
+                    </Grid>
+                    <form className="theme-form">
+                      <ValidatorForm
+                        onSubmit={() => {
+                          this.onClickLogin();
+                        }}
+                      >
                         <div className="form-group">
-                            <TextValidator
+                          <TextValidator
                             id="email"
                             label="Email"
                             type="email"
                             InputLabelProps={{
-                                shrink: true,
+                              shrink: true,
                             }}
                             margin="dense"
                             fullWidth
                             variant="outlined"
                             onChange={(e) =>
-                                onChangeStateLogin(e.target.id, e.target.value)
+                              onChangeStateLogin(e.target.id, e.target.value)
                             }
                             onKeyPress={(e) => this.onEnterKeyPress(e)}
+                            onBlur={this.validateEmail}
+                            error={!this.state.isEmailValid}
+                            helperText={this.state.emailErrorText}
                             value={accountState.login.email}
                             autoComplete={"email"}
-                            validators={["required", "isEmail"]}
-                            errorMessages={[
-                                "masukkan email",
-                                "email tidak valid",
-                            ]}
-                            />
+                            validators={["required"]}
+                            errorMessages={["masukkan email"]}
+                          />
                         </div>
                         <div className="form-group">
-                            <TextValidator
+                          <TextValidator
                             id="password"
                             type="password"
                             label="Kata sandi"
                             InputLabelProps={{
-                                shrink: true,
+                              shrink: true,
                             }}
                             margin="dense"
                             fullWidth
                             variant="outlined"
                             onChange={(e) =>
-                                onChangeStateLogin(e.target.id, e.target.value)
+                              onChangeStateLogin(e.target.id, e.target.value)
                             }
                             onKeyPress={(e) => this.onEnterKeyPress(e)}
                             value={accountState.login.password}
                             validators={["required"]}
                             errorMessages={["masukkan kata sandi"]}
-                            />
+                          />
                         </div>
                         <Grid
-                            container
-                            direction="row"
-                            alignItems="center"
-                            justify="space-between"
+                          container
+                          direction="row"
+                          alignItems="center"
+                          justify="space-between"
                         >
-                            <Grid item>
+                          <Grid item>
                             <FormControlLabel
-                                control={
+                              control={
                                 <Checkbox
-                                    checked={accountState.login.isChecked}
-                                    onChange={(e) =>
+                                  checked={accountState.login.isChecked}
+                                  onChange={(e) =>
                                     onChangeStateLogin(
-                                        e.target.id,
-                                        e.target.checked
+                                      e.target.id,
+                                      e.target.checked
                                     )
-                                    }
-                                    id="isChecked"
-                                    name="checked"
-                                    color="primary"
+                                  }
+                                  id="isChecked"
+                                  name="checked"
+                                  color="primary"
                                 />
-                                }
-                                label="Ingat saya"
+                              }
+                              label="Ingat saya"
                             />
-                            </Grid>
-                            <Grid item>
+                          </Grid>
+                          <Grid item>
                             <MaterialLink
-                                component="button"
-                                variant="body2"
-                                onClick={this.openModalNewPassword}
-                                color="primary"
+                              component="button"
+                              variant="body2"
+                              onClick={this.openModalNewPassword}
+                              color="primary"
                             >
-                                Lupa kata sandi?
+                              Lupa kata sandi?
                             </MaterialLink>
-                            </Grid>
+                          </Grid>
                         </Grid>
                         <Grid
-                            container
-                            direction="column"
-                            alignItems="center"
-                            justify="space-around"
-                            spacing={2}
+                          container
+                          direction="column"
+                          alignItems="center"
+                          justify="space-around"
+                          spacing={2}
                         >
-                            <Grid item>
+                          <Grid item>
                             {!accountState.showSpinner && (
-                                <Button
+                              <Button
                                 variant="contained"
                                 disableElevation
                                 color="primary"
                                 type="submit"
-                                >
+                              >
                                 Masuk
-                                </Button>
+                              </Button>
                             )}
-                            </Grid>
-                            <Grid item>
+                          </Grid>
+                          <Grid item>
                             {accountState.showSpinner && <CircularProgress />}
-                            </Grid>
+                          </Grid>
                         </Grid>
-                        </ValidatorForm>
+                      </ValidatorForm>
                     </form>
                     <Grid
-                        container
-                        direction="column"
-                        alignItems="center"
-                        justify="space-around"
-                        spacing={2}
+                      container
+                      direction="column"
+                      alignItems="center"
+                      justify="space-around"
+                      spacing={2}
                     >
-                        <Grid item>atau masuk dengan</Grid>
-                        <Grid item>
+                      <Grid item>atau masuk dengan</Grid>
+                      <Grid item>
                         <div className="text-center">
-                            <GoogleLogin
+                          <GoogleLogin
                             clientId={Credential}
                             buttonText="Google"
                             onSuccess={this.googleResponse}
                             onFailure={this.googleResponse}
                             cookiePolicy="single_host_origin"
                             responseType="code,token"
-                            />
+                          />
                         </div>
-                        </Grid>
-                        <Grid item>
+                      </Grid>
+                      <Grid item>
                         <div className="text-center">
-                            Belum punya akun SinauNgomah?{" "}
-                            <Link to={`${process.env.PUBLIC_URL}/register`}>
+                          Belum punya akun SinauNgomah?{" "}
+                          <Link to={`${process.env.PUBLIC_URL}/register`}>
                             Daftar
-                            </Link>
+                          </Link>
                         </div>
-                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -402,42 +425,36 @@ class SignIn extends Component {
               {!accountState.newPassword.success && (
                 <ModalBody>
                   <label>
-                    Silahkan masukkan alamat email yang digunakan
-                    untuk registrasi akun anda. Kami akan
-                    mengirimkan email yang berisi link untuk
-                    melakukan reset password ke alamat ini.
+                    Silahkan masukkan alamat email yang digunakan untuk
+                    registrasi akun anda. Kami akan mengirimkan email yang
+                    berisi link untuk melakukan reset password ke alamat ini.
                   </label>
                   <label>Email: </label>
                   <Input
-                    type='email'
-                    id='email'
-                    placeholder='Contoh: janedoe@mail.com'
+                    type="email"
+                    id="email"
+                    placeholder="Contoh: janedoe@mail.com"
                     value={accountState.newPassword.email}
                     onChange={(e) =>
-                      onChangeStateNewPassword(
-                        'email',
-                        e.target.value
-                      )
+                      onChangeStateNewPassword("email", e.target.value)
                     }
                   />
-                  <Collapse
-                    in={accountState.newPassword.openAlert}>
+                  <Collapse in={accountState.newPassword.openAlert}>
                     <Alert
-                      severity='error'
+                      severity="error"
                       action={
                         <IconButton
-                          aria-label='close'
-                          color='inherit'
-                          size='small'
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
                           onClick={() =>
-                            onChangeStateNewPassword(
-                              'openAlert',
-                              false
-                            )
-                          }>
-                          <CloseIcon fontSize='inherit' />
+                            onChangeStateNewPassword("openAlert", false)
+                          }
+                        >
+                          <CloseIcon fontSize="inherit" />
                         </IconButton>
-                      }>
+                      }
+                    >
                       {accountState.newPassword.errormsg}
                     </Alert>
                   </Collapse>
@@ -445,7 +462,7 @@ class SignIn extends Component {
               )}
               {accountState.newPassword.success && (
                 <ModalBody>
-                  <Alert severity='success'>
+                  <Alert severity="success">
                     <p>
                       <strong>Email berhasil dikirim!</strong>
                     </p>
@@ -456,16 +473,16 @@ class SignIn extends Component {
               {!accountState.newPassword.success && (
                 <ModalFooter>
                   <Button
-                    color='primary'
-                    variant='contained'
+                    color="primary"
+                    variant="contained"
                     disableElevation
-                    onClick={newPassword}>
+                    onClick={newPassword}
+                  >
                     Kirim email
                   </Button>
                 </ModalFooter>
               )}
             </Modal>
-
           </section>
           <FooterTwo />
         </div>

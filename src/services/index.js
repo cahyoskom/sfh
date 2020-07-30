@@ -1,29 +1,22 @@
-import axios from "axios";
-import { fail } from "../components/common/toast-message";
+import axios from 'axios';
+import { fail } from '../components/common/toast-message';
 
 export function GET(url, header) {
   return axios
     .get(url, header)
-    .then((res) => {
+    .then(res => {
       return res;
     })
-    .catch((err) => {
-      if (typeof err.response == "undefined") {
-        fail("Network Error, Connection Not Found");
+    .catch(err => {
+      if (typeof err.response == 'undefined') {
+        fail('Network Error, Connection Not Found');
         return { status: 400 };
       } else {
         let errorData = err.response.data || {
-          message: "Something Went Wrong",
-          trace: "",
+          message: 'Something Went Wrong',
+          trace: ''
         };
-        fail(
-          "Error " +
-            (err.response.status || "") +
-            ":" +
-            errorData.message +
-            " " +
-            errorData.trace
-        );
+        fail('Error ' + (err.response.status || '') + ':' + errorData.message + ' ' + errorData.trace);
         return err.response;
       }
     });
@@ -32,34 +25,27 @@ export function GET(url, header) {
 export function GETFILE(url, header) {
   return axios
     .get(url, {
-      responseType: "blob",
+      responseType: 'blob',
       // timeout: 30000,
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-        Accept: "*/*",
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        Accept: '*/*'
+      }
     })
-    .then((res) => {
+    .then(res => {
       return res;
     })
-    .catch((err) => {
-      if (typeof err.response == "undefined") {
-        fail("Network Error, Connection Not Found");
+    .catch(err => {
+      if (typeof err.response == 'undefined') {
+        fail('Network Error, Connection Not Found');
         return { status: 400 };
       } else {
         let errorData = err.response.data || {
-          message: "Something Went Wrong",
-          trace: "",
+          message: 'Something Went Wrong',
+          trace: ''
         };
-        fail(
-          "Error " +
-            (err.response.status || "") +
-            ":" +
-            errorData.message +
-            " " +
-            errorData.trace
-        );
+        fail('Error ' + (err.response.status || '') + ':' + errorData.message + ' ' + errorData.trace);
         return err.response;
       }
     });
@@ -68,26 +54,19 @@ export function GETFILE(url, header) {
 export function POST(url, body, header) {
   return axios
     .post(url, body, header)
-    .then((res) => {
+    .then(res => {
       return res;
     })
-    .catch((err) => {
-      if (typeof err.response == "undefined") {
-        fail("Network Error, Connection Not Found");
+    .catch(err => {
+      if (typeof err.response == 'undefined') {
+        fail('Network Error, Connection Not Found');
         return { status: 400 };
       } else {
         let errorData = err.response.data || {
-          message: "Something Went Wrong",
-          trace: "",
+          message: 'Something Went Wrong',
+          trace: ''
         };
-        fail(
-          "Error " +
-            (err.response.status || "") +
-            ":" +
-            errorData.message +
-            " " +
-            errorData.trace
-        );
+        fail('Error ' + (err.response.status || '') + ':' + errorData.message + ' ' + errorData.trace);
         return err.response;
       }
     });
@@ -96,26 +75,19 @@ export function POST(url, body, header) {
 export function PUT(url, body, header) {
   return axios
     .put(url, body, header)
-    .then((res) => {
+    .then(res => {
       return res;
     })
-    .catch((err) => {
-      if (typeof err.response == "undefined") {
-        fail("Network Error, Connection Not Found");
+    .catch(err => {
+      if (typeof err.response == 'undefined') {
+        fail('Network Error, Connection Not Found');
         return { status: 400 };
       } else {
         let errorData = err.response.data || {
-          message: "Something Went Wrong",
-          trace: "",
+          message: 'Something Went Wrong',
+          trace: ''
         };
-        fail(
-          "Error " +
-            (err.response.status || "") +
-            ":" +
-            errorData.message +
-            " " +
-            errorData.trace
-        );
+        fail('Error ' + (err.response.status || '') + ':' + errorData.message + ' ' + errorData.trace);
         return err.response;
       }
     });
@@ -124,36 +96,29 @@ export function PUT(url, body, header) {
 export function DELETE(url, header) {
   return axios
     .delete(url, header)
-    .then((res) => {
+    .then(res => {
       return res;
     })
-    .catch((err) => {
-      if (typeof err.response == "undefined") {
-        fail("Network Error, Connection Not Found");
+    .catch(err => {
+      if (typeof err.response == 'undefined') {
+        fail('Network Error, Connection Not Found');
         return { status: 400 };
       } else {
         let errorData = err.response.data || {
-          message: "Something Went Wrong",
-          trace: "",
+          message: 'Something Went Wrong',
+          trace: ''
         };
-        fail(
-          "Error " +
-            (err.response.status || "") +
-            ":" +
-            errorData.message +
-            " " +
-            errorData.trace
-        );
+        fail('Error ' + (err.response.status || '') + ':' + errorData.message + ' ' + errorData.trace);
         return err.response;
       }
     });
 }
 
 // Get Unique Brands from Json Data
-export const getBrands = (products) => {
+export const getBrands = products => {
   var uniqueBrands = [];
   products.map((product, index) =>
-    product.tags.map((tag) => {
+    product.tags.map(tag => {
       if (uniqueBrands.indexOf(tag) === -1) {
         uniqueBrands.push(tag);
       }
@@ -164,10 +129,10 @@ export const getBrands = (products) => {
 };
 
 // Get Unique Colors from Json Data
-export const getColors = (products) => {
+export const getColors = products => {
   var uniqueColors = [];
   products.map((product, index) =>
-    product.colors.map((color) => {
+    product.colors.map(color => {
       if (uniqueColors.indexOf(color) === -1) {
         uniqueColors.push(color);
       }
@@ -178,7 +143,7 @@ export const getColors = (products) => {
 };
 
 // Get Minimum and Maximum Prices from Json Data
-export const getMinMaxPrice = (products) => {
+export const getMinMaxPrice = products => {
   let min = 100,
     max = 1000;
 
@@ -191,13 +156,10 @@ export const getMinMaxPrice = (products) => {
   return { min: min, max: max };
 };
 
-export const getVisibleproducts = (
-  data,
-  { brand, color, value, sortBy, startPrice, endPrice }
-) => {
+export const getVisibleproducts = (data, { brand, color, value, sortBy, startPrice, endPrice }) => {
   return data.products
-    .filter((product) => {
-      const brandMatch = product.tags.some((tag) => brand.includes(tag));
+    .filter(product => {
+      const brandMatch = product.tags.some(tag => brand.includes(tag));
 
       let colorMatch;
       if (color) {
@@ -205,49 +167,45 @@ export const getVisibleproducts = (
       } else {
         colorMatch = true;
       }
-      const startPriceMatch =
-        typeof value.min !== "number" || value.min <= product.price;
-      const endPriceMatch =
-        typeof value.max !== "number" || product.price <= value.max;
+      const startPriceMatch = typeof value.min !== 'number' || value.min <= product.price;
+      const endPriceMatch = typeof value.max !== 'number' || product.price <= value.max;
 
       return brandMatch && colorMatch && startPriceMatch && endPriceMatch;
     })
     .sort((product1, product2) => {
-      if (sortBy === "HighToLow") {
+      if (sortBy === 'HighToLow') {
         return product2.price < product1.price ? -1 : 1;
-      } else if (sortBy === "LowToHigh") {
+      } else if (sortBy === 'LowToHigh') {
         return product2.price > product1.price ? -1 : 1;
-      } else if (sortBy === "Newest") {
+      } else if (sortBy === 'Newest') {
         return product2.id < product1.id ? -1 : 1;
-      } else if (sortBy === "AscOrder") {
+      } else if (sortBy === 'AscOrder') {
         return product1.name.localeCompare(product2.name);
-      } else if (sortBy === "DescOrder") {
+      } else if (sortBy === 'DescOrder') {
         return product2.name.localeCompare(product1.name);
       }
     });
 };
 
-export const getCartTotal = (cartItems) => {
+export const getCartTotal = cartItems => {
   var total = 0;
   for (var i = 0; i < cartItems.length; i++) {
-    total +=
-      parseInt(cartItems[i].qty, 10) *
-      parseInt((cartItems[i].price * cartItems[i].discount) / 100, 10);
+    total += parseInt(cartItems[i].qty, 10) * parseInt((cartItems[i].price * cartItems[i].discount) / 100, 10);
   }
   return total;
 };
 
 // Get TOP Collection
-export const getTopCollection = (products) => {
-  const items = products.filter((product) => {
+export const getTopCollection = products => {
+  const items = products.filter(product => {
     return product.rating > 4;
   });
   return items.slice(0, 8);
 };
 
 // Get Best Seller
-export const getBestSeller = (products) => {
-  const items = products.filter((product) => {
+export const getBestSeller = products => {
+  const items = products.filter(product => {
     return product.sale === true;
   });
 
@@ -255,18 +213,18 @@ export const getBestSeller = (products) => {
 };
 
 // Get Mens Wear
-export const getMensWear = (products) => {
-  const items = products.filter((product) => {
-    return product.category === "men";
+export const getMensWear = products => {
+  const items = products.filter(product => {
+    return product.category === 'men';
   });
 
   return items.slice(0, 8);
 };
 
 // Get Womens Wear
-export const getWomensWear = (products) => {
-  const items = products.filter((product) => {
-    return product.category === "women";
+export const getWomensWear = products => {
+  const items = products.filter(product => {
+    return product.category === 'women';
   });
 
   return items.slice(0, 8);
@@ -274,7 +232,7 @@ export const getWomensWear = (products) => {
 
 // Get Single Product
 export const getSingleItem = (products, id) => {
-  const items = products.find((element) => {
+  const items = products.find(element => {
     return element.id === id;
   });
   return items;

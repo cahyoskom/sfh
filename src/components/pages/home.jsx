@@ -55,49 +55,25 @@ class Home extends Component {
           </Button>
         </div>
         <Container>
-          <Grid
-            container
-            direction='row'
-            justify='flex-start'
-            alignItems='center'>
+          <Grid container direction='row' justify='flex-start' alignItems='center'>
             <Grid item xs={12} lg={12}>
               <Card variant='outlined'>
                 <CardContent>
-                  <Grid
-                    container
-                    direction='row'
-                    justify='flex-start'
-                    alignItems='flex-start'>
+                  <Grid container direction='row' justify='flex-start' alignItems='flex-start'>
                     <Grid item xs={12} lg={5}>
-                      <Grid
-                        container
-                        direction='column'
-                        justify='flex-start'
-                        alignItems='stretch'
-                        spacing={2}>
+                      <Grid container direction='column' justify='flex-start' alignItems='stretch' spacing={2}>
                         <Grid item>
                           <h3>Kelas</h3>
                         </Grid>
                         <Grid item>
-                          <Grid
-                            container
-                            direction='row'
-                            justify='flex-start'
-                            alignItems='stretch'
-                            spacing={2}>
+                          <Grid container direction='row' justify='flex-start' alignItems='stretch' spacing={2}>
                             <Grid item>
-                              <Button
-                                variant='contained'
-                                color='primary'
-                                startIcon={<ClassIcon />}>
+                              <Button variant='contained' color='primary' startIcon={<ClassIcon />}>
                                 Gabung Kelas
                               </Button>
                             </Grid>
                             <Grid item>
-                              <Button
-                                variant='contained'
-                                color='primary'
-                                startIcon={<AddIcon />}>
+                              <Button variant='contained' color='primary' startIcon={<AddIcon />}>
                                 Buat Kelas
                               </Button>
                             </Grid>
@@ -108,17 +84,9 @@ class Home extends Component {
                           <Grid item xs={12} lg={12}>
                             <Card variant='outlined'>
                               <CardContent>
-                                <Grid
-                                  container
-                                  direction='row'
-                                  justify='center'
-                                  alignItems='center'>
+                                <Grid container direction='row' justify='center' alignItems='center'>
                                   <Grid item xs={12} lg={9}>
-                                    <Grid
-                                      container
-                                      direction='column'
-                                      justify='center'
-                                      alignItems='flex-start'>
+                                    <Grid container direction='column' justify='center' alignItems='flex-start'>
                                       <Grid item>
                                         <p>{kelas.name}</p>
                                       </Grid>
@@ -149,27 +117,14 @@ class Home extends Component {
                     {/* ------------------------------------------------------------------------------ */}
 
                     <Grid item xs={12} lg={5}>
-                      <Grid
-                        container
-                        direction='column'
-                        justify='flex-start'
-                        alignItems='stretch'
-                        spacing={2}>
+                      <Grid container direction='column' justify='flex-start' alignItems='stretch' spacing={2}>
                         <Grid item>
                           <h3>Sekolah</h3>
                         </Grid>
                         <Grid item>
-                          <Grid
-                            container
-                            direction='row'
-                            justify='flex-start'
-                            alignItems='stretch'
-                            spacing={2}>
+                          <Grid container direction='row' justify='flex-start' alignItems='stretch' spacing={2}>
                             <Grid item>
-                              <Button
-                                variant='contained'
-                                color='primary'
-                                startIcon={<AddIcon />}>
+                              <Button variant='contained' color='primary' startIcon={<AddIcon />}>
                                 Buat Kelas
                               </Button>
                             </Grid>
@@ -180,17 +135,9 @@ class Home extends Component {
                           <Grid item xs={12} lg={12}>
                             <Card variant='outlined'>
                               <CardContent>
-                                <Grid
-                                  container
-                                  direction='row'
-                                  justify='center'
-                                  alignItems='center'>
+                                <Grid container direction='row' justify='center' alignItems='center'>
                                   <Grid item xs={12} lg={9}>
-                                    <Grid
-                                      container
-                                      direction='column'
-                                      justify='center'
-                                      alignItems='flex-start'>
+                                    <Grid container direction='column' justify='center' alignItems='flex-start'>
                                       <Grid item>
                                         <p>{sekolah.name}</p>
                                       </Grid>
@@ -219,7 +166,7 @@ class Home extends Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   accountState: state.class
 });
 

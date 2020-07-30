@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
 import {
   Button,
   // Form,
@@ -15,26 +15,22 @@ import {
   Row,
   Label,
   Input,
-  InputGroup,
-} from "reactstrap";
-import "react-widgets/dist/css/react-widgets.css";
-import DateTimePicker from "../common/DatePicker";
-import CustomInput from "../common/CostumInput";
-import "react-datepicker/dist/react-datepicker.css";
-import "./tasksiswa.css";
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import * as actions from "../../actions";
-import moment from "moment";
-import Select from "react-select";
-import { Formik, Form, Field } from "formik";
-import { Checkbox } from "@material-ui/core";
-import * as messageBox from "../common/message-box";
-import SimpleReactValidator from "simple-react-validator";
+  InputGroup
+} from 'reactstrap';
+import 'react-widgets/dist/css/react-widgets.css';
+import DateTimePicker from '../common/DatePicker';
+import CustomInput from '../common/CostumInput';
+import 'react-datepicker/dist/react-datepicker.css';
+import './tasksiswa.css';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import * as actions from '../../actions';
+import moment from 'moment';
+import Select from 'react-select';
+import { Formik, Form, Field } from 'formik';
+import { Checkbox } from '@material-ui/core';
+import * as messageBox from '../common/message-box';
+import SimpleReactValidator from 'simple-react-validator';
 // import * as Yup from 'yup';
 
 // const uploadFilesSiswaSchema = Yup.object().shape({
@@ -50,8 +46,8 @@ class TaskSiswa extends Component {
       columns: [
         {
           //0
-          name: "collection_status",
-          label: "Status",
+          name: 'collection_status',
+          label: 'Status',
           options: {
             filter: false,
             sort: false,
@@ -61,31 +57,23 @@ class TaskSiswa extends Component {
               if (value == 4) {
                 return (
                   <div>
-                    <i
-                      className="fa fa-check-circle"
-                      title="Submitted"
-                      style={{ color: "green" }}
-                    />
+                    <i className='fa fa-check-circle' title='Submitted' style={{ color: 'green' }} />
                   </div>
                 );
               } else {
                 return (
                   <div>
-                    <i
-                      className="fa fa-window-close"
-                      title="Belum Submit"
-                      style={{ color: "red" }}
-                    />
+                    <i className='fa fa-window-close' title='Belum Submit' style={{ color: 'red' }} />
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //1
-          name: "notes",
-          label: "Notes",
+          name: 'notes',
+          label: 'Notes',
           options: {
             filter: false,
             sort: false,
@@ -95,107 +83,98 @@ class TaskSiswa extends Component {
                   <div>
                     <span
                       style={{
-                        backgroundColor: "#5bb1e4",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: '#5bb1e4',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {tableMeta.rowData[2] +
-                        " - " +
-                        this.props.accountState.roles[0].class_name}
+                      {tableMeta.rowData[2] + ' - ' + this.props.accountState.roles[0].class_name}
                     </span>
                     <p>{value}</p>
                     <span
                       style={{
-                        backgroundColor: "rgb(93, 228, 91)",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: 'rgb(93, 228, 91)',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {"Published : " +
-                        moment(tableMeta.rowData[4])
-                          .format("DD-MM-YYYY")
-                          .toString()}
+                      {'Published : ' + moment(tableMeta.rowData[4]).format('DD-MM-YYYY').toString()}
                     </span>
                     <br />
                     <br />
                     <span
                       style={{
-                        backgroundColor: "#5bb1e4",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: '#5bb1e4',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {"Duration : " +
-                        moment(tableMeta.rowData[4])
-                          .format("DD-MM-YYYY")
-                          .toString() +
-                        " - " +
-                        moment(tableMeta.rowData[5])
-                          .format("DD-MM-YYYY")
-                          .toString()}
+                      {'Duration : ' +
+                        moment(tableMeta.rowData[4]).format('DD-MM-YYYY').toString() +
+                        ' - ' +
+                        moment(tableMeta.rowData[5]).format('DD-MM-YYYY').toString()}
                     </span>
                     {/* <p>{tableMeta.rowData[3]}, </p> */}
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //2
-          name: "subject_name",
-          label: "Mata Pelajaran",
+          name: 'subject_name',
+          label: 'Mata Pelajaran',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //3
-          name: "title",
-          label: "Task",
+          name: 'title',
+          label: 'Task',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //4
-          name: "start_date",
-          label: "Start",
+          name: 'start_date',
+          label: 'Start',
           options: {
             display: false,
-            customBodyRender: (value) => {
+            customBodyRender: value => {
               if (value) {
                 return (
                   <div>
-                    <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
+                    <p>{moment(value).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //5
-          name: "finish_date",
-          label: "Finish",
+          name: 'finish_date',
+          label: 'Finish',
           options: {
             display: false,
-            customBodyRender: (value) => {
+            customBodyRender: value => {
               if (value) {
                 return (
                   <div>
-                    <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
+                    <p>{moment(value).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //6
-          name: "task_id",
-          label: "Action",
+          name: 'task_id',
+          label: 'Action',
           options: {
             // empty: true,
             filter: false,
@@ -205,40 +184,30 @@ class TaskSiswa extends Component {
             customBodyRender: (value, tableMeta, updateValue) => {
               return (
                 <div>
-                  <Button
-                    title="Download"
-                    color="info"
-                    style={{ color: "#fff" }}
-                    onClick={() => this.downloadModal(value)}
-                  >
+                  <Button title='Download' color='info' style={{ color: '#fff' }} onClick={() => this.downloadModal(value)}>
                     Download
                   </Button>
                   &nbsp;
-                  <Button
-                    title="Upload"
-                    color="primary"
-                    style={{ color: "#fff" }}
-                    onClick={() => this.uploadTask(tableMeta)}
-                  >
+                  <Button title='Upload' color='primary' style={{ color: '#fff' }} onClick={() => this.uploadTask(tableMeta)}>
                     Upload
                   </Button>
                 </div>
               );
-            },
-          },
+            }
+          }
         },
         {
           //7
-          name: "task_collection_id",
-          label: "Task",
+          name: 'task_collection_id',
+          label: 'Task',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //8
-          name: "checkbox",
-          label: "Select",
+          name: 'checkbox',
+          label: 'Select',
           options: {
             filter: false,
             sort: false,
@@ -248,7 +217,7 @@ class TaskSiswa extends Component {
                 return (
                   <div>
                     <Checkbox
-                      onChange={(event) => {
+                      onChange={event => {
                         this.handleRowClick(tableMeta, event.target.checked);
                       }}
                       checked={value}
@@ -258,43 +227,40 @@ class TaskSiswa extends Component {
               } else {
                 return (
                   <div>
-                    <Checkbox
-                      disabled={true}
-                      title="Upload jawaban terlebih dahulu"
-                    />
+                    <Checkbox disabled={true} title='Upload jawaban terlebih dahulu' />
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //9
-          name: "published_date",
-          label: "published_date",
+          name: 'published_date',
+          label: 'published_date',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //10
-          name: "class_name",
-          label: "class_name",
+          name: 'class_name',
+          label: 'class_name',
           options: {
-            display: false,
-          },
-        },
+            display: false
+          }
+        }
       ],
       options: {
-        filterType: "checkbox",
+        filterType: 'checkbox'
       },
-      status: "all",
+      status: 'all',
       isAddNew: false,
       isDownload: false,
       uploadedFileName: [],
       fileObj: [],
       task_collection_ids: [],
-      isChecked: false,
+      isChecked: false
     };
     this.getList = this.getList.bind(this);
     this.uploadTask = this.uploadTask.bind(this);
@@ -325,7 +291,7 @@ class TaskSiswa extends Component {
     const { studentPutCollectionFiles } = this.props;
     if (this.validator.allValid()) {
       // studentPutCollectionFiles();
-      console.log("all valid");
+      console.log('all valid');
       // this.modalToggle();
     } else {
       this.validator.showMessages();
@@ -334,29 +300,12 @@ class TaskSiswa extends Component {
   }
 
   downloadFiles() {
-    const {
-      taskSiswaState,
-      setStateModalFormDownload,
-      studentDownloadFile,
-      setStateModalForm,
-    } = this.props;
-    if (
-      taskSiswaState.dataTaskFile.files != null ||
-      taskSiswaState.dataTaskFile.files != undefined
-    ) {
+    const { taskSiswaState, setStateModalFormDownload, studentDownloadFile, setStateModalForm } = this.props;
+    if (taskSiswaState.dataTaskFile.files != null || taskSiswaState.dataTaskFile.files != undefined) {
       for (let i = 0; i < taskSiswaState.dataTaskFile.files.length; i++) {
-        setStateModalForm(
-          "task_id",
-          taskSiswaState.dataTaskFile.files[i].task_file_id
-        );
-        setStateModalForm(
-          "filename",
-          taskSiswaState.dataTaskFile.files[i].filename
-        );
-        setStateModalForm(
-          "mime_type",
-          taskSiswaState.dataTaskFile.files[i].mime_type
-        );
+        setStateModalForm('task_id', taskSiswaState.dataTaskFile.files[i].task_file_id);
+        setStateModalForm('filename', taskSiswaState.dataTaskFile.files[i].filename);
+        setStateModalForm('mime_type', taskSiswaState.dataTaskFile.files[i].mime_type);
         studentDownloadFile();
       }
     }
@@ -364,85 +313,72 @@ class TaskSiswa extends Component {
 
   downloadFile(task_file_id, filename, mime_type) {
     const { studentDownloadFile, setStateModalForm } = this.props;
-    setStateModalForm("task_id", task_file_id);
-    setStateModalForm("filename", filename);
-    setStateModalForm("mime_type", mime_type);
+    setStateModalForm('task_id', task_file_id);
+    setStateModalForm('filename', filename);
+    setStateModalForm('mime_type', mime_type);
     studentDownloadFile();
   }
 
   uploadTask(tableMeta) {
-    let {
-      setModal,
-      setStateModalForm,
-      studentPutCollection,
-      taskSiswaState,
-      studentGetUploadedFileList,
-    } = this.props;
+    let { setModal, setStateModalForm, studentPutCollection, taskSiswaState, studentGetUploadedFileList } = this.props;
     if (taskSiswaState.form.task_collection_id == 0) {
       if (tableMeta.rowData[7] == 0) {
-        setStateModalForm("task_id", tableMeta.rowData[6]);
+        setStateModalForm('task_id', tableMeta.rowData[6]);
         studentPutCollection();
-        console.log("create lembar jawaban");
+        console.log('create lembar jawaban');
       } else {
-        setStateModalForm("task_id", tableMeta.rowData[6]);
-        setStateModalForm("task_collection_id", tableMeta.rowData[7]);
+        setStateModalForm('task_id', tableMeta.rowData[6]);
+        setStateModalForm('task_collection_id', tableMeta.rowData[7]);
         studentGetUploadedFileList();
-        console.log("pakai lembar jawaban yg sudah dibuat");
+        console.log('pakai lembar jawaban yg sudah dibuat');
       }
     } else {
-      setStateModalForm("task_id", tableMeta.rowData[6]);
-      setStateModalForm("task_collection_id", tableMeta.rowData[7]);
+      setStateModalForm('task_id', tableMeta.rowData[6]);
+      setStateModalForm('task_collection_id', tableMeta.rowData[7]);
       studentGetUploadedFileList();
-      console.log("pakai lembar jawaban yg sudah dibuat else");
+      console.log('pakai lembar jawaban yg sudah dibuat else');
     }
 
-    setModal("type", "add");
-    setModal("title", "Upload Files");
-    setModal("buttonText", "Upload");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('type', 'add');
+    setModal('title', 'Upload Files');
+    setModal('buttonText', 'Upload');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
       isAddNew: true,
-      isDownload: false,
+      isDownload: false
     }));
   }
 
   downloadModal(value) {
     let { studentGetTaskFileList, setModal, setStateModalForm } = this.props;
-    setStateModalForm("task_id", value);
+    setStateModalForm('task_id', value);
     studentGetTaskFileList();
 
-    setModal("type", "download");
-    setModal("title", "Download Files");
-    setModal("buttonText", "Download All");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('type', 'download');
+    setModal('title', 'Download Files');
+    setModal('buttonText', 'Download All');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
       isAddNew: false,
-      isDownload: true,
+      isDownload: true
     }));
   }
 
   submitTask() {
-    let {
-      studentSubmitCollection,
-      setStateModalForm,
-      taskSiswaState,
-    } = this.props;
-    setStateModalForm("task_collection_ids", this.state.task_collection_ids);
-    messageBox.confirmSubmitCollection(
-      this.state.task_collection_ids.length,
-      studentSubmitCollection
-    );
+    let { studentSubmitCollection, setStateModalForm, taskSiswaState } = this.props;
+    setStateModalForm('task_collection_ids', this.state.task_collection_ids);
+    messageBox.confirmSubmitCollection(this.state.task_collection_ids.length, studentSubmitCollection);
     // studentSubmitCollection();
   }
 
   modalToggle() {
     const { taskSiswaState, setModal } = this.props;
-    setModal("show", !taskSiswaState.modal.show);
-    this.setState((state) => ({
+    setModal('show', !taskSiswaState.modal.show);
+    this.setState(state => ({
       ...state,
-      uploadedFileName: [],
+      uploadedFileName: []
     }));
   }
 
@@ -450,7 +386,7 @@ class TaskSiswa extends Component {
     this.fileInput.current.click();
   };
 
-  fileHandler = (event) => {
+  fileHandler = event => {
     let { setLoader, setStateModalForm, taskSiswaState } = this.props;
     // console.log('handel file', event.target.files);
     if (event.target.files.length) {
@@ -503,13 +439,10 @@ class TaskSiswa extends Component {
       //     setOCRFile(null);
       //   }
       this.setState({
-        uploadedFileName: fileName,
+        uploadedFileName: fileName
       });
-      setStateModalForm("files", fileObj);
-      setStateModalForm(
-        "task_collection_id",
-        taskSiswaState.form.task_collection_id
-      );
+      setStateModalForm('files', fileObj);
+      setStateModalForm('task_collection_id', taskSiswaState.form.task_collection_id);
       // console.log('pailojek',fileObj);
       // console.log('pailojeknem',fileName);
     }
@@ -522,42 +455,28 @@ class TaskSiswa extends Component {
 
   handleRowClick(tableMeta, val) {
     // console.log('metaa',tableMeta)
-    let {
-      setStateModalForm,
-      taskSiswaState,
-      setStateTaskSiswaList,
-    } = this.props;
+    let { setStateModalForm, taskSiswaState, setStateTaskSiswaList } = this.props;
     let data = taskSiswaState.data;
-    console.log(val, "click");
-    data[
-      data.findIndex((x) => x.task_id === tableMeta.rowData[6])
-    ].checkbox = val;
-    setStateTaskSiswaList("data", data);
-    setStateModalForm("rows", tableMeta.rowData[7]);
-    this.setState((prevState) => ({
-      task_collection_ids: [
-        ...prevState.task_collection_ids,
-        tableMeta.rowData[7],
-      ],
+    console.log(val, 'click');
+    data[data.findIndex(x => x.task_id === tableMeta.rowData[6])].checkbox = val;
+    setStateTaskSiswaList('data', data);
+    setStateModalForm('rows', tableMeta.rowData[7]);
+    this.setState(prevState => ({
+      task_collection_ids: [...prevState.task_collection_ids, tableMeta.rowData[7]]
       // isChecked: !this.state.isChecked
     }));
   }
 
   handleMultiChange(option) {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("taskStatus", option);
+    setStateTaskListFilter('taskStatus', option);
   }
 
   renderView() {
-    let {
-      taskSiswaState,
-      setStateTaskListFilter,
-      studentGetTaskList,
-      accountState,
-    } = this.props;
+    let { taskSiswaState, setStateTaskListFilter, studentGetTaskList, accountState } = this.props;
 
     const options = {
-      responsive: "scroll",
+      responsive: 'scroll',
       // filterType: 'checkbox',
       pagination: false,
       filter: false,
@@ -565,7 +484,7 @@ class TaskSiswa extends Component {
       download: false,
       print: false,
       viewColumns: false,
-      selectableRows: "none",
+      selectableRows: 'none'
     };
 
     //menampilkan file/s yang dipilih untuk di upload(modal upload)
@@ -575,9 +494,9 @@ class TaskSiswa extends Component {
       for (let i = 0; i < filesToUpload.length; i++) {
         filePreview.push(
           <Input
-            type="text"
-            className="form-control"
-            style={{ marginBottom: "5px" }}
+            type='text'
+            className='form-control'
+            style={{ marginBottom: '5px' }}
             value={this.state.uploadedFileName[i]}
             readOnly
           />
@@ -587,23 +506,15 @@ class TaskSiswa extends Component {
 
     //menampilkan file/s untuk di download(modal download)
     let listOfFile = [];
-    if (
-      taskSiswaState.dataTaskFile.files != null ||
-      taskSiswaState.dataTaskFile.files != undefined
-    ) {
+    if (taskSiswaState.dataTaskFile.files != null || taskSiswaState.dataTaskFile.files != undefined) {
       for (let i = 0; i < taskSiswaState.dataTaskFile.files.length; i++) {
         listOfFile.push(
-          <InputGroup style={{ marginBottom: "5px" }}>
-            <Input
-              type="text"
-              className="form-control"
-              value={taskSiswaState.dataTaskFile.files[i].filename}
-              readOnly
-            />
+          <InputGroup style={{ marginBottom: '5px' }}>
+            <Input type='text' className='form-control' value={taskSiswaState.dataTaskFile.files[i].filename} readOnly />
             <Button
               inline
-              color="primary"
-              size="xs"
+              color='primary'
+              size='xs'
               onClick={() => {
                 this.downloadFile(
                   taskSiswaState.dataTaskFile.files[i].task_file_id,
@@ -621,25 +532,12 @@ class TaskSiswa extends Component {
 
     //menampilkan file/s yg sudah di upload. bisa delete(modal upload)
     let listOfUploadedFile = [];
-    if (
-      taskSiswaState.dataUploadedFile.files != null ||
-      taskSiswaState.dataUploadedFile.files != undefined
-    ) {
+    if (taskSiswaState.dataUploadedFile.files != null || taskSiswaState.dataUploadedFile.files != undefined) {
       for (let i = 0; i < taskSiswaState.dataUploadedFile.files.length; i++) {
         listOfUploadedFile.push(
-          <InputGroup style={{ marginBottom: "5px" }}>
-            <Input
-              type="text"
-              className="form-control"
-              value={taskSiswaState.dataUploadedFile.files[i].filename}
-              readOnly
-            />
-            <Button
-              inline
-              title="Delete Uploaded File"
-              color="danger"
-              size="xs"
-            >
+          <InputGroup style={{ marginBottom: '5px' }}>
+            <Input type='text' className='form-control' value={taskSiswaState.dataUploadedFile.files[i].filename} readOnly />
+            <Button inline title='Delete Uploaded File' color='danger' size='xs'>
               X
             </Button>
           </InputGroup>
@@ -649,63 +547,48 @@ class TaskSiswa extends Component {
 
     return (
       <div>
-        <section className="login-page section-b-space">
-          <div className="container">
+        <section className='login-page section-b-space'>
+          <div className='container'>
             <h3>
-              <i className="mdi mdi-table-edit" />
+              <i className='mdi mdi-table-edit' />
               Task List Siswa
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="collection-block">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='collection-block'>
                     <Link to={`${process.env.PUBLIC_URL}/`}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`} className='img-fluid' alt='' />
                     </Link>
                   </div>
-                  <div className={"text-center"}>
+                  <div className={'text-center'}>
                     {/* <p>{taskSiswaState.stardet.toString()}</p> */}
-                    <p>
-                      {moment(taskSiswaState.now)
-                        .format("dddd YYYY-MM-DD")
-                        .toString()}
-                    </p>
+                    <p>{moment(taskSiswaState.now).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
-                      <label>
-                        Nama : {accountState.selectedRole[0].student_name}
-                      </label>
+                  <form className='theme-form'>
+                    <div className='form-group'>
+                      <label>Nama : {accountState.selectedRole[0].student_name}</label>
                       <br />
-                      <label>
-                        Kelas : {accountState.selectedRole[0].class_name}
-                      </label>
+                      <label>Kelas : {accountState.selectedRole[0].class_name}</label>
                       <br />
-                      <label>
-                        NIP : {accountState.selectedRole[0].student_no}
-                      </label>
+                      <label>NIP : {accountState.selectedRole[0].student_no}</label>
                     </div>
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="theme-card authentication-right">
-                  <div className="row">
-                    <div className="col-lg-4">
-                      <Label for="">Status</Label>
+              <div className='col-lg-9 right-login'>
+                <div className='theme-card authentication-right'>
+                  <div className='row'>
+                    <div className='col-lg-4'>
+                      <Label for=''>Status</Label>
                       <Select
-                        style={{ position: "absolute" }}
-                        id="class"
-                        name="class"
-                        placeholder="Pilih Status"
+                        style={{ position: 'absolute' }}
+                        id='class'
+                        name='class'
+                        placeholder='Pilih Status'
                         defaultValue={taskSiswaState.dataSourceStatus.filter(
-                          (option) =>
-                            option.value === taskSiswaState.filter.taskStatus
+                          option => option.value === taskSiswaState.filter.taskStatus
                         )}
                         options={taskSiswaState.dataSourceStatus}
                         closeMenuOnSelect={true}
@@ -713,36 +596,36 @@ class TaskSiswa extends Component {
                         // isMulti
                       />
                     </div>
-                    <div className="col-md-4">
-                      <Label for="subject">mulai</Label>
+                    <div className='col-md-4'>
+                      <Label for='subject'>mulai</Label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("startDate", a);
+                          setStateTaskListFilter('startDate', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskSiswaState.filter.startDate}
                       />
                     </div>
-                    <div className="col-md-4">
+                    <div className='col-md-4'>
                       <label>sampai</label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("endDate", a);
+                          setStateTaskListFilter('endDate', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskSiswaState.filter.endDate}
                       />
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-md-2">
-                      <Button color="primary" onClick={studentGetTaskList}>
+                  <div className='row'>
+                    <div className='col-md-2'>
+                      <Button color='primary' onClick={studentGetTaskList}>
                         Filter
                       </Button>
                     </div>
@@ -759,19 +642,19 @@ class TaskSiswa extends Component {
                   </MuiThemeProvider>
                   <br />
 
-                  <div className="text-right">
-                    <Button size="sm" color="primary" onClick={this.submitTask}>
-                      <i className="fa fa-plus" /> Submit Selected Task
+                  <div className='text-right'>
+                    <Button size='sm' color='primary' onClick={this.submitTask}>
+                      <i className='fa fa-plus' /> Submit Selected Task
                     </Button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -782,15 +665,8 @@ class TaskSiswa extends Component {
             </div>
           </div>
 
-          <Modal
-            isOpen={taskSiswaState.modal.show}
-            fade={false}
-            backdrop={"static"}
-            toggle={this.modalToggle}
-          >
-            <ModalHeader toggle={this.modalToggle}>
-              {taskSiswaState.modal.title}
-            </ModalHeader>
+          <Modal isOpen={taskSiswaState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+            <ModalHeader toggle={this.modalToggle}>{taskSiswaState.modal.title}</ModalHeader>
             <ModalBody>
               {/* {taskSiswaState} */}
               {/* <AsyncPage page={"master-area-form"} fallback={<FormLoader/>} validator={this.validator} ref={this.formArea} /> */}
@@ -799,7 +675,7 @@ class TaskSiswa extends Component {
                   enableReinitialize={true}
                   initialValues={taskSiswaState.form}
                   // validationSchema={uploadFilesSiswaSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     this.uploadTask();
                   }}
                 >
@@ -810,31 +686,27 @@ class TaskSiswa extends Component {
                           <Row form={true}>
                             <Col md={12}>
                               <FormGroup>
-                                <Label for="file">File Upload </Label>
+                                <Label for='file'>File Upload </Label>
                                 <div>{filePreview}</div>
                                 <div>{listOfUploadedFile}</div>
                                 <Field
-                                  name="files"
+                                  name='files'
                                   render={({ field }) => (
                                     <input
-                                      type="file"
+                                      type='file'
                                       hidden
-                                      accept={".jpg,.jpeg,.png"}
+                                      accept={'.jpg,.jpeg,.png'}
                                       onChange={this.fileHandler.bind(this)}
                                       ref={this.fileInput}
-                                      onClick={(event) => {
+                                      onClick={event => {
                                         event.target.value = null;
                                       }}
-                                      style={{ padding: "10px" }}
+                                      style={{ padding: '10px' }}
                                       multiple={true}
                                     />
                                   )}
                                 />
-                                {errors.files && touched.files ? (
-                                  <div className="form-error">
-                                    {errors.files}
-                                  </div>
-                                ) : null}
+                                {errors.files && touched.files ? <div className='form-error'>{errors.files}</div> : null}
                               </FormGroup>
                             </Col>
                           </Row>
@@ -850,7 +722,7 @@ class TaskSiswa extends Component {
                   enableReinitialize={true}
                   initialValues={taskSiswaState.form}
                   // validationSchema={add_editSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     // this.uploadTask()
                   }}
@@ -862,10 +734,7 @@ class TaskSiswa extends Component {
                           <Row form={true}>
                             <Col md={12}>
                               <FormGroup>
-                                <p>
-                                  Deskripsi Task :{" "}
-                                  {taskSiswaState.dataTaskFile.notes}
-                                </p>
+                                <p>Deskripsi Task : {taskSiswaState.dataTaskFile.notes}</p>
                                 <div>{listOfFile}</div>
                               </FormGroup>
                             </Col>
@@ -879,29 +748,21 @@ class TaskSiswa extends Component {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="secondary" onClick={this.modalToggle}>
+              <Button color='secondary' onClick={this.modalToggle}>
                 Cancel
-              </Button>{" "}
-              {taskSiswaState.modal.type == "add" && (
-                <Button
-                  accept={".jpg,.jpeg,.png"}
-                  color="primary"
-                  onClick={this.openFileBrowser.bind(this)}
-                >
+              </Button>{' '}
+              {taskSiswaState.modal.type == 'add' && (
+                <Button accept={'.jpg,.jpeg,.png'} color='primary' onClick={this.openFileBrowser.bind(this)}>
                   Add/Browse
                 </Button>
-              )}{" "}
-              {taskSiswaState.modal.type == "add" && (
-                <Button
-                  color="primary"
-                  type="submit"
-                  onClick={() => this.save()}
-                >
+              )}{' '}
+              {taskSiswaState.modal.type == 'add' && (
+                <Button color='primary' type='submit' onClick={() => this.save()}>
                   {taskSiswaState.modal.buttonText}
                 </Button>
               )}
-              {taskSiswaState.modal.type == "download" && (
-                <Button color="primary" onClick={() => this.downloadFiles()}>
+              {taskSiswaState.modal.type == 'download' && (
+                <Button color='primary' onClick={() => this.downloadFiles()}>
                   {taskSiswaState.modal.buttonText}
                 </Button>
               )}
@@ -916,12 +777,12 @@ class TaskSiswa extends Component {
     let { taskSiswaState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={taskSiswaState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -932,11 +793,9 @@ class TaskSiswa extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   taskSiswaState: state.taskSiswa,
-  accountState: state.account,
+  accountState: state.account
 });
 
-export default connect(mapStateToProps, { ...actions })(
-  withTranslate(TaskSiswa)
-);
+export default connect(mapStateToProps, { ...actions })(withTranslate(TaskSiswa));

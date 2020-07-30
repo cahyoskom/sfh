@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import {
   Grid,
   Checkbox,
@@ -14,27 +14,27 @@ import {
   DialogContent,
   DialogContentText,
   Collapse,
-  Box,
-} from "@material-ui/core";
-import { default as MaterialLink } from "@material-ui/core/Link";
-import Alert from "@material-ui/lab/Alert";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import CloseIcon from "@material-ui/icons/Close";
-import { Input, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+  Box
+} from '@material-ui/core';
+import { default as MaterialLink } from '@material-ui/core/Link';
+import Alert from '@material-ui/lab/Alert';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import CloseIcon from '@material-ui/icons/Close';
+import { Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import {
   onChangeStateRegister,
   googleLogin,
   closeRegistAlert,
   saveRegister,
   setModalActivation,
-  resendEmail,
-} from "../../actions";
-import { GoogleLogin } from "react-google-login";
-import { Credential } from "../../constants/google-key";
-import * as EmailValidator from "email-validator";
-import * as services from "../../services";
-import { API_BASE_URL_DEV, API_PATH } from "../../constants/api";
-import { Header } from "../../services/header";
+  resendEmail
+} from '../../actions';
+import { GoogleLogin } from 'react-google-login';
+import { Credential } from '../../constants/google-key';
+import * as EmailValidator from 'email-validator';
+import * as services from '../../services';
+import { API_BASE_URL_DEV, API_PATH } from '../../constants/api';
+import { Header } from '../../services/header';
 
 const pattern = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;
 
@@ -45,10 +45,10 @@ class Register extends Component {
     this.state = {
       openDialog: false,
       isEmailValid: true,
-      emailErrorText: "",
+      emailErrorText: '',
       isPhoneValid: true,
-      phoneErrorText: "",
-      buttonDisable: true,
+      phoneErrorText: '',
+      buttonDisable: true
     };
   }
   handleClose = () => {
@@ -56,7 +56,7 @@ class Register extends Component {
   };
 
   componentDidMount() {
-    ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
+    ValidatorForm.addValidationRule('isPasswordMatch', value => {
       if (value !== this.props.accountState.register.password) {
         return false;
       }
@@ -74,7 +74,7 @@ class Register extends Component {
     }
   };
 
-  googleResponse = (response) => {
+  googleResponse = response => {
     this.props.googleLogin(response);
   };
 
@@ -83,47 +83,43 @@ class Register extends Component {
     if (!EmailValidator.validate(email)) {
       this.setState({
         isEmailValid: false,
-        emailErrorText: "email tidak valid",
+        emailErrorText: 'email tidak valid'
       });
     } else {
-      services
-        .GET(API_BASE_URL_DEV + API_PATH.checkEmail + "?email="+ email, Header())
-        .then((res) => {
-          if (res.status === 200) {
-            this.setState({
-              isEmailValid: true,
-              emailErrorText: "",
-            });
-          } else {
-            this.setState({
-              isEmailValid: false,
-              emailErrorText: res.data.message,
-            });
-          }
-        });
+      services.GET(API_BASE_URL_DEV + API_PATH.checkEmail + '?email=' + email, Header()).then(res => {
+        if (res.status === 200) {
+          this.setState({
+            isEmailValid: true,
+            emailErrorText: ''
+          });
+        } else {
+          this.setState({
+            isEmailValid: false,
+            emailErrorText: res.data.message
+          });
+        }
+      });
     }
   };
 
   validatePhone = () => {
-    var isValid = this.props.accountState.register.noHP
-      ? pattern.test(this.props.accountState.register.noHP)
-      : true;
+    var isValid = this.props.accountState.register.noHP ? pattern.test(this.props.accountState.register.noHP) : true;
 
     if (isValid) {
       this.setState({
         isPhoneValid: true,
-        phoneErrorText: "",
+        phoneErrorText: ''
       });
     } else {
       this.setState({
         isPhoneValid: false,
-        phoneErrorText: "nomor telepon tidak valid",
+        phoneErrorText: 'nomor telepon tidak valid'
       });
     }
   };
 
   checkEnableSubmit = () => {
-    const{accountState} = this.props
+    const { accountState } = this.props;
     if (
       accountState.register.fullname &&
       accountState.register.email &&
@@ -134,428 +130,317 @@ class Register extends Component {
     } else {
       this.setState({ buttonDisable: true });
     }
-  }
+  };
 
   render() {
-    const {
-      accountState,
-      onChangeStateRegister,
-      closeRegistAlert,
-    } = this.props;
+    const { accountState, onChangeStateRegister, closeRegistAlert } = this.props;
 
-      return (
-        <div>
-          {/*Regsiter section*/}
-          <section className="register-page section-b-space">
-            {!accountState.register.success && (
-              <div className="container">
-                <Grid container justify="center" alignItems="center">
-                  <Grid item xs={12} lg={4}>
-                    <div>
-                      <h4>
-                        <strong>Daftar Akun SinauNgomah</strong>
-                      </h4>
-                    </div>
-                    <Card variant="outlined">
-                      <Box p={1}>
-                        <Grid container direction="col" justify="space-around">
-                          <Grid item>
-                            <Collapse
-                              in={accountState.register.showErrorRegister}
+    return (
+      <div>
+        {/*Regsiter section*/}
+        <section className='register-page section-b-space'>
+          {!accountState.register.success && (
+            <div className='container'>
+              <Grid container justify='center' alignItems='center'>
+                <Grid item xs={12} lg={4}>
+                  <div>
+                    <h4>
+                      <strong>Daftar Akun SinauNgomah</strong>
+                    </h4>
+                  </div>
+                  <Card variant='outlined'>
+                    <Box p={1}>
+                      <Grid container direction='col' justify='space-around'>
+                        <Grid item>
+                          <Collapse in={accountState.register.showErrorRegister}>
+                            <Alert
+                              severity='error'
+                              action={
+                                <IconButton aria-label='close' color='inherit' size='small' onClick={closeRegistAlert}>
+                                  <CloseIcon fontSize='inherit' />
+                                </IconButton>
+                              }
                             >
-                              <Alert
-                                severity="error"
-                                action={
-                                  <IconButton
-                                    aria-label="close"
-                                    color="inherit"
-                                    size="small"
-                                    onClick={closeRegistAlert}
-                                  >
-                                    <CloseIcon fontSize="inherit" />
-                                  </IconButton>
-                                }
-                              >
-                                {accountState.register.errorMessage}
-                              </Alert>
-                            </Collapse>
-                          </Grid>
-                          <Grid item>
-                            {accountState.resendActivationRegist && (
-                              <MaterialLink
-                                component="button"
-                                variant="body2"
-                                onClick={() => setModalActivation("show", true)}
-                              >
-                                Kirim ulang verifikasi email
-                              </MaterialLink>
-                            )}
-                          </Grid>
+                              {accountState.register.errorMessage}
+                            </Alert>
+                          </Collapse>
                         </Grid>
-                        <ValidatorForm onSubmit={this.handleSubmit}>
-                          <CardContent>
-                            <div className="form-group">
-                              <TextValidator
-                                id="fullname"
-                                label="Nama lengkap"
-                                type="text"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                margin="dense"
-                                fullWidth
-                                required
-                                variant="outlined"
-                                onChange={(e) =>
-                                  onChangeStateRegister(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
-                                onKeyUp={this.checkEnableSubmit}
-                                value={accountState.register.fullname}
-                                autoComplete={"name"}
-                                validators={["required"]}
-                                errorMessages={["masukkan nama"]}
+                        <Grid item>
+                          {accountState.resendActivationRegist && (
+                            <MaterialLink component='button' variant='body2' onClick={() => setModalActivation('show', true)}>
+                              Kirim ulang verifikasi email
+                            </MaterialLink>
+                          )}
+                        </Grid>
+                      </Grid>
+                      <ValidatorForm onSubmit={this.handleSubmit}>
+                        <CardContent>
+                          <div className='form-group'>
+                            <TextValidator
+                              id='fullname'
+                              label='Nama lengkap'
+                              type='text'
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              margin='dense'
+                              fullWidth
+                              required
+                              variant='outlined'
+                              onChange={e => onChangeStateRegister(e.target.id, e.target.value)}
+                              onKeyUp={this.checkEnableSubmit}
+                              value={accountState.register.fullname}
+                              autoComplete={'name'}
+                              validators={['required']}
+                              errorMessages={['masukkan nama']}
+                            />
+                          </div>
+                          <div className='form-group'>
+                            <TextValidator
+                              id='email'
+                              label='Email'
+                              type='email'
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              margin='dense'
+                              fullWidth
+                              required
+                              variant='outlined'
+                              onChange={e => onChangeStateRegister(e.target.id, e.target.value)}
+                              onKeyUp={this.checkEnableSubmit}
+                              onBlur={this.validateEmail}
+                              error={!this.state.isEmailValid}
+                              helperText={this.state.emailErrorText}
+                              value={accountState.register.email}
+                              autoComplete={'email'}
+                              validators={['required']}
+                              errorMessages={['masukkan email']}
+                            />
+                          </div>
+                          <div className='form-group'>
+                            <TextValidator
+                              id='password'
+                              type='password'
+                              label='Kata sandi'
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              margin='dense'
+                              fullWidth
+                              required
+                              variant='outlined'
+                              onChange={e => onChangeStateRegister(e.target.id, e.target.value)}
+                              onKeyUp={this.checkEnableSubmit}
+                              value={accountState.register.password}
+                              validators={['required', 'minStringLength:6']}
+                              errorMessages={['masukkan kata sandi', 'kata sandi minimal 6 karakter']}
+                            />
+                          </div>
+                          <div className='form-group'>
+                            <TextValidator
+                              id='rePassword'
+                              type='password'
+                              label='Ulangi kata sandi'
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              margin='dense'
+                              fullWidth
+                              required
+                              variant='outlined'
+                              onChange={e => onChangeStateRegister(e.target.id, e.target.value)}
+                              onKeyUp={this.checkEnableSubmit}
+                              value={accountState.register.rePassword}
+                              validators={['isPasswordMatch', 'required']}
+                              errorMessages={['kata sandi tidak sama', 'masukkan kata sandi']}
+                            />
+                          </div>
+                          <div className='form-group'>
+                            <TextValidator
+                              id='noHP'
+                              type='text'
+                              label='Nomor telepon'
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              onBlur={this.validatePhone}
+                              error={!this.state.isPhoneValid}
+                              helperText={this.state.phoneErrorText}
+                              margin='dense'
+                              fullWidth
+                              variant='outlined'
+                              onChange={e => onChangeStateRegister(e.target.id, e.target.value)}
+                              value={accountState.register.noHP}
+                            />
+                          </div>
+                          <Grid container direction='row' alignItems='center' justify='space-around'>
+                            <Grid item xs={2} lg={2}>
+                              <Checkbox
+                                id='isChecked'
+                                name='checked'
+                                color='primary'
+                                checked={accountState.register.isChecked}
+                                onChange={e => onChangeStateRegister(e.target.id, e.target.checked)}
                               />
-                            </div>
-                            <div className="form-group">
-                              <TextValidator
-                                id="email"
-                                label="Email"
-                                type="email"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                margin="dense"
-                                fullWidth
-                                required
-                                variant="outlined"
-                                onChange={(e) =>
-                                  onChangeStateRegister(
-                                    e.target.id,
-                                    e.target.value
-                                  )
+                            </Grid>
+                            <Grid item xs={10} lg={10}>
+                              <p>Saya telah memahami dan menyetujui Ketentuan & Kebijakan SinauNgomah</p>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+                        <CardActions>
+                          <Grid container direction='column' alignItems='center' justify='space-around' spacing={2}>
+                            <Grid item>
+                              <Button
+                                variant='contained'
+                                disableElevation
+                                color='primary'
+                                type='submit'
+                                disabled={
+                                  this.state.buttonDisable === false && accountState.register.isChecked === true ? false : true
                                 }
-                                onKeyUp={this.checkEnableSubmit}
-                                onBlur={this.validateEmail}
-                                error={!this.state.isEmailValid}
-                                helperText={this.state.emailErrorText}
-                                value={accountState.register.email}
-                                autoComplete={"email"}
-                                validators={["required"]}
-                                errorMessages={["masukkan email"]}
-                              />
-                            </div>
-                            <div className="form-group">
-                              <TextValidator
-                                id="password"
-                                type="password"
-                                label="Kata sandi"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                margin="dense"
-                                fullWidth
-                                required
-                                variant="outlined"
-                                onChange={(e) =>
-                                  onChangeStateRegister(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
-                                onKeyUp={this.checkEnableSubmit}
-                                value={accountState.register.password}
-                                validators={["required", "minStringLength:6"]}
-                                errorMessages={[
-                                  "masukkan kata sandi",
-                                  "kata sandi minimal 6 karakter",
-                                ]}
-                              />
-                            </div>
-                            <div className="form-group">
-                              <TextValidator
-                                id="rePassword"
-                                type="password"
-                                label="Ulangi kata sandi"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                margin="dense"
-                                fullWidth
-                                required
-                                variant="outlined"
-                                onChange={(e) =>
-                                  onChangeStateRegister(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
-                                onKeyUp={this.checkEnableSubmit}
-                                value={accountState.register.rePassword}
-                                validators={["isPasswordMatch", "required"]}
-                                errorMessages={[
-                                  "kata sandi tidak sama",
-                                  "masukkan kata sandi",
-                                ]}
-                              />
-                            </div>
-                            <div className="form-group">
-                              <TextValidator
-                                id="noHP"
-                                type="text"
-                                label="Nomor telepon"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                onBlur={this.validatePhone}
-                                error={!this.state.isPhoneValid}
-                                helperText={this.state.phoneErrorText}
-                                margin="dense"
-                                fullWidth
-                                variant="outlined"
-                                onChange={(e) =>
-                                  onChangeStateRegister(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
-                                value={accountState.register.noHP}
-                              />
-                            </div>
-                            <Grid
-                              container
-                              direction="row"
-                              alignItems="center"
-                              justify="space-around"
-                            >
-                              <Grid item xs={2} lg={2}>
-                                <Checkbox
-                                  id="isChecked"
-                                  name="checked"
-                                  color="primary"
-                                  checked={accountState.register.isChecked}
-                                  onChange={(e) => 
-                                    onChangeStateRegister(
-                                      e.target.id,
-                                      e.target.checked
-                                    )
-                                  }
+                              >
+                                Buat Akun
+                              </Button>
+                            </Grid>
+                            <Grid item>atau masuk dengan</Grid>
+                            <Grid item>
+                              <div className='text-center'>
+                                <GoogleLogin
+                                  clientId={Credential}
+                                  buttonText='Google'
+                                  onSuccess={this.googleResponse}
+                                  onFailure={this.googleResponse}
+                                  cookiePolicy='single_host_origin'
+                                  responseType='code,token'
                                 />
-                              </Grid>
-                              <Grid item xs={10} lg={10}>
-                                <p>
-                                  Saya telah memahami dan menyetujui Ketentuan &
-                                  Kebijakan SinauNgomah
-                                </p>
-                              </Grid>
+                              </div>
                             </Grid>
-                          </CardContent>
-                          <CardActions>
-                            <Grid
-                              container
-                              direction="column"
-                              alignItems="center"
-                              justify="space-around"
-                              spacing={2}
-                            >
-                              <Grid item>
-                                <Button
-                                  variant="contained"
-                                  disableElevation
-                                  color="primary"
-                                  type="submit"
-                                  disabled={
-                                    this.state.buttonDisable === false &&
-                                    accountState.register.isChecked === true
-                                      ? false
-                                      : true
-                                  }
-                                >
-                                  Buat Akun
-                                </Button>
-                              </Grid>
-                              <Grid item>atau masuk dengan</Grid>
-                              <Grid item>
-                                <div className="text-center">
-                                  <GoogleLogin
-                                    clientId={Credential}
-                                    buttonText="Google"
-                                    onSuccess={this.googleResponse}
-                                    onFailure={this.googleResponse}
-                                    cookiePolicy="single_host_origin"
-                                    responseType="code,token"
-                                  />
-                                </div>
-                              </Grid>
-                              <Grid item>
-                                Sudah punya akun?{" "}
-                                <Link to={`${process.env.PUBLIC_URL}/login`}>
-                                  Silakan masuk
-                                </Link>
-                              </Grid>
+                            <Grid item>
+                              Sudah punya akun? <Link to={`${process.env.PUBLIC_URL}/login`}>Silakan masuk</Link>
                             </Grid>
-                          </CardActions>
-                        </ValidatorForm>
-                      </Box>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </div>
-            )}
-            {accountState.register.success && (
-              <div className="container">
-                <Grid
-                  container
-                  direction="column"
-                  alignItems="center"
-                  justify="space-between"
-                  spacing={1}
-                >
-                  <Grid item xs={12} lg={5}>
-                    <img
-                      src={`${process.env.PUBLIC_URL}/assets/images/success-img.png`}
-                      alt="login-page-img"
-                    ></img>
-                  </Grid>
-                  <Grid item alignItems="center">
-                    <strong>Pengguna berhasil didaftarkan!</strong>
-                  </Grid>
-                  <Grid item>
-                    Silakan cek email Anda untuk verifikasi email
-                  </Grid>
-                  <Grid item>
-                    <Link to={`${process.env.PUBLIC_URL}/login`}>
-                      <Button
-                        variant="contained"
-                        disableElevation
-                        color="primary"
-                      >
-                        Masuk
-                      </Button>
-                    </Link>
-                  </Grid>
-                </Grid>
-              </div>
-            )}
-          </section>
-
-          <Dialog
-            open={this.state.openDialog}
-            onClose={this.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                Apakah kamu sudah yakin dengan data yang kamu isi dan ingin
-                melanjutkan?
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Grid
-                container
-                direction="row"
-                alignItems="center"
-                justify="space-around"
-              >
-                <Grid item>
-                  <Button
-                    onClick={this.handleClose}
-                    variant="contained"
-                    disableElevation
-                    color="default"
-                  >
-                    Kembali
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    onClick={this.postRegister}
-                    variant="contained"
-                    disableElevation
-                    color="primary"
-                    autoFocus
-                  >
-                    Ya, sudah yakin
-                  </Button>
+                          </Grid>
+                        </CardActions>
+                      </ValidatorForm>
+                    </Box>
+                  </Card>
                 </Grid>
               </Grid>
-            </DialogActions>
-          </Dialog>
+            </div>
+          )}
+          {accountState.register.success && (
+            <div className='container'>
+              <Grid container direction='column' alignItems='center' justify='space-between' spacing={1}>
+                <Grid item xs={12} lg={5}>
+                  <img src={`${process.env.PUBLIC_URL}/assets/images/success-img.png`} alt='login-page-img'></img>
+                </Grid>
+                <Grid item alignItems='center'>
+                  <strong>Pengguna berhasil didaftarkan!</strong>
+                </Grid>
+                <Grid item>Silakan cek email Anda untuk verifikasi email</Grid>
+                <Grid item>
+                  <Link to={`${process.env.PUBLIC_URL}/login`}>
+                    <Button variant='contained' disableElevation color='primary'>
+                      Masuk
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
+            </div>
+          )}
+        </section>
 
-          {/* modal resend email activation */}
-          <Modal isOpen={accountState.modalActivation.show}>
-            <ModalHeader toggle={() => setModalActivation("show", false)}>
-              <strong>Kirim ulang verifikasi email</strong>
-            </ModalHeader>
-            {!accountState.modalActivation.success && (
-              <ModalBody>
-                <label>
-                  Silahkan masukkan alamat email yang digunakan untuk registrasi
-                  akun anda. Kami akan mengirimkan email yang berisi link untuk
-                  melakukan verifikasi.
-                </label>
-                <label>Email: </label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="Contoh: janedoe@mail.com"
-                  value={accountState.modalActivation.email}
-                  onChange={(e) =>
-                    setModalActivation(e.target.id, e.target.value)
-                  }
-                />
-                <Collapse in={accountState.modalActivation.openAlert}>
-                  <Alert
-                    severity="error"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => setModalActivation("openAlert", false)}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {accountState.modalActivation.errormsg}
-                  </Alert>
-                </Collapse>
-              </ModalBody>
-            )}
-            {accountState.modalActivation.success && (
-              <ModalBody>
-                <Alert severity="success">
-                  <p>
-                    <strong>Email berhasil dikirim!</strong>
-                  </p>
-                  <p>{accountState.modalActivation.successmsg}</p>
-                </Alert>
-              </ModalBody>
-            )}
-            {!accountState.modalActivation.success && (
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  disableElevation
-                  onClick={resendEmail}
-                >
-                  Kirim email
+        <Dialog
+          open={this.state.openDialog}
+          onClose={this.handleClose}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogContent>
+            <DialogContentText id='alert-dialog-description'>
+              Apakah kamu sudah yakin dengan data yang kamu isi dan ingin melanjutkan?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Grid container direction='row' alignItems='center' justify='space-around'>
+              <Grid item>
+                <Button onClick={this.handleClose} variant='contained' disableElevation color='default'>
+                  Kembali
                 </Button>
-              </ModalFooter>
-            )}
-          </Modal>
-        </div>
-      );
+              </Grid>
+              <Grid item>
+                <Button onClick={this.postRegister} variant='contained' disableElevation color='primary' autoFocus>
+                  Ya, sudah yakin
+                </Button>
+              </Grid>
+            </Grid>
+          </DialogActions>
+        </Dialog>
+
+        {/* modal resend email activation */}
+        <Modal isOpen={accountState.modalActivation.show}>
+          <ModalHeader toggle={() => setModalActivation('show', false)}>
+            <strong>Kirim ulang verifikasi email</strong>
+          </ModalHeader>
+          {!accountState.modalActivation.success && (
+            <ModalBody>
+              <label>
+                Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan mengirimkan email yang
+                berisi link untuk melakukan verifikasi.
+              </label>
+              <label>Email: </label>
+              <Input
+                type='email'
+                id='email'
+                placeholder='Contoh: janedoe@mail.com'
+                value={accountState.modalActivation.email}
+                onChange={e => setModalActivation(e.target.id, e.target.value)}
+              />
+              <Collapse in={accountState.modalActivation.openAlert}>
+                <Alert
+                  severity='error'
+                  action={
+                    <IconButton
+                      aria-label='close'
+                      color='inherit'
+                      size='small'
+                      onClick={() => setModalActivation('openAlert', false)}
+                    >
+                      <CloseIcon fontSize='inherit' />
+                    </IconButton>
+                  }
+                >
+                  {accountState.modalActivation.errormsg}
+                </Alert>
+              </Collapse>
+            </ModalBody>
+          )}
+          {accountState.modalActivation.success && (
+            <ModalBody>
+              <Alert severity='success'>
+                <p>
+                  <strong>Email berhasil dikirim!</strong>
+                </p>
+                <p>{accountState.modalActivation.successmsg}</p>
+              </Alert>
+            </ModalBody>
+          )}
+          {!accountState.modalActivation.success && (
+            <ModalFooter>
+              <Button color='primary' variant='contained' disableElevation onClick={resendEmail}>
+                Kirim email
+              </Button>
+            </ModalFooter>
+          )}
+        </Modal>
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  accountState: state.account,
+const mapStateToProps = state => ({
+  accountState: state.account
 });
 export default connect(mapStateToProps, {
   onChangeStateRegister,
@@ -563,5 +448,5 @@ export default connect(mapStateToProps, {
   closeRegistAlert,
   saveRegister,
   setModalActivation,
-  resendEmail,
+  resendEmail
 })(Register);

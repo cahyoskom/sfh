@@ -1,31 +1,27 @@
-import React, { Component } from "react";
-import SimpleReactValidator from "simple-react-validator";
-import { connect } from "react-redux";
-import BlockUi from "react-block-ui";
-import Container from "@material-ui/core/Container";
-import { Grid, Box } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { Link } from "react-router-dom";
-import Alert from "@material-ui/lab/Alert";
+import React, { Component } from 'react';
+import SimpleReactValidator from 'simple-react-validator';
+import { connect } from 'react-redux';
+import BlockUi from 'react-block-ui';
+import Container from '@material-ui/core/Container';
+import { Grid, Box } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { Link } from 'react-router-dom';
+import Alert from '@material-ui/lab/Alert';
 
-import {
-  onChangeStateUpdatePassword,
-  updatePassword,
-  setUpdatePasswordCode,
-} from "../../actions";
+import { onChangeStateUpdatePassword, updatePassword, setUpdatePasswordCode } from '../../actions';
 
 class UpdatePassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showPassword: false,
+      showPassword: false
     };
     this.handleClickShowPassword = this.handleClickShowPassword.bind(this);
 
@@ -33,19 +29,19 @@ class UpdatePassword extends Component {
   }
 
   componentDidMount() {
-    document.getElementById("footer").style.display = "none";
-    document.getElementById("sticky").style.display = "none";
+    document.getElementById('footer').style.display = 'none';
+    document.getElementById('sticky').style.display = 'none';
   }
 
   onClickUpdatePassword() {
     let { updatePassword, onChangeStateUpdatePassword } = this.props;
-    onChangeStateUpdatePassword("code", this.props.match.params.code);
+    onChangeStateUpdatePassword('code', this.props.match.params.code);
     updatePassword();
   }
   handleClickShowPassword() {
     const currentState = this.state.showPassword;
     this.setState({
-      showPassword: !currentState,
+      showPassword: !currentState
     });
   }
 
@@ -54,8 +50,8 @@ class UpdatePassword extends Component {
 
     return (
       <div>
-        <section className="login-page section-b-space">
-          <div className="container">
+        <section className='login-page section-b-space'>
+          <div className='container'>
             {/* <div className='row row d-flex justify-content-center'>
               <div className='col-lg-4'>
                 <div className={'text-center'}>
@@ -145,64 +141,37 @@ class UpdatePassword extends Component {
           </div>
 
           <Container>
-            <Grid
-              container
-              direction="column"
-              justify="center"
-              alignItems="center"
-            >
+            <Grid container direction='column' justify='center' alignItems='center'>
               <Grid item xs={12} lg={12}>
                 <Box maxWidth={700}>
-                  <Card variant="outlined">
+                  <Card variant='outlined'>
                     <CardContent>
                       {!accountState.updatePassword.success && (
-                        <Grid
-                          container
-                          direction="row"
-                          justify="center"
-                          alignItems="stretch"
-                          spacing={2}
-                        >
+                        <Grid container direction='row' justify='center' alignItems='stretch' spacing={2}>
                           <Grid item>
                             <h3>
                               <strong>Ganti Kata Sandi</strong>
                             </h3>
                           </Grid>
-                          <Grid
-                            container
-                            direction="row"
-                            justify="space-between"
-                            alignItems="center"
-                          >
+                          <Grid container direction='row' justify='space-between' alignItems='center'>
                             <Grid item xs={12} lg={5}>
                               <h4>Kata sandi yang baru</h4>
                             </Grid>
                             <Grid item xs={12} lg={7}>
                               <OutlinedInput
-                                id="password"
-                                placeholder="Masukkan kata sandi"
-                                fullWidth="true"
-                                type={
-                                  this.state.showPassword ? "text" : "password"
-                                }
-                                onChange={(e) =>
-                                  onChangeStateUpdatePassword(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
+                                id='password'
+                                placeholder='Masukkan kata sandi'
+                                fullWidth='true'
+                                type={this.state.showPassword ? 'text' : 'password'}
+                                onChange={e => onChangeStateUpdatePassword(e.target.id, e.target.value)}
                                 endAdornment={
-                                  <InputAdornment position="end">
+                                  <InputAdornment position='end'>
                                     <IconButton
-                                      aria-label="toggle password visibility"
+                                      aria-label='toggle password visibility'
                                       onClick={this.handleClickShowPassword}
-                                      edge="end"
+                                      edge='end'
                                     >
-                                      {this.state.showPassword ? (
-                                        <Visibility />
-                                      ) : (
-                                        <VisibilityOff />
-                                      )}
+                                      {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                                   </InputAdornment>
                                 }
@@ -210,12 +179,7 @@ class UpdatePassword extends Component {
                               />
                             </Grid>
                           </Grid>
-                          <Grid
-                            container
-                            direction="row"
-                            justify="space-between"
-                            alignItems="center"
-                          >
+                          <Grid container direction='row' justify='space-between' alignItems='center'>
                             <Grid item xs={12} lg={5}>
                               <h4>Ulangi kata sandi yang baru</h4>
                             </Grid>
@@ -234,30 +198,19 @@ class UpdatePassword extends Component {
                 autoComplete={"password"}
               /> */}
                               <OutlinedInput
-                                id="repeatPassword"
-                                placeholder="Masukkan kata sandi"
-                                fullWidth="true"
-                                type={
-                                  this.state.showPassword ? "text" : "password"
-                                }
-                                onChange={(e) =>
-                                  onChangeStateUpdatePassword(
-                                    e.target.id,
-                                    e.target.value
-                                  )
-                                }
+                                id='repeatPassword'
+                                placeholder='Masukkan kata sandi'
+                                fullWidth='true'
+                                type={this.state.showPassword ? 'text' : 'password'}
+                                onChange={e => onChangeStateUpdatePassword(e.target.id, e.target.value)}
                                 endAdornment={
-                                  <InputAdornment position="end">
+                                  <InputAdornment position='end'>
                                     <IconButton
-                                      aria-label="toggle password visibility"
+                                      aria-label='toggle password visibility'
                                       onClick={this.handleClickShowPassword}
-                                      edge="end"
+                                      edge='end'
                                     >
-                                      {this.state.showPassword ? (
-                                        <Visibility />
-                                      ) : (
-                                        <VisibilityOff />
-                                      )}
+                                      {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                                   </InputAdornment>
                                 }
@@ -266,15 +219,10 @@ class UpdatePassword extends Component {
                             </Grid>
                           </Grid>
 
-                          <Grid
-                            container
-                            direction="row-reverse"
-                            justify="flex-start"
-                            alignItems="center"
-                          >
+                          <Grid container direction='row-reverse' justify='flex-start' alignItems='center'>
                             <Button
-                              variant="contained"
-                              color="primary"
+                              variant='contained'
+                              color='primary'
                               onClick={() => {
                                 this.onClickUpdatePassword();
                               }}
@@ -285,18 +233,13 @@ class UpdatePassword extends Component {
                         </Grid>
                       )}
                       {accountState.updatePassword.success && (
-                        <Grid
-                          container
-                          direction="column"
-                          justify="center"
-                          alignItems="center"
-                        >
-                          <Alert severity="success">
+                        <Grid container direction='column' justify='center' alignItems='center'>
+                          <Alert severity='success'>
                             <p>
                               <strong>Kata sandi berhasil diubah!</strong>
                             </p>
                             <Link to={`${process.env.PUBLIC_URL}/login`}>
-                              <Button variant="contained" color="primary">
+                              <Button variant='contained' color='primary'>
                                 Masuk
                               </Button>
                             </Link>
@@ -319,12 +262,12 @@ class UpdatePassword extends Component {
 
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={accountState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -336,12 +279,12 @@ class UpdatePassword extends Component {
 }
 
 // export default UpdatePassword
-const mapStateToProps = (state) => ({
-  accountState: state.account,
+const mapStateToProps = state => ({
+  accountState: state.account
 });
 
 export default connect(mapStateToProps, {
   onChangeStateUpdatePassword,
   updatePassword,
-  setUpdatePasswordCode,
+  setUpdatePasswordCode
 })(UpdatePassword);

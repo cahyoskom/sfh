@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
 import {
   Button,
   FormGroup,
@@ -18,28 +18,24 @@ import {
   CardImg,
   CardText,
   CardBody,
-  CardTitle,
-} from "reactstrap";
-import CustomFooterGuru from "../common/customFooterGuru";
+  CardTitle
+} from 'reactstrap';
+import CustomFooterGuru from '../common/customFooterGuru';
 // import Select from "../common/Select";
-import "react-widgets/dist/css/react-widgets.css";
-import DateTimePicker from "../common/DatePicker";
+import 'react-widgets/dist/css/react-widgets.css';
+import DateTimePicker from '../common/DatePicker';
 // import Input from "../common/Input";
-import "react-datepicker/dist/react-datepicker.css";
-import "../tasklist/tasksiswa.css";
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import * as actions from "../../actions";
-import moment from "moment";
-import * as messageBox from "../common/message-box";
-import SimpleReactValidator from "simple-react-validator";
-import { Formik, Form, Field } from "formik";
-import Select from "react-select";
-import Breadcrumb from "../common/breadcrumb";
+import 'react-datepicker/dist/react-datepicker.css';
+import '../tasklist/tasksiswa.css';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import * as actions from '../../actions';
+import moment from 'moment';
+import * as messageBox from '../common/message-box';
+import SimpleReactValidator from 'simple-react-validator';
+import { Formik, Form, Field } from 'formik';
+import Select from 'react-select';
+import Breadcrumb from '../common/breadcrumb';
 
 class Student extends Component {
   constructor(props) {
@@ -48,24 +44,24 @@ class Student extends Component {
     this.state = {
       columns: [
         {
-          name: "no",
-          label: "No",
+          name: 'no',
+          label: 'No'
         },
         {
-          name: "student_name",
-          label: "Name",
+          name: 'student_name',
+          label: 'Name'
         },
         {
-          name: "student_no",
-          label: "NIP",
+          name: 'student_no',
+          label: 'NIP'
         },
         {
-          name: "class_id",
-          label: "Kelas",
+          name: 'class_id',
+          label: 'Kelas'
         },
         {
-          name: "sex",
-          label: "Kelamin",
+          name: 'sex',
+          label: 'Kelamin',
           options: {
             customBodyRender: (value, tableMeta, updateValue) => {
               if (value == 1) {
@@ -73,25 +69,25 @@ class Student extends Component {
               } else {
                 return <div>Perempuan</div>;
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "status",
-          label: "status",
+          name: 'status',
+          label: 'status',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "student_id",
-          label: "Action",
+          name: 'student_id',
+          label: 'Action',
           options: {
             filter: false,
             sort: false,
             print: false,
             download: false,
-            display: false,
+            display: false
             // customBodyRender: (value, tableMeta, updateValue) => {
             //     return (
             //     <div>
@@ -100,10 +96,10 @@ class Student extends Component {
             //     </div>
             //     );
             // }
-          },
-        },
+          }
+        }
       ],
-      isAddStudent: false,
+      isAddStudent: false
     };
     this.onClickSignOut = this.onClickSignOut.bind(this);
     this.validator = new SimpleReactValidator();
@@ -121,13 +117,13 @@ class Student extends Component {
 
   addStudent() {
     let { setModal } = this.props;
-    setModal("type", "addStudent");
-    setModal("title", "Add Student");
-    setModal("buttonText", "Add");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('type', 'addStudent');
+    setModal('title', 'Add Student');
+    setModal('buttonText', 'Add');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
-      isAddStudent: true,
+      isAddStudent: true
     }));
   }
 
@@ -148,46 +144,40 @@ class Student extends Component {
 
   handleMultiChange(option) {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("class_id", option);
+    setStateTaskListFilter('class_id', option);
   }
 
   modalToggle() {
     const { adminState, setModal } = this.props;
-    setModal("show", !adminState.modal.show);
+    setModal('show', !adminState.modal.show);
   }
 
   renderView() {
     let { adminState, adminSetModalFormStudent } = this.props;
 
     const options = {
-      responsive: "scroll",
+      responsive: 'scroll',
       filter: false,
       search: false,
       download: false,
       print: false,
       viewColumns: false,
-      selectableRows: false,
+      selectableRows: false
     };
 
     return (
       <div>
-        <Breadcrumb
-          title={
-            <Link to={`${process.env.PUBLIC_URL}/usermanagement/`}>
-              Back to User Management
-            </Link>
-          }
-        />
-        <section className="login-page section-b-space">
-          <div className="container">
-            <h3 className="text-left">
-              <i className="mdi mdi-table-edit" />
+        <Breadcrumb title={<Link to={`${process.env.PUBLIC_URL}/usermanagement/`}>Back to User Management</Link>} />
+        <section className='login-page section-b-space'>
+          <div className='container'>
+            <h3 className='text-left'>
+              <i className='mdi mdi-table-edit' />
               STUDENT
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="collection-block">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='collection-block'>
                     {/* <Link to={`${process.env.PUBLIC_URL}/`}>
                                         <img
                                             src={`${
@@ -198,19 +188,13 @@ class Student extends Component {
                                         />
                                         </Link> */}
                   </div>
-                  <div className={"text-center"}>
-                    <p>
-                      {moment(adminState.now)
-                        .format("dddd YYYY-MM-DD")
-                        .toString()}
-                    </p>
+                  <div className={'text-center'}>
+                    <p>{moment(adminState.now).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
-                      <label>
-                        Nama : {localStorage.name.replace(/"/g, "")}
-                      </label>
+                  <form className='theme-form'>
+                    <div className='form-group'>
+                      <label>Nama : {localStorage.name.replace(/"/g, '')}</label>
                       <br />
                       <label>Kelas : SD 5</label>
                       <br />
@@ -219,20 +203,16 @@ class Student extends Component {
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="theme-card authentication-right">
+              <div className='col-lg-9 right-login'>
+                <div className='theme-card authentication-right'>
                   <div>{/* {card} */}</div>
                   <MuiThemeProvider>
                     <MUIDataTable
                       title={
                         <div>
-                          List Student{" "}
-                          <Button
-                            size="sm"
-                            color="primary"
-                            onClick={this.addStudent}
-                          >
-                            <i className="fa fa-plus"></i>&nbsp;Add Student
+                          List Student{' '}
+                          <Button size='sm' color='primary' onClick={this.addStudent}>
+                            <i className='fa fa-plus'></i>&nbsp;Add Student
                           </Button>
                         </div>
                       }
@@ -245,11 +225,11 @@ class Student extends Component {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -260,22 +240,15 @@ class Student extends Component {
             </div>
           </div>
 
-          <Modal
-            isOpen={adminState.modal.show}
-            fade={false}
-            backdrop={"static"}
-            toggle={this.modalToggle}
-          >
-            <ModalHeader toggle={this.modalToggle}>
-              {adminState.modal.title}
-            </ModalHeader>
+          <Modal isOpen={adminState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+            <ModalHeader toggle={this.modalToggle}>{adminState.modal.title}</ModalHeader>
             <ModalBody>
               {this.state.isAddStudent && (
                 <Formik
                   enableReinitialize={true}
                   initialValues={adminState.form}
                   // validationSchema={add_editSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     // this.uploadTask()
                   }}
@@ -287,19 +260,12 @@ class Student extends Component {
                           <Row form={true}>
                             <Col md={12}>
                               <FormGroup>
-                                <Label for="student_name">Student Name</Label>
+                                <Label for='student_name'>Student Name</Label>
                                 <Input
-                                  name="student_name"
-                                  id="student_name"
-                                  defaultValue={
-                                    adminState.student.form.student_name
-                                  }
-                                  onChange={(e) =>
-                                    adminSetModalFormStudent(
-                                      "student_name",
-                                      e.target.value
-                                    )
-                                  }
+                                  name='student_name'
+                                  id='student_name'
+                                  defaultValue={adminState.student.form.student_name}
+                                  onChange={e => adminSetModalFormStudent('student_name', e.target.value)}
                                 />
                                 {/* {validator.message(
                                                 "area_description",
@@ -308,19 +274,12 @@ class Student extends Component {
                                             )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="student_no">Student No</Label>
+                                <Label for='student_no'>Student No</Label>
                                 <Input
-                                  name="student_no"
-                                  id="student_no"
-                                  defaultValue={
-                                    adminState.student.form.student_no
-                                  }
-                                  onChange={(e) =>
-                                    adminSetModalFormStudent(
-                                      "student_no",
-                                      e.target.value
-                                    )
-                                  }
+                                  name='student_no'
+                                  id='student_no'
+                                  defaultValue={adminState.student.form.student_no}
+                                  onChange={e => adminSetModalFormStudent('student_no', e.target.value)}
                                 />
                                 {/* {validator.message(
                                                 "area_description",
@@ -329,15 +288,13 @@ class Student extends Component {
                                             )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="sex">Jenis Kelamin</Label>
+                                <Label for='sex'>Jenis Kelamin</Label>
                                 <Select
-                                  name="sex"
-                                  id="sex"
+                                  name='sex'
+                                  id='sex'
                                   // value={adminState.student.form.sex}
                                   options={adminState.student.sexOption}
-                                  onChange={(e) =>
-                                    adminSetModalFormStudent("sex", e.value)
-                                  }
+                                  onChange={e => adminSetModalFormStudent('sex', e.value)}
                                 />
                                 {/* {validator.message(
                                                 "area_description",
@@ -346,17 +303,12 @@ class Student extends Component {
                                             )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="class_id">Kelas</Label>
+                                <Label for='class_id'>Kelas</Label>
                                 <Select
-                                  name="class_id"
-                                  id="class_id"
+                                  name='class_id'
+                                  id='class_id'
                                   options={adminState.class.dataSourceClass}
-                                  onChange={(e) =>
-                                    adminSetModalFormStudent(
-                                      "class_id",
-                                      e.value
-                                    )
-                                  }
+                                  onChange={e => adminSetModalFormStudent('class_id', e.value)}
                                 />
                                 {/* {validator.message(
                                                 "area_description",
@@ -375,16 +327,16 @@ class Student extends Component {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="secondary" onClick={this.modalToggle}>
+              <Button color='secondary' onClick={this.modalToggle}>
                 Cancel
-              </Button>{" "}
-              {adminState.modal.type == "addStudent" && (
-                <Button color="primary" onClick={() => this.save()}>
+              </Button>{' '}
+              {adminState.modal.type == 'addStudent' && (
+                <Button color='primary' onClick={() => this.save()}>
                   {adminState.modal.buttonText}
                 </Button>
               )}
-              {adminState.modal.type == "edit" && (
-                <Button color="primary" onClick={() => this.update()}>
+              {adminState.modal.type == 'edit' && (
+                <Button color='primary' onClick={() => this.update()}>
                   {adminState.modal.buttonText}
                 </Button>
               )}
@@ -407,12 +359,12 @@ class Student extends Component {
     let { adminState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={adminState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -423,8 +375,8 @@ class Student extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  adminState: state.admin,
+const mapStateToProps = state => ({
+  adminState: state.admin
 });
 
 export default connect(mapStateToProps, { ...actions })(withTranslate(Student));

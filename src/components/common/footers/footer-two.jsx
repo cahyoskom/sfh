@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class FooterTwo extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      divName: "RTL",
-      colorPick: false,
+      divName: 'RTL',
+      colorPick: false
     };
   }
   componentWillMount() {
-    window.addEventListener("scroll", this.handleScroll);
+    window.addEventListener('scroll', this.handleScroll);
   }
   componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
+    window.removeEventListener('scroll', this.handleScroll);
   }
 
   /*=====================
@@ -22,21 +22,21 @@ class FooterTwo extends Component {
      ==========================*/
   handleScroll = () => {
     if (document.documentElement.scrollTop > 600) {
-      document.querySelector(".tap-top").style = "display: block";
+      document.querySelector('.tap-top').style = 'display: block';
     } else {
-      document.querySelector(".tap-top").style = "display: none";
+      document.querySelector('.tap-top').style = 'display: none';
     }
   };
   clickToTop() {
-    window.scroll({ top: 0, left: 0, behavior: "smooth" });
+    window.scroll({ top: 0, left: 0, behavior: 'smooth' });
   }
   ChangeRtl(divName) {
-    if (divName === "RTL") {
-      document.body.classList.add("rtl");
-      this.setState({ divName: "LTR" });
+    if (divName === 'RTL') {
+      document.body.classList.add('rtl');
+      this.setState({ divName: 'LTR' });
     } else {
-      document.body.classList.remove("rtl");
-      this.setState({ divName: "RTL" });
+      document.body.classList.remove('rtl');
+      this.setState({ divName: 'RTL' });
     }
   }
   componentDidMount() {
@@ -122,7 +122,7 @@ class FooterTwo extends Component {
          Pre loader
          ==========================*/
     setTimeout(function () {
-      document.querySelector(".loader-wrapper").style = "display: none";
+      document.querySelector('.loader-wrapper').style = 'display: none';
     }, 2000);
   }
 
@@ -131,29 +131,21 @@ class FooterTwo extends Component {
   }
 
   changeColor(color) {
-    document
-      .getElementById("color")
-      .setAttribute(
-        "href",
-        `${process.env.PUBLIC_URL}/assets/css/` + color + `.css`
-      );
+    document.getElementById('color').setAttribute('href', `${process.env.PUBLIC_URL}/assets/css/` + color + `.css`);
   }
 
   render() {
-    let color_style = this.state.colorPick
-      ? { right: "0px" }
-      : { right: "-190px" };
-    let tap_to_top = { display: "none" };
+    let color_style = this.state.colorPick ? { right: '0px' } : { right: '-190px' };
+    let tap_to_top = { display: 'none' };
     return (
-      <footer id={"footer"} className="footer-light">
-        <div className="sub-footer ">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-6 col-md-6 col-sm-12">
-                <div className="footer-end">
+      <footer id={'footer'} className='footer-light'>
+        <div className='sub-footer '>
+          <div className='container'>
+            <div className='row'>
+              <div className='col-xl-6 col-md-6 col-sm-12'>
+                <div className='footer-end'>
                   <p>
-                    <i className="fa fa-copyright" aria-hidden="true"></i> 2020
-                    SinauNgomah powered by KarpaLabs
+                    <i className='fa fa-copyright' aria-hidden='true'></i> 2020 SinauNgomah powered by KarpaLabs
                   </p>
                 </div>
               </div>
@@ -189,13 +181,9 @@ class FooterTwo extends Component {
                         </div>
                     </div>
                 </div> */}
-        <div
-          className="tap-top top-cls"
-          onClick={this.clickToTop}
-          style={tap_to_top}
-        >
+        <div className='tap-top top-cls' onClick={this.clickToTop} style={tap_to_top}>
           <div>
-            <i className="fa fa-angle-double-up"></i>
+            <i className='fa fa-angle-double-up'></i>
           </div>
         </div>
       </footer>

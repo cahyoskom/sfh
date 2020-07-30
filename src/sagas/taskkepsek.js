@@ -1,4 +1,4 @@
-import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
+import { all, takeEvery, put, fork, select, call } from 'redux-saga/effects';
 import {
   KEPSEK_GET_TASK_LIST,
   KEPSEK_GET_TASK_LIST_SUCCESS,
@@ -12,15 +12,15 @@ import {
   KEPSEK_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
   KEPSEK_DOWNLOAD_COLLECTION,
   SET_LOADER,
-  SET_MODAL,
-} from "../constants/ActionTypes";
-import { fail, success } from "../components/common/toast-message";
-import * as services from "../services";
-import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
-import { HeaderFile, HeaderAuth } from "../services/header";
-import moment from "moment";
+  SET_MODAL
+} from '../constants/ActionTypes';
+import { fail, success } from '../components/common/toast-message';
+import * as services from '../services';
+import { API_BASE_URL_DEV, API_PATH } from '../constants/api';
+import { HeaderFile, HeaderAuth } from '../services/header';
+import moment from 'moment';
 
-const getKepsekState = (state) => state.taskKepsek;
+const getKepsekState = state => state.taskKepsek;
 
 export function* kepsekGetTaskList() {
   try {
@@ -28,18 +28,18 @@ export function* kepsekGetTaskList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let classes = taskKepsek.filter.class_id;
-    let paramClass = "&class=";
+    let paramClass = '&class=';
 
     if (classes.length != 0) {
       let kelas = [];
-      let optional = "";
+      let optional = '';
       for (let i = 0; i < classes.length; i++) {
         kelas.push(classes[i].value);
-        optional += "&class=" + kelas[i];
+        optional += '&class=' + kelas[i];
       }
 
       paramClass = optional;
@@ -48,14 +48,14 @@ export function* kepsekGetTaskList() {
     let param = {
       class: taskKepsek.filter.class_id,
       subject: taskKepsek.filter.subject_id,
-      start_date: moment(taskKepsek.filter.start_date).format("YYYY-MM-DD"),
-      end_date: moment(taskKepsek.filter.end_date).format("YYYY-MM-DD"),
+      start_date: moment(taskKepsek.filter.start_date).format('YYYY-MM-DD'),
+      end_date: moment(taskKepsek.filter.end_date).format('YYYY-MM-DD')
     };
     // console.log("param",param);
     // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?class=" + param.class + "&subject=" + param.subject + optional, HeaderAuth());
     const response = yield call(
       services.GET,
-      API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject,
+      API_BASE_URL_DEV + '/task?' + paramClass + '&subject=' + param.subject,
       HeaderAuth()
     );
     // console.log("rzponze".response)
@@ -79,21 +79,21 @@ export function* kepsekGetTaskList() {
       // console.log('ressss', result);
       yield put({
         type: KEPSEK_GET_TASK_LIST_SUCCESS,
-        field: "data",
-        value: result,
+        field: 'data',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -104,16 +104,12 @@ export function* kepsekGetTaskCollectionList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let task_id = taskKepsek.params;
     //   console.log('par',task_id)
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/task/" + task_id + "/collection",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/task/' + task_id + '/collection', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -131,21 +127,21 @@ export function* kepsekGetTaskCollectionList() {
       // console.log('ressss', result);
       yield put({
         type: KEPSEK_GET_TASK_COLLECTION_LIST_SUCCESS,
-        field: "dataCollection",
-        value: result,
+        field: 'dataCollection',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -154,14 +150,10 @@ export function* kepsekGetSubjectList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/subject",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/subject', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -174,21 +166,21 @@ export function* kepsekGetSubjectList() {
       }
       yield put({
         type: KEPSEK_GET_SUBJECT_LIST_SUCCESS,
-        field: "dataSourceSubject",
-        value: result,
+        field: 'dataSourceSubject',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -197,14 +189,10 @@ export function* kepsekGetClassList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/class",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/class', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -217,21 +205,21 @@ export function* kepsekGetClassList() {
       }
       yield put({
         type: KEPSEK_GET_CLASS_LIST_SUCCESS,
-        field: "dataSourceClass",
-        value: result,
+        field: 'dataSourceClass',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -241,17 +229,12 @@ export function* kepsekGetUploadedCollectionList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     const taskKepsek = yield select(getKepsekState);
-    let task_collection_id =
-      taskKepsek.formUploadedCollection.task_collection_id;
+    let task_collection_id = taskKepsek.formUploadedCollection.task_collection_id;
     //   console.log('swsw', taskKepsek)
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/collection/" + task_collection_id,
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/collection/' + task_collection_id, HeaderAuth());
     // console.log('guru', response);
     if (response.status == 200) {
       let datas = response.data;
@@ -259,8 +242,7 @@ export function* kepsekGetUploadedCollectionList() {
       if (datas.data.files != null || datas.data.files != undefined) {
         for (let i = 0; i < datas.data.files.length; i++) {
           let obj = {};
-          obj.task_collection_file_id =
-            datas.data.files[i].task_collection_file_id;
+          obj.task_collection_file_id = datas.data.files[i].task_collection_file_id;
           obj.task_collection_id = datas.data.files[i].task_collection_id;
           obj.filename = datas.data.files[i].filename;
           obj.location = datas.data.files[i].location;
@@ -271,26 +253,26 @@ export function* kepsekGetUploadedCollectionList() {
       }
       let result = {
         task_collection_id: datas.data.task_collection_id,
-        files: uploadedFiles,
+        files: uploadedFiles
       };
 
       yield put({
         type: KEPSEK_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
-        field: "dataUploadedCollection",
-        value: result,
+        field: 'dataUploadedCollection',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -300,17 +282,16 @@ export function* kepsekDownloadCollection() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     const taskKepsek = yield select(getKepsekState);
-    let task_collection_file_id =
-      taskKepsek.formUploadedCollection.task_collection_file_id;
+    let task_collection_file_id = taskKepsek.formUploadedCollection.task_collection_file_id;
     let filename = taskKepsek.formUploadedCollection.filename;
     let type = '"' + taskKepsek.formUploadedCollection.mime_type + '"';
 
     const response = yield call(
       services.GETFILE,
-      API_BASE_URL_DEV + "/collection/download/" + task_collection_file_id,
+      API_BASE_URL_DEV + '/collection/download/' + task_collection_file_id,
       HeaderFile()
     );
     // console.log('kepsekdonlotcollection', response);
@@ -320,25 +301,25 @@ export function* kepsekDownloadCollection() {
       window.URL = window.URL || window.webkitURL;
       const blob = new Blob([fileDownload], { type: type });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", filename);
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
     } else if (response.status == 404) {
-      fail("File /s not found");
+      fail('File /s not found');
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -349,10 +330,7 @@ export default function* rootSaga() {
     takeEvery(KEPSEK_GET_TASK_COLLECTION_LIST, kepsekGetTaskCollectionList),
     takeEvery(KEPSEK_GET_SUBJECT_LIST, kepsekGetSubjectList),
     takeEvery(KEPSEK_GET_CLASS_LIST, kepsekGetClassList),
-    takeEvery(
-      KEPSEK_GET_UPLOADED_COLLECTION_LIST,
-      kepsekGetUploadedCollectionList
-    ),
-    takeEvery(KEPSEK_DOWNLOAD_COLLECTION, kepsekDownloadCollection),
+    takeEvery(KEPSEK_GET_UPLOADED_COLLECTION_LIST, kepsekGetUploadedCollectionList),
+    takeEvery(KEPSEK_DOWNLOAD_COLLECTION, kepsekDownloadCollection)
   ]);
 }

@@ -4,7 +4,6 @@ const crypto = require("crypto");
 const { time } = require("console");
 const { env } = process;
 const passwordValidator = require("password-validator");
-const phoneValidator = require("validate-phone-number-node-js");
 const emailValidator = require("email-validator");
 
 const sec_user = require("../models/sec_user");
@@ -17,8 +16,9 @@ const { sha256 } = require("../common/sha");
 const mailer = require("../common/mailer");
 const { ACTIVE, DEACTIVE, DELETED } = require("../enums/status.enums");
 const userController = require("./user");
-const pwValidator = new passwordValidator().is().min(8);
+const pwValidator = new passwordValidator().is().min(6);
 // .is().max(100).has().uppercase().has().lowercase().has().digits().has().not().spaces();
+const phoneValidator = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;
 
 async function shouldSendingMail(flag, filtering, disabling = false) {
   const model_confirmation = sec_confirmation();
@@ -131,7 +131,7 @@ exports.create = async function (req, res) {
     }
 
     var checkPhone = req.body.phone
-      ? phoneValidator.validate(req.body.phone)
+      ? phoneValidator.test(req.body.phone)
       : true;
     if (checkPhone == false) {
       throw new Error("Nomor Telepon yang dimasukkan tidak sesuai kriteria");

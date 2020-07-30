@@ -1,9 +1,7 @@
-# Ignore everything:
-/*
-
-# Except specific folder:
-!common/
-!config/
-!controllers/
-!enums/
-!models/
+database/
+files/
+node_modules/
+postman/
+trash/
+package.json
+package-lock.json

@@ -10,5 +10,6 @@ export const API_PATH = {
   oauth: '/login_google',
   register: '/registration',
   requestActivation: '/request_activation',
-  activating: '/activating'
+  activating: '/activating',
+  checkEmail: '/check_email'
 };

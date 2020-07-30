@@ -1,0 +1,9 @@
+# Ignore everything:
+/*
+
+# Except specific folder:
+!common/
+!config/
+!controllers/
+!enums/
+!models/

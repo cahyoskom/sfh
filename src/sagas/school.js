@@ -7,11 +7,11 @@ import {
   FAILED_UPDATE_SCHOOL,
   DELETE_SCHOOL,
   REMOVE_SCHOOL_DATA,
+  SET_SCHOOL_AUTHORITY,
 } from "../constants/ActionTypes";
 import * as services from "../services";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
 import { HeaderAuth } from "../services/header";
-import { deleteSchool } from "../actions";
 
 const getSchoolState = (state) => state.school;
 export function* getSchoolInfo(action) {
@@ -21,13 +21,19 @@ export function* getSchoolInfo(action) {
     HeaderAuth()
   );
   if (_res.status === 200) {
-    if (_res.data != null) {
+    if (_res.data) {
       yield put({
         type: SET_SCHOOL_DATA,
         value: _res.data.data,
       });
+      console.log(_res.data.hasAuthority);
+      yield put({
+        types: SET_SCHOOL_AUTHORITY,
+        value: _res.data.hasAuthority
+      })
     }
   } else {
+    //SCHOOL NOT FOUND
     console.log(_res.data.message);
   }
 }

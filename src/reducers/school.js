@@ -5,9 +5,11 @@ import {
   SUCCESS_UPDATE_SCHOOL,
   FAILED_UPDATE_SCHOOL,
   REMOVE_SCHOOL_DATA,
+  SET_SCHOOL_AUTHORITY,
 } from "../constants/ActionTypes";
 const initialState = {
   data: {},
+  userHasAuthority: false,
   modal: {
     show: false,
     failed: false,
@@ -26,6 +28,11 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         data: action.value,
       };
+    case SET_SCHOOL_AUTHORITY:
+      return {
+        ...state,
+        userHasAuthority: action.value
+      }
     case SET_SCHOOL_MODAL:
       return {
         ...state,

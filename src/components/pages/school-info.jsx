@@ -10,6 +10,10 @@ import {
   Collapse,
   TextField,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
 } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Alert from "@material-ui/lab/Alert";
@@ -24,7 +28,22 @@ import {
   deleteSchool,
 } from "../../actions";
 
+const pattern = /^[0-9]*$/;
+
 class SchoolInfo extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isPhoneValid: true,
+      phoneErrorText: "",
+      isZipcodeValid: true,
+      zipcodeErrorText: "",
+
+      openDialog: false,
+    };
+  }
+
   componentDidMount = () => {
     this.props.getSchool(this.props.match.params.id);
   };
@@ -45,6 +64,50 @@ class SchoolInfo extends Component {
     this.getBase64(file, (result) => {
       this.props.setModalSchool("avatar", result);
     });
+  };
+
+  validatePhone = () => {
+    var isValid = this.props.schoolState.modal.phone
+      ? pattern.test(this.props.schoolState.modal.phone)
+      : true;
+
+    if (isValid) {
+      this.setState({
+        isPhoneValid: true,
+        phoneErrorText: "",
+      });
+    } else {
+      this.setState({
+        isPhoneValid: false,
+        phoneErrorText: "nomor telepon tidak valid",
+      });
+    }
+  };
+
+  validateZipcode = () => {
+    var isValid = this.props.schoolState.modal.zipcode
+      ? pattern.test(this.props.schoolState.modal.zipcode)
+      : true;
+
+    if (isValid) {
+      this.setState({
+        isZipcodeValid: true,
+        zipcodeErrorText: "",
+      });
+    } else {
+      this.setState({
+        isZipcodeValid: false,
+        zipcodeErrorText: "kode pos tidak valid",
+      });
+    }
+  };
+
+  handleDelete = () => {
+    this.setState({ openDialog: true });
+  };
+
+  handleClose = () => {
+    this.setState({ openDialog: false });
   };
 
   render() {
@@ -106,15 +169,17 @@ class SchoolInfo extends Component {
                           {schoolState.data.phone}
                         </Grid>
                       </Grid>
-                      {/* ONLY SHOW FOR SCHOOL MEMBER */}
-                      <Grid item container direction="row">
-                        <Grid item xs={5} lg={5}>
-                          <strong>Kode sekolah</strong>
+                      {/* ONLY SHOW FOR OWNER MAINTAINER*/}
+                      {schoolState.userHasAuthority &&
+                        <Grid item container direction="row">
+                          <Grid item xs={5} lg={5}>
+                            <strong>Kode sekolah</strong>
+                          </Grid>
+                          <Grid item xs={7} lg={7}>
+                            <strong>{schoolState.data.code}</strong>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={7} lg={7}>
-                          <strong>{schoolState.data.code}</strong>
-                        </Grid>
-                      </Grid>
+                      }
                       {/* <Grid item container direction="row">
                       <Grid item xs={5} lg={5}>
                         <strong>Catatan Sekolah</strong>
@@ -124,34 +189,36 @@ class SchoolInfo extends Component {
                           "Belum mengisi catatan sekolah"}
                       </Grid>
                     </Grid> */}
-                      {/* ONLY SHOW FOR SCHOOL MEMBER */}
-                      <Grid
-                        item
-                        container
-                        direction="row"
-                        justify="space-between"
-                      >
-                        <Grid item xs={6} lg={6}>
-                          <Button
-                            color="secondary"
-                            variant="contained"
-                            disableElevation
-                            onClick={deleteSchool}
-                          >
-                            Hapus Sekolah
+                      {/* ONLY SHOW FOR OWNER MAINTAINER*/}
+                      {schoolState.userHasAuthority &&
+                        <Grid
+                          item
+                          container
+                          direction="row"
+                          justify="space-between"
+                        >
+                          <Grid item xs={6} lg={6}>
+                            <Button
+                              color="secondary"
+                              variant="contained"
+                              disableElevation
+                              onClick={this.handleDelete}
+                            >
+                              Hapus Sekolah
                           </Button>
-                        </Grid>
-                        <Grid item container xs={6} lg={6} justify="flex-end">
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            disableElevation
-                            onClick={onUpdateSchool}
-                          >
-                            Ubah
+                          </Grid>
+                          <Grid item container xs={6} lg={6} justify="flex-end">
+                            <Button
+                              color="primary"
+                              variant="contained"
+                              disableElevation
+                              onClick={onUpdateSchool}
+                            >
+                              Ubah
                           </Button>
+                          </Grid>
                         </Grid>
-                      </Grid>
+                      }
                     </Grid>
                   </Box>
                 </Paper>
@@ -218,6 +285,9 @@ class SchoolInfo extends Component {
                     margin="dense"
                     fullWidth
                     variant="outlined"
+                    onKeyUp={this.validateZipcode}
+                    error={!this.state.isZipcodeValid}
+                    helperText={this.state.zipcodeErrorText}
                     onChange={(e) =>
                       setModalSchool(e.target.id, e.target.value)
                     }
@@ -236,6 +306,9 @@ class SchoolInfo extends Component {
                     placeholder="Contoh: 0212894203"
                     fullWidth
                     variant="outlined"
+                    onKeyUp={this.validatePhone}
+                    error={!this.state.isPhoneValid}
+                    helperText={this.state.phoneErrorText}
                     onChange={(e) =>
                       setModalSchool(e.target.id, e.target.value)
                     }
@@ -300,6 +373,50 @@ class SchoolInfo extends Component {
               </ModalFooter>
             </ValidatorForm>
           </Modal>
+
+          {/* Remove school confirmation dialog*/}
+          <Dialog
+            open={this.state.openDialog}
+            onClose={this.handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Apakah kamu yakin ingin menghapus sekolah?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Grid
+                container
+                direction="row"
+                alignItems="center"
+                justify="space-around"
+              >
+                <Grid item>
+                  <Button
+                    onClick={this.handleClose}
+                    variant="contained"
+                    disableElevation
+                    color="default"
+                  >
+                    Batal
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={deleteSchool}
+                    variant="contained"
+                    disableElevation
+                    color="primary"
+                    autoFocus
+                  >
+                    Hapus
+                  </Button>
+                </Grid>
+              </Grid>
+            </DialogActions>
+          </Dialog>
         </section>
       </div>
     );

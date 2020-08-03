@@ -85,6 +85,15 @@ export const saveRegister = () => ({
   type: types.SET_REGISTER,
 });
 
+//profile
+export const getUserData = () => ({
+  type: types.GET_USER_DATA,
+});
+
+export const requestUserData = () => ({
+  type: types.REQUEST_USER_DATA,
+});
+
 /////////////
 
 export const fetchProductsBegin = () => ({

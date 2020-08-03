@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const m_school = require('../models/m_school');
 const m_school_member = require('../models/m_school_member');
+const sec_group = require('../models/sec_group');
 const m_class = require('../models/m_class');
 const m_class_member = require('../models/m_class_member');
 const m_subject = require('../models/m_subject');
@@ -14,6 +15,28 @@ const t_task_collection_file = require('../models/t_task_collection_file');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const isBase64 = require('is-base64');
 const pattern = /^[0-9]*$/;
+
+async function checkAuthority(userId) {
+  const model_school_member = m_school_member();
+  const model_sec_group = sec_group();
+  var member = await model_school_member.findAll({
+    where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [1, 2] } }
+    // include: [
+    //   {
+    //     model: model_sec_group,
+    //     where: {
+    //       id: {
+    //         [Op.or]: [1, 2]
+    //       }
+    //     }
+    //   }
+    // ]
+  });
+  if (member.length > 0) {
+    return true;
+  }
+  return false;
+}
 
 exports.findAll = async function (req, res) {
   const model_school = m_school();
@@ -28,7 +51,8 @@ exports.findOne = async function (req, res) {
     where: { id: req.params.id, status: ACTIVE }
   });
 
-  res.json({ data: datum });
+  var hasAuthority = await checkAuthority(req.user.id);
+  res.json({ data: datum, hasAuthority: hasAuthority });
 };
 
 exports.create = async function (req, res) {
@@ -43,7 +67,7 @@ exports.create = async function (req, res) {
   }
   var checkZipcode = req.body.zipcode ? pattern.test(req.body.zipcode) : true;
   if (checkZipcode == false) {
-    res.status(401).json({ error: null, message: "Kode pos tidak valid" });
+    res.status(401).json({ error: null, message: 'Kode pos tidak valid' });
   }
   var new_obj = {
     m_school_id: req.body.m_school_id,
@@ -54,8 +78,8 @@ exports.create = async function (req, res) {
     phone: req.body.phone,
     avatar: req.body.avatar,
     status: 1,
-    created_date: moment().format()
-    // created_by: req.body.name,
+    created_date: moment().format(),
+    created_by: req.user.email
   };
   try {
     var datum = await model_school.create(new_obj);
@@ -66,6 +90,12 @@ exports.create = async function (req, res) {
 };
 
 exports.update = async function (req, res) {
+  var hasAuthority = await checkAuthority(req.user.id);
+  if (!hasAuthority) {
+    res
+      .status(403)
+      .json({ error: null, message: 'Pengguna tidak memiliki otoritas untuk mengubah sekolah' });
+  }
   const model_school = m_school();
   var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
   if (!checkAvatar) {
@@ -73,13 +103,12 @@ exports.update = async function (req, res) {
   }
   var checkPhone = req.body.phone ? pattern.test(req.body.phone) : true;
   if (checkPhone == false) {
-    res.status(401).json({ error: null, message: "Nomor telepon tidak valid" });
+    res.status(401).json({ error: null, message: 'Nomor telepon tidak valid' });
   }
   var checkZipcode = req.body.zipcode ? pattern.test(req.body.zipcode) : true;
   if (checkZipcode == false) {
-    res.status(401).json({ error: null, message: "Kode pos tidak valid" });
+    res.status(401).json({ error: null, message: 'Kode pos tidak valid' });
   }
-  console.log(req.user)
 
   var update_obj = {
     m_school_id: req.body.id,
@@ -89,8 +118,8 @@ exports.update = async function (req, res) {
     phone: req.body.phone,
     avatar: req.body.avatar,
     status: ACTIVE,
-    updated_date: moment().format()
-    // updated_by: req.body.name
+    updated_date: moment().format(),
+    updated_by: req.user.email
   };
   try {
     var datum = await model_school.update(update_obj, {
@@ -103,6 +132,12 @@ exports.update = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
+  var hasAuthority = await checkAuthority(req.user.id);
+  if (!hasAuthority) {
+    res
+      .status(403)
+      .json({ error: null, message: 'User tidak memiliki otoritas untuk menghapus sekolah' });
+  }
   // delete school within id from req.params.id
   const model_school = m_school();
   const schoolId = req.params.id;

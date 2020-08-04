@@ -10,10 +10,7 @@ import {
   Collapse,
   TextField,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
+  CircularProgress,
 } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Alert from "@material-ui/lab/Alert";
@@ -26,6 +23,7 @@ import {
   onUpdateSchool,
   saveUpdateSchool,
   deleteSchool,
+  handleDoneUpdateSchool
 } from "../../actions";
 
 const pattern = /^[0-9]*$/;
@@ -41,6 +39,7 @@ class SchoolInfo extends Component {
       zipcodeErrorText: "",
 
       openDialog: false,
+      updateConfirmation: false,
     };
   }
 
@@ -110,6 +109,23 @@ class SchoolInfo extends Component {
     this.setState({ openDialog: false });
   };
 
+  handleUpdate = () => {
+    this.setState({ updateConfirmation: true });
+  };
+
+  closeUpdateConfirmation = () => {
+    this.setState({ updateConfirmation: false });
+  };
+
+  handleSaveUpdateSchool = () => {
+    this.setState({ updateConfirmation: false });
+    this.props.saveUpdateSchool();
+  }
+
+  handleDoneDelete = () => {
+    window.location.href = process.env.PUBLIC_URL + "/";
+  }
+
   render() {
     const {
       schoolState,
@@ -117,6 +133,7 @@ class SchoolInfo extends Component {
       setModalSchool,
       saveUpdateSchool,
       deleteSchool,
+      handleDoneUpdateSchool,
     } = this.props;
     return (
       <div>
@@ -142,7 +159,7 @@ class SchoolInfo extends Component {
                         ></Image>
                       </Grid>
                       <hr
-                        style={{ border: "1px solid #C4C4C4", width: "100%" }}
+                        style={{ border: "1px solid #C4C4C4", width: "95%" }}
                       />
 
                       <Grid item container direction="row">
@@ -170,7 +187,7 @@ class SchoolInfo extends Component {
                         </Grid>
                       </Grid>
                       {/* ONLY SHOW FOR OWNER MAINTAINER*/}
-                      {schoolState.userHasAuthority &&
+                      {schoolState.userHasAuthority && (
                         <Grid item container direction="row">
                           <Grid item xs={5} lg={5}>
                             <strong>Kode sekolah</strong>
@@ -179,7 +196,7 @@ class SchoolInfo extends Component {
                             <strong>{schoolState.data.code}</strong>
                           </Grid>
                         </Grid>
-                      }
+                      )}
                       {/* <Grid item container direction="row">
                       <Grid item xs={5} lg={5}>
                         <strong>Catatan Sekolah</strong>
@@ -190,7 +207,7 @@ class SchoolInfo extends Component {
                       </Grid>
                     </Grid> */}
                       {/* ONLY SHOW FOR OWNER MAINTAINER*/}
-                      {schoolState.userHasAuthority &&
+                      {schoolState.userHasAuthority && (
                         <Grid
                           item
                           container
@@ -205,7 +222,7 @@ class SchoolInfo extends Component {
                               onClick={this.handleDelete}
                             >
                               Hapus Sekolah
-                          </Button>
+                            </Button>
                           </Grid>
                           <Grid item container xs={6} lg={6} justify="flex-end">
                             <Button
@@ -215,10 +232,10 @@ class SchoolInfo extends Component {
                               onClick={onUpdateSchool}
                             >
                               Ubah
-                          </Button>
+                            </Button>
                           </Grid>
                         </Grid>
-                      }
+                      )}
                     </Grid>
                   </Box>
                 </Paper>
@@ -227,11 +244,17 @@ class SchoolInfo extends Component {
           </Container>
 
           {/*Modal edit school */}
-          <Modal isOpen={schoolState.modal.show}>
+          <Modal
+            isOpen={
+              schoolState.successUpdateSchool == true
+                ? false
+                : schoolState.modal.show
+            }
+          >
             <ModalHeader toggle={() => setModalSchool("show", false)}>
               <strong>Ubah Sekolah</strong>
             </ModalHeader>
-            <ValidatorForm onSubmit={saveUpdateSchool}>
+            <ValidatorForm onSubmit={this.handleUpdate}>
               <ModalBody>
                 <div className="form-group">
                   <span>Nama sekolah*</span>
@@ -354,69 +377,177 @@ class SchoolInfo extends Component {
                 </Collapse>
               </ModalBody>
               <ModalFooter>
-                <Button
-                  color="default"
-                  variant="contained"
-                  disableElevation
-                  onClick={() => setModalSchool("show", false)}
-                >
-                  Batal
-                </Button>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  disableElevation
-                  type="submit"
-                >
-                  Simpan
-                </Button>
+                {!schoolState.modal.showSpinner && (
+                  <div>
+                    <Button
+                      color="default"
+                      variant="contained"
+                      disableElevation
+                      onClick={() => setModalSchool("show", false)}
+                    >
+                      Batal
+                    </Button>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disableElevation
+                      type="submit"
+                    >
+                      Simpan
+                    </Button>
+                  </div>
+                )}
+                {schoolState.modal.showSpinner && <CircularProgress />}
               </ModalFooter>
             </ValidatorForm>
           </Modal>
 
           {/* Remove school confirmation dialog*/}
-          <Dialog
-            open={this.state.openDialog}
-            onClose={this.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+          <Modal
+            isOpen={
+              schoolState.successDeleteSchool == true
+                ? false
+                : this.state.openDialog
+            }
+            centered
           >
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                Apakah kamu yakin ingin menghapus sekolah?
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
+            <ModalBody>
+              {!schoolState.deleteSchoolFailed && (
+                <Grid
+                  container
+                  direction="col"
+                  spacing={1}
+                  justify="center"
+                  alignItems="center"
+                >
+                  <Grid item>Apakah kamu yakin ingin menghapus sekolah?</Grid>
+                  <Grid item container justify="space-around">
+                    <Grid item>
+                      <Button
+                        color="default"
+                        variant="contained"
+                        disableElevation
+                        onClick={this.handleClose}
+                      >
+                        Batal
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        disableElevation
+                        onClick={deleteSchool}
+                      >
+                        Hapus
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+              {schoolState.deleteSchoolFailed && (
+                <Alert severity="error">{schoolState.deleteErrormsg}</Alert>
+              )}
+            </ModalBody>
+          </Modal>
+
+          {/* Update school confirmation dialog */}
+          <Modal isOpen={this.state.updateConfirmation} centered>
+            <ModalBody>
               <Grid
                 container
-                direction="row"
+                direction="col"
+                spacing={1}
+                justify="center"
                 alignItems="center"
-                justify="space-around"
               >
                 <Grid item>
-                  <Button
-                    onClick={this.handleClose}
-                    variant="contained"
-                    disableElevation
-                    color="default"
-                  >
-                    Batal
-                  </Button>
+                  Apakah kamu yakin dengan data yang kamu isi dan ingin
+                  menyimpannya?
                 </Grid>
-                <Grid item>
-                  <Button
-                    onClick={deleteSchool}
-                    variant="contained"
-                    disableElevation
-                    color="primary"
-                    autoFocus
-                  >
-                    Hapus
-                  </Button>
+                <Grid item container justify="space-around">
+                  <Grid item>
+                    <Button
+                      color="default"
+                      variant="contained"
+                      disableElevation
+                      onClick={this.closeUpdateConfirmation}
+                    >
+                      Batal
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disableElevation
+                      onClick={this.handleSaveUpdateSchool}
+                    >
+                      Simpan
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
-            </DialogActions>
-          </Dialog>
+            </ModalBody>
+          </Modal>
+
+          {/* Success delete modal */}
+          <Modal isOpen={schoolState.successDeleteSchool} centered>
+            <ModalBody>
+              <Grid
+                container
+                direction="col"
+                spacing={2}
+                justify="center"
+                alignItems="center"
+              >
+                <Grid item>
+                  <strong>Sekolah berhasil dihapus!</strong>
+                </Grid>
+                <Grid container justify="center">
+                  <Grid item>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disableElevation
+                      onClick={this.handleDoneDelete}
+                    >
+                      Oke
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </ModalBody>
+          </Modal>
+
+          {/* Success update modal */}
+          <Modal isOpen={schoolState.successUpdateSchool} centered>
+            <ModalBody>
+              <Grid
+                container
+                direction="col"
+                spacing={2}
+                justify="center"
+                alignItems="center"
+              >
+                <Grid item>
+                  <strong>Data sekolah berhasil diubah!</strong>
+                </Grid>
+                <Grid container justify="center">
+                  <Grid item>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disableElevation
+                      onClick={handleDoneUpdateSchool}
+                    >
+                      Oke
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </ModalBody>
+          </Modal>
         </section>
       </div>
     );
@@ -432,4 +563,5 @@ export default connect(mapStateToProps, {
   onUpdateSchool,
   saveUpdateSchool,
   deleteSchool,
+  handleDoneUpdateSchool
 })(SchoolInfo);

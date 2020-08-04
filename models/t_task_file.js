@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
@@ -131,10 +131,6 @@ module.exports = (sequelize) => {
       }
     ]
   };
-  const TTaskFileModel = sequelize.define(
-    't_task_file_model',
-    attributes,
-    options
-  );
+  const TTaskFileModel = sequelize.define('t_task_file_model', attributes, options);
   return TTaskFileModel;
 };

@@ -84,12 +84,9 @@ exports.delete = async function (req, res) {
       attributes: ['id'],
       where: classmemberFilter
     })
-    .map((el) => el.dataValues.id);
+    .map(el => el.dataValues.id);
   console.log('>> Getting class member ids for next process:', classmemberIds);
-  await model_class_member.update(
-    { status: DELETED },
-    { where: classmemberFilter }
-  );
+  await model_class_member.update({ status: DELETED }, { where: classmemberFilter });
   //------------------------------------------------------------------------
 
   // delete related subject within m_class_id from req.params.id
@@ -102,7 +99,7 @@ exports.delete = async function (req, res) {
       attributes: ['id'],
       where: subjectFilter
     })
-    .map((el) => el.dataValues.id);
+    .map(el => el.dataValues.id);
   console.log('>> Getting subject ids for next process:', subjectIds);
   await model_subject.update({ status: DELETED }, { where: subjectFilter });
   //------------------------------------------------------------------------
@@ -117,7 +114,7 @@ exports.delete = async function (req, res) {
       attributes: ['id'],
       where: taskFilter
     })
-    .map((el) => el.dataValues.id);
+    .map(el => el.dataValues.id);
   console.log('>> Getting task ids for next process:', taskIds);
   await model_task.update({ status: DELETED }, { where: taskFilter });
   //------------------------------------------------------------------------
@@ -132,7 +129,7 @@ exports.delete = async function (req, res) {
       attributes: ['id'],
       where: taskfileFilter
     })
-    .map((el) => el.dataValues.id);
+    .map(el => el.dataValues.id);
   console.log('>> Getting task file ids for next process:', taskfileIds);
   await model_task_file.update({ status: DELETED }, { where: taskfileFilter });
   //------------------------------------------------------------------------
@@ -147,15 +144,9 @@ exports.delete = async function (req, res) {
       attributes: ['id'],
       where: taskcollectionFilter
     })
-    .map((el) => el.dataValues.id);
-  console.log(
-    '>> Getting task collection ids for next process:',
-    taskcollectionIds
-  );
-  await model_task_collection.update(
-    { status: DELETED },
-    { where: taskcollectionFilter }
-  );
+    .map(el => el.dataValues.id);
+  console.log('>> Getting task collection ids for next process:', taskcollectionIds);
+  await model_task_collection.update({ status: DELETED }, { where: taskcollectionFilter });
   //------------------------------------------------------------------------
 
   // delete related task collection file within t_task_id from previous process when getting task ids

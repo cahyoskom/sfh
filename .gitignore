@@ -1,3 +1,7 @@
 /*.env
 node_modules
 files/*
+pm2.pid
+log
+logs
+trash

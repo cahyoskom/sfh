@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
@@ -120,10 +120,6 @@ module.exports = (sequelize) => {
     comment: '',
     indexes: []
   };
-  const SecRegistrantModel = sequelize.define(
-    'sec_registrant_model',
-    attributes,
-    options
-  );
+  const SecRegistrantModel = sequelize.define('sec_registrant_model', attributes, options);
   return SecRegistrantModel;
 };

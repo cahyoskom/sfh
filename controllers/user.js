@@ -1,6 +1,7 @@
 const sec_user = require("../models/sec_user");
 const STATUS = require("../enums/status.enums");
 const moment = require("moment");
+const isBase64 = require("is-base64");
 
 exports.findAll = async function (req, res) {
   const model_user = sec_user();
@@ -20,12 +21,19 @@ exports.findOne = async function (req, res) {
 
 exports.create = async function (req, res) {
   const model_user = sec_user();
+  var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
+  if (!checkAvatar) {
+    res
+      .status(401)
+      .json({ error: null, message: "Format gambar tidak sesuai" });
+  }
+
   var new_obj = {
     name: req.body.name,
     email: req.body.email,
     username: req.body.username,
     password: req.body.password,
-    is_email_validated: 0,
+    is_email_validated: 1,
     phone: req.body.phone,
     is_phone_validated: 0,
     avatar: req.body.avatar,
@@ -44,6 +52,13 @@ exports.create = async function (req, res) {
 
 exports.update = async function (req, res) {
   const model_user = sec_user();
+  var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
+  if (!checkAvatar) {
+    res
+      .status(401)
+      .json({ error: null, message: "Format gambar tidak sesuai" });
+  }
+
   var update_obj = {
     name: req.body.name,
     email: req.body.email,

@@ -1,37 +1,21 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
-import {
-  Button,
-  FormGroup,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Col,
-  Row,
-  Label,
-  Input,
-  InputGroup,
-} from "reactstrap";
-import "react-widgets/dist/css/react-widgets.css";
-import DateTimePicker from "../common/DatePicker";
-import "react-datepicker/dist/react-datepicker.css";
-import "./tasksiswa.css";
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import * as actions from "../../actions";
-import moment from "moment";
-import * as messageBox from "../common/message-box";
-import SimpleReactValidator from "simple-react-validator";
-import { Formik, Form, Field } from "formik";
-import Select from "react-select";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
+import { Button, FormGroup, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from 'reactstrap';
+import 'react-widgets/dist/css/react-widgets.css';
+import DateTimePicker from '../common/DatePicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './tasksiswa.css';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import * as actions from '../../actions';
+import moment from 'moment';
+import * as messageBox from '../common/message-box';
+import SimpleReactValidator from 'simple-react-validator';
+import { Formik, Form, Field } from 'formik';
+import Select from 'react-select';
 
 class TaskGuru extends Component {
   constructor(props) {
@@ -40,8 +24,8 @@ class TaskGuru extends Component {
       columns: [
         {
           //0
-          name: "status",
-          label: "Status",
+          name: 'status',
+          label: 'Status',
           options: {
             filter: false,
             sort: false,
@@ -51,31 +35,23 @@ class TaskGuru extends Component {
               if (value) {
                 return (
                   <div>
-                    <i
-                      className="fa fa-check-circle"
-                      title="Submitted"
-                      style={{ color: "green" }}
-                    />
+                    <i className='fa fa-check-circle' title='Submitted' style={{ color: 'green' }} />
                   </div>
                 );
               } else {
                 return (
                   <div>
-                    <i
-                      className="fa fa-window-close"
-                      title="Belum Submit"
-                      style={{ color: "red" }}
-                    />
+                    <i className='fa fa-window-close' title='Belum Submit' style={{ color: 'red' }} />
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //1
-          name: "notes",
-          label: "Notes",
+          name: 'notes',
+          label: 'Notes',
           options: {
             filter: false,
             sort: false,
@@ -85,94 +61,87 @@ class TaskGuru extends Component {
                   <div>
                     <span
                       style={{
-                        backgroundColor: "#5bb1e4",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: '#5bb1e4',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {tableMeta.rowData[3] + " - " + tableMeta.rowData[2]}
+                      {tableMeta.rowData[3] + ' - ' + tableMeta.rowData[2]}
                     </span>
                     <p>{value}</p>
                     <span
                       style={{
-                        backgroundColor: "rgb(93, 228, 91)",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: 'rgb(93, 228, 91)',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {"Published : " +
-                        moment(tableMeta.rowData[11])
-                          .format("DD-MM-YYYY")
-                          .toString()}
+                      {'Published : ' + moment(tableMeta.rowData[11]).format('DD-MM-YYYY').toString()}
                     </span>
                     <br />
                     <br />
                     <span
                       style={{
-                        backgroundColor: "#5bb1e4",
-                        padding: "5px",
-                        borderRadius: "25px",
+                        backgroundColor: '#5bb1e4',
+                        padding: '5px',
+                        borderRadius: '25px'
                       }}
                     >
-                      {"Duration : " +
-                        moment(tableMeta.rowData[5])
-                          .format("DD-MM-YYYY")
-                          .toString() +
-                        " - " +
-                        moment(tableMeta.rowData[6])
-                          .format("DD-MM-YYYY")
-                          .toString()}
+                      {'Duration : ' +
+                        moment(tableMeta.rowData[5]).format('DD-MM-YYYY').toString() +
+                        ' - ' +
+                        moment(tableMeta.rowData[6]).format('DD-MM-YYYY').toString()}
                     </span>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //2
-          name: "class_name",
-          label: "Kelas",
+          name: 'class_name',
+          label: 'Kelas',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //3
-          name: "subject_name",
-          label: "Mata Pelajaran",
+          name: 'subject_name',
+          label: 'Mata Pelajaran',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //4
-          name: "title",
-          label: "Task",
+          name: 'title',
+          label: 'Task',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //5
-          name: "start_date",
-          label: "Start",
+          name: 'start_date',
+          label: 'Start',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //6
-          name: "finish_date",
-          label: "Finish",
+          name: 'finish_date',
+          label: 'Finish',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //7
-          name: "task_id",
-          label: "Action",
+          name: 'task_id',
+          label: 'Action',
           options: {
             filter: false,
             sort: false,
@@ -186,82 +155,77 @@ class TaskGuru extends Component {
                                     onClick={() => this.detailTask(tableMeta)}
                                     >Detail</Button>&nbsp; */}
                     <Link to={`${process.env.PUBLIC_URL}/taskguru/` + value}>
-                      <Button title="Detail Task" color="primary" size="sm">
+                      <Button title='Detail Task' color='primary' size='sm'>
                         Detail
                       </Button>
                     </Link>
                     &nbsp;
-                    <Button
-                      title="Arsipkan Task"
-                      color="secondary"
-                      size="sm"
-                      onClick={() => this.archivedTask(tableMeta)}
-                    >
+                    <Button title='Arsipkan Task' color='secondary' size='sm' onClick={() => this.archivedTask(tableMeta)}>
                       Arsipkan
                     </Button>
                     &nbsp;
                     <Button
-                      title="Edit Task"
-                      color="info"
-                      style={{ color: "#fff" }}
+                      title='Edit Task'
+                      color='info'
+                      style={{ color: '#fff' }}
                       onClick={() => this.editTask(tableMeta)}
-                      size="sm"
+                      size='sm'
                     >
                       Edit
                     </Button>
                     &nbsp;
                     <Button
-                      title="Delete Task"
-                      color="danger"
-                      style={{ color: "#fff" }}
+                      title='Delete Task'
+                      color='danger'
+                      style={{ color: '#fff' }}
                       onClick={() => this.deleteTask(tableMeta)}
-                      size="sm"
+                      size='sm'
                     >
                       Delete
                     </Button>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
           //8
-          name: "class_id",
-          label: "class_id",
+          name: 'class_id',
+          label: 'class_id',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //9
-          name: "subject_id",
-          label: "subject_id",
+          name: 'subject_id',
+          label: 'subject_id',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //10
-          name: "assignor_id",
-          label: "assignor_id",
+          name: 'assignor_id',
+          label: 'assignor_id',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
           //11
-          name: "publish_date",
-          label: "publish_date",
+          name: 'publish_date',
+          label: 'publish_date',
           options: {
-            display: false,
-          },
-        },
+            display: false
+          }
+        }
       ],
       options: {
-        filterType: "checkbox",
+        filterType: 'checkbox'
       },
-      status: "all",
+      status: 'all',
       isAddNew: false,
       isEdit: false,
       isDetail: false,
@@ -269,7 +233,7 @@ class TaskGuru extends Component {
       dataSourceClass: this.props.taskGuruState.dataSourceClass,
       uploadedFileName: [],
       isFormInvalid: false,
-      listOfFile: [],
+      listOfFile: []
     };
     this.getList = this.getList.bind(this);
     this.uploadTask = this.uploadTask.bind(this);
@@ -295,28 +259,28 @@ class TaskGuru extends Component {
     getClassList();
     getSubjectList();
     this.clearModal();
-    console.log("acc state", accountState);
+    console.log('acc state', accountState);
   }
 
   clearModal() {
     let { setStateModalForm } = this.props;
-    setStateModalForm("task_id", "");
-    setStateModalForm("class_id", "");
-    setStateModalForm("subject_id", "");
-    setStateModalForm("assignor_id", "");
-    setStateModalForm("title", "");
-    setStateModalForm("notes", "");
-    setStateModalForm("start_date", new Date());
-    setStateModalForm("finish_date", new Date());
-    setStateModalForm("files", null);
+    setStateModalForm('task_id', '');
+    setStateModalForm('class_id', '');
+    setStateModalForm('subject_id', '');
+    setStateModalForm('assignor_id', '');
+    setStateModalForm('title', '');
+    setStateModalForm('notes', '');
+    setStateModalForm('start_date', new Date());
+    setStateModalForm('finish_date', new Date());
+    setStateModalForm('files', null);
   }
 
   clearFilter() {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("class_id", "");
-    setStateTaskListFilter("subject_id", "");
-    setStateTaskListFilter("start_date", new Date());
-    setStateTaskListFilter("finish_date", new Date());
+    setStateTaskListFilter('class_id', '');
+    setStateTaskListFilter('subject_id', '');
+    setStateTaskListFilter('start_date', new Date());
+    setStateTaskListFilter('finish_date', new Date());
   }
 
   getList() {
@@ -330,81 +294,70 @@ class TaskGuru extends Component {
     getSubjectList();
     getClassList();
 
-    setModal("type", "add");
-    setModal("title", "Upload Task");
-    setModal("buttonText", "Upload");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('type', 'add');
+    setModal('title', 'Upload Task');
+    setModal('buttonText', 'Upload');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
       isAddNew: true,
       isEdit: false,
-      isDetail: false,
+      isDetail: false
     }));
   }
 
   detailTask(data) {
-    let {
-      getSubjectList,
-      getClassList,
-      setModal,
-      setStateModalForm,
-    } = this.props;
+    let { getSubjectList, getClassList, setModal, setStateModalForm } = this.props;
     getSubjectList();
     getClassList();
 
-    setStateModalForm("class_id", data.rowData[8]);
-    setStateModalForm("subject_id", data.rowData[9]);
-    setStateModalForm("title", data.rowData[4]);
-    setStateModalForm("notes", data.rowData[1]);
-    setStateModalForm("start_date", data.rowData[5]);
-    setStateModalForm("finish_date", data.rowData[6]);
+    setStateModalForm('class_id', data.rowData[8]);
+    setStateModalForm('subject_id', data.rowData[9]);
+    setStateModalForm('title', data.rowData[4]);
+    setStateModalForm('notes', data.rowData[1]);
+    setStateModalForm('start_date', data.rowData[5]);
+    setStateModalForm('finish_date', data.rowData[6]);
 
-    setModal("type", "detail");
-    setModal("title", "Detail Task");
+    setModal('type', 'detail');
+    setModal('title', 'Detail Task');
     // setModal("buttonText", "Upload")
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
       isAddNew: false,
       isEdit: false,
-      isDetail: true,
+      isDetail: true
     }));
   }
 
   editTask(data) {
-    let {
-      getSubjectList,
-      getClassList,
-      setModal,
-      setStateModalForm,
-      getTaskGuruById,
-    } = this.props;
+    let { getSubjectList, getClassList, setModal, setStateModalForm, getTaskGuruById } = this.props;
     getSubjectList();
     getClassList();
-    setStateModalForm("task_id", data.rowData[7]);
+    setStateModalForm('task_id', data.rowData[7]);
     getTaskGuruById();
 
-    setModal("type", "edit");
-    setModal("title", "Edit Task");
-    setModal("buttonText", "Update");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    setModal('type', 'edit');
+    setModal('title', 'Edit Task');
+    setModal('buttonText', 'Update');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
       isAddNew: false,
       isEdit: true,
-      isDetail: false,
+      isDetail: false
     }));
   }
 
   deleteTask(tableMeta) {
     const { deleteTask, setStateModalForm, taskGuruState } = this.props;
-    setStateModalForm("task_id", tableMeta.rowData[7]);
+    setStateModalForm('task_id', tableMeta.rowData[7]);
     messageBox.confirmDelete(taskGuruState.form.task_id, deleteTask);
   }
 
   archivedTask(tableMeta) {
     const { archivedTask, setStateModalForm, taskGuruState } = this.props;
-    setStateModalForm("task_id", tableMeta.rowData[7]);
+    setStateModalForm('task_id', tableMeta.rowData[7]);
     messageBox.confirmArchive(taskGuruState.form.task_id, archivedTask);
   }
 
@@ -430,10 +383,10 @@ class TaskGuru extends Component {
 
   modalToggle() {
     const { taskGuruState, setModal } = this.props;
-    setModal("show", !taskGuruState.modal.show);
-    this.setState((state) => ({
+    setModal('show', !taskGuruState.modal.show);
+    this.setState(state => ({
       ...state,
-      uploadedFileName: [],
+      uploadedFileName: []
     }));
   }
 
@@ -441,9 +394,9 @@ class TaskGuru extends Component {
     this.fileInput.current.click();
   };
 
-  fileHandler = (event) => {
+  fileHandler = event => {
     let { setLoader, setStateModalForm, taskGuruState } = this.props;
-    console.log("handel file", event.target.files);
+    console.log('handel file', event.target.files);
     // console.log('fileeeesss', taskGuruState.form.files);
     if (event.target.files.length) {
       var fileObj = [];
@@ -495,11 +448,11 @@ class TaskGuru extends Component {
       //     setOCRFile(null);
       //   }
       this.setState({
-        uploadedFileName: fileName,
+        uploadedFileName: fileName
       });
-      setStateModalForm("files", fileObj);
-      console.log("pailojek", fileObj);
-      console.log("pailojeknem", fileName);
+      setStateModalForm('files', fileObj);
+      console.log('pailojek', fileObj);
+      console.log('pailojeknem', fileName);
     }
   };
 
@@ -510,31 +463,26 @@ class TaskGuru extends Component {
 
   handleMultiChange(option) {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("class_id", option);
+    setStateTaskListFilter('class_id', option);
   }
 
   deleteFile(task_file_id) {
     let { guruDeleteTaskFile, setStateModalForm } = this.props;
-    setStateModalForm("deleteFileIds", task_file_id);
+    setStateModalForm('deleteFileIds', task_file_id);
     guruDeleteTaskFile();
   }
 
   renderView() {
-    let {
-      taskGuruState,
-      setStateTaskListFilter,
-      setStateModalForm,
-      getTaskGuruList,
-    } = this.props;
+    let { taskGuruState, setStateTaskListFilter, setStateModalForm, getTaskGuruList } = this.props;
 
     const options = {
-      responsive: "scroll",
+      responsive: 'scroll',
       filter: false,
       search: false,
       download: false,
       print: false,
       viewColumns: false,
-      selectableRows: "none",
+      selectableRows: 'none'
     };
 
     let filesToUpload = this.state.uploadedFileName;
@@ -544,9 +492,9 @@ class TaskGuru extends Component {
       for (let i = 0; i < filesToUpload.length; i++) {
         filePreview.push(
           <Input
-            type="text"
-            className="form-control"
-            style={{ marginBottom: "5px" }}
+            type='text'
+            className='form-control'
+            style={{ marginBottom: '5px' }}
             value={this.state.uploadedFileName[i]}
             readOnly
           />
@@ -557,21 +505,13 @@ class TaskGuru extends Component {
     console.log(taskGuruState.form.files);
 
     let listOfFile = [];
-    if (
-      taskGuruState.form.files != null ||
-      taskGuruState.form.files != undefined
-    ) {
+    if (taskGuruState.form.files != null || taskGuruState.form.files != undefined) {
       for (let i = 0; i < taskGuruState.form.files.length; i++) {
         listOfFile.push(
-          <InputGroup style={{ marginBottom: "5px" }}>
-            <Input
-              type="text"
-              className="form-control"
-              value={taskGuruState.form.files[i].filename}
-              readOnly
-            />
+          <InputGroup style={{ marginBottom: '5px' }}>
+            <Input type='text' className='form-control' value={taskGuruState.form.files[i].filename} readOnly />
             <Button
-              color="danger"
+              color='danger'
               onClick={() => {
                 this.deleteFile(taskGuruState.form.files[i].task_file_id);
               }}
@@ -585,37 +525,27 @@ class TaskGuru extends Component {
 
     return (
       <div>
-        <section className="login-page section-b-space">
-          <div className="container">
-            <h3 className="text-left">
-              <i className="mdi mdi-table-edit" />
+        <section className='login-page section-b-space'>
+          <div className='container'>
+            <h3 className='text-left'>
+              <i className='mdi mdi-table-edit' />
               Task List Guru
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="collection-block">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='collection-block'>
                     <Link to={`${process.env.PUBLIC_URL}/`}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`} className='img-fluid' alt='' />
                     </Link>
                   </div>
-                  <div className={"text-center"}>
-                    <p>
-                      {moment(taskGuruState.now)
-                        .format("dddd YYYY-MM-DD")
-                        .toString()}
-                    </p>
+                  <div className={'text-center'}>
+                    <p>{moment(taskGuruState.now).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
-                      <label>
-                        Nama : {localStorage.name.replace(/"/g, "")}
-                      </label>
+                  <form className='theme-form'>
+                    <div className='form-group'>
+                      <label>Nama : {localStorage.name.replace(/"/g, '')}</label>
                       <br />
                       {/* <label>Kelas : SD 5</label><br/>
                                             <label>NIP : 011232001</label> */}
@@ -623,19 +553,18 @@ class TaskGuru extends Component {
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="theme-card authentication-right">
-                  <div className="row">
-                    <div className="col-lg-4">
-                      <Label for="">Kelas</Label>
+              <div className='col-lg-9 right-login'>
+                <div className='theme-card authentication-right'>
+                  <div className='row'>
+                    <div className='col-lg-4'>
+                      <Label for=''>Kelas</Label>
                       <Select
-                        style={{ position: "absolute" }}
-                        id="class"
-                        name="class"
-                        placeholder="Pilih Kelas"
+                        style={{ position: 'absolute' }}
+                        id='class'
+                        name='class'
+                        placeholder='Pilih Kelas'
                         defaultValue={taskGuruState.dataSourceClass.filter(
-                          (option) =>
-                            option.value === taskGuruState.filter.class_id
+                          option => option.value === taskGuruState.filter.class_id
                         )}
                         options={taskGuruState.dataSourceClass}
                         closeMenuOnSelect={false}
@@ -643,44 +572,42 @@ class TaskGuru extends Component {
                         isMulti
                       />
                       <br />
-                      <Label for="">Mata Pelajaran</Label>
+                      <Label for=''>Mata Pelajaran</Label>
                       <Select
-                        style={{ position: "absolute" }}
-                        id="subject"
-                        name="subject"
+                        style={{ position: 'absolute' }}
+                        id='subject'
+                        name='subject'
                         defaultValue={taskGuruState.filter.subject_id}
                         options={taskGuruState.dataSourceSubject}
-                        onChange={(e) =>
-                          setStateTaskListFilter("subject_id", e.value)
-                        }
+                        onChange={e => setStateTaskListFilter('subject_id', e.value)}
                       />
                     </div>
-                    <div className="col-md-4">
-                      <Label for="subject">mulai</Label>
+                    <div className='col-md-4'>
+                      <Label for='subject'>mulai</Label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("start_date", a);
+                          setStateTaskListFilter('start_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskGuruState.filter.start_date}
                       />
                       <label>sampai</label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("finish_date", a);
+                          setStateTaskListFilter('finish_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskGuruState.filter.finish_date}
                       />
                     </div>
-                    <div className="col-md-4">
-                      <Button color="primary" onClick={getTaskGuruList}>
+                    <div className='col-md-4'>
+                      <Button color='primary' onClick={getTaskGuruList}>
                         Filter
                       </Button>
                       &nbsp;
@@ -689,27 +616,23 @@ class TaskGuru extends Component {
                   </div>
 
                   <MuiThemeProvider>
-                    <MUIDataTable
-                      data={taskGuruState.data}
-                      columns={this.state.columns}
-                      options={options}
-                    />
+                    <MUIDataTable data={taskGuruState.data} columns={this.state.columns} options={options} />
                   </MuiThemeProvider>
                   <br />
 
-                  <div className="text-right">
-                    <Button size="sm" color="primary" onClick={this.uploadTask}>
-                      <i className="fa fa-plus" /> Add New Task
+                  <div className='text-right'>
+                    <Button size='sm' color='primary' onClick={this.uploadTask}>
+                      <i className='fa fa-plus' /> Add New Task
                     </Button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -719,22 +642,15 @@ class TaskGuru extends Component {
               </div>
             </div>
           </div>
-          <Modal
-            isOpen={taskGuruState.modal.show}
-            fade={false}
-            backdrop={"static"}
-            toggle={this.modalToggle}
-          >
-            <ModalHeader toggle={this.modalToggle}>
-              {taskGuruState.modal.title}
-            </ModalHeader>
+          <Modal isOpen={taskGuruState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+            <ModalHeader toggle={this.modalToggle}>{taskGuruState.modal.title}</ModalHeader>
             <ModalBody>
               {this.state.isAddNew && (
                 <Formik
                   enableReinitialize={true}
                   initialValues={taskGuruState.taskDetail}
                   // validationSchema={add_editSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     this.uploadTask();
                   }}
@@ -747,23 +663,18 @@ class TaskGuru extends Component {
                             <Col md={12}>
                               <FormGroup>
                                 <Field
-                                  name="Mata Pelajaran"
+                                  name='Mata Pelajaran'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="kelas">Assign to</Label>
+                                      <Label for='kelas'>Assign to</Label>
                                       <Select
                                         {...field}
-                                        id={"kelas"}
+                                        id={'kelas'}
                                         options={taskGuruState.dataSourceClass}
-                                        onChange={(e) =>
-                                          setStateModalForm("class_id", e.value)
-                                        }
+                                        onChange={e => setStateModalForm('class_id', e.value)}
                                       />
-                                      {errors[field.name] &&
-                                      touched[field.name] ? (
-                                        <div className="form-error">
-                                          {errors[field.name]}
-                                        </div>
+                                      {errors[field.name] && touched[field.name] ? (
+                                        <div className='form-error'>{errors[field.name]}</div>
                                       ) : null}
                                     </div>
                                   )}
@@ -771,44 +682,30 @@ class TaskGuru extends Component {
                               </FormGroup>
                               <FormGroup>
                                 <Field
-                                  name="Mata Pelajaran"
+                                  name='Mata Pelajaran'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="subject">
-                                        Mata Pelajaran
-                                      </Label>
+                                      <Label for='subject'>Mata Pelajaran</Label>
                                       <Select
                                         {...field}
                                         // id={"subject"}
-                                        options={
-                                          taskGuruState.dataSourceSubject
-                                        }
-                                        onChange={(e) =>
-                                          setStateModalForm(
-                                            "subject_id",
-                                            e.value
-                                          )
-                                        }
+                                        options={taskGuruState.dataSourceSubject}
+                                        onChange={e => setStateModalForm('subject_id', e.value)}
                                       />
-                                      {errors[field.name] &&
-                                      touched[field.name] ? (
-                                        <div className="form-error">
-                                          {errors[field.name]}
-                                        </div>
+                                      {errors[field.name] && touched[field.name] ? (
+                                        <div className='form-error'>{errors[field.name]}</div>
                                       ) : null}
                                     </div>
                                   )}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="title">Nama Task</Label>
+                                <Label for='title'>Nama Task</Label>
                                 <Input
-                                  name="title"
-                                  id="title"
+                                  name='title'
+                                  id='title'
                                   defaultValue={taskGuruState.form.title}
-                                  onChange={(e) =>
-                                    setStateModalForm("title", e.target.value)
-                                  }
+                                  onChange={e => setStateModalForm('title', e.target.value)}
                                 />
                                 {/* {validator.message(
                                                     "area_description",
@@ -817,14 +714,12 @@ class TaskGuru extends Component {
                                                 )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="notes">Notes</Label>
+                                <Label for='notes'>Notes</Label>
                                 <Input
-                                  type="textarea"
-                                  name="notes"
-                                  id="notes"
-                                  onChange={(e) =>
-                                    setStateModalForm("notes", e.target.value)
-                                  }
+                                  type='textarea'
+                                  name='notes'
+                                  id='notes'
+                                  onChange={e => setStateModalForm('notes', e.target.value)}
                                 />
                                 {/* {validator.message(
                                                     "area_description",
@@ -833,52 +728,52 @@ class TaskGuru extends Component {
                                                 )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Periode Task</Label>
+                                <Label for=''>Periode Task</Label>
                                 <DateTimePicker
                                   min={new Date()}
                                   isInline={true}
-                                  colLabel={"col-md-1"}
+                                  colLabel={'col-md-1'}
                                   onChange={(a, b) => {
-                                    setStateModalForm("start_date", a);
+                                    setStateModalForm('start_date', a);
                                   }}
-                                  format={"DD/MMM/YYYY"}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.start_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Sampai</Label>
+                                <Label for=''>Sampai</Label>
                                 <DateTimePicker
                                   min={new Date()}
                                   isInline={true}
-                                  colLabel={"col-md-1"}
+                                  colLabel={'col-md-1'}
                                   onChange={(a, b) => {
-                                    setStateModalForm("finish_date", a);
+                                    setStateModalForm('finish_date', a);
                                   }}
-                                  format={"DD/MMM/YYYY"}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.finish_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="file">File Upload </Label> {"  "}
+                                <Label for='file'>File Upload </Label> {'  '}
                                 <Button
-                                  accept={".jpg,.jpeg,.png"}
+                                  accept={'.jpg,.jpeg,.png'}
                                   onClick={this.openFileBrowser.bind(this)}
-                                  size="sm"
-                                  color="info"
+                                  size='sm'
+                                  color='info'
                                 >
                                   Browse
                                 </Button>
                                 <div>{filePreview}</div>
                                 <input
-                                  type="file"
+                                  type='file'
                                   hidden
-                                  accept={".jpg,.jpeg,.png"}
+                                  accept={'.jpg,.jpeg,.png'}
                                   onChange={this.fileHandler.bind(this)}
                                   ref={this.fileInput}
-                                  onClick={(event) => {
+                                  onClick={event => {
                                     event.target.value = null;
                                   }}
-                                  style={{ padding: "10px" }}
+                                  style={{ padding: '10px' }}
                                   multiple={true}
                                 />
                               </FormGroup>
@@ -900,7 +795,7 @@ class TaskGuru extends Component {
                   enableReinitialize={true}
                   initialValues={taskGuruState.taskDetail}
                   // validationSchema={add_editSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     //console.log(values)
                     this.uploadTask();
@@ -914,28 +809,21 @@ class TaskGuru extends Component {
                             <Col md={12}>
                               <FormGroup>
                                 <Field
-                                  name="class_id"
+                                  name='class_id'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="kelas">Assign to</Label>
+                                      <Label for='kelas'>Assign to</Label>
                                       <Select
                                         {...field}
-                                        id={"kelas"}
+                                        id={'kelas'}
                                         value={taskGuruState.dataSourceClass.filter(
-                                          (option) =>
-                                            option.value ===
-                                            taskGuruState.form.class_id
+                                          option => option.value === taskGuruState.form.class_id
                                         )}
                                         options={taskGuruState.dataSourceClass}
-                                        onChange={(e) =>
-                                          setStateModalForm("class_id", e.value)
-                                        }
+                                        onChange={e => setStateModalForm('class_id', e.value)}
                                       />
-                                      {errors[field.name] &&
-                                      touched[field.name] ? (
-                                        <div className="form-error">
-                                          {errors[field.name]}
-                                        </div>
+                                      {errors[field.name] && touched[field.name] ? (
+                                        <div className='form-error'>{errors[field.name]}</div>
                                       ) : null}
                                     </div>
                                   )}
@@ -943,49 +831,33 @@ class TaskGuru extends Component {
                               </FormGroup>
                               <FormGroup>
                                 <Field
-                                  name="subject_id"
+                                  name='subject_id'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="subject">
-                                        Mata Pelajaran
-                                      </Label>
+                                      <Label for='subject'>Mata Pelajaran</Label>
                                       <Select
                                         {...field}
                                         // id={"subject"}
                                         value={taskGuruState.dataSourceSubject.filter(
-                                          (option) =>
-                                            option.value ===
-                                            taskGuruState.form.subject_id
+                                          option => option.value === taskGuruState.form.subject_id
                                         )}
-                                        options={
-                                          taskGuruState.dataSourceSubject
-                                        }
-                                        onChange={(e) =>
-                                          setStateModalForm(
-                                            "subject_id",
-                                            e.value
-                                          )
-                                        }
+                                        options={taskGuruState.dataSourceSubject}
+                                        onChange={e => setStateModalForm('subject_id', e.value)}
                                       />
-                                      {errors[field.name] &&
-                                      touched[field.name] ? (
-                                        <div className="form-error">
-                                          {errors[field.name]}
-                                        </div>
+                                      {errors[field.name] && touched[field.name] ? (
+                                        <div className='form-error'>{errors[field.name]}</div>
                                       ) : null}
                                     </div>
                                   )}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="title">Nama Task</Label>
+                                <Label for='title'>Nama Task</Label>
                                 <Input
-                                  name="title"
-                                  id="title"
+                                  name='title'
+                                  id='title'
                                   defaultValue={taskGuruState.form.title}
-                                  onChange={(e) =>
-                                    setStateModalForm("title", e.target.value)
-                                  }
+                                  onChange={e => setStateModalForm('title', e.target.value)}
                                 />
                                 {/* {validator.message(
                                                     "area_description",
@@ -994,15 +866,13 @@ class TaskGuru extends Component {
                                                 )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="notes">Notes</Label>
+                                <Label for='notes'>Notes</Label>
                                 <Input
-                                  type="textarea"
-                                  name="notes"
-                                  id="notes"
+                                  type='textarea'
+                                  name='notes'
+                                  id='notes'
                                   value={taskGuruState.form.notes}
-                                  onChange={(e) =>
-                                    setStateModalForm("notes", e.target.value)
-                                  }
+                                  onChange={e => setStateModalForm('notes', e.target.value)}
                                   // defaultValue={areaState.master.form.area_description}
                                   // onBlur={e => setStateMasterAreaForm(e.target.id, e.target.value)}
                                 />
@@ -1013,52 +883,52 @@ class TaskGuru extends Component {
                                                 )} */}
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Periode Task</Label>
+                                <Label for=''>Periode Task</Label>
                                 <DateTimePicker
                                   min={new Date()}
                                   isInline={true}
-                                  colLabel={"col-md-1"}
+                                  colLabel={'col-md-1'}
                                   onChange={(a, b) => {
-                                    setStateModalForm("start_date", a);
+                                    setStateModalForm('start_date', a);
                                   }}
-                                  format={"DD/MMM/YYYY"}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.start_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Sampai</Label>
+                                <Label for=''>Sampai</Label>
                                 <DateTimePicker
                                   min={new Date()}
                                   isInline={true}
-                                  colLabel={"col-md-1"}
+                                  colLabel={'col-md-1'}
                                   onChange={(a, b) => {
-                                    setStateModalForm("finish_date", a);
+                                    setStateModalForm('finish_date', a);
                                   }}
-                                  format={"DD/MMM/YYYY"}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.finish_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="file">File Upload</Label> {"  "}
+                                <Label for='file'>File Upload</Label> {'  '}
                                 <Button
-                                  accept={".jpg,.jpeg,.png"}
+                                  accept={'.jpg,.jpeg,.png'}
                                   onClick={this.openFileBrowser.bind(this)}
-                                  size="sm"
-                                  color="info"
+                                  size='sm'
+                                  color='info'
                                 >
                                   Browse
                                 </Button>
                                 <div>{filePreview}</div>
                                 <input
-                                  type="file"
+                                  type='file'
                                   hidden
-                                  accept={".jpg,.jpeg,.png"}
+                                  accept={'.jpg,.jpeg,.png'}
                                   onChange={this.fileHandler.bind(this)}
                                   ref={this.fileInput}
-                                  onClick={(event) => {
+                                  onClick={event => {
                                     event.target.value = null;
                                   }}
-                                  style={{ padding: "10px" }}
+                                  style={{ padding: '10px' }}
                                   multiple={true}
                                 />
                                 <Label>List of file</Label>
@@ -1084,7 +954,7 @@ class TaskGuru extends Component {
                 <Formik
                   enableReinitialize={true}
                   initialValues={taskGuruState.taskDetail}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     //console.log(values)
                   }}
@@ -1097,18 +967,16 @@ class TaskGuru extends Component {
                             <Col md={12}>
                               <FormGroup>
                                 <Field
-                                  name="Mata Pelajaran"
+                                  name='Mata Pelajaran'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="kelas">Assign to</Label>
+                                      <Label for='kelas'>Assign to</Label>
                                       <Select
                                         {...field}
-                                        id={"kelas"}
+                                        id={'kelas'}
                                         options={taskGuruState.dataSourceClass}
                                         value={taskGuruState.dataSourceClass.filter(
-                                          (option) =>
-                                            option.value ===
-                                            taskGuruState.form.class_id
+                                          option => option.value === taskGuruState.form.class_id
                                         )}
                                         isDisabled={true}
                                       />
@@ -1118,22 +986,16 @@ class TaskGuru extends Component {
                               </FormGroup>
                               <FormGroup>
                                 <Field
-                                  name="Mata Pelajaran"
+                                  name='Mata Pelajaran'
                                   render={({ field }) => (
                                     <div>
-                                      <Label for="subject">
-                                        Mata Pelajaran
-                                      </Label>
+                                      <Label for='subject'>Mata Pelajaran</Label>
                                       <Select
                                         {...field}
                                         // id={"subject"}
-                                        options={
-                                          taskGuruState.dataSourceSubject
-                                        }
+                                        options={taskGuruState.dataSourceSubject}
                                         value={taskGuruState.dataSourceSubject.filter(
-                                          (option) =>
-                                            option.value ===
-                                            taskGuruState.form.subject_id
+                                          option => option.value === taskGuruState.form.subject_id
                                         )}
                                         isDisabled={true}
                                       />
@@ -1142,44 +1004,39 @@ class TaskGuru extends Component {
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="title">Nama Task</Label>
-                                <Input
-                                  name="title"
-                                  id="title"
-                                  defaultValue={taskGuruState.form.title}
-                                  disabled={true}
-                                />
+                                <Label for='title'>Nama Task</Label>
+                                <Input name='title' id='title' defaultValue={taskGuruState.form.title} disabled={true} />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="notes">Notes</Label>
+                                <Label for='notes'>Notes</Label>
                                 <Input
-                                  type="textarea"
-                                  name="notes"
-                                  id="notes"
+                                  type='textarea'
+                                  name='notes'
+                                  id='notes'
                                   value={taskGuruState.form.notes}
                                   disabled={true}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Periode Task</Label>
+                                <Label for=''>Periode Task</Label>
                                 <DateTimePicker
                                   isInline={true}
-                                  colLabel={"col-md-1"}
-                                  format={"DD/MMM/YYYY"}
+                                  colLabel={'col-md-1'}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.start_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="">Sampai</Label>
+                                <Label for=''>Sampai</Label>
                                 <DateTimePicker
                                   isInline={true}
-                                  colLabel={"col-md-1"}
-                                  format={"DD/MMM/YYYY"}
+                                  colLabel={'col-md-1'}
+                                  format={'DD/MMM/YYYY'}
                                   value={taskGuruState.form.finish_date}
                                 />
                               </FormGroup>
                               <FormGroup>
-                                <Label for="file">File</Label>
+                                <Label for='file'>File</Label>
                               </FormGroup>
                             </Col>
                           </Row>
@@ -1191,16 +1048,16 @@ class TaskGuru extends Component {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button size="sm" color="secondary" onClick={this.modalToggle}>
+              <Button size='sm' color='secondary' onClick={this.modalToggle}>
                 Cancel
-              </Button>{" "}
-              {taskGuruState.modal.type == "edit" && (
-                <Button size="sm" color="primary" onClick={() => this.update()}>
+              </Button>{' '}
+              {taskGuruState.modal.type == 'edit' && (
+                <Button size='sm' color='primary' onClick={() => this.update()}>
                   {taskGuruState.modal.buttonText}
                 </Button>
               )}
-              {taskGuruState.modal.type == "add" && (
-                <Button size="sm" color="primary" onClick={() => this.save()}>
+              {taskGuruState.modal.type == 'add' && (
+                <Button size='sm' color='primary' onClick={() => this.save()}>
                   {taskGuruState.modal.buttonText}
                 </Button>
               )}
@@ -1215,12 +1072,12 @@ class TaskGuru extends Component {
     let { taskGuruState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={taskGuruState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -1231,11 +1088,9 @@ class TaskGuru extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   taskGuruState: state.taskGuru,
-  accountState: state.account,
+  accountState: state.account
 });
 
-export default connect(mapStateToProps, { ...actions })(
-  withTranslate(TaskGuru)
-);
+export default connect(mapStateToProps, { ...actions })(withTranslate(TaskGuru));

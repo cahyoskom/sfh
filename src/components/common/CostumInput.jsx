@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Input } from "reactstrap";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Input } from 'reactstrap';
 
 export default class CustomInput extends Component {
   constructor(props) {
@@ -22,7 +22,7 @@ export default class CustomInput extends Component {
     isInline: PropTypes.bool,
     id: PropTypes.string,
     pattern: PropTypes.string,
-    autoComplete: PropTypes.string,
+    autoComplete: PropTypes.string
   };
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.value !== nextProps.value) {
@@ -38,13 +38,13 @@ export default class CustomInput extends Component {
 
   render() {
     let {
-      id = "",
+      id = '',
       value,
       disable = false,
-      name = "",
-      label = "",
-      placeholder = "",
-      help = "",
+      name = '',
+      label = '',
+      placeholder = '',
+      help = '',
       isInline = false,
       onFocus,
       onBlur,
@@ -56,23 +56,21 @@ export default class CustomInput extends Component {
       step,
       min,
       max,
-      size = "md",
-      classList = "col-md-12",
-      classInput = "form-control",
-      autoComplete = "",
-      colLabel = "col-md-2",
-      colInput = "col-md-4",
+      size = 'md',
+      classList = 'col-md-12',
+      classInput = 'form-control',
+      autoComplete = '',
+      colLabel = 'col-md-2',
+      colInput = 'col-md-4'
     } = this.props;
-    let parent = isInline ? "form-group row" : "form-group";
-    let labels = isInline
-      ? colLabel + " label-title-small bold default"
-      : "col-md-12  label-title-small bold default";
+    let parent = isInline ? 'form-group row' : 'form-group';
+    let labels = isInline ? colLabel + ' label-title-small bold default' : 'col-md-12  label-title-small bold default';
     let inputs = isInline ? colInput : classList;
 
     let self = this;
     return (
       <div className={parent}>
-        <label className={labels} htmlFor="text-input">
+        <label className={labels} htmlFor='text-input'>
           {label}
         </label>
         <div className={inputs}>
@@ -83,7 +81,7 @@ export default class CustomInput extends Component {
             name={name}
             value={value}
             disabled={disable}
-            onChange={(e) => {
+            onChange={e => {
               self.setValue(name, e);
             }}
             onFocus={onFocus}
@@ -100,14 +98,13 @@ export default class CustomInput extends Component {
             max={max}
             autoComplete={autoComplete}
           />
-          <span className="help-block">{help}</span>
+          <span className='help-block'>{help}</span>
         </div>
       </div>
     );
   }
 
   setValue(property, event) {
-    if (event.target.validity.valid)
-      this.props.onChange(property, event.target.value);
+    if (event.target.validity.valid) this.props.onChange(property, event.target.value);
   }
 }

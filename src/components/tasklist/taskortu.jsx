@@ -1,30 +1,19 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
-import {
-  Button,
-  CustomInput,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
-import ErrorBoundary from "../common/error-boundary";
-import Breadcrumb from "../common/breadcrumb";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { setDate } from "../../actions";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
+import { Button, CustomInput, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import ErrorBoundary from '../common/error-boundary';
+import Breadcrumb from '../common/breadcrumb';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { setDate } from '../../actions';
 // import Input from './../../../../components/collection/Input';
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import classnames from "classnames";
-import { getTaskOrtuList, setModal } from "../../actions";
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import classnames from 'classnames';
+import { getTaskOrtuList, setModal } from '../../actions';
 
 class TaskOrtu extends Component {
   constructor(props) {
@@ -32,8 +21,8 @@ class TaskOrtu extends Component {
     this.state = {
       columns: [
         {
-          name: "Status",
-          label: "Status",
+          name: 'Status',
+          label: 'Status',
           options: {
             filter: false,
             sort: false,
@@ -43,30 +32,30 @@ class TaskOrtu extends Component {
               if (value) {
                 return (
                   <div>
-                    <i className="fa fa-check-circle" title="Submitted" />
+                    <i className='fa fa-check-circle' title='Submitted' />
                   </div>
                 );
               } else {
                 return (
                   <div>
-                    <i className="fa fa-ban" title="Belum Submit" />
+                    <i className='fa fa-ban' title='Belum Submit' />
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "Deskripsi",
-          label: "Deskripsi",
+          name: 'Deskripsi',
+          label: 'Deskripsi',
           options: {
             filter: true,
-            sort: true,
-          },
+            sort: true
+          }
         },
         {
-          name: "Id",
-          label: "Action",
+          name: 'Id',
+          label: 'Action',
           options: {
             empty: true,
             filter: false,
@@ -81,20 +70,11 @@ class TaskOrtu extends Component {
                                   <Button title="View Detail" color="info" style={{color: "#fff"}}><i className="mdi mdi-eye"/></Button>&nbsp;
                                 </Link> */}
                     {/* <Button title="Delete Billing" color="danger" onClick={() => this.deleteBilling(tableMeta)}><i className="mdi mdi-close-outline"/></Button>&nbsp; */}
-                    <Button
-                      title="Download"
-                      color="info"
-                      style={{ color: "#fff" }}
-                    >
+                    <Button title='Download' color='info' style={{ color: '#fff' }}>
                       Download
                     </Button>
                     &nbsp;
-                    <Button
-                      title="Upload"
-                      color="primary"
-                      style={{ color: "#fff" }}
-                      onClick={() => this.uploadTask()}
-                    >
+                    <Button title='Upload' color='primary' style={{ color: '#fff' }} onClick={() => this.uploadTask()}>
                       Upload
                     </Button>
                   </div>
@@ -105,32 +85,23 @@ class TaskOrtu extends Component {
                     {/* <Link to={`/admin/billing/`+ value} style={{color: "#fff"}}>
                                   <Button title="View Detail" color="info" style={{color: "#fff"}}><i className="mdi mdi-eye"/></Button>&nbsp;
                                 </Link> */}
-                    <Button
-                      title="Download"
-                      color="info"
-                      style={{ color: "#fff" }}
-                    >
+                    <Button title='Download' color='info' style={{ color: '#fff' }}>
                       Download
                     </Button>
                     &nbsp;
-                    <Button
-                      title="Upload"
-                      color="primary"
-                      style={{ color: "#fff" }}
-                      onClick={() => this.uploadTask()}
-                    >
+                    <Button title='Upload' color='primary' style={{ color: '#fff' }} onClick={() => this.uploadTask()}>
                       Upload
                     </Button>
                   </div>
                 );
               }
-            },
-          },
-        },
+            }
+          }
+        }
       ],
       options: {
-        filterType: "checkbox",
-      },
+        filterType: 'checkbox'
+      }
     };
     this.getList = this.getList.bind(this);
     this.uploadTask = this.uploadTask.bind(this);
@@ -139,27 +110,27 @@ class TaskOrtu extends Component {
 
   componentDidMount() {
     let { getTaskOrtuList } = this.props;
-    console.log("sss", this.props);
+    console.log('sss', this.props);
     this.getList();
   }
 
   getList() {
     let { getTaskOrtuList } = this.props;
-    console.log("www", this.props);
+    console.log('www', this.props);
     getTaskOrtuList();
   }
 
   uploadTask() {
     let { setModal } = this.props;
-    setModal("type", "add");
-    setModal("title", "Upload Task");
-    setModal("buttonText", "Uploadd");
-    setModal("show", true);
+    setModal('type', 'add');
+    setModal('title', 'Upload Task');
+    setModal('buttonText', 'Uploadd');
+    setModal('show', true);
   }
 
   modalToggle() {
     const { taskOrtuState, setModal } = this.props;
-    setModal("show", !taskOrtuState.modal.show);
+    setModal('show', !taskOrtuState.modal.show);
   }
 
   onClickSignOut() {
@@ -169,11 +140,11 @@ class TaskOrtu extends Component {
 
   renderView() {
     let { taskOrtuState } = this.props;
-    console.log("block renderview", taskOrtuState);
+    console.log('block renderview', taskOrtuState);
 
     const options = {
-      responsive: "scroll",
-      filterType: "checkbox",
+      responsive: 'scroll',
+      filterType: 'checkbox'
       // selectableRows: false,
       // setRowProps: (row) => {
       //   return {
@@ -187,32 +158,28 @@ class TaskOrtu extends Component {
 
     return (
       <div>
-        <section className="login-page section-b-space">
-          <div className="container">
+        <section className='login-page section-b-space'>
+          <div className='container'>
             <h3>
-              <i className="mdi mdi-table-edit" />
+              <i className='mdi mdi-table-edit' />
               Task List Orang Tua
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="brand-logo">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='brand-logo'>
                     <Link to={`${process.env.PUBLIC_URL}/`}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/notebook.png`}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={`${process.env.PUBLIC_URL}/assets/images/icon/notebook.png`} className='img-fluid' alt='' />
                     </Link>
                   </div>
-                  <div className={"text-center"}>
+                  <div className={'text-center'}>
                     {/* <p>Senin, 25 mei 2020</p> */}
                     <p>{taskOrtuState.stardet.toString()}</p>
                     {/* <p id="tanggal"></p> */}
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
+                  <form className='theme-form'>
+                    <div className='form-group'>
                       <label>Nama OTS : Gatot</label>
                       <br />
                       <label>Nama Siswa : Budi Wicaksono</label>
@@ -222,12 +189,12 @@ class TaskOrtu extends Component {
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
+              <div className='col-lg-9 right-login'>
                 {/* <h3>New Customer</h3> */}
-                <div className="theme-card authentication-right">
+                <div className='theme-card authentication-right'>
                   <MuiThemeProvider>
                     <MUIDataTable
-                      title={""}
+                      title={''}
                       // data={this.state.data}
                       data={taskOrtuState.data}
                       columns={this.state.columns}
@@ -237,11 +204,11 @@ class TaskOrtu extends Component {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -249,20 +216,16 @@ class TaskOrtu extends Component {
                   Logout
                 </a>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="row">
-                  <div className="col-lg-3">
-                    <div className={"text-left"}>
-                      <CustomInput type="checkbox" label="Select All" inline />
+              <div className='col-lg-9 right-login'>
+                <div className='row'>
+                  <div className='col-lg-3'>
+                    <div className={'text-left'}>
+                      <CustomInput type='checkbox' label='Select All' inline />
                     </div>
                   </div>
-                  <div className="col-lg-9 right-login">
-                    <div className={"text-right"}>
-                      <a
-                        href="#"
-                        className="btn btn-solid"
-                        style={{ padding: "5px", marginTop: "0px" }}
-                      >
+                  <div className='col-lg-9 right-login'>
+                    <div className={'text-right'}>
+                      <a href='#' className='btn btn-solid' style={{ padding: '5px', marginTop: '0px' }}>
                         Submit Selected Task
                       </a>
                     </div>
@@ -272,29 +235,22 @@ class TaskOrtu extends Component {
             </div>
           </div>
 
-          <Modal
-            isOpen={taskOrtuState.modal.show}
-            fade={false}
-            backdrop={"static"}
-            toggle={this.modalToggle}
-          >
-            <ModalHeader toggle={this.modalToggle}>
-              {taskOrtuState.modal.title}
-            </ModalHeader>
+          <Modal isOpen={taskOrtuState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+            <ModalHeader toggle={this.modalToggle}>{taskOrtuState.modal.title}</ModalHeader>
             <ModalBody>
               {/* <AsyncPage page={"master-area-form"} fallback={<FormLoader/>} validator={this.validator} ref={this.formArea} /> */}
             </ModalBody>
             <ModalFooter>
-              <Button color="secondary" onClick={this.modalToggle}>
+              <Button color='secondary' onClick={this.modalToggle}>
                 Cancel
-              </Button>{" "}
-              {taskOrtuState.modal.type == "add" && (
-                <Button color="primary" onClick={() => this.save()}>
+              </Button>{' '}
+              {taskOrtuState.modal.type == 'add' && (
+                <Button color='primary' onClick={() => this.save()}>
                   {taskOrtuState.modal.buttonText}
                 </Button>
               )}
-              {taskOrtuState.modal.type == "edit" && (
-                <Button color="primary" onClick={() => this.update()}>
+              {taskOrtuState.modal.type == 'edit' && (
+                <Button color='primary' onClick={() => this.update()}>
                   {taskOrtuState.modal.buttonText}
                 </Button>
               )}
@@ -306,16 +262,16 @@ class TaskOrtu extends Component {
   }
 
   render() {
-    console.log("block render");
+    console.log('block render');
     let { taskOrtuState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={taskOrtuState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -326,10 +282,8 @@ class TaskOrtu extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  taskOrtuState: state.taskOrtu,
+const mapStateToProps = state => ({
+  taskOrtuState: state.taskOrtu
 });
 
-export default connect(mapStateToProps, { getTaskOrtuList, setModal })(
-  withTranslate(TaskOrtu)
-);
+export default connect(mapStateToProps, { getTaskOrtuList, setModal })(withTranslate(TaskOrtu));

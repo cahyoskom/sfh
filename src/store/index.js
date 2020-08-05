@@ -47,21 +47,21 @@
 // });
 
 // export default store;
-import { createStore, applyMiddleware, compose } from "redux";
+import { createStore, applyMiddleware, compose } from 'redux';
 
 // middlewares
-import thunkMiddleware from "redux-thunk";
-import logger from "redux-logger";
-import createSagaMiddleware from "redux-saga";
+import thunkMiddleware from 'redux-thunk';
+import logger from 'redux-logger';
+import createSagaMiddleware from 'redux-saga';
 
 // Import custom components
-import rootReducer from "../reducers";
-import rootSaga from "../sagas";
+import rootReducer from '../reducers';
+import rootSaga from '../sagas';
 
 function saveToLocalStorage(state) {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem("state", serializedState);
+    localStorage.setItem('state', serializedState);
   } catch (e) {
     console.log(e);
   }
@@ -83,7 +83,7 @@ const persistedState = loadFromLocalStorage();
 const sagaMiddleware = createSagaMiddleware();
 const middlewares = [thunkMiddleware, sagaMiddleware];
 const composeEnhancers =
-  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
         // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
       })
@@ -92,11 +92,7 @@ const composeEnhancers =
 /**
  * Create a Redux store that holds the app state.
  */
-const store = createStore(
-  rootReducer,
-  persistedState,
-  composeEnhancers(applyMiddleware(...middlewares))
-);
+const store = createStore(rootReducer, persistedState, composeEnhancers(applyMiddleware(...middlewares)));
 sagaMiddleware.run(rootSaga);
 
 const unsubscribe = store.subscribe(() => {

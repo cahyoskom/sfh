@@ -28,17 +28,7 @@ import {
   googleLogin,
   closeAlert
 } from '../../actions';
-import {
-  Form,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Col,
-  Row,
-  Spinner,
-  Input
-} from 'reactstrap';
+import { Form, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Spinner, Input } from 'reactstrap';
 import Select from 'react-select';
 import Recaptcha from 'react-recaptcha';
 import { Grid } from '@material-ui/core';
@@ -64,10 +54,7 @@ class SignIn extends Component {
     if (localStorage.getItem('isChecked')) {
       this.props.onChangeStateLogin('email', localStorage.getItem('email'));
       this.props.onChangeStateLogin('isChecked', true);
-      this.props.onChangeStateLogin(
-        'password',
-        localStorage.getItem('password')
-      );
+      this.props.onChangeStateLogin('password', localStorage.getItem('password'));
     }
 
     document.getElementById('footer').style.display = 'none';
@@ -128,7 +115,7 @@ class SignIn extends Component {
     });
   };
 
-  googleResponse = (response) => {
+  googleResponse = response => {
     console.log(response);
     this.props.googleLogin(response);
   };
@@ -157,21 +144,16 @@ class SignIn extends Component {
               <div id='loader' />
             </div>
           </span>
-        }>
+        }
+      >
         <div>
           <HeaderOne />
           {/*Login section*/}
           <section className='login-page section-b-space'>
             <Container>
-              <Grid
-                container
-                direction='row'
-                justify='center'
-                alignItems='center'>
+              <Grid container direction='row' justify='center' alignItems='center'>
                 <Grid item xs={12} lg={7}>
-                  <img
-                    src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`}
-                    alt='login-page-img'></img>
+                  <img src={`${process.env.PUBLIC_URL}/assets/images/login-img.png`} alt='login-page-img'></img>
                 </Grid>
                 <Grid item sm={12} lg={3}>
                   <div>
@@ -184,14 +166,11 @@ class SignIn extends Component {
                       <Alert
                         severity='error'
                         action={
-                          <IconButton
-                            aria-label='close'
-                            color='inherit'
-                            size='small'
-                            onClick={closeAlert}>
+                          <IconButton aria-label='close' color='inherit' size='small' onClick={closeAlert}>
                             <CloseIcon fontSize='inherit' />
                           </IconButton>
-                        }>
+                        }
+                      >
                         {accountState.alertMsg}
                       </Alert>
                     </Collapse>
@@ -200,7 +179,8 @@ class SignIn extends Component {
                     <ValidatorForm
                       onSubmit={() => {
                         this.onClickLogin();
-                      }}>
+                      }}
+                    >
                       <div className='form-group'>
                         <TextValidator
                           id='email'
@@ -212,17 +192,12 @@ class SignIn extends Component {
                           margin='dense'
                           fullWidth
                           variant='outlined'
-                          onChange={(e) =>
-                            onChangeStateLogin(e.target.id, e.target.value)
-                          }
-                          onKeyPress={(e) => this.onEnterKeyPress(e)}
+                          onChange={e => onChangeStateLogin(e.target.id, e.target.value)}
+                          onKeyPress={e => this.onEnterKeyPress(e)}
                           value={accountState.login.email}
                           autoComplete={'email'}
                           validators={['required', 'isEmail']}
-                          errorMessages={[
-                            'masukkan email',
-                            'email tidak valid'
-                          ]}
+                          errorMessages={['masukkan email', 'email tidak valid']}
                         />
                       </div>
                       <div className='form-group'>
@@ -236,31 +211,20 @@ class SignIn extends Component {
                           margin='dense'
                           fullWidth
                           variant='outlined'
-                          onChange={(e) =>
-                            onChangeStateLogin(e.target.id, e.target.value)
-                          }
-                          onKeyPress={(e) => this.onEnterKeyPress(e)}
+                          onChange={e => onChangeStateLogin(e.target.id, e.target.value)}
+                          onKeyPress={e => this.onEnterKeyPress(e)}
                           value={accountState.login.password}
                           validators={['required']}
                           errorMessages={['masukkan kata sandi']}
                         />
                       </div>
-                      <Grid
-                        container
-                        direction='row'
-                        alignItems='center'
-                        justify='space-between'>
+                      <Grid container direction='row' alignItems='center' justify='space-between'>
                         <Grid item>
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={accountState.login.isChecked}
-                                onChange={(e) =>
-                                  onChangeStateLogin(
-                                    e.target.id,
-                                    e.target.checked
-                                  )
-                                }
+                                onChange={e => onChangeStateLogin(e.target.id, e.target.checked)}
                                 id='isChecked'
                                 name='checked'
                                 color='primary'
@@ -270,9 +234,7 @@ class SignIn extends Component {
                           />
                         </Grid>
                         <Grid item>
-                          <a
-                            onClick={this.openModalNewPassword}
-                            color='primary'>
+                          <a onClick={this.openModalNewPassword} color='primary'>
                             Lupa kata sandi?
                           </a>
                           <Modal isOpen={this.state.newPasswordModal}>
@@ -282,10 +244,8 @@ class SignIn extends Component {
                             {!accountState.newPassword.success && (
                               <ModalBody>
                                 <label>
-                                  Silahkan masukkan alamat email yang digunakan
-                                  untuk registrasi akun anda. Kami akan
-                                  mengirimkan email yang berisi link untuk
-                                  melakukan reset password ke alamat ini.
+                                  Silahkan masukkan alamat email yang digunakan untuk registrasi akun anda. Kami akan
+                                  mengirimkan email yang berisi link untuk melakukan reset password ke alamat ini.
                                 </label>
                                 <label>Email: </label>
                                 <Input
@@ -293,15 +253,9 @@ class SignIn extends Component {
                                   id='email'
                                   placeholder='Contoh: janedoe@mail.com'
                                   value={accountState.newPassword.email}
-                                  onChange={(e) =>
-                                    onChangeStateNewPassword(
-                                      'email',
-                                      e.target.value
-                                    )
-                                  }
+                                  onChange={e => onChangeStateNewPassword('email', e.target.value)}
                                 />
-                                <Collapse
-                                  in={accountState.newPassword.openAlert}>
+                                <Collapse in={accountState.newPassword.openAlert}>
                                   <Alert
                                     severity='error'
                                     action={
@@ -309,15 +263,12 @@ class SignIn extends Component {
                                         aria-label='close'
                                         color='inherit'
                                         size='small'
-                                        onClick={() =>
-                                          onChangeStateNewPassword(
-                                            'openAlert',
-                                            false
-                                          )
-                                        }>
+                                        onClick={() => onChangeStateNewPassword('openAlert', false)}
+                                      >
                                         <CloseIcon fontSize='inherit' />
                                       </IconButton>
-                                    }>
+                                    }
+                                  >
                                     {accountState.newPassword.errormsg}
                                   </Alert>
                                 </Collapse>
@@ -335,11 +286,7 @@ class SignIn extends Component {
                             )}
                             {!accountState.newPassword.success && (
                               <ModalFooter>
-                                <Button
-                                  color='primary'
-                                  variant='contained'
-                                  disableElevation
-                                  onClick={newPassword}>
+                                <Button color='primary' variant='contained' disableElevation onClick={newPassword}>
                                   Kirim email
                                 </Button>
                               </ModalFooter>
@@ -367,33 +314,17 @@ class SignIn extends Component {
                                             "required"
                                         )}
                                         </div> */}
-                      <Grid
-                        container
-                        direction='column'
-                        alignItems='center'
-                        justify='space-around'
-                        spacing={2}>
+                      <Grid container direction='column' alignItems='center' justify='space-around' spacing={2}>
                         {!accountState.showSpinner && (
-                          <Button
-                            variant='contained'
-                            disableElevation
-                            color='primary'
-                            type='submit'>
+                          <Button variant='contained' disableElevation color='primary' type='submit'>
                             Masuk
                           </Button>
                         )}
-                        <Grid item>
-                          {accountState.showSpinner && <CircularProgress />}
-                        </Grid>
+                        <Grid item>{accountState.showSpinner && <CircularProgress />}</Grid>
                       </Grid>
                     </ValidatorForm>
                   </form>
-                  <Grid
-                    container
-                    direction='column'
-                    alignItems='center'
-                    justify='space-around'
-                    spacing={2}>
+                  <Grid container direction='column' alignItems='center' justify='space-around' spacing={2}>
                     <Grid item>atau masuk dengan</Grid>
                     <Grid item>
                       <div className='text-center'>
@@ -462,7 +393,7 @@ class SignIn extends Component {
 }
 
 // export default SignIn
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   accountState: state.account
 });
 

@@ -1,4 +1,4 @@
-import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
+import { all, takeEvery, put, fork, select, call } from 'redux-saga/effects';
 import {
   GET_SUBJECT_LIST,
   GET_SUBJECT_LIST_SUCCESS,
@@ -33,16 +33,16 @@ import {
   ADMIN_CREATE_STUDENT,
   ADMIN_CREATE_CLASS,
   ADMIN_CREATE_SUBJECT,
-  ADMIN_SIGN_USER_ROLE,
-} from "../constants/ActionTypes";
-import { fail, success } from "../components/common/toast-message";
-import * as services from "../services";
-import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
-import { Header, HeaderAuth } from "../services/header";
-import moment from "moment";
+  ADMIN_SIGN_USER_ROLE
+} from '../constants/ActionTypes';
+import { fail, success } from '../components/common/toast-message';
+import * as services from '../services';
+import { API_BASE_URL_DEV, API_PATH } from '../constants/api';
+import { Header, HeaderAuth } from '../services/header';
+import moment from 'moment';
 
-const adminState = (state) => state.admin;
-const getTaskGuruState = (state) => state.taskGuru;
+const adminState = state => state.admin;
+const getTaskGuruState = state => state.taskGuru;
 
 export function* adminGetGroupList() {
   try {
@@ -50,14 +50,10 @@ export function* adminGetGroupList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/group",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/group', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -76,21 +72,21 @@ export function* adminGetGroupList() {
       // console.log('ressss', result);
       yield put({
         type: ADMIN_GET_GROUP_LIST_SUCCESS,
-        field: "dataGroup",
-        value: result,
+        field: 'dataGroup',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -101,14 +97,10 @@ export function* adminGetUserList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/user",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/user', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -125,21 +117,21 @@ export function* adminGetUserList() {
       // console.log('ressss', result);
       yield put({
         type: ADMIN_GET_USER_LIST_SUCCESS,
-        field: "dataUser",
-        value: result,
+        field: 'dataUser',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -151,16 +143,12 @@ export function* adminGetUserById() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let id = admin.user.formRole.user_id;
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/user/" + id,
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/user/' + id, HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -169,24 +157,24 @@ export function* adminGetUserById() {
       obj.user_id = datas.data.user_id;
       obj.user_name = datas.data.user_name;
       obj.email = datas.data.email;
-      console.log("ressss", obj);
+      console.log('ressss', obj);
       yield put({
         type: ADMIN_GET_USER_LIST_SUCCESS,
-        field: "dataUserById",
-        value: obj,
+        field: 'dataUserById',
+        value: obj
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -195,14 +183,10 @@ export function* adminGetSubjectList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/subject",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/subject', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -216,21 +200,21 @@ export function* adminGetSubjectList() {
       }
       yield put({
         type: ADMIN_GET_SUBJECT_LIST_SUCCESS,
-        field: "dataSubject",
-        value: result,
+        field: 'dataSubject',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -239,14 +223,10 @@ export function* adminGetClassList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/class",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/class', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -262,21 +242,21 @@ export function* adminGetClassList() {
       }
       yield put({
         type: ADMIN_GET_CLASS_LIST_SUCCESS,
-        field: "dataClass",
-        value: result,
+        field: 'dataClass',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -285,14 +265,10 @@ export function* adminGetStudentList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/student",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/student', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -310,21 +286,21 @@ export function* adminGetStudentList() {
       }
       yield put({
         type: ADMIN_GET_STUDENT_LIST_SUCCESS,
-        field: "dataStudent",
-        value: result,
+        field: 'dataStudent',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -333,14 +309,10 @@ export function* adminGetRoleList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/role",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/role', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -359,21 +331,21 @@ export function* adminGetRoleList() {
       }
       yield put({
         type: ADMIN_GET_ROLE_LIST_SUCCESS,
-        field: "dataRole",
-        value: result,
+        field: 'dataRole',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -383,16 +355,12 @@ export function* adminGetRoleByUserId() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     const admin = yield select(adminState);
     let user_id = admin.user.formRole.user_id;
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/role/user/" + user_id,
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/role/user/' + user_id, HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -415,22 +383,22 @@ export function* adminGetRoleByUserId() {
       }
       yield put({
         type: ADMIN_GET_ROLE_LIST_SUCCESS,
-        field: "dataRoleById",
-        value: result,
+        field: 'dataRoleById',
+        value: result
       });
-      console.log("ccc", result);
+      console.log('ccc', result);
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -442,38 +410,33 @@ export function* adminCreateUser() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       user_name: form.user_name,
       email: form.email,
-      password: form.password,
+      password: form.password
     };
     // console.log('par',params);
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/user",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/user', params, HeaderAuth());
     if (_response.status == 200) {
-      success("New User Added Successfully");
+      success('New User Added Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* adminGetUserList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -486,38 +449,33 @@ export function* adminCreateClass() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       class_level: form.class_level,
       class_parallel: form.class_parallel,
-      class_name: form.class_name,
+      class_name: form.class_name
     };
     // console.log('par',params);
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/class",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/class', params, HeaderAuth());
     if (_response.status == 200) {
-      success("New Class Added Successfully");
+      success('New Class Added Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* adminGetClassList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -530,36 +488,31 @@ export function* adminCreateSubject() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
-      subject_name: form.subject_name,
+      subject_name: form.subject_name
     };
 
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/subject",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/subject', params, HeaderAuth());
     if (_response.status == 200) {
-      success("New Subject Added Successfully");
+      success('New Subject Added Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* adminGetSubjectList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -572,39 +525,34 @@ export function* adminCreateStudent() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       student_name: form.student_name,
       student_no: form.student_no,
       sex: form.sex,
-      class_id: form.class_id,
+      class_id: form.class_id
     };
     // console.log('std', params)
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/student",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/student', params, HeaderAuth());
     if (_response.status == 200) {
-      success("New Student Added Successfully");
+      success('New Student Added Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* adminGetStudentList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -617,28 +565,23 @@ export function* adminSignUserRole() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       user_id: form.user_id,
       group_id: form.group_id,
-      class_id: form.class_id == "" ? null : form.class_id,
-      subject_id: form.subject_id == "" ? null : form.subject_id,
-      student_id: form.student_id == "" ? null : form.student_id,
+      class_id: form.class_id == '' ? null : form.class_id,
+      subject_id: form.subject_id == '' ? null : form.subject_id,
+      student_id: form.student_id == '' ? null : form.student_id
     };
-    console.log("std", params);
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/role",
-      params,
-      HeaderAuth()
-    );
+    console.log('std', params);
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/role', params, HeaderAuth());
     if (_response.status == 200) {
-      success("Role Assigned Successfully");
+      success('Role Assigned Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* adminGetUserList();
       yield* adminGetUserById();
@@ -646,12 +589,12 @@ export function* adminSignUserRole() {
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -662,14 +605,10 @@ export function* AdminGetDataSourceClass() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/class",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/class', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -682,21 +621,21 @@ export function* AdminGetDataSourceClass() {
       }
       yield put({
         type: ADMIN_GET_DATASOURCE_CLASS_SUCCESS,
-        field: "dataSourceClass",
-        value: result,
+        field: 'dataSourceClass',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -705,14 +644,10 @@ export function* AdminGetDataSourceGroup() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/group",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/group', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -725,21 +660,21 @@ export function* AdminGetDataSourceGroup() {
       }
       yield put({
         type: ADMIN_GET_DATASOURCE_GROUP_SUCCESS,
-        field: "dataSourceGroup",
-        value: result,
+        field: 'dataSourceGroup',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -748,14 +683,10 @@ export function* AdminGetDataSourceSubject() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/subject",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/subject', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -768,21 +699,21 @@ export function* AdminGetDataSourceSubject() {
       }
       yield put({
         type: ADMIN_GET_DATASOURCE_SUBJECT_SUCCESS,
-        field: "dataSourceSubject",
-        value: result,
+        field: 'dataSourceSubject',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -791,14 +722,10 @@ export function* AdminGetDataSourceStudent() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/student",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/student', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -811,21 +738,21 @@ export function* AdminGetDataSourceStudent() {
       }
       yield put({
         type: ADMIN_GET_DATASOURCE_STUDENT_SUCCESS,
-        field: "dataSourceStudent",
-        value: result,
+        field: 'dataSourceStudent',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -848,6 +775,6 @@ export default function* rootSaga() {
     takeEvery(ADMIN_CREATE_CLASS, adminCreateClass),
     takeEvery(ADMIN_CREATE_SUBJECT, adminCreateSubject),
     takeEvery(ADMIN_CREATE_STUDENT, adminCreateStudent),
-    takeEvery(ADMIN_SIGN_USER_ROLE, adminSignUserRole),
+    takeEvery(ADMIN_SIGN_USER_ROLE, adminSignUserRole)
   ]);
 }

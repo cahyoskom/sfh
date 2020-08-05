@@ -1,41 +1,25 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
-import {
-  Button,
-  FormGroup,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Col,
-  Row,
-  Label,
-  Input,
-  InputGroup,
-} from "reactstrap";
-import CustomFooterGuru from "../common/customFooterGuru";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
+import { Button, FormGroup, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Label, Input, InputGroup } from 'reactstrap';
+import CustomFooterGuru from '../common/customFooterGuru';
 // import Select from "../common/Select";
-import "react-widgets/dist/css/react-widgets.css";
-import DateTimePicker from "../common/DatePicker";
+import 'react-widgets/dist/css/react-widgets.css';
+import DateTimePicker from '../common/DatePicker';
 // import Input from "../common/Input";
-import "react-datepicker/dist/react-datepicker.css";
-import "./tasksiswa.css";
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import * as actions from "../../actions";
-import moment from "moment";
-import * as messageBox from "../common/message-box";
-import SimpleReactValidator from "simple-react-validator";
-import { Formik, Form, Field } from "formik";
-import Select from "react-select";
-import Breadcrumb from "../common/breadcrumb";
+import 'react-datepicker/dist/react-datepicker.css';
+import './tasksiswa.css';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import * as actions from '../../actions';
+import moment from 'moment';
+import * as messageBox from '../common/message-box';
+import SimpleReactValidator from 'simple-react-validator';
+import { Formik, Form, Field } from 'formik';
+import Select from 'react-select';
+import Breadcrumb from '../common/breadcrumb';
 
 class TaskKepsekPerId extends Component {
   constructor(props) {
@@ -44,23 +28,23 @@ class TaskKepsekPerId extends Component {
     this.state = {
       columns: [
         {
-          name: "status",
-          label: "status",
+          name: 'status',
+          label: 'status',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "student_no",
-          label: "No",
+          name: 'student_no',
+          label: 'No'
         },
         {
-          name: "student_name",
-          label: "Nama Siswa / Email",
+          name: 'student_name',
+          label: 'Nama Siswa / Email'
         },
         {
-          name: "task_progress",
-          label: "Task Progress",
+          name: 'task_progress',
+          label: 'Task Progress',
           options: {
             filter: false,
             sort: false,
@@ -68,34 +52,30 @@ class TaskKepsekPerId extends Component {
               if (tableMeta.rowData[0] == 4) {
                 return (
                   <div>
-                    <p style={{ color: "yellow" }}>
-                      <span style={{ backgroundColor: "green" }}>
-                        Sudah Submit
-                      </span>
+                    <p style={{ color: 'yellow' }}>
+                      <span style={{ backgroundColor: 'green' }}>Sudah Submit</span>
                     </p>
                   </div>
                 );
               } else {
                 return (
                   <div>
-                    <p style={{ color: "red" }}>
-                      <span style={{ backgroundColor: "yellow" }}>
-                        Belum Submit
-                      </span>
+                    <p style={{ color: 'red' }}>
+                      <span style={{ backgroundColor: 'yellow' }}>Belum Submit</span>
                     </p>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "submitted_date",
-          label: "Last Submit",
+          name: 'submitted_date',
+          label: 'Last Submit'
         },
         {
-          name: "task_collection_id",
-          label: "Upload Folder",
+          name: 'task_collection_id',
+          label: 'Upload Folder',
           options: {
             filter: false,
             sort: false,
@@ -105,11 +85,7 @@ class TaskKepsekPerId extends Component {
               if (tableMeta.rowData[0] == 4) {
                 return (
                   <div>
-                    <Button
-                      color="primary"
-                      size="sm"
-                      onClick={() => this.openModal(value)}
-                    >
+                    <Button color='primary' size='sm' onClick={() => this.openModal(value)}>
                       OPEN
                     </Button>
                   </div>
@@ -117,17 +93,17 @@ class TaskKepsekPerId extends Component {
               } else {
                 return (
                   <div>
-                    <Button disabled color="primary" size="sm">
+                    <Button disabled color='primary' size='sm'>
                       OPEN
                     </Button>
                   </div>
                 );
               }
-            },
-          },
-        },
+            }
+          }
+        }
       ],
-      isDetail: false,
+      isDetail: false
     };
     this.getList = this.getList.bind(this);
     this.onClickSignOut = this.onClickSignOut.bind(this);
@@ -148,7 +124,7 @@ class TaskKepsekPerId extends Component {
 
   modalToggle() {
     const { taskKepsekState, setModal } = this.props;
-    setModal("show", !taskKepsekState.modal.show);
+    setModal('show', !taskKepsekState.modal.show);
   }
 
   getList() {
@@ -157,70 +133,41 @@ class TaskKepsekPerId extends Component {
   }
 
   openModal(value) {
-    let {
-      kepsekGetUploadedCollectionList,
-      setStateModalFormUploadedCollection,
-      setModal,
-      taskKepsekState,
-    } = this.props;
-    console.log("openmodal", value);
-    setStateModalFormUploadedCollection("task_collection_id", value);
+    let { kepsekGetUploadedCollectionList, setStateModalFormUploadedCollection, setModal, taskKepsekState } = this.props;
+    console.log('openmodal', value);
+    setStateModalFormUploadedCollection('task_collection_id', value);
     kepsekGetUploadedCollectionList();
-    console.log("fgfg", taskKepsekState);
-    setModal("type", "download");
-    setModal("title", "Uploaded Files");
-    setModal("buttonText", "Download All");
-    setModal("show", true);
-    this.setState((prevState) => ({
+    console.log('fgfg', taskKepsekState);
+    setModal('type', 'download');
+    setModal('title', 'Uploaded Files');
+    setModal('buttonText', 'Download All');
+    setModal('show', true);
+    this.setState(prevState => ({
       ...prevState,
-      isDetail: true,
+      isDetail: true
     }));
   }
 
   downloadFiles() {
-    const {
-      taskKepsekState,
-      setStateModalFormUploadedCollection,
-      kepsekDownloadCollection,
-    } = this.props;
-    if (
-      taskKepsekState.dataUploadedCollection.files != null ||
-      taskKepsekState.dataUploadedCollection.files != undefined
-    ) {
-      for (
-        let i = 0;
-        i < taskKepsekState.dataUploadedCollection.files.length;
-        i++
-      ) {
+    const { taskKepsekState, setStateModalFormUploadedCollection, kepsekDownloadCollection } = this.props;
+    if (taskKepsekState.dataUploadedCollection.files != null || taskKepsekState.dataUploadedCollection.files != undefined) {
+      for (let i = 0; i < taskKepsekState.dataUploadedCollection.files.length; i++) {
         setStateModalFormUploadedCollection(
-          "task_collection_file_id",
-          taskKepsekState.dataUploadedCollection.files[i]
-            .task_collection_file_id
+          'task_collection_file_id',
+          taskKepsekState.dataUploadedCollection.files[i].task_collection_file_id
         );
-        setStateModalFormUploadedCollection(
-          "filename",
-          taskKepsekState.dataUploadedCollection.files[i].filename
-        );
-        setStateModalFormUploadedCollection(
-          "mime_type",
-          taskKepsekState.dataUploadedCollection.files[i].mime_type
-        );
+        setStateModalFormUploadedCollection('filename', taskKepsekState.dataUploadedCollection.files[i].filename);
+        setStateModalFormUploadedCollection('mime_type', taskKepsekState.dataUploadedCollection.files[i].mime_type);
         kepsekDownloadCollection();
       }
     }
   }
 
   downloadFile(task_collection_file_id, filename, mime_type) {
-    const {
-      guruDownloadCollection,
-      setStateModalFormUploadedCollection,
-    } = this.props;
-    setStateModalFormUploadedCollection(
-      "task_collection_file_id",
-      task_collection_file_id
-    );
-    setStateModalFormUploadedCollection("filename", filename);
-    setStateModalFormUploadedCollection("mime_type", mime_type);
+    const { guruDownloadCollection, setStateModalFormUploadedCollection } = this.props;
+    setStateModalFormUploadedCollection('task_collection_file_id', task_collection_file_id);
+    setStateModalFormUploadedCollection('filename', filename);
+    setStateModalFormUploadedCollection('mime_type', mime_type);
     guruDownloadCollection();
   }
 
@@ -231,54 +178,41 @@ class TaskKepsekPerId extends Component {
 
   handleMultiChange(option) {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("class_id", option);
+    setStateTaskListFilter('class_id', option);
   }
 
   renderView() {
-    let {
-      taskKepsekState,
-      setStateTaskListFilter,
-      setStateModalForm,
-      kepsekGetTaskList,
-    } = this.props;
+    let { taskKepsekState, setStateTaskListFilter, setStateModalForm, kepsekGetTaskList } = this.props;
 
     const options = {
-      responsive: "scroll",
+      responsive: 'scroll',
       filter: false,
       search: false,
       download: false,
       print: false,
       viewColumns: false,
-      selectableRows: false,
+      selectableRows: false
     };
 
     //menampilkan file/s untuk di download(modal download)
     let listOfFile = [];
-    if (
-      taskKepsekState.dataUploadedCollection.files != null ||
-      taskKepsekState.dataUploadedCollection.files != undefined
-    ) {
-      for (
-        let i = 0;
-        i < taskKepsekState.dataUploadedCollection.files.length;
-        i++
-      ) {
+    if (taskKepsekState.dataUploadedCollection.files != null || taskKepsekState.dataUploadedCollection.files != undefined) {
+      for (let i = 0; i < taskKepsekState.dataUploadedCollection.files.length; i++) {
         listOfFile.push(
-          <InputGroup style={{ marginBottom: "5px" }}>
+          <InputGroup style={{ marginBottom: '5px' }}>
             <Input
-              type="text"
-              className="form-control"
+              type='text'
+              className='form-control'
               value={taskKepsekState.dataUploadedCollection.files[i].filename}
               readOnly
             />
             <Button
               inline={true}
-              color="primary"
-              size="xs"
+              color='primary'
+              size='xs'
               onClick={() => {
                 this.downloadFile(
-                  taskKepsekState.dataUploadedCollection.files[i]
-                    .task_collection_file_id,
+                  taskKepsekState.dataUploadedCollection.files[i].task_collection_file_id,
                   taskKepsekState.dataUploadedCollection.files[i].filename,
                   taskKepsekState.dataUploadedCollection.files[i].mime_type
                 );
@@ -293,40 +227,28 @@ class TaskKepsekPerId extends Component {
 
     return (
       <div>
-        <Breadcrumb
-          title={<Link to={`${process.env.PUBLIC_URL}/taskkepsek/`}>Back</Link>}
-        />
-        <section className="login-page section-b-space">
-          <div className="container">
-            <h3 className="text-left">
-              <i className="mdi mdi-table-edit" />
+        <Breadcrumb title={<Link to={`${process.env.PUBLIC_URL}/taskkepsek/`}>Back</Link>} />
+        <section className='login-page section-b-space'>
+          <div className='container'>
+            <h3 className='text-left'>
+              <i className='mdi mdi-table-edit' />
               Kepala Sekolah
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="collection-block">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='collection-block'>
                     <Link to={`${process.env.PUBLIC_URL}/`}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`} className='img-fluid' alt='' />
                     </Link>
                   </div>
-                  <div className={"text-center"}>
-                    <p>
-                      {moment(taskKepsekState.now)
-                        .format("dddd YYYY-MM-DD")
-                        .toString()}
-                    </p>
+                  <div className={'text-center'}>
+                    <p>{moment(taskKepsekState.now).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
-                      <label>
-                        Nama : {localStorage.name.replace(/"/g, "")}
-                      </label>
+                  <form className='theme-form'>
+                    <div className='form-group'>
+                      <label>Nama : {localStorage.name.replace(/"/g, '')}</label>
                       <br />
                       <label>Kelas : SD 5</label>
                       <br />
@@ -335,21 +257,20 @@ class TaskKepsekPerId extends Component {
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="theme-card authentication-right">
-                  <div className="row">
-                    <div className="col-lg-4">
-                      <Label for="">Kelas</Label>
+              <div className='col-lg-9 right-login'>
+                <div className='theme-card authentication-right'>
+                  <div className='row'>
+                    <div className='col-lg-4'>
+                      <Label for=''>Kelas</Label>
                       <Select
                         // className={"col-md-3"}
-                        style={{ position: "absolute" }}
-                        id="class"
-                        name="class"
-                        placeholder="Pilih Kelas"
+                        style={{ position: 'absolute' }}
+                        id='class'
+                        name='class'
+                        placeholder='Pilih Kelas'
                         // defaultValue={taskKepsekState.filter.class_id}
                         defaultValue={taskKepsekState.dataSourceClass.filter(
-                          (option) =>
-                            option.value === taskKepsekState.filter.class_id
+                          option => option.value === taskKepsekState.filter.class_id
                         )}
                         options={taskKepsekState.dataSourceClass}
                         closeMenuOnSelect={false}
@@ -361,46 +282,46 @@ class TaskKepsekPerId extends Component {
                         isMulti
                       />
                       <br />
-                      <Label for="">Mata Pelajaran</Label>
+                      <Label for=''>Mata Pelajaran</Label>
                       <Select
                         // className={"col-md-3"}
-                        style={{ position: "absolute" }}
-                        id="subject"
-                        name="subject"
+                        style={{ position: 'absolute' }}
+                        id='subject'
+                        name='subject'
                         defaultValue={taskKepsekState.filter.subject_id}
                         options={taskKepsekState.dataSourceSubject}
                         onChange={
-                          (e) => setStateTaskListFilter("subject_id", e.value)
+                          e => setStateTaskListFilter('subject_id', e.value)
                           // kepsekGetTaskList
                         }
                         multi
                       />
                     </div>
-                    <div className="col-md-4">
-                      <Label for="subject">mulai</Label>
+                    <div className='col-md-4'>
+                      <Label for='subject'>mulai</Label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("start_date", a);
+                          setStateTaskListFilter('start_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskKepsekState.filter.start_date}
                       />
                       <label>sampai</label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("end_date", a);
+                          setStateTaskListFilter('end_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskKepsekState.filter.end_date}
                       />
                     </div>
-                    <div className="col-md-2">
+                    <div className='col-md-2'>
                       <Button onClick={kepsekGetTaskList}>Filter</Button>
                     </div>
                   </div>
@@ -417,11 +338,11 @@ class TaskKepsekPerId extends Component {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -432,22 +353,15 @@ class TaskKepsekPerId extends Component {
             </div>
           </div>
 
-          <Modal
-            isOpen={taskKepsekState.modal.show}
-            fade={false}
-            backdrop={"static"}
-            toggle={this.modalToggle}
-          >
-            <ModalHeader toggle={this.modalToggle}>
-              {taskKepsekState.modal.title}
-            </ModalHeader>
+          <Modal isOpen={taskKepsekState.modal.show} fade={false} backdrop={'static'} toggle={this.modalToggle}>
+            <ModalHeader toggle={this.modalToggle}>{taskKepsekState.modal.title}</ModalHeader>
             <ModalBody>
               {this.state.isDetail && (
                 <Formik
                   enableReinitialize={true}
                   initialValues={taskKepsekState.taskDetail}
                   // validationSchema={add_editSchema}
-                  onSubmit={(values) => {
+                  onSubmit={values => {
                     // same shape as initial values
                     // this.uploadTask()
                   }}
@@ -473,15 +387,11 @@ class TaskKepsekPerId extends Component {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button size="sm" color="secondary" onClick={this.modalToggle}>
+              <Button size='sm' color='secondary' onClick={this.modalToggle}>
                 Cancel
-              </Button>{" "}
-              {taskKepsekState.modal.type == "download" && (
-                <Button
-                  size="sm"
-                  color="primary"
-                  onClick={() => this.downloadFiles()}
-                >
+              </Button>{' '}
+              {taskKepsekState.modal.type == 'download' && (
+                <Button size='sm' color='primary' onClick={() => this.downloadFiles()}>
                   {taskKepsekState.modal.buttonText}
                 </Button>
               )}
@@ -496,12 +406,12 @@ class TaskKepsekPerId extends Component {
     let { taskKepsekState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={taskKepsekState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -512,10 +422,8 @@ class TaskKepsekPerId extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  taskKepsekState: state.taskKepsek,
+const mapStateToProps = state => ({
+  taskKepsekState: state.taskKepsek
 });
 
-export default connect(mapStateToProps, { ...actions })(
-  withTranslate(TaskKepsekPerId)
-);
+export default connect(mapStateToProps, { ...actions })(withTranslate(TaskKepsekPerId));

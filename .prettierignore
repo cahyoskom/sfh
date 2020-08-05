@@ -1,0 +1,6 @@
+build/
+node_modules/
+public/
+trash/
+package.json
+package-lock.json

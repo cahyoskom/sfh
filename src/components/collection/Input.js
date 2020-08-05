@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class Input extends Component {
   constructor(props) {
@@ -21,7 +21,7 @@ export default class Input extends Component {
     isInline: PropTypes.bool,
     id: PropTypes.string,
     pattern: PropTypes.string,
-    autoComplete: PropTypes.string,
+    autoComplete: PropTypes.string
   };
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.value !== nextProps.value) {
@@ -41,12 +41,9 @@ export default class Input extends Component {
       var config = { attributes: true, childList: true, subtree: true };
       var callback = function (mutationsList) {
         for (var mutation of mutationsList) {
-          if (mutation.type == "attributes") {
-            if (mutation.attributeName == "style") {
-              $("#" + self.props.id + "_Id-error").attr(
-                "style",
-                "margin-left: 15px !important"
-              );
+          if (mutation.type == 'attributes') {
+            if (mutation.attributeName == 'style') {
+              $('#' + self.props.id + '_Id-error').attr('style', 'margin-left: 15px !important');
             }
           }
         }
@@ -58,13 +55,13 @@ export default class Input extends Component {
 
   render() {
     let {
-      id = "",
+      id = '',
       value,
       disable = false,
-      name = "",
-      label = "",
-      placeholder = "",
-      help = "",
+      name = '',
+      label = '',
+      placeholder = '',
+      help = '',
       isInline = false,
       onFocus,
       onBlur,
@@ -77,31 +74,29 @@ export default class Input extends Component {
       min,
       max,
       isDropDown,
-      classList = "col-md-12",
-      classInput = "form-control",
-      autoComplete = "",
+      classList = 'col-md-12',
+      classInput = 'form-control',
+      autoComplete = ''
     } = this.props;
-    let parent = isInline ? "form-group row" : "form-group";
-    let labels = isInline
-      ? "col-md-3  label-title-small bold default"
-      : "col-md-12  label-title-small bold default";
-    let inputs = isInline ? "col-md-9" : classList;
+    let parent = isInline ? 'form-group row' : 'form-group';
+    let labels = isInline ? 'col-md-3  label-title-small bold default' : 'col-md-12  label-title-small bold default';
+    let inputs = isInline ? 'col-md-9' : classList;
 
     let self = this;
     return (
       <React.Fragment>
-        <label className={labels} htmlFor="text-input">
+        <label className={labels} htmlFor='text-input'>
           {label}
         </label>
         <div className={inputs}>
           <input
             pattern={pattern}
-            className={classInput + " form-control inputs "}
+            className={classInput + ' form-control inputs '}
             placeholder={placeholder}
             name={name}
             value={value}
             disabled={disable}
-            onChange={(e) => {
+            onChange={e => {
               self.setValue(name, e);
             }}
             onFocus={onFocus}
@@ -117,14 +112,13 @@ export default class Input extends Component {
             max={max}
             autoComplete={autoComplete}
           />
-          <span className="help-block">{help}</span>
+          <span className='help-block'>{help}</span>
         </div>
       </React.Fragment>
     );
   }
 
   setValue(property, event) {
-    if (event.target.validity.valid)
-      this.props.onChange(property, event.target.value);
+    if (event.target.validity.valid) this.props.onChange(property, event.target.value);
   }
 }

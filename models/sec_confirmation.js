@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
@@ -141,10 +141,6 @@ module.exports = (sequelize) => {
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define(
-    'sec_confirmation_model',
-    attributes,
-    options
-  );
+  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
   return SecConfirmationModel;
 };

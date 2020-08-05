@@ -1,6 +1,6 @@
 const query = require('../models/query');
 
-module.exports.get = async (user_id) => {
+module.exports.get = async user_id => {
   var sql = `SELECT r.group_id, group_name, r.class_id, class_name, 
     r.subject_id, subject_name,
     r.student_id, student_no, student_name, st.class_id student_class_id, sex
@@ -15,7 +15,7 @@ module.exports.get = async (user_id) => {
   return await query.query(sql, param);
 };
 
-module.exports.set = async (roles) => {
+module.exports.set = async roles => {
   var result = {};
   for (var role of roles) {
     var role_id = role.group_id;
@@ -27,7 +27,7 @@ module.exports.set = async (roles) => {
   return result;
 };
 
-module.exports.getStudent = async (roles) => {
+module.exports.getStudent = async roles => {
   for (var role of roles) {
     if (!!role.student_id) {
       return {

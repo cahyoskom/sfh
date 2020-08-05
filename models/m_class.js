@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
@@ -75,10 +75,6 @@ module.exports = (sequelize) => {
     comment: '',
     indexes: []
   };
-  const SecGroupModel = sequelize.define(
-    'sec_group_model',
-    attributes,
-    options
-  );
+  const SecGroupModel = sequelize.define('sec_group_model', attributes, options);
   return SecGroupModel;
 };

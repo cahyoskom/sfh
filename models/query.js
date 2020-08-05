@@ -5,9 +5,7 @@ const { sequelize } = require('../database');
 // where => sequelize where-style
 module.exports.query = async (query, param, where = null) => {
   if (!!where) {
-    let filter = await sequelize().queryInterface.QueryGenerator.getWhereConditions(
-      where
-    );
+    let filter = await sequelize().queryInterface.QueryGenerator.getWhereConditions(where);
 
     query = query + ' WHERE ' + filter;
   }

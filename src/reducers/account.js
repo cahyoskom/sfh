@@ -26,7 +26,6 @@ import {
   SET_MODAL_ACTIVATION,
   EMAIL_ACTIVATION_SUCCESS,
   SET_RESEND_ACTIVATION_REGIST,
-  GET_USER_DATA,
 } from "../constants/ActionTypes";
 import Config from "../constants/config";
 import { ErrorMessage } from "formik";
@@ -346,14 +345,6 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         role: {
           ...state.role,
-          [action.field]: action.value,
-        },
-      };
-    case GET_USER_DATA:
-      return {
-        ...state,
-        user: {
-          ...state.user,
           [action.field]: action.value,
         },
       };

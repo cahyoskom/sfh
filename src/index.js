@@ -82,6 +82,7 @@ import Class from './components/usermanagement/class';
 import Student from './components/usermanagement/student';
 import Role from './components/usermanagement/role';
 import Confirmation from './components/pages/confirmation';
+import Profile from './components/pages/profile';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -172,6 +173,12 @@ class Root extends React.Component {
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}
                     component={Register}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/profile`}
+                    component={Profile}
                     authenticated={this.authCheck()}
                   />
 

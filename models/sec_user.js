@@ -113,15 +113,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'auth_data'
     },
-    is_admin: {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'is_admin'
-    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

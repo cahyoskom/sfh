@@ -38,7 +38,7 @@ exports.create = async function (req, res) {
     auth_provider: 1,
     status: 1,
     created_date: moment().format(),
-    created_by: req.body.name
+    created_by: req.body.email
   };
   try {
     var datum = await model_user.create(new_obj);
@@ -63,7 +63,7 @@ exports.update = async function (req, res) {
     phone: req.body.phone,
     avatar: req.body.avatar,
     updated_date: moment().format(),
-    updated_by: req.body.name
+    updated_by: req.body.email
   };
   try {
     var datum = await model_user.update(update_obj, {

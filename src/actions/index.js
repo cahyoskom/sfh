@@ -86,12 +86,10 @@ export const saveRegister = () => ({
 });
 
 //profile
-export const getUserData = () => ({
-  type: types.GET_USER_DATA,
-});
-
-export const requestUserData = () => ({
+export const requestUserData = (id, value) => ({
   type: types.REQUEST_USER_DATA,
+  id,
+  value,
 });
 
 /////////////

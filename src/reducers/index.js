@@ -8,6 +8,7 @@ import taskOrtuReducer from "./taskortu";
 import taskKepsekReducer from "./taskkepsek";
 import taskGuruReducer from "./taskguru";
 import adminReducer from "./admin";
+import profileReducer from "./profile";
 
 const rootReducer = combineReducers({
   account: accountReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   taskKepsek: taskKepsekReducer,
   taskGuru: taskGuruReducer,
   admin: adminReducer,
+  profile: profileReducer,
   Intl,
 });
 

@@ -11,5 +11,5 @@ export const API_PATH = {
   register: "/registration",
   requestActivation: "/request_activation",
   activating: "/activating",
-  profile: "/profile/:id",
+  profile: "/user",
 };

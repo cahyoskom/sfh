@@ -20,8 +20,19 @@ export const onChangeStateClassInfo = (field, value) => ({
   value,
   field,
 });
+export const onChangeStateEditClass = (field, value) => ({
+  type: types.ON_CHANGE_STATE_EDIT_CLASS,
+  value,
+  field,
+});
+export const postUpdateClass = () => ({
+  type: types.UPDATE_CLASS_INFO,
+});
 export const postDeleteClass = () => ({
   type: types.SET_CLASS_DELETE,
+});
+export const postDuplicateClass = () => ({
+  type: types.SET_CLASS_DUPLICATE,
 });
 
 //LOGIN

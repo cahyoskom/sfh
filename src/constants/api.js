@@ -14,4 +14,7 @@ export const API_PATH = {
   getClassInfo: "/class",
   getSchoolInfo: "/school",
   deleteClass: "/class",
+  editClass: "/class",
+  schoolByCode: "/school/code",
+  duplicateClass: "/class/duplicate",
 };

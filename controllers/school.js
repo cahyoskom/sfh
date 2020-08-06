@@ -77,7 +77,8 @@ exports.create = async function (req, res) {
     zipcode: req.body.zipcode,
     phone: req.body.phone,
     avatar: req.body.avatar,
-    status: 1,
+    note: req.body.note,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.email
   };
@@ -117,6 +118,7 @@ exports.update = async function (req, res) {
     zipcode: req.body.zipcode,
     phone: req.body.phone,
     avatar: req.body.avatar,
+    note: req.body.note,
     status: ACTIVE,
     updated_date: moment().format(),
     updated_by: req.user.email

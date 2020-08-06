@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const db = require('../database');
+const { DataTypes } = require("sequelize");
+const db = require("../database");
 
 module.exports = (sequelize) => {
   if (!sequelize) sequelize = db.sequelize();
@@ -12,20 +12,20 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: 'id'
+      field: "id",
     },
     m_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: "m_school_id",
       references: {
-        key: 'id',
-        model: 'm_school_model'
-      }
+        key: "id",
+        model: "m_school_model",
+      },
     },
     code: {
       type: DataTypes.STRING(10),
@@ -34,25 +34,34 @@ module.exports = (sequelize) => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: "code",
     },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: '',
+      defaultValue: "",
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'name'
+      field: "name",
     },
     description: {
       type: DataTypes.STRING(200),
       allowNull: true,
-      defaultValue: '',
+      defaultValue: "",
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'description'
+      field: "description",
+    },
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: "",
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: "note",
     },
     avatar: {
       type: DataTypes.TEXT,
@@ -61,34 +70,34 @@ module.exports = (sequelize) => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'avatar'
+      field: "avatar",
     },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
-      defaultValue: '0',
+      defaultValue: "0",
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'status'
+      field: "status",
     },
     created_date: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'created_date'
+      field: "created_date",
     },
     created_by: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: 'SYSTEM',
+      defaultValue: "SYSTEM",
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'created_by'
+      field: "created_by",
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -97,7 +106,7 @@ module.exports = (sequelize) => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_date'
+      field: "updated_date",
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -106,22 +115,22 @@ module.exports = (sequelize) => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
-    }
+      field: "updated_by",
+    },
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class',
-    comment: '',
+    tableName: "m_class",
+    comment: "",
     indexes: [
       {
-        name: 'm_school_id',
+        name: "m_school_id",
         unique: false,
-        type: 'BTREE',
-        fields: ['m_school_id']
-      }
-    ]
+        type: "BTREE",
+        fields: ["m_school_id"],
+      },
+    ],
   };
-  const MClassModel = sequelize.define('m_class_model', attributes, options);
+  const MClassModel = sequelize.define("m_class_model", attributes, options);
   return MClassModel;
 };

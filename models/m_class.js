@@ -63,6 +63,15 @@ module.exports = sequelize => {
       comment: null,
       field: 'avatar'
     },
+    link_status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '1',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link_status'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

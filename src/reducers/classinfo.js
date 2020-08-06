@@ -8,34 +8,34 @@ import {
   SET_DELETE_CLASS_SUCCESS,
   SET_DELETE_CLASS_FAIL,
   SET_DUPLICATE_CLASS_SUCCESS,
-  SET_DUPLICATE_CLASS_FAIL,
-} from "../constants/ActionTypes";
-import Config from "../constants/config";
-import { ErrorMessage } from "formik";
+  SET_DUPLICATE_CLASS_FAIL
+} from '../constants/ActionTypes';
+import Config from '../constants/config';
+import { ErrorMessage } from 'formik';
 
 const initialState = {
   classInfo: {
-    name: "",
-    description: "",
-    school: "",
-    code: "",
-    note: "",
+    name: '',
+    description: '',
+    school: '',
+    code: '',
+    note: '',
     success: false,
-    id: "",
-    hasAuthority: false,
+    id: '',
+    hasAuthority: false
   },
   editClass: {
-    id: "",
-    name: "",
-    description: "",
-    note: "",
+    id: '',
+    name: '',
+    description: '',
+    note: '',
     schoolExist: false,
-    school: "",
-    schoolCode: "",
+    school: '',
+    schoolCode: '',
     success: false,
-    successmsg: "",
+    successmsg: '',
     openAlert: false,
-    errormsg: "",
+    errormsg: '',
     editForm: false,
     confirmUpdate: false,
     updateFail: false,
@@ -45,8 +45,8 @@ const initialState = {
     confirmDuplicate: false,
     duplicateFail: false,
     duplicateSuccess: false,
-    duplicatedId: "",
-  },
+    duplicatedId: ''
+  }
 };
 
 export default function classReducer(state = initialState, action) {
@@ -62,7 +62,7 @@ export default function classReducer(state = initialState, action) {
           code: action.value.data.code,
           note: action.value.data.note,
           id: action.value.data.id,
-          hasAuthority: action.value.hasAuthority,
+          hasAuthority: action.value.hasAuthority
         },
         editClass: {
           ...state.editClass,
@@ -70,24 +70,24 @@ export default function classReducer(state = initialState, action) {
           name: action.value.data.name,
           description: action.value.data.description,
           note: action.value.data.note,
-          schoolCode: action.value.data.schoolCode,
-        },
+          schoolCode: action.value.data.schoolCode
+        }
       };
     case ON_CHANGE_STATE_CLASS_INFO:
       return {
         ...state,
         classInfo: {
           ...state.classInfo,
-          [action.field]: action.value,
-        },
+          [action.field]: action.value
+        }
       };
     case ON_CHANGE_STATE_EDIT_CLASS:
       return {
         ...state,
         editClass: {
           ...state.editClass,
-          [action.field]: action.value,
-        },
+          [action.field]: action.value
+        }
       };
     case SET_UPDATE_CLASS_SUCCESS:
       return {
@@ -97,8 +97,8 @@ export default function classReducer(state = initialState, action) {
           successmsg: action.value,
           success: true,
           editForm: false,
-          confirmUpdate: false,
-        },
+          confirmUpdate: false
+        }
       };
     case SET_UPDATE_CLASS_FAIL:
       return {
@@ -107,8 +107,8 @@ export default function classReducer(state = initialState, action) {
           ...state.editClass,
           updateFail: true,
           editForm: false,
-          confirmUpdate: false,
-        },
+          confirmUpdate: false
+        }
       };
     case SET_DELETE_CLASS_FAIL:
       return {
@@ -117,8 +117,8 @@ export default function classReducer(state = initialState, action) {
           ...state.editClass,
           deleteFail: true,
           editForm: false,
-          confirmDelete: false,
-        },
+          confirmDelete: false
+        }
       };
     case SET_DUPLICATE_CLASS_FAIL:
       return {
@@ -126,8 +126,8 @@ export default function classReducer(state = initialState, action) {
         editClass: {
           ...state.editClass,
           duplicateFail: true,
-          confirmDuplicate: false,
-        },
+          confirmDuplicate: false
+        }
       };
     case SET_DELETE_CLASS_SUCCESS:
       return {
@@ -135,8 +135,8 @@ export default function classReducer(state = initialState, action) {
         editClass: {
           ...state.editClass,
           deleteSuccess: true,
-          confirmDelete: false,
-        },
+          confirmDelete: false
+        }
       };
     case SET_DUPLICATE_CLASS_SUCCESS:
       return {
@@ -145,8 +145,8 @@ export default function classReducer(state = initialState, action) {
           ...state.editClass,
           duplicateSuccess: true,
           confirmDuplicate: false,
-          duplicatedId: action.value,
-        },
+          duplicatedId: action.value
+        }
       };
     default:
   }

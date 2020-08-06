@@ -4,6 +4,7 @@
   "description": "School From Home - API",
   "private": true,
   "scripts": {
+    "pretty": "prettier --write .",
     "generate-model": "sequelize-automate -c ./config/sequelize-automate.config.js",
     "start": "node --inspect http.js",
     "debug": "nodemon --inspect http.js"
@@ -30,6 +31,7 @@
     "express-convention-routes": "^1.0.6",
     "formidable": "^1.2.2",
     "google-auth-library": "^6.0.5",
+    "is-base64": "^1.1.0",
     "moment": "^2.27.0",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
@@ -40,6 +42,7 @@
     "validate-phone-number-node-js": "0.0.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5"
   }
 }

@@ -4,3 +4,4 @@ files/*
 pm2.pid
 log
 logs
+trash

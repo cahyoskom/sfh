@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const { time } = require('console');
 const { env } = process;
 const passwordValidator = require('password-validator');
-const phoneValidator = require('validate-phone-number-node-js');
 const emailValidator = require('email-validator');
 
 const sec_user = require('../models/sec_user');
@@ -17,8 +16,9 @@ const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
 const { ACTIVE, DEACTIVE, DELETED } = require('../enums/status.enums');
 const userController = require('./user');
-// const pwValidator = new passwordValidator().is().min(8).is().max(100)
-//   .has().uppercase().has().lowercase().has().digits().has().not().spaces();
+const pwValidator = new passwordValidator().is().min(6);
+// .is().max(100).has().uppercase().has().lowercase().has().digits().has().not().spaces();
+const phoneValidator = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;
 
 async function shouldSendingMail(flag, filtering, disabling = false) {
   const model_confirmation = sec_confirmation();
@@ -62,9 +62,7 @@ exports.create = async function (req, res) {
   var new_user = {
     name: req.body.name,
     email: req.body.email,
-    password: sha256(
-      req.body.email + req.body.password + process.env.USER_SECRET
-    ),
+    password: sha256(req.body.email + req.body.password + process.env.USER_SECRET),
     phone: req.body.phone,
     status: ACTIVE,
     created_date: moment().format()
@@ -79,7 +77,8 @@ exports.create = async function (req, res) {
 
     if (checkUser) {
       // note this! we don't care about sec_user status flag, because email should be unique list
-      throw new Error('Your mail already registered, please log in');
+      // throw new Error('Your mail already registered, please log in');
+      throw new Error('Email sudah terdaftar, silakan login.');
     } else {
       const checkReg = await model_registrant.findOne({
         where: {
@@ -105,13 +104,17 @@ exports.create = async function (req, res) {
               );
 
               if (alreadyValidLink) {
+                // throw new Error('Please check mail box for visit our activation link')
                 throw new Error(
-                  'Please check mail box for visit our activation link'
+                  'Email sudah terdaftar. Silakan cek email untuk melakukan aktivasi link.'
                 );
               }
             }
-            res.status(401)
-            .json({error:401001, message:'Please do request activation link'});
+            res.status(401).json({
+              error: 401001,
+              // message: 'Please do request activation link',
+              message: 'Harap melakukan aktivasi link.'
+            });
             return;
           }
         }
@@ -123,16 +126,14 @@ exports.create = async function (req, res) {
       throw new Error('Email yang dimasukkan tidak sesuai kriteria');
     }
 
-    // var checkPW = pwValidator.validate(req.body.password);
-    // if (checkPW == false) {
-    //   throw new Error('Password yang dimasukkan tidak sesuai kriteria');
-    // }
+    var checkPW = pwValidator.validate(req.body.password);
+    if (checkPW == false) {
+      throw new Error('Password yang dimasukkan tidak sesuai kriteria');
+    }
 
-    var checkPhone = req.body.phone
-      ? phoneValidator.validate(req.body.phone)
-      : true;
+    var checkPhone = req.body.phone ? phoneValidator.test(req.body.phone) : true;
     if (checkPhone == false) {
-      throw new Error('Nomor Telepon yang dimasukkan tidak sesuai kriteria');
+      throw new Error('Nomor telepon yang dimasukkan tidak sesuai kriteria');
     }
 
     const registrant = await model_registrant.create(new_user);
@@ -160,7 +161,8 @@ exports.create = async function (req, res) {
     if (!sendEmail) throw sendEmail;
 
     return res.json({
-      message: `An email for account activation has been sent to ${registrant.email}.`,
+      // message: `An email for account activation has been sent to ${registrant.email}.`,
+      message: `Email untuk aktivasi akun sudah dikirimkan ke ${registrant.email}.`,
       data: registrant
     });
   } catch (err) {
@@ -180,14 +182,16 @@ exports.activating = async function (req, res) {
       where: { code: req.params.code }
     });
     if (confirmation.status !== ACTIVE) {
-      throw new Error('This link is already used');
+      // throw new Error('This link is already used');
+      throw new Error('Link sudah digunakan.');
     }
 
     var registrant = await model_registrant.findOne({
       where: { id: confirmation.sec_registrant_id }
     });
     if (registrant.is_email_validated) {
-      throw new Error('This user has already been verified');
+      // throw new Error('This user has already been verified');
+      throw new Error('Pengguna sudah diverifikasi.');
     }
 
     registrant.is_email_validated = 1;
@@ -218,7 +222,8 @@ exports.activating = async function (req, res) {
       var copy = await model_user.create(copy_to_user);
 
       return res.json({
-        message: 'The account is successfully verified. Please log in.',
+        // message: 'The account is successfully verified. Please log in.',
+        message: 'Akun berhasil diverifikasi. silakan login.',
         data: copy
       });
     }
@@ -244,7 +249,8 @@ exports.requestActivation = async function (req, res) {
       }
     });
     if (!registrant) {
-      throw new Error('Email entered is wrong');
+      // throw new Error('Email entered is wrong');
+      throw new Error('Email yang dimasukkan salah.');
     }
 
     const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_VERIFICATION', {
@@ -273,7 +279,8 @@ exports.requestActivation = async function (req, res) {
     if (!sendEmail) throw sendEmail;
 
     return res.json({
-      message: `An email for account activation has been sent to ${registrant.email}.`,
+      // message: `An email for account activation has been sent to ${registrant.email}.`,
+      message: `Email untuk aktivasi akun sudah dikirimkan ke ${registrant.email}.`,
       data: registrant
     });
   } catch (e) {
@@ -306,16 +313,19 @@ exports.forgotPassword = async function (req, res) {
       });
 
       if (!registrant) {
-        throw new Error('Email entered is wrong or not registered');
+        // throw new Error('Email entered is wrong or not registered');
+        // throw new Error('Email yang dimasukkan salah atau belum terdaftar.');
+        throw new Error('Email yang anda masukkan salah');
       }
 
-      throw new Error('Verify your email to continue');
+      // throw new Error('Verify your email to continue');
+      // throw new Error('Harap Verifikasi Email Terlebih Dahulu.');
+      throw new Error('Email akan terkirim apabila telah terdaftar');
     }
 
-    const countdownMsg = await shouldSendingMail(
-      'MAIL_INTERVAL_FORGOT_PASSWORD',
-      { sec_user_id: user.id }
-    );
+    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_FORGOT_PASSWORD', {
+      sec_user_id: user.id
+    });
     if (countdownMsg) throw new Error(countdownMsg);
 
     const code = crypto.randomBytes(16).toString('hex');
@@ -339,7 +349,9 @@ exports.forgotPassword = async function (req, res) {
     if (!sendEmail) throw sendEmail;
 
     return res.json({
-      message: `An email for check validity password change has been sent to ${user.email}.`
+      // message: `An email for check validity password change has been sent to ${user.email}.`
+      // message: `Email untuk validasi perubahan password sudah dikirimkan ke ${user.email}.`,
+      message: 'Email akan terkirim apabila telah terdaftar'
     });
   } catch (e) {
     res.status(401).json({
@@ -353,7 +365,7 @@ exports.updatePassword = async function (req, res) {
   const model_user = sec_user();
   const model_confirmation = sec_confirmation();
   const code = req.params.code;
-  const email = req.body.email;
+  // const email = req.body.email;
   const password = req.body.password;
 
   const confirm = await model_confirmation.findOne({
@@ -362,7 +374,8 @@ exports.updatePassword = async function (req, res) {
   if (!confirm) {
     return res.status(401).json({
       error: null,
-      message: 'Token is not found please request another password change.'
+      // message: 'Code is not found please request another password change.',
+      message: 'Token tidak ditemukan, harap request perubahan password lagi.'
     });
   }
 
@@ -376,32 +389,60 @@ exports.updatePassword = async function (req, res) {
   const user = await model_user.findOne({
     where: { id: confirm.sec_user_id }
   });
+
   if (!user) {
     return res.status(401).json({
       error: null,
+      // message: 'Invalid account: mismatch code',
       message: 'Invalid code: account not found'
-    });
-  }
-  if (user.email !== email) {
-    return res.status(401).json({
-      error: null,
-      message: 'Invalid account: mismatch code'
     });
   }
 
   const now = moment();
 
   user.password = sha256(user.email + password + env.USER_SECRET);
-  user.updated_by = email;
+  user.updated_by = user.email;
   user.updated_date = now.format();
   await user.save();
 
   confirm.status = DELETED;
-  confirm.updated_by = email;
+  confirm.updated_by = user.email;
   confirm.updated_date = now.format();
   await confirm.save();
 
   return res.json({
-    message: 'Your password updated'
+    // message: 'Your password updated',
+    message: 'Password berhasil diperbarui.'
+  });
+};
+
+exports.checkEmail = async function (req, res) {
+  var email = req.query.email;
+  const model_user = sec_user();
+  var user = await model_user.findOne({
+    where: {
+      email: email
+    }
+  });
+  if (user) {
+    return res.status(401).json({
+      message: 'Email sudah terdaftar'
+    });
+  } else {
+    const model_registrant = sec_registrant();
+    var registrant = await model_registrant.findOne({
+      where: {
+        email: email,
+        status: ACTIVE
+      }
+    });
+    if (registrant) {
+      return res.status(401).json({
+        message: 'Email sudah terdaftar'
+      });
+    }
+  }
+  return res.status(200).json({
+    message: 'Email dapat digunakan'
   });
 };

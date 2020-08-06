@@ -30,4 +30,5 @@ module.exports = function (router) {
     }
     res.status(401).end();
   });
+  router.get('/check_email', registration.checkEmail);
 };

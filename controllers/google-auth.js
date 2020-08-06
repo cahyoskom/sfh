@@ -23,10 +23,7 @@ async function setToken(tokenId, userId) {
   });
   if (token.length > 0) {
     // token exists, delete
-    sec_token().update(
-      { status: USER_STATUS.DELETED },
-      { where: { sec_user_id: userId } }
-    );
+    sec_token().update({ status: USER_STATUS.DELETED }, { where: { sec_user_id: userId } });
   }
 
   var parameter = m_param();

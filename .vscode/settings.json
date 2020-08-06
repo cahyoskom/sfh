@@ -1,0 +1,31 @@
+{
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "workbench.iconTheme": "vscode-icons",
+  "material-icon-theme.folders.theme": "specific",
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "prettier.singleQuote": true,
+  "editor.formatOnSave": true,
+  "prettier.trailingComma": "none",
+  "editor.formatOnType": true,
+  "terminal.integrated.scrollback": 10000000,
+  "editor.formatOnPaste": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.jsxSingleQuote": true,
+  "prettier.jsxBracketSameLine": false,
+  "prettier.printWidth": 100,
+  "workbench.sideBar.location": "left",
+  "editor.wordWrapColumn": 100,
+  "editor.smoothScrolling": true,
+  "editor.tabSize": 2,
+  "prettier.semi": true,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.bracketSpacing": true,
+  "prettier.arrowParens": "avoid"
+}

@@ -68,10 +68,7 @@ exports.findAll = async function (req, res) {
 
   if (!!req.user.roles[GROUP_ENUMS.STUDENT]) {
     // student
-    var cols = await GetCollectionForStudent(
-      req.user.roles[GROUP_ENUMS.STUDENT][0],
-      filter
-    );
+    var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0], filter);
   } else {
     // not student
     if (!!req.query.class) {
@@ -197,12 +194,7 @@ exports.upload = async function (req, res) {
     where: { name: 'UPLOAD_DIR' }
   });
   var upload_dir =
-    UPLOAD_DIR.value +
-    '/task_' +
-    task_id +
-    '/collection/' +
-    task_collection_id +
-    '/';
+    UPLOAD_DIR.value + '/task_' + task_id + '/collection/' + task_collection_id + '/';
   if (!fs.existsSync(upload_dir)) {
     fs.mkdirSync(upload_dir, {
       recursive: true
@@ -266,13 +258,7 @@ exports.download = async function (req, res) {
       return;
     }
     var task_id = coll.task_id;
-    var upload_dir =
-      UPLOAD_DIR +
-      '/task_' +
-      task_id +
-      '/collection/' +
-      task_collection_id +
-      '/';
+    var upload_dir = UPLOAD_DIR + '/task_' + task_id + '/collection/' + task_collection_id + '/';
     var filename = upload_dir + file.filename;
     if (!fs.existsSync(filename)) {
       res.status(404).json({

@@ -1,0 +1,7 @@
+database/
+files/
+node_modules/
+postman/
+trash/
+package.json
+package-lock.json

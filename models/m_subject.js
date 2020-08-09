@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-module.exports = (sequelize) => {
+module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
 
   const attributes = {
@@ -95,10 +95,6 @@ module.exports = (sequelize) => {
       }
     ]
   };
-  const MSubjectModel = sequelize.define(
-    'm_subject_model',
-    attributes,
-    options
-  );
+  const MSubjectModel = sequelize.define('m_subject_model', attributes, options);
   return MSubjectModel;
 };

@@ -121,6 +121,7 @@ exports.update = async function (req, res) {
     updated_date: moment().format(),
     updated_by: req.user.email
   };
+
   try {
     var datum = await model_school.update(update_obj, {
       where: { id: req.body.id }

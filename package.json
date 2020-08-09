@@ -4,13 +4,14 @@
   "description": "School From Home - API",
   "private": true,
   "scripts": {
+    "pretty": "prettier --write .",
     "generate-model": "sequelize-automate -c ./config/sequelize-automate.config.js",
     "start": "node --inspect http.js",
     "debug": "nodemon --inspect http.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/karpalabs/sfh/api.git"
+    "url": "git+ssh://git@gitlab.com:karpalabs/sfh/api.git"
   },
   "author": "@karplabs",
   "bugs": {
@@ -37,10 +38,10 @@
     "nodemailer": "^6.4.10",
     "password-validator": "^5.0.3",
     "sequelize": "^5.22.3",
-    "sequelize-automate": "^1.2.2",
-    "validate-phone-number-node-js": "0.0.1"
+    "sequelize-automate": "^1.2.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5"
   }
 }

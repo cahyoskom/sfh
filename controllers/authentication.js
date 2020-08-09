@@ -46,10 +46,7 @@ async function setToken(user_id) {
 
   if (token.length > 0) {
     // token exists, delete
-    sec_token().update(
-      { status: DELETED },
-      { where: { sec_user_id: user_id } }
-    );
+    sec_token().update({ status: DELETED }, { where: { sec_user_id: user_id } });
   }
   // create new token
   const parameter = m_param();
@@ -99,9 +96,7 @@ exports.login = async function (req, res) {
   if (!user) {
     var registrant = await checkRegistrant(email, password);
     if (!registrant) {
-      res
-        .status(401)
-        .json({ error: 10, message: 'Email atau kata sandi salah' });
+      res.status(401).json({ error: 10, message: 'Email atau kata sandi salah' });
       return;
     } else {
       var resendActivation = await allowResendActivation(registrant.id);

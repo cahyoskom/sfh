@@ -12,8 +12,11 @@ const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
+const sec_user = require('../models/sec_user');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
+const crypto = require('crypto');
 const isBase64 = require('is-base64');
+const { sequelize } = require('../database');
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {
@@ -50,6 +53,9 @@ exports.findOne = async function (req, res) {
   var datum = await model_school.findOne({
     where: { id: req.params.id, status: ACTIVE }
   });
+  if (!datum) {
+    res.status(404).json({ error: null, message: 'Sekolah tidak ditemukan' });
+  }
 
   var hasAuthority = await checkAuthority(req.user.id);
   res.json({ data: datum, hasAuthority: hasAuthority });
@@ -270,4 +276,187 @@ exports.delete = async function (req, res) {
   res.json({
     message: 'Data has been deleted.'
   });
+};
+
+exports.connectClass = async function (req, res) {
+  const model_class = m_class();
+  var targetClass = await model_class.findOne({
+    where: { code: req.body.code, status: ACTIVE }
+  });
+  if (!targetClass) {
+    res.status(409).json({
+      error: null,
+      message: 'Kelas tidak ditemukan'
+    });
+  }
+  if (targetClass.m_school_id) {
+    res.status(409).json({
+      error: null,
+      message: 'Kelas sudah terhubung ke sekolah'
+    });
+  }
+
+  var update_obj = {
+    m_school_id: req.body.m_school_id,
+    link_status: 2 //request by school
+  };
+  try {
+    var datum = await model_class.update(update_obj, {
+      where: { id: targetClass.id }
+    });
+
+    const model_class_member = m_class_member();
+    var members = await model_class_member.findAndCountAll({
+      where: { m_class_id: targetClass.id, status: ACTIVE }
+    });
+
+    var owner_id = await model_class_member.findOne({
+      attributes: ['sec_user_id'],
+      where: { m_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
+    });
+    console.log(owner_id);
+    var owner_name = await sec_user().findOne({
+      attributes: ['name'],
+      where: { id: owner_id.sec_user_id }
+    });
+    console.log(owner_name);
+
+    res.json({
+      id: targetClass.id,
+      name: targetClass.name,
+      link_status: 2,
+      ownerName: owner_name.name,
+      countMembers: members.count
+    });
+  } catch (err) {
+    res.status(411).json({
+      error: null,
+      message: err.message
+    });
+  }
+};
+
+exports.createClass = async function (req, res) {
+  const model_class = m_class();
+  var new_obj = {
+    m_school_id: req.body.m_school_id,
+    code: crypto.randomBytes(7).toString('hex'),
+    name: req.body.name,
+    description: req.body.description,
+    link_status: 0, //CONNECTED
+    status: ACTIVE,
+    created_date: moment().format(),
+    created_by: req.user.email
+  };
+  try {
+    var datum = await model_class.create(new_obj);
+    var new_member = {
+      m_class_id: datum.id,
+      sec_user_id: req.user.id,
+      sec_group_id: 1, // OWNER
+      status: ACTIVE,
+      created_date: moment().format()
+    };
+    try {
+      var member = await m_class_member().create(new_member);
+      res.json({
+        id: datum.id,
+        name: datum.name,
+        link_status: datum.link_status,
+        ownerName: req.user.name,
+        countMembers: 1
+      });
+    } catch (err) {
+      res.status(411).json({ error: null, message: err.message });
+    }
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
+};
+
+exports.getAllClass = async function (req, res) {
+  const filter = req.query.filter;
+  const school_id = req.query.schoolId;
+  var condition;
+  if (filter !== '') {
+    condition = {
+      [Op.and]: [
+        { m_school_id: school_id, status: ACTIVE },
+        sequelize().where(sequelize().fn('lower', sequelize().col('name')), {
+          [Op.like]: '%' + filter + '%'
+        })
+      ]
+    };
+  } else {
+    condition = {
+      m_school_id: school_id,
+      status: ACTIVE
+    };
+  }
+
+  try {
+    var listClass = await m_class().findAll({
+      attributes: [
+        'id',
+        'link_status',
+        'name',
+
+        [sequelize().fn('COUNT', sequelize().col('sec_user_id')), 'countMembers']
+        // ['sec_user_model.name', 'ownerName']
+      ],
+      where: condition,
+      include: [
+        {
+          model: m_class_member(),
+          required: true,
+          where: { status: ACTIVE }
+          // include: [
+          //   {
+          //     model: sec_group(),
+          //     required: true,
+          //     where: { status: 1 } //OWNER
+          //   },
+          // {
+          //   model: sec_user(),
+          //   required: true,
+          //   where: {sec_user :}
+          // }
+          // ]
+        }
+      ],
+      group: 'm_class_model.id'
+    });
+
+    res.json({ listClass });
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
+};
+
+exports.approval = async function (req, res) {
+  const model_class = m_class();
+  var update_obj;
+  if (req.body.status) {
+    update_obj = {
+      link_status: 0, //ACCEPT
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  } else {
+    update_obj = {
+      m_school_id: null,
+      link_status: 0, //DECLINE
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  }
+
+  try {
+    var update = await model_class.update(update_obj, {
+      where: { id: req.params.classId }
+    });
+    res.json({ message: 'Link status berhasil diubah' });
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
 };

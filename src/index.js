@@ -43,7 +43,6 @@ import aboutUs from "./components/pages/about-us";
 import PageNotFound from "./components/pages/404";
 import lookbook from "./components/pages/lookbook";
 import Login from "./components/pages/login";
-import Register from "./components/pages/register";
 import Search from "./components/pages/search";
 import Collection from "./components/pages/collection";
 import ForgetPassword from "./components/pages/forget-password";
@@ -60,6 +59,7 @@ import BlogPage from "./components/blogs/blog-page";
 //customme
 import Home from "./components/pages/home";
 import SignIn from "./components/pages/loginPage";
+import Register from "./components/pages/register";
 import PrivateRoute from "./PrivateRoute";
 import PrivateRouteGuru from "./PrivateRouteGuru";
 import PrivateRouteSiswa from "./PrivateRouteSiswa";
@@ -82,6 +82,7 @@ import Student from "./components/usermanagement/student";
 import Role from "./components/usermanagement/role";
 import Confirmation from "./components/pages/confirmation";
 import SchoolInfo from "./components/pages/school-info";
+import SchoolClass from "./components/pages/school-class";
 
 var lang = localStorage.getItem("locale-lang");
 
@@ -236,6 +237,12 @@ class Root extends React.Component {
                   <PrivateRoute
                     path={`${process.env.PUBLIC_URL}/school/:id`}
                     component={SchoolInfo}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/school_class/:id`}
+                    component={SchoolClass}
                     authenticated={this.authCheck()}
                   />
 

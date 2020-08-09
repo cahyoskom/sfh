@@ -105,6 +105,47 @@ export const saveUpdateSchool = () => ({
 export const deleteSchool = () => ({
   type: types.DELETE_SCHOOL,
 });
+export const handleDoneUpdateSchool = () => ({
+  type: types.DONE_UPDATE_SCHOOL
+})
+export const getSchoolClass = (value) => ({
+  type: types.GET_SCHOOL_CLASS,
+  value
+})
+export const schoolConnectClass = () => ({
+  type: types.CONNECT_CLASS_FROM_SCHOOL,
+})
+export const setModalConnectClass = (field, value) => ({
+  type: types.SET_CONNECT_CLASS,
+  field,
+  value
+})
+export const setModalCreateSchoolClass = (field, value) => ({
+  type: types.SET_MODAL_CREATE_SCHOOL_CLASS,
+  field,
+  value
+})
+export const schoolCreateClass = () => ({
+  type: types.SCHOOL_CREATE_CLASS,
+})
+export const closeModalConnectClass = () => ({
+  type: types.CLOSE_MODAL_CONNECT_CLASS
+})
+export const changeLinkStatus = (id, value) => ({
+  type: types.CHANGE_LINK_STATUS,
+  id,
+  value
+})
+export const closeSuccessModal = () => ({
+  type: types.CLOSE_SCHOOL_SUCCESS_MODAL
+})
+export const searchClass = () => ({
+  type: types.SEARCH_CLASS
+})
+export const setFilter = (value) => ({
+  type: types.SET_FILTER,
+  value
+})
 
 /////////////
 

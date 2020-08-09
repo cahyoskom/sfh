@@ -154,7 +154,10 @@ class SchoolInfo extends Component {
                         <Image
                           className="school-logo"
                           style={{ height: "140px", width: "140px" }}
-                          src={schoolState.data.avatar}
+                          src={
+                            schoolState.data.avatar ||
+                            `${process.env.PUBLIC_URL}/assets/images/school-logo.svg`
+                          }
                           roundedCircle
                         ></Image>
                       </Grid>
@@ -197,15 +200,15 @@ class SchoolInfo extends Component {
                           </Grid>
                         </Grid>
                       )}
-                      {/* <Grid item container direction="row">
-                      <Grid item xs={5} lg={5}>
-                        <strong>Catatan Sekolah</strong>
+                      <Grid item container direction="row">
+                        <Grid item xs={5} lg={5}>
+                          <strong>Catatan Sekolah</strong>
+                        </Grid>
+                        <Grid item xs={7} lg={7}>
+                          {schoolState.data.note ||
+                            "Belum mengisi catatan sekolah"}
+                        </Grid>
                       </Grid>
-                      <Grid item xs={7} lg={7}>
-                        {schoolState.school.catatan ||
-                          "Belum mengisi catatan sekolah"}
-                      </Grid>
-                    </Grid> */}
                       {/* ONLY SHOW FOR OWNER MAINTAINER*/}
                       {schoolState.userHasAuthority && (
                         <Grid
@@ -379,22 +382,26 @@ class SchoolInfo extends Component {
               <ModalFooter>
                 {!schoolState.modal.showSpinner && (
                   <div>
-                    <Button
-                      color="default"
-                      variant="contained"
-                      disableElevation
-                      onClick={() => setModalSchool("show", false)}
-                    >
-                      Batal
-                    </Button>
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      disableElevation
-                      type="submit"
-                    >
-                      Simpan
-                    </Button>
+                    <div>
+                      <Button
+                        color="default"
+                        variant="contained"
+                        disableElevation
+                        onClick={() => setModalSchool("show", false)}
+                      >
+                        Batal
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        disableElevation
+                        type="submit"
+                      >
+                        Simpan
+                      </Button>
+                    </div>
                   </div>
                 )}
                 {schoolState.modal.showSpinner && <CircularProgress />}

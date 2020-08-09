@@ -8,6 +8,21 @@ import {
   DELETE_SCHOOL,
   REMOVE_SCHOOL_DATA,
   SET_SCHOOL_AUTHORITY,
+  DELETE_SCHOOL_FAILED,
+  UPDATE_SCHOOL_SPINNER,
+  GET_SCHOOL_CLASS,
+  SET_LIST_CLASS,
+  CONNECT_CLASS_FROM_SCHOOL,
+  SCHOOL_CREATE_CLASS,
+  SUCCESS_CONNECT_CLASS,
+  FAILED_CONNECT_CLASS,
+  SUCCESS_CREATE_SCHOOL_CLASS,
+  FAILED_CREATE_SCHOOL_CLASS,
+  CHANGE_LINK_STATUS,
+  APPROVE_JOIN_SCHOOL,
+  DECLINE_JOIN_SCHOOL,
+  SEARCH_CLASS,
+  SET_FILTERED_CLASS
 } from "../constants/ActionTypes";
 import * as services from "../services";
 import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
@@ -21,24 +36,26 @@ export function* getSchoolInfo(action) {
     HeaderAuth()
   );
   if (_res.status === 200) {
-    if (_res.data) {
-      yield put({
-        type: SET_SCHOOL_DATA,
-        value: _res.data.data,
-      });
-      console.log(_res.data.hasAuthority);
-      yield put({
-        types: SET_SCHOOL_AUTHORITY,
-        value: _res.data.hasAuthority
-      })
-    }
+    yield put({
+      type: SET_SCHOOL_DATA,
+      value: _res.data.data,
+    });
+    console.log(_res.data.hasAuthority);
+    yield put({
+      type: SET_SCHOOL_AUTHORITY,
+      value: _res.data.hasAuthority,
+    });
   } else {
     //SCHOOL NOT FOUND
-    console.log(_res.data.message);
+    window.location.href = process.env.PUBLIC_URL + "/404";
   }
 }
 
 export function* updateSchool() {
+  yield put({
+    type: UPDATE_SCHOOL_SPINNER,
+    value: true,
+  });
   const state = yield select(getSchoolState);
   const modal = state.modal;
   let param = {
@@ -70,16 +87,166 @@ export function* updateSchool() {
 export function* removeSchool() {
   const state = yield select(getSchoolState);
   const schoolId = state.data.id;
+  try {
+    const _res = yield call(
+      services.DELETE,
+      API_BASE_URL_DEV + API_PATH.school + "/" + schoolId,
+      HeaderAuth()
+    );
+    if (_res.status === 200) {
+      yield put({
+        type: REMOVE_SCHOOL_DATA,
+      });
+    } else {
+      yield put({
+        type: DELETE_SCHOOL_FAILED,
+        value: _res.data.message,
+      });
+    }
+  } catch (err) {
+    yield put({
+      type: DELETE_SCHOOL_FAILED,
+      value: err,
+    });
+  }
+}
+
+export function* getAllClass(action) {
+  const state = yield select(getSchoolState);
+  try {
+    const _res = yield call(
+      services.GET,
+      API_BASE_URL_DEV + API_PATH.school + "/class_list?schoolId=" + action.value +"&filter=" + state.filter,
+      HeaderAuth()
+    );
+    if (_res.status === 200) {
+      yield put({
+        type: SET_LIST_CLASS,
+        value: _res.data.listClass,
+      });
+      yield put({
+        type: SET_FILTERED_CLASS,
+        value: _res.data.listClass
+      })
+    } else {
+      console.log(_res.data.message);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+export function* connectClass() {
+  try {
+    const state = yield select(getSchoolState);
+    let param = {
+      code: state.connectClassModal.code,
+      m_school_id: state.data.id,
+    };
+    const _res = yield call(
+      services.POST,
+      API_BASE_URL_DEV + API_PATH.school + "/connect_class",
+      param,
+      HeaderAuth()
+    );
+    if (_res.status === 200) {
+      yield put({
+        type: SUCCESS_CONNECT_CLASS,
+        value: _res.data,
+      });
+      console.log(_res.data);
+    } else {
+      yield put({
+        type: FAILED_CONNECT_CLASS,
+        value: _res.data.message,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export function* createClass() {
+  try {
+    const state = yield select(getSchoolState);
+    const createState = state.createClassModal;
+    let param = {
+      m_school_id: state.data.id,
+      name: createState.name,
+      description: createState.description,
+    };
+    const _res = yield call(
+      services.PUT,
+      API_BASE_URL_DEV + API_PATH.school + "/create_class",
+      param,
+      HeaderAuth()
+    );
+
+    if (_res.status === 200) {
+      console.log(_res.data);
+      yield put({
+        type: SUCCESS_CREATE_SCHOOL_CLASS,
+        value: _res.data,
+      });
+    } else {
+      yield put({
+        type: FAILED_CREATE_SCHOOL_CLASS,
+        value: _res.data.message,
+      });
+    }
+  } catch (err) {}
+}
+
+export function* updateLinkStatus(action) {
+  let param = {
+    status: action.value,
+  };
   const _res = yield call(
-    services.DELETE,
-    API_BASE_URL_DEV + API_PATH.school + "/" + schoolId,
+    services.POST,
+    API_BASE_URL_DEV + API_PATH.school + "/approval/" + action.id,
+    param,
     HeaderAuth()
   );
   if (_res.status === 200) {
+    if (action.value === true) {
+      yield put({
+        type: APPROVE_JOIN_SCHOOL,
+        field: action.id,
+      });
+    } else {
+      yield put({
+        type: DECLINE_JOIN_SCHOOL,
+        field: action.id,
+      });
+    }
+  }
+}
+
+export function* getFilteredClassList() {
+  const state = yield select(getSchoolState);
+  if (state.filter == "") {
     yield put({
-      type: REMOVE_SCHOOL_DATA,
-    });
-    window.location.href = process.env.PUBLIC_URL + "/";
+      type: SET_FILTERED_CLASS,
+      value: state.listClass
+    })
+  } else {
+    try {
+      const _res = yield call(
+        services.GET,
+        API_BASE_URL_DEV + API_PATH.school + "/class_list?schoolId=" + state.data.id + "&filter=" + state.filter,
+        HeaderAuth()
+      );
+      if (_res.status === 200) {
+        yield put({
+          type: SET_FILTERED_CLASS,
+          value: _res.data.listClass
+        })
+      } else {
+        console.log(_res.data.message)
+      }
+    } catch (err) {
+      console.log(err.message)
+    }
   }
 }
 
@@ -88,5 +255,10 @@ export default function* rootSaga() {
     takeEvery(GET_SCHOOL, getSchoolInfo),
     takeEvery(SAVE_UPDATE_SCHOOL, updateSchool),
     takeEvery(DELETE_SCHOOL, removeSchool),
+    takeEvery(GET_SCHOOL_CLASS, getAllClass),
+    takeEvery(CONNECT_CLASS_FROM_SCHOOL, connectClass),
+    takeEvery(SCHOOL_CREATE_CLASS, createClass),
+    takeEvery(CHANGE_LINK_STATUS, updateLinkStatus),
+    takeEvery(SEARCH_CLASS, getFilteredClassList)
   ]);
 }

@@ -13,39 +13,26 @@ export const newPassword = () => ({
 
 //CLASS
 export const getDataClassInfo = () => ({
-  type: types.SET_CLASS_INFO,
+  type: types.SET_CLASS_INFO
 });
 export const onChangeStateClassInfo = (field, value) => ({
   type: types.ON_CHANGE_STATE_CLASS_INFO,
   value,
-  field,
+  field
 });
 export const onChangeStateEditClass = (field, value) => ({
   type: types.ON_CHANGE_STATE_EDIT_CLASS,
   value,
-  field,
+  field
 });
 export const postUpdateClass = () => ({
-  type: types.UPDATE_CLASS_INFO,
+  type: types.UPDATE_CLASS_INFO
 });
 export const postDeleteClass = () => ({
-  type: types.SET_CLASS_DELETE,
+  type: types.SET_CLASS_DELETE
 });
 export const postDuplicateClass = () => ({
-  type: types.SET_CLASS_DUPLICATE,
-});
-
-//CLASS
-export const getDataClassInfo = () => ({
-  type: types.SET_CLASS_INFO,
-});
-export const onChangeStateClassInfo = (field, value) => ({
-  type: types.ON_CHANGE_STATE_CLASS_INFO,
-  value,
-  field,
-});
-export const postDeleteClass = () => ({
-  type: types.SET_CLASS_DELETE,
+  type: types.SET_CLASS_DUPLICATE
 });
 
 //LOGIN

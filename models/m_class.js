@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const m_class_member = require('../models/m_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -132,5 +133,6 @@ module.exports = sequelize => {
     ]
   };
   const MClassModel = sequelize.define('m_class_model', attributes, options);
+  MClassModel.hasMany(m_class_member(), { foreignKey: 'm_class_id' });
   return MClassModel;
 };

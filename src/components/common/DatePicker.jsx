@@ -51,39 +51,39 @@
 // 			this.props.onChange(property, date)
 // 		}
 // }
-import React, { Component } from "react";
-import moment from "moment";
-import momentLocalizer from "react-widgets-moment";
-import { FormGroup, FormFeedback } from "reactstrap";
-import { DateTimePicker } from "react-widgets";
-import "react-widgets/dist/css/react-widgets.css";
-import "../tasklist/tasksiswa.css";
+import React, { Component } from 'react';
+import moment from 'moment';
+import momentLocalizer from 'react-widgets-moment';
+import { FormGroup, FormFeedback } from 'reactstrap';
+import { DateTimePicker } from 'react-widgets';
+import 'react-widgets/dist/css/react-widgets.css';
+import '../tasklist/tasksiswa.css';
 
-moment.locale("id");
+moment.locale('id');
 momentLocalizer();
 
 export default class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      event: moment().format("YYYY-MM-DD"),
+      event: moment().format('YYYY-MM-DD')
     };
   }
 
   render() {
     let {
       value,
-      id = "",
-      name = "",
+      id = '',
+      name = '',
       disabled,
-      label = "",
-      help = "",
+      label = '',
+      help = '',
       time = false,
-      format = "DD MM YYYY",
+      format = 'DD MM YYYY',
       isInline,
-      colLabel = "col-md-4",
-      colInput = "col-md-8",
-      onChange,
+      colLabel = 'col-md-4',
+      colInput = 'col-md-8',
+      onChange
     } = this.props;
     const { event } = this.state;
 
@@ -91,13 +91,11 @@ export default class DatePicker extends Component {
       value = this.state.event;
     }
 
-    let labels = isInline
-      ? colLabel + " label-title-small bold default"
-      : "col-md-12  label-title-small bold default";
-    let inputs = isInline ? colInput : "col-md-12";
+    let labels = isInline ? colLabel + ' label-title-small bold default' : 'col-md-12  label-title-small bold default';
+    let inputs = isInline ? colInput : 'col-md-12';
 
     return (
-      <FormGroup className={"row"}>
+      <FormGroup className={'row'}>
         <label className={labels}>{label}</label>
         <DateTimePicker
           id={id}

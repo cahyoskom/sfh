@@ -1,104 +1,100 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { ScrollContext } from "react-router-scroll-4";
-import { IntlReducer as Intl, IntlProvider } from "react-redux-multilingual";
-import { IntlActions } from "react-redux-multilingual";
-import "./index.scss";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { ScrollContext } from 'react-router-scroll-4';
+import { IntlReducer as Intl, IntlProvider } from 'react-redux-multilingual';
+import { IntlActions } from 'react-redux-multilingual';
+import './index.scss';
 
 // Import custom components
-import store from "./store";
-import translations from "./constants/translations";
-import { getAllProducts } from "./actions";
-import Fashion from "./components/layouts/fashion";
+import store from './store';
+import translations from './constants/translations';
+import { getAllProducts } from './actions';
+import Fashion from './components/layouts/fashion';
 
 //Collection Pages
-import CollectionLeftSidebar from "./components/collection/collection-left-sidebar";
-import CollectionNoSidebar from "./components/collection/collection-no-sidebar";
-import CollectionRightSidebar from "./components/collection/collection-right-sidebar";
+import CollectionLeftSidebar from './components/collection/collection-left-sidebar';
+import CollectionNoSidebar from './components/collection/collection-no-sidebar';
+import CollectionRightSidebar from './components/collection/collection-right-sidebar';
 
 // Product Pages
-import LeftSideBar from "./components/products/left-sidebar";
-import RightSideBar from "./components/products/right-sidebar";
-import NoSideBar from "./components/products/no-sidebar";
-import LeftImage from "./components/products/left-image";
-import RightImage from "./components/products/right-image";
-import Accordian from "./components/products/accordian";
-import ColumnLeft from "./components/products/column-left";
-import ColumnRight from "./components/products/column-right";
-import Column from "./components/products/column";
-import Vertical from "./components/products/vertical";
+import LeftSideBar from './components/products/left-sidebar';
+import RightSideBar from './components/products/right-sidebar';
+import NoSideBar from './components/products/no-sidebar';
+import LeftImage from './components/products/left-image';
+import RightImage from './components/products/right-image';
+import Accordian from './components/products/accordian';
+import ColumnLeft from './components/products/column-left';
+import ColumnRight from './components/products/column-right';
+import Column from './components/products/column';
+import Vertical from './components/products/vertical';
 
 // Features
-import Layout from "./components/app";
-import Cart from "./components/cart";
-import Compare from "./components/compare/index";
-import wishList from "./components/wishlist";
-import checkOut from "./components/checkout";
-import orderSuccess from "./components/checkout/success-page";
+import Layout from './components/app';
+import Cart from './components/cart';
+import Compare from './components/compare/index';
+import wishList from './components/wishlist';
+import checkOut from './components/checkout';
+import orderSuccess from './components/checkout/success-page';
 
 // Extra Pages
-import aboutUs from "./components/pages/about-us";
-import PageNotFound from "./components/pages/404";
-import lookbook from "./components/pages/lookbook";
-import Login from "./components/pages/login";
-import Search from "./components/pages/search";
-import Collection from "./components/pages/collection";
-import ForgetPassword from "./components/pages/forget-password";
-import Contact from "./components/pages/contact";
-import Dashboard from "./components/pages/dashboard";
-import Faq from "./components/pages/faq";
-import UpdatePassword from "./components/pages/update-password";
+import aboutUs from './components/pages/about-us';
+import PageNotFound from './components/pages/404';
+import lookbook from './components/pages/lookbook';
+import Login from './components/pages/login';
+import Search from './components/pages/search';
+import Collection from './components/pages/collection';
+import ForgetPassword from './components/pages/forget-password';
+import Contact from './components/pages/contact';
+import Dashboard from './components/pages/dashboard';
+import Faq from './components/pages/faq';
+import UpdatePassword from './components/pages/update-password';
 
 // Blog Pages
-import RightSide from "./components/blogs/right-sidebar";
-import Details from "./components/blogs/details";
-import BlogPage from "./components/blogs/blog-page";
+import RightSide from './components/blogs/right-sidebar';
+import Details from './components/blogs/details';
+import BlogPage from './components/blogs/blog-page';
 
 //customme
-import Home from "./components/pages/home";
-import SignIn from "./components/pages/loginPage";
-import Register from "./components/pages/register";
-import PrivateRoute from "./PrivateRoute";
-import PrivateRouteGuru from "./PrivateRouteGuru";
-import PrivateRouteSiswa from "./PrivateRouteSiswa";
-import PrivateRouteAdmin from "./PrivateRouteAdmin";
-import PrivateRouteKepsek from "./PrivateRouteAdmin";
-import PublicRoute from "./PublicRoute";
-import TaskSiswa from "./components/tasklist/tasksiswa";
-import TaskOrtu from "./components/tasklist/taskortu";
-import TaskKepsek from "./components/tasklist/taskkepsek";
-import TaskKepsekPerId from "./components/tasklist/taskkepsek_perid";
-import TaskGuru from "./components/tasklist/taskguru";
-import TaskGuruPerId from "./components/tasklist/taskguru_perid";
-import Admin from "./components/usermanagement/admin";
-import Group from "./components/usermanagement/group";
-import User from "./components/usermanagement/user";
-import UserPerId from "./components/usermanagement/user_perid";
-import Subject from "./components/usermanagement/subject";
-import Class from "./components/usermanagement/class";
-import Student from "./components/usermanagement/student";
-import Role from "./components/usermanagement/role";
-import Confirmation from "./components/pages/confirmation";
-import SchoolInfo from "./components/pages/school-info";
-import SchoolClass from "./components/pages/school-class";
+import Home from './components/pages/home';
+import SignIn from './components/pages/loginPage';
+import Register from './components/pages/register';
+import PrivateRoute from './PrivateRoute';
+import PrivateRouteGuru from './PrivateRouteGuru';
+import PrivateRouteSiswa from './PrivateRouteSiswa';
+import PrivateRouteAdmin from './PrivateRouteAdmin';
+import PrivateRouteKepsek from './PrivateRouteAdmin';
+import PublicRoute from './PublicRoute';
+import PublicRouteConfirmation from './PublicRouteConfirmation';
+import TaskSiswa from './components/tasklist/tasksiswa';
+import TaskOrtu from './components/tasklist/taskortu';
+import TaskKepsek from './components/tasklist/taskkepsek';
+import TaskKepsekPerId from './components/tasklist/taskkepsek_perid';
+import TaskGuru from './components/tasklist/taskguru';
+import TaskGuruPerId from './components/tasklist/taskguru_perid';
+import Admin from './components/usermanagement/admin';
+import Group from './components/usermanagement/group';
+import User from './components/usermanagement/user';
+import UserPerId from './components/usermanagement/user_perid';
+import Subject from './components/usermanagement/subject';
+import Class from './components/usermanagement/class';
+import Student from './components/usermanagement/student';
+import Role from './components/usermanagement/role';
+import Confirmation from './components/pages/confirmation';
+import SchoolInfo from './components/pages/school-info';
+import SchoolClass from './components/pages/school-class';
 
-var lang = localStorage.getItem("locale-lang");
+var lang = localStorage.getItem('locale-lang');
 
 if (lang == null) {
-  lang = "en";
+  lang = 'en';
 }
 
 class Root extends React.Component {
   authCheck() {
     let { account } = store.getState();
-    if (
-      account.token == null ||
-      account.token == undefined ||
-      account.profile == null ||
-      account.profile == undefined
-    ) {
+    if (account.token == null || account.token == undefined || account.profile == null || account.profile == undefined) {
       return false;
     } else {
       return true;
@@ -107,19 +103,10 @@ class Root extends React.Component {
 
   roleGuruCheck() {
     let { account } = store.getState();
-    if (
-      account.token == null ||
-      account.token == undefined ||
-      account.profile == null ||
-      account.profile == undefined
-    ) {
+    if (account.token == null || account.token == undefined || account.profile == null || account.profile == undefined) {
       return false;
     } else {
-      if (
-        account.roles == null ||
-        account.roles == undefined ||
-        account.selectedRole[0].group_id != 4
-      ) {
+      if (account.roles == null || account.roles == undefined || account.selectedRole[0].group_id != 4) {
         return false;
       } else {
         return true;
@@ -129,19 +116,10 @@ class Root extends React.Component {
 
   roleSiswaCheck() {
     let { account } = store.getState();
-    if (
-      account.token == null ||
-      account.token == undefined ||
-      account.profile == null ||
-      account.profile == undefined
-    ) {
+    if (account.token == null || account.token == undefined || account.profile == null || account.profile == undefined) {
       return false;
     } else {
-      if (
-        account.roles == null ||
-        account.roles == undefined ||
-        account.selectedRole[0].group_id != 6
-      ) {
+      if (account.roles == null || account.roles == undefined || account.selectedRole[0].group_id != 6) {
         return false;
       } else {
         return true;
@@ -151,19 +129,10 @@ class Root extends React.Component {
 
   roleAdminCheck() {
     let { account } = store.getState();
-    if (
-      account.token == null ||
-      account.token == undefined ||
-      account.profile == null ||
-      account.profile == undefined
-    ) {
+    if (account.token == null || account.token == undefined || account.profile == null || account.profile == undefined) {
       return false;
     } else {
-      if (
-        account.roles == null ||
-        account.roles == undefined ||
-        account.selectedRole[0].group_id != 1
-      ) {
+      if (account.roles == null || account.roles == undefined || account.selectedRole[0].group_id != 1) {
         return false;
       } else {
         return true;
@@ -173,19 +142,10 @@ class Root extends React.Component {
 
   roleKepsekCheck() {
     let { account } = store.getState();
-    if (
-      account.token == null ||
-      account.token == undefined ||
-      account.profile == null ||
-      account.profile == undefined
-    ) {
+    if (account.token == null || account.token == undefined || account.profile == null || account.profile == undefined) {
       return false;
     } else {
-      if (
-        account.roles == null ||
-        account.roles == undefined ||
-        account.selectedRole[0].group_id != 2
-      ) {
+      if (account.roles == null || account.roles == undefined || account.selectedRole[0].group_id != 2) {
         return false;
       } else {
         return true;
@@ -199,29 +159,17 @@ class Root extends React.Component {
 
     return (
       <Provider store={store}>
-        <IntlProvider translations={translations} locale="en">
-          <BrowserRouter basename={"/"}>
+        <IntlProvider translations={translations} locale='en'>
+          <BrowserRouter basename={'/'}>
             <ScrollContext>
               <Layout>
                 <Switch>
-                  <PrivateRoute
-                    exact
-                    path={`${process.env.PUBLIC_URL}/`}
-                    component={Home}
-                    authenticated={this.authCheck()}
-                  />
+                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={Home} authenticated={this.authCheck()} />
 
                   {/* Custom Routes */}
-                  <PublicRoute
-                    path={`${process.env.PUBLIC_URL}/login`}
-                    component={SignIn}
-                    authenticated={this.authCheck()}
-                  />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
 
-                  <PublicRoute
-                    path={`${process.env.PUBLIC_URL}/confirmation`}
-                    component={Confirmation}
-                  />
+                  <PublicRouteConfirmation path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}
@@ -229,10 +177,7 @@ class Root extends React.Component {
                     authenticated={this.authCheck()}
                   />
 
-                  <PublicRoute
-                    path={`${process.env.PUBLIC_URL}/update_password/:code`}
-                    component={UpdatePassword}
-                  />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/update_password/:code`} component={UpdatePassword} />
 
                   <PrivateRoute
                     path={`${process.env.PUBLIC_URL}/school/:id`}
@@ -377,4 +322,4 @@ class Root extends React.Component {
   }
 }
 
-ReactDOM.render(<Root />, document.getElementById("root"));
+ReactDOM.render(<Root />, document.getElementById('root'));

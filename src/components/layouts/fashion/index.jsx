@@ -143,9 +143,7 @@ class Fashion extends Component {
                         <div>
                           <h4>welcome to fashion</h4>
                           <h1>men fashion</h1>
-                          <Link
-                            to={`${process.env.PUBLIC_URL}/left-sidebar/collection`}
-                            className='btn btn-solid'>
+                          <Link to={`${process.env.PUBLIC_URL}/left-sidebar/collection`} className='btn btn-solid'>
                             shop now
                           </Link>
                         </div>
@@ -164,9 +162,7 @@ class Fashion extends Component {
                         <div>
                           <h4>welcome to fashion</h4>
                           <h1>women fashion</h1>
-                          <Link
-                            to={`${process.env.PUBLIC_URL}/left-sidebar/collection`}
-                            className='btn btn-solid'>
+                          <Link to={`${process.env.PUBLIC_URL}/left-sidebar/collection`} className='btn btn-solid'>
                             shop now
                           </Link>
                         </div>
@@ -187,11 +183,7 @@ class Fashion extends Component {
               <div className='col-md-6'>
                 <Link to={`${process.env.PUBLIC_URL}/left-sidebar/collection`}>
                   <div className='collection-banner p-right text-center'>
-                    <img
-                      src={`${process.env.PUBLIC_URL}/assets/images/sub-banner1.jpg`}
-                      className='img-fluid'
-                      alt=''
-                    />
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/sub-banner1.jpg`} className='img-fluid' alt='' />
                     <div className='contain-banner'>
                       <div>
                         <h4>save 30%</h4>
@@ -204,11 +196,7 @@ class Fashion extends Component {
               <div className='col-md-6'>
                 <Link to={`${process.env.PUBLIC_URL}/left-sidebar/collection`}>
                   <div className='collection-banner p-right text-center'>
-                    <img
-                      src={`${process.env.PUBLIC_URL}/assets/images/sub-banner2.jpg`}
-                      className='img-fluid'
-                      alt=''
-                    />
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/sub-banner2.jpg`} className='img-fluid' alt='' />
                     <div className='contain-banner'>
                       <div>
                         <h4>save 60%</h4>
@@ -294,80 +282,56 @@ class Fashion extends Component {
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/1.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/1.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/2.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/2.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/3.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/3.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/4.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/4.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/5.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/5.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/6.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/6.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/7.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/7.png`} alt='' />
                       </a>
                     </div>
                   </div>
                   <div>
                     <div className='logo-block'>
                       <a href={null}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logos/8.png`}
-                          alt=''
-                        />
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/logos/8.png`} alt='' />
                       </a>
                     </div>
                   </div>

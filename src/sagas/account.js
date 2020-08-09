@@ -24,7 +24,8 @@ import {
   EMAIL_ACTIVATION_SUCCESS,
   SET_MODAL_ACTIVATION,
   SET_RESEND_ACTIVATION_REGIST,
-  ON_CHANGE_STATE_NEW_PASSWORD
+  ON_CHANGE_STATE_NEW_PASSWORD,
+  ON_CHANGE_STATE_UPDATE_PASSWORD
 } from '../constants/ActionTypes';
 import { fail, success } from '../components/common/toast-message';
 import * as services from '../services';
@@ -33,18 +34,13 @@ import { Header, HeaderAuth } from '../services/header';
 import group from '../components/usermanagement/group';
 //import updatePassword from "../components/pages/update-password";
 
-const getAccountState = (state) => state.account;
+const getAccountState = state => state.account;
 export function* googleLogin(action) {
   if (action.data.tokenId) {
     let param = {
       tokenId: action.data.tokenId
     };
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + API_PATH.oauth,
-      param,
-      Header()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.oauth, param, Header());
     if (_response.status === 200) {
       let data = _response.data;
       let profile = {
@@ -98,12 +94,7 @@ export function* login() {
       password: loginState.password
     };
     console.log(param);
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + API_PATH.login,
-      param,
-      Header()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.login, param, Header());
     if (_response.status === 200) {
       let data = _response.data;
       let profile = {
@@ -177,16 +168,26 @@ export function* newPassword() {
     const accountState = yield select(getAccountState);
     const newPasswordState = accountState.newPassword;
 
+    let email = newPasswordState.email;
+
+    if (!email) {
+      yield put({
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: true,
+        field: 'openAlert'
+      });
+      yield put({
+        type: ON_CHANGE_STATE_NEW_PASSWORD,
+        value: 'silakan isi email yang anda gunakan',
+        field: 'errormsg'
+      });
+      return;
+    }
     let param = {
-      email: newPasswordState.email
+      email: email
     };
 
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + API_PATH.newPassword,
-      param,
-      Header()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.newPassword, param, Header());
 
     if (_response.status == 200) {
       let data = _response.data;
@@ -243,18 +244,16 @@ export function* updatePassword() {
     const accountState = yield select(getAccountState);
     const updatePasswordState = accountState.updatePassword;
 
-    if (updatePasswordState.recaptcha == '') {
-      fail('lakukan captcha');
+    if (updatePasswordState.password != updatePasswordState.repeatPassword) {
+      fail('password tidak sama');
       return;
     }
-    if (updatePasswordState.password != updatePasswordState.repeatPassword) {
-      console.log('password tidak sama');
-      fail('password tidak sama');
+    if (updatePasswordState.password.length < 6) {
+      fail('password tidak sesuai kriteria (minimal 6 karakter)');
       return;
     }
 
     let param = {
-      email: updatePasswordState.email,
       password: updatePasswordState.password
     };
 
@@ -266,21 +265,17 @@ export function* updatePassword() {
     );
 
     if (_response.status == 200) {
-      let data = _response.data;
+      let message = _response.data.message;
       console.log(_response);
-      let message = data.message;
-
-      // yield put({
-      //   type: SET_NEW_PASSWORD_SUCCESS
-      // });
+      yield put({
+        type: ON_CHANGE_STATE_UPDATE_PASSWORD,
+        value: true,
+        field: 'success'
+      });
 
       success(message);
     }
   } catch (error) {
-    yield put({
-      type: SET_LOADER,
-      value: false
-    });
     fail(error);
   }
 }
@@ -396,12 +391,7 @@ export function* registration() {
       phone: registState.noHP,
       name: registState.fullname
     };
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + API_PATH.register,
-      param,
-      Header()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + API_PATH.register, param, Header());
     if (_response.status === 200) {
       yield put({
         type: RESET_STATE_LOGIN
@@ -437,12 +427,7 @@ export function* sendEmail() {
     let param = {
       email: accountState.modalActivation.email
     };
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + API_PATH.requestActivation,
-      param,
-      Header()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.requestActivation, param, Header());
     if (_response.status === 200) {
       yield put({
         type: EMAIL_ACTIVATION_SUCCESS,

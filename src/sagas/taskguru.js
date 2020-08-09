@@ -1,4 +1,4 @@
-import { all, takeEvery, put, fork, select, call } from "redux-saga/effects";
+import { all, takeEvery, put, fork, select, call } from 'redux-saga/effects';
 import {
   GET_TASK_GURU_LIST,
   GET_TASK_GURU_LIST_SUCCESS,
@@ -19,17 +19,17 @@ import {
   GET_TASK_GURU_BY_ID,
   GURU_DELETE_TASK_FILE,
   SET_MODAL_EDIT_FORM_GURU,
-  GURU_DOWNLOAD_COLLECTION,
-} from "../constants/ActionTypes";
-import { fail, success } from "../components/common/toast-message";
-import * as services from "../services";
-import { API_BASE_URL_DEV, API_PATH } from "../constants/api";
-import { HeaderFile, HeaderAuth } from "../services/header";
-import moment from "moment";
-import { setStateModalForm, setModal } from "../actions";
+  GURU_DOWNLOAD_COLLECTION
+} from '../constants/ActionTypes';
+import { fail, success } from '../components/common/toast-message';
+import * as services from '../services';
+import { API_BASE_URL_DEV, API_PATH } from '../constants/api';
+import { HeaderFile, HeaderAuth } from '../services/header';
+import moment from 'moment';
+import { setStateModalForm, setModal } from '../actions';
 
-const getTaskGuruState = (state) => state.taskGuru;
-const getAccountState = (state) => state.account;
+const getTaskGuruState = state => state.taskGuru;
+const getAccountState = state => state.account;
 
 export function* getTaskGuruList() {
   try {
@@ -38,24 +38,24 @@ export function* getTaskGuruList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     //param class
     let classes = taskGuru.filter.class_id;
-    let paramClass = "&class=";
+    let paramClass = '&class=';
 
     if (classes.length != 0) {
       let kelas = [];
-      let optional = "";
+      let optional = '';
       for (let i = 0; i < classes.length; i++) {
         kelas.push(classes[i].value);
-        optional += "&class=" + kelas[i];
+        optional += '&class=' + kelas[i];
       }
       paramClass = optional;
     }
     //param subject
     let subjects = taskGuru.filter.subject_id;
-    let paramSubject = subjects != "" ? "&subject=" + subjects : "&subject=";
+    let paramSubject = subjects != '' ? '&subject=' + subjects : '&subject=';
 
     // if(subjects.length != 0){
     //   let subject = [];
@@ -69,15 +69,13 @@ export function* getTaskGuruList() {
 
     let paramStartDate =
       taskGuru.filter.start_date == null
-        ? "&start_date="
-        : "&start_date=" +
-          moment(taskGuru.filter.start_date).format("YYYY-MM-DD");
+        ? '&start_date='
+        : '&start_date=' + moment(taskGuru.filter.start_date).format('YYYY-MM-DD');
     let paramFinishDate =
       taskGuru.filter.finish_date == null
-        ? "&finish_date="
-        : "&finish_date=" +
-          moment(taskGuru.filter.finish_date).format("YYYY-MM-DD");
-    console.log("xxxxxx", taskGuru.filter);
+        ? '&finish_date='
+        : '&finish_date=' + moment(taskGuru.filter.finish_date).format('YYYY-MM-DD');
+    console.log('xxxxxx', taskGuru.filter);
     // let param = {
     //     class: taskGuru.filter.class_id,
     //     subject: taskGuru.filter.subject_id,
@@ -89,12 +87,7 @@ export function* getTaskGuruList() {
     // const response = yield call(services.GET, API_BASE_URL_DEV + "/task?" + paramClass + "&subject=" + param.subject, HeaderAuth());
     const response = yield call(
       services.GET,
-      API_BASE_URL_DEV +
-        "/task?" +
-        paramClass +
-        paramSubject +
-        paramStartDate +
-        paramFinishDate,
+      API_BASE_URL_DEV + '/task?' + paramClass + paramSubject + paramStartDate + paramFinishDate,
       HeaderAuth()
     );
 
@@ -119,21 +112,21 @@ export function* getTaskGuruList() {
       // console.log('ressss', result);
       yield put({
         type: GET_TASK_GURU_LIST_SUCCESS,
-        field: "data",
-        value: result,
+        field: 'data',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -144,16 +137,12 @@ export function* guruGetTaskCollectionList() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let task_id = taskGuru.params;
     // console.log('par',task_id)
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/task/" + task_id + "/collection",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/task/' + task_id + '/collection', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -172,21 +161,21 @@ export function* guruGetTaskCollectionList() {
       // console.log('ressss', result);
       yield put({
         type: GURU_GET_TASK_COLLECTION_LIST_SUCCESS,
-        field: "dataCollection",
-        value: result,
+        field: 'dataCollection',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -198,16 +187,12 @@ export function* getTaskGuruById() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let task_id = taskGuru.form.task_id;
     // console.log("task_id",task_id);
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/task/" + task_id,
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/task/' + task_id, HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -235,27 +220,27 @@ export function* getTaskGuruById() {
           notes: datas.data.notes,
           title: datas.data.title,
           start_date: datas.data.start_date,
-          finish_date: datas.data.finish_date,
+          finish_date: datas.data.finish_date
         };
 
         // console.log('ressss', result);
         yield put({
           type: SET_MODAL_EDIT_FORM_GURU,
-          payload: result,
+          payload: result
         });
       }
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -264,13 +249,9 @@ export function* getSubjectList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/subject",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/subject', HeaderAuth());
     if (response.status == 200) {
       let datas = response.data;
       let result = [];
@@ -282,20 +263,20 @@ export function* getSubjectList() {
       }
       yield put({
         type: GET_SUBJECT_LIST_SUCCESS,
-        field: "dataSourceSubject",
-        value: result,
+        field: 'dataSourceSubject',
+        value: result
       });
     }
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -304,14 +285,10 @@ export function* getClassList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/class",
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/class', HeaderAuth());
 
     if (response.status == 200) {
       let datas = response.data;
@@ -324,21 +301,21 @@ export function* getClassList() {
       }
       yield put({
         type: GET_CLASS_LIST_SUCCESS,
-        field: "dataSourceClass",
-        value: result,
+        field: 'dataSourceClass',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -350,7 +327,7 @@ export function* postTask() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       assignor_id: taskGuruState.assignor_id,
@@ -360,18 +337,13 @@ export function* postTask() {
       notes: form.notes,
       //   weight: form.weight,
       weight: 5,
-      start_date: moment(form.start_date).format("YYYY-MM-DD"),
-      finish_date: moment(form.finish_date).format("YYYY-MM-DD"),
-      publish_date: moment(form.publish_date).format("YYYY-MM-DD"),
-      files: form.files,
+      start_date: moment(form.start_date).format('YYYY-MM-DD'),
+      finish_date: moment(form.finish_date).format('YYYY-MM-DD'),
+      publish_date: moment(form.publish_date).format('YYYY-MM-DD'),
+      files: form.files
     };
 
-    const _response = yield call(
-      services.PUT,
-      API_BASE_URL_DEV + "/task",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.PUT, API_BASE_URL_DEV + '/task', params, HeaderAuth());
 
     if (_response.status == 200) {
       if (form.files != null || form.files != undefined) {
@@ -381,36 +353,31 @@ export function* postTask() {
         const formData = new FormData();
         // formData.append("files", form.files);
         for (let i = 0; i < form.files.length; i++) {
-          formData.append("files", form.files[i]);
+          formData.append('files', form.files[i]);
         }
         // console.log('ffaaaiill', form.files[0]);
-        const response = yield call(
-          services.PUT,
-          API_BASE_URL_DEV + "/task/" + task_id + "/files",
-          formData,
-          HeaderAuth()
-        );
+        const response = yield call(services.PUT, API_BASE_URL_DEV + '/task/' + task_id + '/files', formData, HeaderAuth());
         if (response.status == 200) {
           // console.log('respon formdata',response);
         }
       }
-      success("New Task Added Successfully");
+      success('New Task Added Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* getTaskGuruList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -423,7 +390,7 @@ export function* updateTask() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     let params = {
       task_id: form.task_id,
@@ -434,17 +401,12 @@ export function* updateTask() {
       notes: form.notes,
       //   weight: form.weight,
       weight: 5,
-      start_date: moment(form.start_date).format("YYYY-MM-DD"),
-      finish_date: moment(form.finish_date).format("YYYY-MM-DD"),
-      publish_date: moment(form.publish_date).format("YYYY-MM-DD"),
+      start_date: moment(form.start_date).format('YYYY-MM-DD'),
+      finish_date: moment(form.finish_date).format('YYYY-MM-DD'),
+      publish_date: moment(form.publish_date).format('YYYY-MM-DD')
     };
 
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + "/task",
-      params,
-      HeaderAuth()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + '/task', params, HeaderAuth());
 
     if (_response.status == 200) {
       if (form.files != null || form.files != undefined) {
@@ -454,36 +416,31 @@ export function* updateTask() {
         const formData = new FormData();
         // formData.append("files", form.files);
         for (let i = 0; i < form.files.length; i++) {
-          formData.append("files", form.files[i]);
+          formData.append('files', form.files[i]);
         }
         // console.log('ffaaaiill', form.files[0]);
-        const response = yield call(
-          services.PUT,
-          API_BASE_URL_DEV + "/task/" + task_id + "/files",
-          formData,
-          HeaderAuth()
-        );
+        const response = yield call(services.PUT, API_BASE_URL_DEV + '/task/' + task_id + '/files', formData, HeaderAuth());
         if (response.status == 200) {
           // console.log('respon formdata',response);
         }
       }
-      success("Task Updated Successfully");
+      success('Task Updated Successfully');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* getTaskGuruList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -495,31 +452,27 @@ export function* deleteTask() {
     const deleteIds = taskGuruState.form.task_id;
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
-    const _response = yield call(
-      services.DELETE,
-      API_BASE_URL_DEV + "/task/" + deleteIds,
-      HeaderAuth()
-    );
+    const _response = yield call(services.DELETE, API_BASE_URL_DEV + '/task/' + deleteIds, HeaderAuth());
     if (_response.status === 200) {
-      success("Task Successfully Deleted");
+      success('Task Successfully Deleted');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* getTaskGuruList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -532,38 +485,33 @@ export function* archivedTask() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let param = {
-      task_id: archievedIds,
+      task_id: archievedIds
     };
 
-    const _response = yield call(
-      services.POST,
-      API_BASE_URL_DEV + "/task/archived",
-      param,
-      HeaderAuth()
-    );
+    const _response = yield call(services.POST, API_BASE_URL_DEV + '/task/archived', param, HeaderAuth());
 
     if (_response.status === 200) {
-      success("Task Successfully Archived");
+      success('Task Successfully Archived');
       yield put({
         type: SET_MODAL,
-        field: "show",
-        value: false,
+        field: 'show',
+        value: false
       });
       yield* getTaskGuruList();
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -576,34 +524,30 @@ export function* guruDeleteTaskFile() {
 
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
 
     let task_id = form.task_id;
-    if (
-      form.deleteFileIds != 0 ||
-      form.deleteFileIds != undefined ||
-      form.deleteFileIds != null
-    ) {
+    if (form.deleteFileIds != 0 || form.deleteFileIds != undefined || form.deleteFileIds != null) {
       let task_file_id = form.deleteFileIds;
       const _response = yield call(
         services.DELETE,
-        API_BASE_URL_DEV + "/task/" + task_id + "/files/" + task_file_id,
+        API_BASE_URL_DEV + '/task/' + task_id + '/files/' + task_file_id,
         HeaderAuth()
       );
       if (_response.status === 200) {
-        success("File Deleted");
+        success('File Deleted');
       }
       yield* getTaskGuruById();
     }
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
     fail(error);
   }
@@ -614,16 +558,12 @@ export function* guruGetUploadedCollectionList() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     const taskGuru = yield select(getTaskGuruState);
     let task_collection_id = taskGuru.formUploadedCollection.task_collection_id;
     // console.log('swsw', taskGuru)
-    const response = yield call(
-      services.GET,
-      API_BASE_URL_DEV + "/collection/" + task_collection_id,
-      HeaderAuth()
-    );
+    const response = yield call(services.GET, API_BASE_URL_DEV + '/collection/' + task_collection_id, HeaderAuth());
     // console.log('guru', response);
     if (response.status == 200) {
       let datas = response.data;
@@ -631,8 +571,7 @@ export function* guruGetUploadedCollectionList() {
       if (datas.data.files != null || datas.data.files != undefined) {
         for (let i = 0; i < datas.data.files.length; i++) {
           let obj = {};
-          obj.task_collection_file_id =
-            datas.data.files[i].task_collection_file_id;
+          obj.task_collection_file_id = datas.data.files[i].task_collection_file_id;
           obj.task_collection_id = datas.data.files[i].task_collection_id;
           obj.filename = datas.data.files[i].filename;
           obj.location = datas.data.files[i].location;
@@ -643,26 +582,26 @@ export function* guruGetUploadedCollectionList() {
       }
       let result = {
         task_collection_id: datas.data.task_collection_id,
-        files: uploadedFiles,
+        files: uploadedFiles
       };
 
       yield put({
         type: GURU_GET_UPLOADED_COLLECTION_LIST_SUCCESS,
-        field: "dataUploadedCollection",
-        value: result,
+        field: 'dataUploadedCollection',
+        value: result
       });
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -672,17 +611,16 @@ export function* guruDownloadCollection() {
   try {
     yield put({
       type: SET_LOADER,
-      value: true,
+      value: true
     });
     const taskGuru = yield select(getTaskGuruState);
-    let task_collection_file_id =
-      taskGuru.formUploadedCollection.task_collection_file_id;
+    let task_collection_file_id = taskGuru.formUploadedCollection.task_collection_file_id;
     let filename = taskGuru.formUploadedCollection.filename;
     let type = '"' + taskGuru.formUploadedCollection.mime_type + '"';
 
     const response = yield call(
       services.GETFILE,
-      API_BASE_URL_DEV + "/collection/download/" + task_collection_file_id,
+      API_BASE_URL_DEV + '/collection/download/' + task_collection_file_id,
       HeaderFile()
     );
     // console.log('gurudonlotcollection', response);
@@ -692,25 +630,25 @@ export function* guruDownloadCollection() {
       window.URL = window.URL || window.webkitURL;
       const blob = new Blob([fileDownload], { type: type });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", filename);
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
     } else if (response.status == 404) {
-      fail("File /s not found");
+      fail('File /s not found');
     }
 
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   } catch (error) {
     // console.log(error)
     fail(error);
     yield put({
       type: SET_LOADER,
-      value: false,
+      value: false
     });
   }
 }
@@ -728,6 +666,6 @@ export default function* rootSaga() {
     takeEvery(DELETE_TASK, deleteTask),
     takeEvery(ARCHIVED_TASK, archivedTask),
     takeEvery(GET_TASK_GURU_BY_ID, getTaskGuruById),
-    takeEvery(GURU_DELETE_TASK_FILE, guruDeleteTaskFile),
+    takeEvery(GURU_DELETE_TASK_FILE, guruDeleteTaskFile)
   ]);
 }

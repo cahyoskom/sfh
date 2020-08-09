@@ -1,25 +1,25 @@
-import React from "react";
-import TableFooter from "@material-ui/core/TableFooter";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import { withStyles } from "@material-ui/core/styles";
-import TablePagination from "@material-ui/core/TablePagination";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import AddIcon from "@material-ui/icons/Add";
-import { Button } from "@material-ui/core";
+import React from 'react';
+import TableFooter from '@material-ui/core/TableFooter';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import { withStyles } from '@material-ui/core/styles';
+import TablePagination from '@material-ui/core/TablePagination';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import AddIcon from '@material-ui/icons/Add';
+import { Button } from '@material-ui/core';
 
 const defaultFooterStyles = {
   root: {
-    "&:last-child": {
-      padding: "0px 0px 0px 590px",
-    },
-  },
+    '&:last-child': {
+      padding: '0px 0px 0px 590px'
+    }
+  }
 };
 
 class CustomFooterGuru extends React.Component {
   handleClick = () => {
-    alert("Custom toolbar add button clicked");
+    alert('Custom toolbar add button clicked');
   };
 
   render() {
@@ -30,16 +30,9 @@ class CustomFooterGuru extends React.Component {
         <TableRow>
           <TableCell>
             <React.Fragment>
-              <Tooltip title={"custom icon"}>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={this.handleClick}
-                >
-                  <Button
-                    color="primary"
-                    size="small"
-                    style={{ color: "blue" }}
-                  >
+              <Tooltip title={'custom icon'}>
+                <IconButton className={classes.iconButton} onClick={this.handleClick}>
+                  <Button color='primary' size='small' style={{ color: 'blue' }}>
                     Add New Task
                   </Button>
                   {/* <AddIcon className={classes.deleteIcon} /> */}
@@ -64,6 +57,4 @@ class CustomFooterGuru extends React.Component {
   }
 }
 
-export default withStyles(defaultFooterStyles, { name: "CustomFooter" })(
-  CustomFooterGuru
-);
+export default withStyles(defaultFooterStyles, { name: 'CustomFooter' })(CustomFooterGuru);

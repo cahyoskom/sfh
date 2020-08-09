@@ -1,39 +1,24 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withTranslate } from "react-redux-multilingual";
-import BlockUi from "react-block-ui";
-import { Link, NavLink } from "react-router-dom";
-import {
-  Button,
-  FormGroup,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Col,
-  Row,
-  Label,
-  Input,
-} from "reactstrap";
-import CustomFooterGuru from "../common/customFooterGuru";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslate } from 'react-redux-multilingual';
+import BlockUi from 'react-block-ui';
+import { Link, NavLink } from 'react-router-dom';
+import { Button, FormGroup, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Label, Input } from 'reactstrap';
+import CustomFooterGuru from '../common/customFooterGuru';
 // import Select from "../common/Select";
-import "react-widgets/dist/css/react-widgets.css";
-import DateTimePicker from "../common/DatePicker";
+import 'react-widgets/dist/css/react-widgets.css';
+import DateTimePicker from '../common/DatePicker';
 // import Input from "../common/Input";
-import "react-datepicker/dist/react-datepicker.css";
-import "./tasksiswa.css";
-import MUIDataTable from "mui-datatables";
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
-import * as actions from "../../actions";
-import moment from "moment";
-import * as messageBox from "../common/message-box";
-import SimpleReactValidator from "simple-react-validator";
-import { Formik, Form, Field } from "formik";
-import Select from "react-select";
+import 'react-datepicker/dist/react-datepicker.css';
+import './tasksiswa.css';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import * as actions from '../../actions';
+import moment from 'moment';
+import * as messageBox from '../common/message-box';
+import SimpleReactValidator from 'simple-react-validator';
+import { Formik, Form, Field } from 'formik';
+import Select from 'react-select';
 // import Breadcrumb from "../common/breadcrumb";
 
 class TaskKepsek extends Component {
@@ -43,8 +28,8 @@ class TaskKepsek extends Component {
     this.state = {
       columns: [
         {
-          name: "status",
-          label: "Status",
+          name: 'status',
+          label: 'Status',
           options: {
             display: false,
             filter: false,
@@ -55,30 +40,22 @@ class TaskKepsek extends Component {
               if (value) {
                 return (
                   <div>
-                    <i
-                      className="fa fa-check-circle"
-                      title="Submitted"
-                      style={{ color: "green" }}
-                    />
+                    <i className='fa fa-check-circle' title='Submitted' style={{ color: 'green' }} />
                   </div>
                 );
               } else {
                 return (
                   <div>
-                    <i
-                      className="fa fa-window-close"
-                      title="Belum Submit"
-                      style={{ color: "red" }}
-                    />
+                    <i className='fa fa-window-close' title='Belum Submit' style={{ color: 'red' }} />
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "notes",
-          label: "Deskripsi",
+          name: 'notes',
+          label: 'Deskripsi',
           options: {
             filter: false,
             sort: false,
@@ -93,65 +70,65 @@ class TaskKepsek extends Component {
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "class_name",
-          label: "Kelas",
+          name: 'class_name',
+          label: 'Kelas',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "subject_name",
-          label: "Mata Pelajaran",
+          name: 'subject_name',
+          label: 'Mata Pelajaran',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "title",
-          label: "Task",
+          name: 'title',
+          label: 'Task',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "start_date",
-          label: "Start",
+          name: 'start_date',
+          label: 'Start',
           options: {
             display: false,
-            customBodyRender: (value) => {
+            customBodyRender: value => {
               if (value) {
                 return (
                   <div>
-                    <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
+                    <p>{moment(value).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "finish_date",
-          label: "Finish",
+          name: 'finish_date',
+          label: 'Finish',
           options: {
             display: false,
-            customBodyRender: (value) => {
+            customBodyRender: value => {
               if (value) {
                 return (
                   <div>
-                    <p>{moment(value).format("dddd YYYY-MM-DD").toString()}</p>
+                    <p>{moment(value).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "task_id",
-          label: "Action",
+          name: 'task_id',
+          label: 'Action',
           options: {
             filter: false,
             sort: false,
@@ -162,36 +139,36 @@ class TaskKepsek extends Component {
                 return (
                   <div>
                     <Link to={`${process.env.PUBLIC_URL}/taskkepsek/` + value}>
-                      <Button title="Detail Task" color="primary" size="sm">
+                      <Button title='Detail Task' color='primary' size='sm'>
                         Detail
                       </Button>
                     </Link>
                   </div>
                 );
               }
-            },
-          },
+            }
+          }
         },
         {
-          name: "class_id",
-          label: "class_id",
+          name: 'class_id',
+          label: 'class_id',
           options: {
-            display: false,
-          },
+            display: false
+          }
         },
         {
-          name: "subject_id",
-          label: "subject_id",
+          name: 'subject_id',
+          label: 'subject_id',
           options: {
-            display: false,
-          },
-        },
+            display: false
+          }
+        }
       ],
       isAddNew: false,
       isEdit: false,
       isDetail: false,
       multiValueClass: [],
-      dataSourceClass: this.props.taskKepsekState.dataSourceClass,
+      dataSourceClass: this.props.taskKepsekState.dataSourceClass
     };
     this.getList = this.getList.bind(this);
     this.onClickSignOut = this.onClickSignOut.bind(this);
@@ -219,61 +196,46 @@ class TaskKepsek extends Component {
 
   handleMultiChange(option) {
     let { setStateTaskListFilter } = this.props;
-    setStateTaskListFilter("class_id", option);
+    setStateTaskListFilter('class_id', option);
   }
 
   renderView() {
-    let {
-      taskKepsekState,
-      setStateTaskListFilter,
-      setStateModalForm,
-      kepsekGetTaskList,
-    } = this.props;
+    let { taskKepsekState, setStateTaskListFilter, setStateModalForm, kepsekGetTaskList } = this.props;
 
     const options = {
-      responsive: "scroll",
+      responsive: 'scroll',
       filter: false,
       search: false,
       download: false,
       print: false,
       viewColumns: false,
-      selectableRows: false,
+      selectableRows: false
     };
 
     return (
       <div>
         {/* <Breadcrumb title={<Link to={`${process.env.PUBLIC_URL}/usermanagement`}>User Management</Link>}/> */}
-        <section className="login-page section-b-space">
-          <div className="container">
-            <h3 className="text-left">
-              <i className="mdi mdi-table-edit" />
+        <section className='login-page section-b-space'>
+          <div className='container'>
+            <h3 className='text-left'>
+              <i className='mdi mdi-table-edit' />
               Kepala Sekolah
             </h3>
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="theme-card">
-                  <div className="collection-block">
+            <div className='row'>
+              <div className='col-lg-3'>
+                <div className='theme-card'>
+                  <div className='collection-block'>
                     <Link to={`${process.env.PUBLIC_URL}/`}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={`${process.env.PUBLIC_URL}/assets/images/icon/tes.png`} className='img-fluid' alt='' />
                     </Link>
                   </div>
-                  <div className={"text-center"}>
-                    <p>
-                      {moment(taskKepsekState.now)
-                        .format("dddd YYYY-MM-DD")
-                        .toString()}
-                    </p>
+                  <div className={'text-center'}>
+                    <p>{moment(taskKepsekState.now).format('dddd YYYY-MM-DD').toString()}</p>
                   </div>
                   <br />
-                  <form className="theme-form">
-                    <div className="form-group">
-                      <label>
-                        Nama : {localStorage.name.replace(/"/g, "")}
-                      </label>
+                  <form className='theme-form'>
+                    <div className='form-group'>
+                      <label>Nama : {localStorage.name.replace(/"/g, '')}</label>
                       <br />
                       <label>Kelas : SD 5</label>
                       <br />
@@ -282,21 +244,20 @@ class TaskKepsek extends Component {
                   </form>
                 </div>
               </div>
-              <div className="col-lg-9 right-login">
-                <div className="theme-card authentication-right">
-                  <div className="row">
-                    <div className="col-lg-4">
-                      <Label for="">Kelas</Label>
+              <div className='col-lg-9 right-login'>
+                <div className='theme-card authentication-right'>
+                  <div className='row'>
+                    <div className='col-lg-4'>
+                      <Label for=''>Kelas</Label>
                       <Select
                         // className={"col-md-3"}
-                        style={{ position: "absolute" }}
-                        id="class"
-                        name="class"
-                        placeholder="Pilih Kelas"
+                        style={{ position: 'absolute' }}
+                        id='class'
+                        name='class'
+                        placeholder='Pilih Kelas'
                         // defaultValue={taskKepsekState.filter.class_id}
                         defaultValue={taskKepsekState.dataSourceClass.filter(
-                          (option) =>
-                            option.value === taskKepsekState.filter.class_id
+                          option => option.value === taskKepsekState.filter.class_id
                         )}
                         options={taskKepsekState.dataSourceClass}
                         closeMenuOnSelect={false}
@@ -308,46 +269,46 @@ class TaskKepsek extends Component {
                         isMulti
                       />
                       <br />
-                      <Label for="">Mata Pelajaran</Label>
+                      <Label for=''>Mata Pelajaran</Label>
                       <Select
                         // className={"col-md-3"}
-                        style={{ position: "absolute" }}
-                        id="subject"
-                        name="subject"
+                        style={{ position: 'absolute' }}
+                        id='subject'
+                        name='subject'
                         defaultValue={taskKepsekState.filter.subject_id}
                         options={taskKepsekState.dataSourceSubject}
                         onChange={
-                          (e) => setStateTaskListFilter("subject_id", e.value)
+                          e => setStateTaskListFilter('subject_id', e.value)
                           // kepsekGetTaskList
                         }
                         multi
                       />
                     </div>
-                    <div className="col-md-4">
-                      <Label for="subject">mulai</Label>
+                    <div className='col-md-4'>
+                      <Label for='subject'>mulai</Label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("start_date", a);
+                          setStateTaskListFilter('start_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskKepsekState.filter.start_date}
                       />
                       <label>sampai</label>
                       <DateTimePicker
                         min={new Date()}
                         isInline={true}
-                        colLabel={"col-md-1"}
+                        colLabel={'col-md-1'}
                         onChange={(a, b) => {
-                          setStateTaskListFilter("end_date", a);
+                          setStateTaskListFilter('end_date', a);
                         }}
-                        format={"DD/MMM/YYYY"}
+                        format={'DD/MMM/YYYY'}
                         value={taskKepsekState.filter.end_date}
                       />
                     </div>
-                    <div className="col-md-2">
+                    <div className='col-md-2'>
                       <Button onClick={kepsekGetTaskList}>Filter</Button>
                     </div>
                   </div>
@@ -364,11 +325,11 @@ class TaskKepsek extends Component {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3">
-                <a href="#">Pengaturan</a> |{" "}
+            <div className='row'>
+              <div className='col-lg-3'>
+                <a href='#'>Pengaturan</a> |{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={() => {
                     this.onClickSignOut();
                   }}
@@ -387,12 +348,12 @@ class TaskKepsek extends Component {
     let { taskKepsekState } = this.props;
     return (
       <BlockUi
-        tag="div"
+        tag='div'
         blocking={taskKepsekState.loader}
         message={
           <span>
-            <div id="preloader">
-              <div id="loader" />
+            <div id='preloader'>
+              <div id='loader' />
             </div>
           </span>
         }
@@ -403,10 +364,8 @@ class TaskKepsek extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  taskKepsekState: state.taskKepsek,
+const mapStateToProps = state => ({
+  taskKepsekState: state.taskKepsek
 });
 
-export default connect(mapStateToProps, { ...actions })(
-  withTranslate(TaskKepsek)
-);
+export default connect(mapStateToProps, { ...actions })(withTranslate(TaskKepsek));

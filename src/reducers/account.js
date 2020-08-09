@@ -63,8 +63,8 @@ const initialState = {
   updatePassword: {
     password: '',
     repeatPassword: '',
-    recaptcha: '',
-    code: ''
+    code: '',
+    success: false
   },
   // roles:[],
   // roles: localStorage.getItem("roles")
@@ -91,9 +91,7 @@ const initialState = {
   //   sex: ""
   // },
   token: localStorage.getItem('token'),
-  profile: localStorage.getItem('profile')
-    ? JSON.parse(localStorage.getItem('profile'))
-    : undefined,
+  profile: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')) : undefined,
   loader: false,
   modal: {
     show: false,

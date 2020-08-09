@@ -1,14 +1,14 @@
-import { combineReducers } from "redux";
-import { IntlReducer as Intl, IntlProvider } from "react-redux-multilingual";
+import { combineReducers } from 'redux';
+import { IntlReducer as Intl, IntlProvider } from 'react-redux-multilingual';
 
 // Import custom components
-import accountReducer from "./account";
-import taskSiswaReducer from "./tasksiswa";
-import taskOrtuReducer from "./taskortu";
-import taskKepsekReducer from "./taskkepsek";
-import taskGuruReducer from "./taskguru";
-import adminReducer from "./admin";
-import schoolReducer from "./school"
+import accountReducer from './account';
+import taskSiswaReducer from './tasksiswa';
+import taskOrtuReducer from './taskortu';
+import taskKepsekReducer from './taskkepsek';
+import taskGuruReducer from './taskguru';
+import adminReducer from './admin';
+import schoolReducer from './school';
 
 const rootReducer = combineReducers({
   account: accountReducer,
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
   taskGuru: taskGuruReducer,
   admin: adminReducer,
   school: schoolReducer,
-  Intl,
+  Intl
 });
 
 export default rootReducer;

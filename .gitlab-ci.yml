@@ -84,8 +84,8 @@ deploy_dev:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_HOST" [ -f "$DEPLOY_PATH" ] && mv "$DEPLOY_PATH" "$DEPLOY_PATH-`date +%Y%m%d`"
-    - ssh "$DEPLOY_USER@$DEPLOY_HOST" [ -f "$ZIP_PATH/$ZIP_NAME" ] && mv "$ZIP_PATH/$ZIP_NAME" "$ZIP_PATH/$APP_NAME-`date +%Y%m%d`.zip"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" mv "$DEPLOY_PATH" "$DEPLOY_PATH"-`date +%Y%m%d` 2>/dev/null
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" mv "$ZIP_PATH/$ZIP_NAME" "$ZIP_PATH/$APP_NAME"-`date +%Y%m%d`.zip 2>/dev/null
     - scp "$ZIP_NAME" "$DEPLOY_USER@$DEPLOY_HOST:$ZIP_PATH"
     - ssh "$DEPLOY_USER@$DEPLOY_HOST" unzip -o "$ZIP_NAME" -d "$DEPLOY_PATH"
     - ssh "$DEPLOY_USER@$DEPLOY_HOST" 'sed -i.bak "s/\/assets/\/'"$APP_NAME"'\/assets/g" '"$DEPLOY_PATH"'/static/css/main.*.chunk.css'
@@ -116,8 +116,8 @@ deploy_prod:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_HOST" [ -f "$DEPLOY_PATH" ] && mv "$DEPLOY_PATH" "$DEPLOY_PATH-`date +%Y%m%d`"
-    - ssh "$DEPLOY_USER@$DEPLOY_HOST" [ -f "$ZIP_PATH/$ZIP_NAME" ] && mv "$ZIP_PATH/$ZIP_NAME" "$ZIP_PATH/$APP_NAME-`date +%Y%m%d`.zip"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" mv "$DEPLOY_PATH" "$DEPLOY_PATH"-`date +%Y%m%d` 2>/dev/null
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" mv "$ZIP_PATH/$ZIP_NAME" "$ZIP_PATH/$APP_NAME"-`date +%Y%m%d`.zip 2>/dev/null
     - scp "$ZIP_NAME" "$DEPLOY_USER@$DEPLOY_HOST:$ZIP_PATH"
     - ssh "$DEPLOY_USER@$DEPLOY_HOST" unzip -o "$ZIP_NAME" -d "$DEPLOY_PATH"
     - ssh "$DEPLOY_USER@$DEPLOY_HOST" 'sed -i.bak "s/\/assets/\/'"$APP_NAME"'\/assets/g" '"$DEPLOY_PATH"'/static/css/main.*.chunk.css'

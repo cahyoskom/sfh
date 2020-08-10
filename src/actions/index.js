@@ -89,9 +89,18 @@ export const saveRegister = () => ({
 export const requestUserData = (id, value) => ({
   type: types.REQUEST_USER_DATA,
   id,
-  value,
+  value
 });
 
+export const onChangeStateProfile = (field, value) => ({
+  type: types.ON_CHANGE_STATE_PROFILE,
+  value,
+  field
+});
+
+export const saveProfile = () => ({
+  type: types.SET_PROFILE
+});
 /////////////
 
 export const fetchProductsBegin = () => ({

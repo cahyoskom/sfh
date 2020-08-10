@@ -61,6 +61,24 @@ exports.create = async function (req, res) {
   }
 };
 
+exports.join = async function (req, res) {
+  const model_school_member = m_school_member();
+  var new_obj = {
+    m_school_id: req.body.m_school_id,
+    sec_user_id: req.body.sec_user_id,
+    sec_group_id: req.body.sec_group_id,
+    status: 1,
+    created_date: moment().format(),
+    created_by: req.body.name
+  };
+  try {
+    var datum = await model_school_member.create(new_obj);
+    res.json({ data: datum });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+  }
+};
+
 exports.update = async function (req, res) {
   const model_school = m_school();
   var update_obj = {

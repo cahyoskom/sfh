@@ -6,4 +6,5 @@ module.exports = function (router) {
   router.post('/', school.update);
   router.put('/', school.create);
   router.delete('/:id', school.delete);
+  router.put('/join', school.join);
 };

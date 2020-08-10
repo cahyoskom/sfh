@@ -46,6 +46,24 @@ exports.create = async function (req, res) {
   }
 };
 
+exports.join = async function (req, res) {
+  const model_class_member = m_class_member();
+  var new_obj = {
+    m_class_id: req.body.m_class_id,
+    sec_user_id: req.body.sec_user_id,
+    sec_group_id: req.body.sec_group_id,
+    status: 1,
+    created_date: moment().format(),
+    created_by: req.body.name
+  };
+  try {
+    var datum = await model_class_member.create(new_obj);
+    res.json({ data: datum });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+  }
+};
+
 exports.update = async function (req, res) {
   const model_class = m_class();
   var update_obj = {

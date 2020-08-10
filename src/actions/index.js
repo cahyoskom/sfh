@@ -98,6 +98,12 @@ export const onChangeStateProfile = (field, value) => ({
   field
 });
 
+export const onChangeStateEditProfile = (field, value) => ({
+  type: types.ON_CHANGE_STATE_EDIT_PROFILE,
+  value,
+  field
+});
+
 export const saveProfile = () => ({
   type: types.SET_PROFILE
 });

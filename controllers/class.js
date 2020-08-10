@@ -12,6 +12,7 @@ const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
+const sequelize = require('sequelize');
 
 exports.findAll = async function (req, res) {
   const model_class = m_class();
@@ -70,6 +71,7 @@ exports.create = async function (req, res) {
     res.status(411).json({ error: 11, message: err.message });
   }
 };
+
 exports.duplicate = async function (req, res) {
   const model_class = m_class();
   var datum = await model_class.findOne({
@@ -180,11 +182,12 @@ exports.delete = async function (req, res) {
     { status: DELETED },
     { where: { id: classId, status: ACTIVE } }
   );
+  //------------------------------------------------------------------------
+
   if (!datum[0]) {
     res.status(411).json({ message: 'kelas tidak ditemukan' });
     return;
   }
-  //------------------------------------------------------------------------
 
   // delete related class member within m_class_id from req.params.id
   const model_class_member = m_class_member();

@@ -129,6 +129,7 @@ exports.update = async function (req, res) {
     updated_date: moment().format(),
     updated_by: req.user.email
   };
+
   try {
     var datum = await model_school.update(update_obj, {
       where: { id: req.body.id }
@@ -410,18 +411,6 @@ exports.getAllClass = async function (req, res) {
           model: m_class_member(),
           required: true,
           where: { status: ACTIVE }
-          // include: [
-          //   {
-          //     model: sec_group(),
-          //     required: true,
-          //     where: { status: 1 } //OWNER
-          //   },
-          // {
-          //   model: sec_user(),
-          //   required: true,
-          //   where: {sec_user :}
-          // }
-          // ]
         }
       ],
       group: 'm_class_model.id'

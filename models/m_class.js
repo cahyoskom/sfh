@@ -67,11 +67,20 @@ module.exports = sequelize => {
     link_status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
-      defaultValue: '1',
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'link_status'
+      field: 'note'
+    },
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'note'
     },
     status: {
       type: DataTypes.INTEGER(4),

@@ -84,7 +84,7 @@ module.exports = sequelize => {
     note: {
       type: DataTypes.STRING(200),
       allowNull: true,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,

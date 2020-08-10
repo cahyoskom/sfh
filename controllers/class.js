@@ -10,6 +10,7 @@ const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
+const sequelize = require('sequelize');
 
 exports.findAll = async function (req, res) {
   const model_class = m_class();
@@ -68,102 +69,50 @@ exports.update = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
+  let transaction;
+  try {
+    const model_class = m_class();
+    const classId = req.params.id;
+    await model_class.update(
+      {
+        status: DELETED
+      },
+      { where: { id: classId }, transaction }
+    );
+
+    const model_class_member = m_class_member();
+    const classmemberFilter = {
+      m_class_id: classId
+    };
+    await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
+    // If the execution reaches this line, no errors were thrown.
+    // We commit the transaction.
+    await transaction.commit();
+    res.json({
+      message: 'Data has been deleted.'
+    });
+  } catch (error) {
+    // If the execution reaches this line, an error was thrown.
+    // We rollback the transaction.
+    await transaction.rollback();
+  }
+
+  //-----------------------------------------------------------------------------------------------------------
   // delete class within id from req.params.id
-  const model_class = m_class();
-  const classId = req.params.id;
-  await model_class.update({ status: DELETED }, { where: { id: classId } });
-  //------------------------------------------------------------------------
+  // const model_class = m_class();
+  // const classId = req.params.id;
+  // await model_class.update({ status: DELETED }, { where: { id: classId } });
+  // //------------------------------------------------------------------------
 
-  // delete related class member within m_class_id from req.params.id
-  const model_class_member = m_class_member();
-  const classmemberFilter = {
-    m_class_id: classId
-  };
-  const classmemberIds = await model_class_member
-    .findAll({
-      attributes: ['id'],
-      where: classmemberFilter
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting class member ids for next process:', classmemberIds);
-  await model_class_member.update({ status: DELETED }, { where: classmemberFilter });
-  //------------------------------------------------------------------------
+  // // delete related class member within m_class_id from req.params.id
+  // const model_class_member = m_class_member();
+  // const classmemberFilter = {
+  //   m_class_id: classId
+  // };
+  // await model_class_member.update({ status: DELETED }, { where: classmemberFilter });
+  // //------------------------------------------------------------------------
 
-  // delete related subject within m_class_id from req.params.id
-  const model_subject = m_subject();
-  const subjectFilter = {
-    m_class_id: classId
-  };
-  const subjectIds = await model_subject
-    .findAll({
-      attributes: ['id'],
-      where: subjectFilter
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting subject ids for next process:', subjectIds);
-  await model_subject.update({ status: DELETED }, { where: subjectFilter });
-  //------------------------------------------------------------------------
-
-  // delete related task within m_class_id from req.params.id
-  const model_task = t_task();
-  const taskFilter = {
-    m_class_id: classId
-  };
-  const taskIds = await model_task
-    .findAll({
-      attributes: ['id'],
-      where: taskFilter
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task ids for next process:', taskIds);
-  await model_task.update({ status: DELETED }, { where: taskFilter });
-  //------------------------------------------------------------------------
-
-  // delete related task file within t_task_id from previous process when getting task ids
-  const model_task_file = t_task_file();
-  const taskfileFilter = {
-    t_task_id: { [Op.in]: taskIds }
-  };
-  const taskfileIds = await model_task_file
-    .findAll({
-      attributes: ['id'],
-      where: taskfileFilter
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task file ids for next process:', taskfileIds);
-  await model_task_file.update({ status: DELETED }, { where: taskfileFilter });
-  //------------------------------------------------------------------------
-
-  // delete related task collection within t_task_id from previous process when getting task ids
-  const model_task_collection = t_task_collection();
-  const taskcollectionFilter = {
-    t_task_id: { [Op.in]: taskIds }
-  };
-  const taskcollectionIds = await model_task_collection
-    .findAll({
-      attributes: ['id'],
-      where: taskcollectionFilter
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task collection ids for next process:', taskcollectionIds);
-  await model_task_collection.update({ status: DELETED }, { where: taskcollectionFilter });
-  //------------------------------------------------------------------------
-
-  // delete related task collection file within t_task_id from previous process when getting task ids
-  const model_task_collection_file = t_task_collection_file();
-  const taskcollectionfileFilter = {
-    t_task_collection_id: {
-      [Op.in]: taskcollectionIds
-    }
-  };
-  await model_task_collection_file.update(
-    { status: DELETED },
-    {
-      where: taskcollectionfileFilter
-    }
-  );
-
-  res.json({
-    message: 'Data has been deleted.'
-  });
+  // res.json({
+  //   message: 'Data has been deleted.'
+  // });
 };

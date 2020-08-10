@@ -63,6 +63,15 @@ module.exports = sequelize => {
       comment: null,
       field: 'avatar'
     },
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'note'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

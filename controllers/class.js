@@ -5,6 +5,8 @@ const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
+const sec_group = require('../models/sec_group');
+
 const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
@@ -18,13 +20,35 @@ exports.findAll = async function (req, res) {
   res.json({ data: data });
 };
 
+async function checkAuthority(userId) {
+  const model_class_member = m_class_member();
+  const model_sec_group = sec_group();
+  var member = await model_class_member.findAll({
+    where: {
+      sec_user_id: userId,
+      status: ACTIVE,
+      sec_group_id: { [Op.or]: [1, 2] }
+    }
+  });
+  if (member.length > 0) {
+    return true;
+  }
+  return false;
+}
+
 exports.findOne = async function (req, res) {
   const model_class = m_class();
   var datum = await model_class.findOne({
-    where: { id: req.params.id }
+    where: { id: req.params.id, status: ACTIVE }
   });
+  if (!datum) {
+    res.status(401).json({ message: 'Kelas tidak ditemukan' });
+    return;
+  }
 
-  res.json({ data: datum });
+  var hasAuthority = await checkAuthority(req.user.id);
+
+  res.status(200).json({ data: datum, hasAuthority: hasAuthority });
 };
 
 exports.create = async function (req, res) {
@@ -33,10 +57,11 @@ exports.create = async function (req, res) {
     m_school_id: req.body.m_school_id,
     code: req.body.code,
     name: req.body.name,
+    note: req.body.note,
     description: req.body.description,
     status: 1,
     created_date: moment().format(),
-    created_by: req.body.name
+    created_by: req.user.name
   };
   try {
     var datum = await model_class.create(new_obj);
@@ -44,6 +69,59 @@ exports.create = async function (req, res) {
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
+};
+exports.duplicate = async function (req, res) {
+  const model_class = m_class();
+  var datum = await model_class.findOne({
+    where: { id: req.params.id, status: ACTIVE }
+  });
+  if (!datum) {
+    res.status(401).json({ message: 'kelas tidak ditemukan' });
+    return;
+  }
+  var new_obj = {
+    m_school_id: datum.m_school_id,
+    code: datum.code,
+    name: datum.name,
+    note: datum.note,
+    description: datum.description,
+    status: ACTIVE,
+    created_date: moment().format()
+    //created_by: req.user.name,
+  };
+  try {
+    var savedDuplicate = await model_class.create(new_obj);
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+    return;
+  }
+  const model_class_member = m_class_member();
+  let members = await model_class_member.findAll({
+    where: {
+      status: ACTIVE,
+      m_class_id: datum.id
+    }
+  });
+  if (members.length == 0) {
+    return;
+  }
+  console.log(members);
+  for (const indexMember in members) {
+    member = members[indexMember];
+    var new_member = {
+      m_class_id: savedDuplicate.id,
+      sec_user_id: member.sec_user_id,
+      sec_group_id: member.sec_group_id,
+      status: ACTIVE
+    };
+    try {
+      var savedMember = await model_class_member.create(new_member);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  res.json({ data: savedDuplicate });
+  return;
 };
 
 exports.join = async function (req, res) {
@@ -70,6 +148,7 @@ exports.update = async function (req, res) {
     m_school_id: req.body.m_school_id,
     code: req.body.code,
     name: req.body.name,
+    note: req.body.note,
     description: req.body.description,
     status: req.body.status,
     updated_date: moment().format(),
@@ -77,9 +156,17 @@ exports.update = async function (req, res) {
   };
   try {
     var datum = await model_class.update(update_obj, {
-      where: { id: req.params.id }
+      where: { id: req.params.id, status: ACTIVE }
     });
-    res.json({ message: 'Data has been updated.' });
+    if (!datum[0]) {
+      res.status(411).json({ message: 'kelas tidak ditemukan' });
+      console.log('class not found');
+      return;
+    }
+    var updatedDatum = await model_class.findOne({
+      where: { id: req.params.id, status: ACTIVE }
+    });
+    res.json({ message: 'Data has been updated.', data: updatedDatum });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
@@ -89,7 +176,14 @@ exports.delete = async function (req, res) {
   // delete class within id from req.params.id
   const model_class = m_class();
   const classId = req.params.id;
-  await model_class.update({ status: DELETED }, { where: { id: classId } });
+  const datum = await model_class.update(
+    { status: DELETED },
+    { where: { id: classId, status: ACTIVE } }
+  );
+  if (!datum[0]) {
+    res.status(411).json({ message: 'kelas tidak ditemukan' });
+    return;
+  }
   //------------------------------------------------------------------------
 
   // delete related class member within m_class_id from req.params.id

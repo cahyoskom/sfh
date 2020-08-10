@@ -7,4 +7,5 @@ module.exports = function (router) {
   router.put('/', cls.create);
   router.delete('/:id', cls.delete);
   router.put('/join', cls.join);
+  router.put('/duplicate/:id', cls.duplicate);
 };

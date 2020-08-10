@@ -31,6 +31,15 @@ exports.findOne = async function (req, res) {
   res.json({ data: datum });
 };
 
+exports.findByCode = async function (req, res) {
+  const model_school = m_school();
+  var datum = await model_school.findOne({
+    where: { code: req.params.code }
+  });
+
+  res.json({ data: datum });
+};
+
 exports.create = async function (req, res) {
   const model_school = m_school();
   var checkAvatar = isBase64(req.body.avatar, { allowMime: true });

@@ -71,7 +71,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'note'
+      field: 'link_status'
     },
     note: {
       type: DataTypes.STRING(200),

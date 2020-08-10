@@ -7,7 +7,12 @@ import {
 } from '../constants/ActionTypes';
 
 const initialState = {
-  data: {},
+  data: {
+    name: '',
+    email: '',
+    password: '',
+    phone: ''
+  },
   profile: {
     isChecked: false,
     name: '',
@@ -15,9 +20,13 @@ const initialState = {
     password: '',
     rePassword: '',
     phone: '',
-    showErrorProfile: false,
-    errorMessage: '',
-    success: false
+    success: false,
+    successmsg: '',
+    openAlert: false,
+    errormsg: '',
+    editForm: false,
+    confirmUpdate: false,
+    updateFail: false
   }
 };
 
@@ -26,15 +35,30 @@ export default function profileReducer(state = initialState, action) {
     case GET_USER_DATA:
       return {
         ...state,
-        data: action.value
+        data: {
+          ...state.data,
+          name: action.value.data.name,
+          email: action.value.data.email,
+          password: action.value.data.password,
+          phone: action.value.data.phone
+        },
+        profile: {
+          ...state.profile,
+          name: action.value.data.name,
+          email: action.value.data.email,
+          password: action.value.data.password,
+          phone: action.value.data.phone
+        }
+        //data: action.value
       };
     case SET_PROFILE_FAILED:
       return {
         ...state,
         profile: {
           ...state.profile,
-          errorMessage: action.value,
-          showErrorProfile: true
+          updateFail: true,
+          editForm: false,
+          confirmUpdate: false
         }
       };
     case SET_PROFILE_SUCCESS:
@@ -42,7 +66,10 @@ export default function profileReducer(state = initialState, action) {
         ...state,
         profile: {
           ...state.profile,
-          success: true
+          successmsg: action.value,
+          success: true,
+          editForm: false,
+          confirmUpdate: false
         }
       };
     case ON_CHANGE_STATE_PROFILE:

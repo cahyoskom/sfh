@@ -4,6 +4,10 @@ import $ from "jquery";
 import "smartmenus";
 import { withTranslate } from "react-redux-multilingual";
 
+import { postLogout } from "../../../../actions";
+import Button from "@material-ui/core/Button";
+import { connect } from "react-redux";
+
 class NavBar extends Component {
   constructor(props) {
     super(props);
@@ -14,11 +18,12 @@ class NavBar extends Component {
   }
 
   componentWillMount() {
-    $(function () {
+    $(function() {
       $("#main-menu").smartmenus({
         subMenusSubOffsetX: 1,
         subMenusSubOffsetY: -8,
       });
+      $("li").css("margin", "0px");
     });
     if (window.innerWidth < 750) {
       this.setState({ navClose: { right: "-410px" } });
@@ -35,7 +40,7 @@ class NavBar extends Component {
     this.setState({ navClose: { right: "-410px" } });
   }
   render() {
-    const { translate } = this.props;
+    const { translate, postLogout } = this.props;
     return (
       <div>
         <nav id="main-nav">
@@ -60,8 +65,21 @@ class NavBar extends Component {
             {/* <li className="mega"><Link to={`${process.env.PUBLIC_URL}/`}>{translate('home')}</Link></li> */}
             {localStorage.name != null && (
               <li className="mega">
-                {" "}
-                Hello, {localStorage.name.replace(/"/g, "")}
+                <div class="row">
+                  {" "}
+                  Hello, {localStorage.name.replace(/"/g, "")}
+                </div>
+              </li>
+            )}
+            {localStorage.user_id != null && (
+              <li>
+                <Button
+                  color="secondary"
+                  variant="outlined"
+                  onClick={postLogout}
+                >
+                  Logout
+                </Button>
               </li>
             )}
           </ul>
@@ -71,4 +89,11 @@ class NavBar extends Component {
   }
 }
 
-export default withTranslate(NavBar);
+//export default withTranslate(NavBar);
+
+const mapStateToProps = (state) => ({});
+
+// export default Home;
+export default connect(mapStateToProps, {
+  postLogout,
+})(withTranslate(NavBar));

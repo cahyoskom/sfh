@@ -12,6 +12,8 @@ import CartContainer from "./../../../containers/CartContainer";
 import TopBar from "./common/topbar";
 import { changeCurrency } from "../../../actions";
 import { connect } from "react-redux";
+import $ from "jquery";
+import "../../stylesheet/header.css";
 
 class HeaderOne extends Component {
   constructor(props) {
@@ -23,6 +25,7 @@ class HeaderOne extends Component {
   }
 
   componentWillMount() {
+    $("#logo-image").css("margin", "30000px");
     // window.addEventListener('scroll', this.handleScroll);
   }
   componentWillUnmount() {
@@ -84,7 +87,7 @@ class HeaderOne extends Component {
               <div className="main-menu">
                 <div className="menu-left">
                   <div className="navbar">
-                    <a href="javascript:void(0)" onClick={this.openNav}>
+                    {/* <a href="javascript:void(0)" onClick={this.openNav}>
                       <div className="bar-style">
                         {" "}
                         <i
@@ -92,11 +95,28 @@ class HeaderOne extends Component {
                           aria-hidden="true"
                         ></i>
                       </div>
-                    </a>
+                    </a> */}
                     {/*SideBar Navigation Component*/}
                     <SideBar />
                   </div>
-                  <div className="brand-logo">
+                  <div className="brand-logo row">
+                    <a href="/">
+                      <img
+                        id="logo-image-navbar"
+                        src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`}
+                        className="img-fluid"
+                        alt=""
+                      />
+                    </a>
+                    <a href="/">
+                      <img
+                        id="brand-name-navbar"
+                        src={`${process.env.PUBLIC_URL}/assets/images/icon/brand-name.png`}
+                        className="img-fluid"
+                        alt=""
+                      />
+                    </a>
+
                     {/* <Link to={`${process.env.PUBLIC_URL}/`}>
 											<img src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`} className="img-fluid" alt="" />
 										</Link> */}

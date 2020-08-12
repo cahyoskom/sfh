@@ -84,6 +84,8 @@ import Role from './components/usermanagement/role';
 import Confirmation from './components/pages/confirmation';
 import SchoolInfo from './components/pages/school-info';
 import SchoolClass from './components/pages/school-class';
+import SchoolMember from './components/pages/school-member';
+import Invitation from './components/pages/accept-invitation';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -190,6 +192,14 @@ class Root extends React.Component {
                     component={SchoolClass}
                     authenticated={this.authCheck()}
                   />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/school_member/:id`}
+                    component={SchoolMember}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <Route path={`${process.env.PUBLIC_URL}/invitation`} component={Invitation} />
 
                   <PrivateRouteSiswa
                     path={`${process.env.PUBLIC_URL}/tasksiswa`}

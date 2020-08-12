@@ -16,7 +16,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  InputBase
+  InputBase,
+  Menu,
+  MenuItem
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
@@ -49,7 +51,9 @@ class SchoolClass extends Component {
     this.state = {
       declineConfirmation: false,
       idDecline: null,
-      valueDecline: null
+      valueDecline: null,
+
+      anchorEl: null
     };
   }
 
@@ -72,6 +76,17 @@ class SchoolClass extends Component {
   handleDecline = () => {
     this.setState({ declineConfirmation: false });
     this.props.changeLinkStatus(this.state.idDecline, this.state.valueDecline);
+  };
+
+  handleMore = e => {
+    this.setState({ anchorEl: e.currentTarget });
+  };
+  handleCloseMore = () => {
+    this.setState({ anchorEl: null });
+  };
+  handleDisconnect = id => {
+    this.handleCloseMore();
+    this.openDeclineConfirmation(id, false);
   };
 
   render() {
@@ -109,7 +124,7 @@ class SchoolClass extends Component {
 
                           {schoolState.userHasAuthority ? (
                             <div>
-                              Kode sekolah: <stong>schoolState.data.code</stong>
+                              Kode sekolah: <stong>{schoolState.data.code}</stong>
                             </div>
                           ) : (
                             <div></div>
@@ -138,6 +153,7 @@ class SchoolClass extends Component {
                       <Button
                         variant='contained'
                         color='primary'
+                        style={{ textTransform: 'none' }}
                         startIcon={<ShareOutlinedIcon />}
                         onClick={() => setModalConnectClass('show', true)}
                       >
@@ -150,6 +166,7 @@ class SchoolClass extends Component {
                       <Button
                         variant='contained'
                         color='primary'
+                        style={{ textTransform: 'none' }}
                         startIcon={<AddIcon />}
                         onClick={() => setModalCreateSchoolClass('show', true)}
                       >
@@ -205,8 +222,8 @@ class SchoolClass extends Component {
                           <TableCell>{row.ownerName}</TableCell>
                           <TableCell>{row.countMembers}</TableCell>
                           {schoolState.userHasAuthority && (
-                            <TableCell>
-                              {row.link_status === 1 && (
+                            <TableCell align='right'>
+                              {row.link_status === 1 ? (
                                 <Grid container>
                                   <div style={{ marginRight: '3px' }}>
                                     <IconButton color='inherit' onClick={() => changeLinkStatus(row.id, true)}>
@@ -219,8 +236,28 @@ class SchoolClass extends Component {
                                     </IconButton>
                                   </div>
                                 </Grid>
+                              ) : (
+                                <div>
+                                  <IconButton
+                                    aria-label='more'
+                                    aria-controls='menu'
+                                    aria-haspopup='true'
+                                    color='inherit'
+                                    onClick={this.handleMore}
+                                  >
+                                    <MoreVertIcon />
+                                  </IconButton>
+                                  <Menu
+                                    id='menu'
+                                    anchorEl={this.state.anchorEl}
+                                    keepMounted
+                                    open={Boolean(this.state.anchorEl)}
+                                    onClose={this.handleCloseMore}
+                                  >
+                                    <MenuItem onClick={() => this.handleDisconnect(row.id)}>Putuskan</MenuItem>
+                                  </Menu>
+                                </div>
                               )}
-                              {/* <MoreVertIcon /> */}
                             </TableCell>
                           )}
                         </TableRow>
@@ -277,12 +314,18 @@ class SchoolClass extends Component {
               </ModalBody>
               <ModalFooter>
                 <div>
-                  <Button color='default' variant='contained' disableElevation onClick={closeModalConnectClass}>
+                  <Button
+                    style={{ textTransform: 'none' }}
+                    color='default'
+                    variant='contained'
+                    disableElevation
+                    onClick={closeModalConnectClass}
+                  >
                     Batal
                   </Button>
                 </div>
                 <div>
-                  <Button color='primary' variant='contained' disableElevation type='submit'>
+                  <Button style={{ textTransform: 'none' }} color='primary' variant='contained' disableElevation type='submit'>
                     Sambungkan
                   </Button>
                 </div>
@@ -356,6 +399,7 @@ class SchoolClass extends Component {
                 <div>
                   <Button
                     color='default'
+                    style={{ textTransform: 'none' }}
                     variant='contained'
                     disableElevation
                     onClick={() => setModalCreateSchoolClass('show', false)}
@@ -364,7 +408,7 @@ class SchoolClass extends Component {
                   </Button>
                 </div>
                 <div>
-                  <Button color='primary' variant='contained' disableElevation type='submit'>
+                  <Button style={{ textTransform: 'none' }} color='primary' variant='contained' disableElevation type='submit'>
                     Buat
                   </Button>
                 </div>
@@ -381,7 +425,13 @@ class SchoolClass extends Component {
                 </Grid>
                 <Grid container justify='center'>
                   <Grid item>
-                    <Button color='primary' variant='contained' disableElevation onClick={closeSuccessModal}>
+                    <Button
+                      style={{ textTransform: 'none' }}
+                      color='primary'
+                      variant='contained'
+                      disableElevation
+                      onClick={closeSuccessModal}
+                    >
                       Oke
                     </Button>
                   </Grid>
@@ -394,16 +444,28 @@ class SchoolClass extends Component {
           <Modal isOpen={this.state.declineConfirmation} centered>
             <ModalBody>
               <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
-                <Grid item>Apakah kamu yakin ingin menolak sambungkan kelas?</Grid>
+                <Grid item>Apakah kamu yakin ingin membatalkan sambungkan kelas?</Grid>
                 <Grid item container justify='space-around'>
                   <Grid item>
-                    <Button color='default' variant='contained' disableElevation onClick={this.closeDeclineConfirmation}>
+                    <Button
+                      style={{ textTransform: 'none' }}
+                      color='default'
+                      variant='contained'
+                      disableElevation
+                      onClick={this.closeDeclineConfirmation}
+                    >
                       Batal
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button color='primary' variant='contained' disableElevation onClick={this.handleDecline}>
-                      Tolak
+                    <Button
+                      style={{ textTransform: 'none' }}
+                      color='primary'
+                      variant='contained'
+                      disableElevation
+                      onClick={this.handleDecline}
+                    >
+                      Ya, sudah yakin
                     </Button>
                   </Grid>
                 </Grid>

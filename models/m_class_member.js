@@ -53,6 +53,15 @@ module.exports = sequelize => {
         model: 'sec_group_model'
       }
     },
+    link_status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link_status'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

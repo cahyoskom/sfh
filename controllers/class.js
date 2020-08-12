@@ -6,12 +6,101 @@ const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
 const sec_group = require('../models/sec_group');
+const sec_user = require('../models/sec_user');
 
 const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
+const enums = require('../enums/group.enums');
+
+exports.member = async function (req, res) {
+  const classId = req.params.id;
+  const model_class = m_class();
+  const model_class_member = m_class_member();
+  const model_user = sec_user();
+  const link_status_enums = [
+    'Disetujui',
+    'Menunggu persetujuan',
+    'Undangan terkirim',
+    'Dinonaktifkan'
+  ];
+
+  let data = {};
+
+  //hasAuthority
+  let hasAuthority = false;
+  if (req.user) {
+    hasAuthority = await checkAuthority(req.user.id);
+  }
+  data['hasAuthority'] = hasAuthority;
+
+  //Students
+  let studentsData = [];
+  let students;
+  if (hasAuthority) {
+    students = await model_class_member.findAll({
+      where: {
+        m_class_id: classId,
+        status: ACTIVE,
+        sec_group_id: enums.STUDENT
+      }
+    });
+  } else {
+    students = await model_class_member.findAll({
+      where: {
+        m_class_id: classId,
+        status: ACTIVE,
+        sec_group_id: enums.STUDENT,
+        link_status: 0
+      }
+    });
+  }
+
+  for (i in students) {
+    let iuser = await model_user.findOne({
+      where: {
+        id: students[i].sec_user_id,
+        status: ACTIVE
+      }
+    });
+    let user = JSON.parse(JSON.stringify(iuser));
+
+    user['role'] = students[i].sec_group_id;
+    user['link_status'] = link_status_enums[students[i].link_status];
+    studentsData.push(user);
+  }
+  data['students'] = studentsData;
+
+  // Teachers
+
+  let teachersData = [];
+  let teachers = await model_class_member.findAll({
+    where: {
+      m_class_id: classId,
+      status: ACTIVE,
+      sec_group_id: 2
+    }
+  });
+  for (i in teachers) {
+    let iuser = await model_user.findOne({
+      where: {
+        id: teachers[i].sec_user_id,
+        status: ACTIVE
+      }
+    });
+    let user = JSON.parse(JSON.stringify(iuser));
+
+    user['role'] = teachers[i].sec_group_id;
+    user['link_status'] = link_status_enums[teachers[i].link_status];
+    teachersData.push(user);
+  }
+  data['teachers'] = teachersData;
+
+  res.json(data);
+  return;
+};
 
 exports.findAll = async function (req, res) {
   const model_class = m_class();

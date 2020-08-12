@@ -681,7 +681,7 @@ exports.acceptInvitation = async function (req, res) {
       }
     });
     if (check_member) {
-      res.status(200001).json({ message: 'Anggota sudah terdaftar', school_name: school.name });
+      res.status(200).json({ is_new_member: false, school_name: school.name });
     } else {
       res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
     }
@@ -704,7 +704,7 @@ exports.acceptInvitation = async function (req, res) {
         created_by: 'SYSTEM'
       };
       var created = await m_school_member().create(new_member);
-      res.json({ school_name: school.name });
+      res.json({ school_name: school.name, is_new_member: true });
     } catch (err) {
       res.status(401).json({ error: null, message: err.message });
     }

@@ -3,6 +3,7 @@ import {
   SET_PROFILE_FAILED,
   SET_PROFILE_SUCCESS,
   ON_CHANGE_STATE_PROFILE,
+  ON_CHANGE_STATE_EDIT_PROFILE,
   REQUEST_USER_DATA
 } from '../constants/ActionTypes';
 
@@ -18,7 +19,8 @@ const initialState = {
     name: '',
     email: '',
     password: '',
-    rePassword: '',
+    new_password: '',
+    re_new_password: '',
     phone: '',
     success: false,
     successmsg: '',
@@ -40,14 +42,19 @@ export default function profileReducer(state = initialState, action) {
           name: action.value.data.name,
           email: action.value.data.email,
           password: action.value.data.password,
-          phone: action.value.data.phone
+          phone: action.value.data.phone,
+          avatar: action.value.data.avatar,
+          hasAuthority: action.value.hasAuthority
         },
         profile: {
           ...state.profile,
           name: action.value.data.name,
           email: action.value.data.email,
           password: action.value.data.password,
-          phone: action.value.data.phone
+          new_password: '',
+          re_new_password: '',
+          phone: action.value.data.phone,
+          avatar: action.value.data.avatar
         }
         //data: action.value
       };
@@ -73,6 +80,14 @@ export default function profileReducer(state = initialState, action) {
         }
       };
     case ON_CHANGE_STATE_PROFILE:
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          [action.field]: action.value
+        }
+      };
+    case ON_CHANGE_STATE_EDIT_PROFILE:
       return {
         ...state,
         profile: {

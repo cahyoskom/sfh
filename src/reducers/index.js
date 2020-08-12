@@ -9,6 +9,7 @@ import taskKepsekReducer from './taskkepsek';
 import taskGuruReducer from './taskguru';
 import adminReducer from './admin';
 import profileReducer from './profile';
+import schoolReducer from './school';
 
 const rootReducer = combineReducers({
   account: accountReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   taskGuru: taskGuruReducer,
   admin: adminReducer,
   profile: profileReducer,
+  school: schoolReducer,
   Intl
 });
 

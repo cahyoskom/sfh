@@ -43,7 +43,6 @@ import aboutUs from './components/pages/about-us';
 import PageNotFound from './components/pages/404';
 import lookbook from './components/pages/lookbook';
 import Login from './components/pages/login';
-import Register from './components/pages/register';
 import Search from './components/pages/search';
 import Collection from './components/pages/collection';
 import ForgetPassword from './components/pages/forget-password';
@@ -60,6 +59,7 @@ import BlogPage from './components/blogs/blog-page';
 //customme
 import Home from './components/pages/home';
 import SignIn from './components/pages/loginPage';
+import Register from './components/pages/register';
 import PrivateRoute from './PrivateRoute';
 import PrivateRouteGuru from './PrivateRouteGuru';
 import PrivateRouteSiswa from './PrivateRouteSiswa';
@@ -83,6 +83,10 @@ import Student from './components/usermanagement/student';
 import Role from './components/usermanagement/role';
 import Confirmation from './components/pages/confirmation';
 import Profile from './components/pages/profile';
+import SchoolInfo from './components/pages/school-info';
+import SchoolClass from './components/pages/school-class';
+import SchoolMember from './components/pages/school-member';
+import Invitation from './components/pages/accept-invitation';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -183,6 +187,26 @@ class Root extends React.Component {
                   />
 
                   <PublicRoute path={`${process.env.PUBLIC_URL}/update_password/:code`} component={UpdatePassword} />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/school/:id`}
+                    component={SchoolInfo}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/school_class/:id`}
+                    component={SchoolClass}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/school_member/:id`}
+                    component={SchoolMember}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <Route path={`${process.env.PUBLIC_URL}/invitation`} component={Invitation} />
 
                   <PrivateRouteSiswa
                     path={`${process.env.PUBLIC_URL}/tasksiswa`}

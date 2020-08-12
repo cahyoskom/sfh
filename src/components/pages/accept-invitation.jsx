@@ -13,7 +13,6 @@ class Invitation extends Component {
     this.state = {
       success: false,
       accepted: false,
-      message: '',
       schoolName: ''
     };
   }
@@ -27,16 +26,10 @@ class Invitation extends Component {
       axios
         .get(API_BASE_URL_DEV + API_PATH.schoolInvitation + '?code=' + queryStringObj.code)
         .then(res => {
-          if (res.status == 200) {
-            this.setState({ success: true, schoolName: res.data.school_name });
-          } else if (res.status == 200001) {
-            this.setState({ success: true, accepted: true, schoolName: res.data.school_name });
-          } else {
-            this.setState({ success: false, message: res.data.message });
-          }
+          this.setState({ success: true, accepted: !res.data.is_new_member, schoolName: res.data.school_name });
         })
         .catch(err => {
-          this.setState({ success: false, message: err.message });
+          this.setState({ success: false });
         });
     }
   }
@@ -46,31 +39,23 @@ class Invitation extends Component {
       <div>
         <section className='confirmation-page'>
           <Container>
-            {this.state.success && (
+            {this.state.success ? (
               <Grid container direction='column' justify='center' alignItems='center' spacing={2}>
                 <Grid item xs={12}>
                   <img src={`${process.env.PUBLIC_URL}/assets/images/confirmation-img.png`} alt='confirmation-img'></img>
                 </Grid>
                 <Grid item xs={12} justify='center'>
-                  <div alignItems='center'>
-                    {this.state.accepted ? (
-                      <h3>Link sudah digunakan</h3>
-                    ) : (
-                      <h3>
-                        <strong>Oke!</strong>
-                      </h3>
-                    )}
-                  </div>
+                  <div alignItems='center'>{this.state.accepted && <h5>Link undangan sudah diakses</h5>}</div>
                 </Grid>
                 <Grid item xs={12} justify='center'>
                   <div alignItems='center'>
-                    {this.state.accepted ? (
+                    {!this.state.accepted ? (
                       <h7>
                         Anda berhasil bergabung sebagai anggota <strong>{this.state.schoolName}</strong>
                       </h7>
                     ) : (
                       <h7>
-                        Anda telah tergabung sebagai anggota <strong>{this.state.schoolName}</strong>
+                        Anda sudah tergabung sebagai anggota <strong>{this.state.schoolName}</strong>
                       </h7>
                     )}
                   </div>
@@ -83,12 +68,13 @@ class Invitation extends Component {
                   </Link>
                 </Grid>
               </Grid>
-            )}
-            <Grid container direction='column' justify='center' alignItems='center' spacing={2}>
-              <Grid item xs={12} lg={8} justify='center'>
-                <Alert severity='error'>{this.state.message}</Alert>
+            ) : (
+              <Grid container direction='column' justify='center' alignItems='center' spacing={2}>
+                <Grid item xs={12} lg={8} justify='center'>
+                  <Alert severity='error'>Link undangan tidak valid</Alert>
+                </Grid>
               </Grid>
-            </Grid>
+            )}
           </Container>
         </section>
       </div>

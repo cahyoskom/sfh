@@ -672,7 +672,6 @@ exports.acceptInvitation = async function (req, res) {
   var school = await m_school().findOne({
     where: { id: invitation.m_school_id }
   });
-  console.log(invitation.status);
   if (invitation.status === DEACTIVE) {
     var check_member = await m_school_member().findOne({
       where: {
@@ -684,32 +683,32 @@ exports.acceptInvitation = async function (req, res) {
     if (check_member) {
       res.status(200001).json({ message: 'Anggota sudah terdaftar', school_name: school.name });
     } else {
-      res.status(401).json({ error: null, message: 'Link undangan tidak valid' });
+      res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
     }
   } else if (invitation.status === ACTIVE) {
-    var obj = {
+    var new_obj = {
       status: DEACTIVE,
       updated_by: 'SYSTEM',
-      updated_date: now.format()
+      updated_date: moment().format()
     };
-    console.log('aaaaaaa');
     try {
-      var updated = await sec_confirmation().update(obj, {
+      var updated = await sec_confirmation().update(new_obj, {
         where: { id: invitation.id }
       });
       var new_member = {
         m_school_id: invitation.m_school_id,
         sec_user_id: invitation.sec_user_id,
-        staus: ACTIVE,
+        status: ACTIVE,
         sec_group_id: 2, //MAINTAINER
         created_date: moment().format(),
         created_by: 'SYSTEM'
       };
-      console.log('ccccc');
       var created = await m_school_member().create(new_member);
       res.json({ school_name: school.name });
     } catch (err) {
       res.status(401).json({ error: null, message: err.message });
     }
+  } else {
+    res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
   }
 };

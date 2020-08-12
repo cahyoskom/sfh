@@ -83,6 +83,7 @@ import Student from './components/usermanagement/student';
 import Role from './components/usermanagement/role';
 import Confirmation from './components/pages/confirmation';
 import ClassInfo from './components/pages/class-info';
+import ClassMember from './components/pages/class-member';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -170,6 +171,7 @@ class Root extends React.Component {
 
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/class-info/:id`} component={ClassInfo} />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/class-member/:id`} component={ClassMember} />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}

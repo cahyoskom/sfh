@@ -12,6 +12,7 @@ export const API_PATH = {
   requestActivation: '/request_activation',
   activating: '/activating',
   getClassInfo: '/class',
+  getClassMembers: '/class/member',
   getSchoolInfo: '/school',
   deleteClass: '/class',
   editClass: '/class',

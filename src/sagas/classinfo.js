@@ -11,7 +11,9 @@ import {
   SET_DELETE_CLASS_SUCCESS,
   SET_DELETE_CLASS_FAIL,
   SET_DUPLICATE_CLASS_SUCCESS,
-  SET_DUPLICATE_CLASS_FAIL
+  SET_DUPLICATE_CLASS_FAIL,
+  SET_CLASS_MEMBERS,
+  SET_CLASS_MEMBERS_DATA
 } from '../constants/ActionTypes';
 import { fail, success } from '../components/common/toast-message';
 import * as services from '../services';
@@ -20,6 +22,32 @@ import { Header, HeaderAuth } from '../services/header';
 import group from '../components/usermanagement/group';
 const getClassInfoState = state => state.class;
 
+export function* setclassmembers() {
+  try {
+    const accountState = yield select(getClassInfoState);
+    const classInfoState = accountState.classInfo;
+    const classMembersState = accountState.members;
+    const classId = classInfoState.id;
+    let param = {};
+    let url = API_BASE_URL_DEV + API_PATH.getClassMembers + '/' + classId;
+
+    const _response = yield call(services.GET, url, HeaderAuth());
+    if (_response.status != 200) {
+      fail(_response.data.message);
+      return;
+    }
+    let data = _response.data;
+
+    console.log(data);
+    yield put({
+      type: SET_CLASS_MEMBERS_DATA,
+      value: data
+    });
+  } catch (error) {
+    console.log(error);
+    fail(error);
+  }
+}
 export function* setclassinfo() {
   console.log('function called');
   try {
@@ -189,6 +217,7 @@ export default function* rootSaga() {
     takeEvery(SET_CLASS_INFO, setclassinfo),
     takeEvery(SET_CLASS_DELETE, deleteClass),
     takeEvery(UPDATE_CLASS_INFO, updateClass),
-    takeEvery(SET_CLASS_DUPLICATE, duplicateClass)
+    takeEvery(SET_CLASS_DUPLICATE, duplicateClass),
+    takeEvery(SET_CLASS_MEMBERS, setclassmembers)
   ]);
 }

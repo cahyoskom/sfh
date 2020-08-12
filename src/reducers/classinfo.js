@@ -8,7 +8,9 @@ import {
   SET_DELETE_CLASS_SUCCESS,
   SET_DELETE_CLASS_FAIL,
   SET_DUPLICATE_CLASS_SUCCESS,
-  SET_DUPLICATE_CLASS_FAIL
+  SET_DUPLICATE_CLASS_FAIL,
+  SET_CLASS_MEMBERS_DATA,
+  ON_CHANGE_STATE_CLASS_MEMBERS
 } from '../constants/ActionTypes';
 import Config from '../constants/config';
 import { ErrorMessage } from 'formik';
@@ -46,6 +48,9 @@ const initialState = {
     duplicateFail: false,
     duplicateSuccess: false,
     duplicatedId: ''
+  },
+  members: {
+    data: ''
   }
 };
 
@@ -71,6 +76,22 @@ export default function classReducer(state = initialState, action) {
           description: action.value.data.description,
           note: action.value.data.note,
           schoolCode: action.value.data.schoolCode
+        }
+      };
+    case SET_CLASS_MEMBERS_DATA:
+      return {
+        ...state,
+        members: {
+          ...state.members,
+          data: action.value
+        }
+      };
+    case ON_CHANGE_STATE_CLASS_MEMBERS:
+      return {
+        ...state,
+        members: {
+          ...state.members,
+          [action.field]: action.value
         }
       };
     case ON_CHANGE_STATE_CLASS_INFO:

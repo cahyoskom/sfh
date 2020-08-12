@@ -7,7 +7,8 @@ import taskKepsek from './taskkepsek';
 import taskGuru from './taskguru';
 import profile from './profile';
 import school from './school';
+import classinfo from './classinfo';
 
 export default function* rootSaga(getState) {
-  yield all([account(), taskSiswa(), taskOrtu(), taskKepsek(), taskGuru(), admin(), profile(), school()]);
+  yield all([account(), taskSiswa(), taskOrtu(), taskKepsek(), taskGuru(), admin(), profile(), school(), classinfo()]);
 }

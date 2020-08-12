@@ -14,5 +14,12 @@ export const API_PATH = {
   checkEmail: '/check_email',
   profile: '/profile',
   school: '/school',
-  schoolInvitation: '/school_invitation'
+  schoolInvitation: '/school_invitation',
+  getClassInfo: '/class',
+  getClassMembers: '/class/member',
+  getSchoolInfo: '/school',
+  deleteClass: '/class',
+  editClass: '/class',
+  schoolByCode: '/school/code',
+  duplicateClass: '/class/duplicate'
 };

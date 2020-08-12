@@ -1,52 +1,130 @@
 image: node:latest
 
 stages:
+  - install
   - build
   - deploy
 
-build_dev: # A job to build the static website - replace it with your build methods
+install_dev: # A job to build the static website - replace it with your build methods
+  stage: install
+  variables:
+    APP_NAME: sfh-dev
+  script:
+    - npm install
+    - CI=false PUBLIC_URL=/$APP_NAME npm run build
+  artifacts:
+    paths:
+      - build # This is what we want to publish, replace with your `dist` directory
+  only:
+    - dev
+
+install_prod:
+  stage: install
+  variables:
+    APP_NAME: sfh
+  script:
+    - npm install
+    - CI=false PUBLIC_URL=/$APP_NAME npm run build
+  artifacts:
+    paths:
+      - build
+  only:
+    - master
+
+build_dev:
   image: weltn24/up-docker-node-chrome-headless
   stage: build
   variables:
-    FILE_NAME: sfh-dev.zip
+    APP_NAME: sfh-dev
+    ZIP_NAME: $APP_NAME.zip
   before_script:
     - apt-get install zip unzip
   script:
-    - npm install
-    - CI=false npm run build
-    - cd build; zip -r ../${FILE_NAME} .
+    - cd build; zip -r ../$ZIP_NAME .
   artifacts:
     paths:
-      - ${FILE_NAME} # This is what we want to publish, replace with your `dist` directory
+      - $ZIP_NAME
   only:
     - dev
+
+build_prod:
+  image: weltn24/up-docker-node-chrome-headless
+  stage: build
+  variables:
+    APP_NAME: sfh
+    ZIP_NAME: $APP_NAME.zip
+  before_script:
+    - apt-get install zip unzip
+  script:
+    - cd build; zip -r ../$ZIP_NAME .
+  artifacts:
+    paths:
+      - $ZIP_NAME
+  only:
+    - master
 
 deploy_dev:
   stage: deploy
   variables:
+    # WARNING! Make sure "$DEPLOY_USER" have RW previleges to "$DEPLOY_PATH/.."
+    APP_NAME: sfh-dev
     DEPLOY_USER: deploy
     DEPLOY_HOST: 144.91.77.116
-    DEPLOY_PATH: /var/www/karpadev.karpalabs.com/public_html/sfh-dev/
-    FILE_NAME: sfh-dev.zip
-    ZIP_PATH: /home/$DEPLOY_USER/$FILE_NAME
-    ENV_NAME: dev
-    ENV_URL: https://karpadev.karpalabs.com/sfh-dev
+    DEPLOY_PATH: /var/www/karpadev.karpalabs.com/public_html/$APP_NAME
+    ZIP_PATH: /home/$DEPLOY_USER
+    ZIP_NAME: $APP_NAME.zip
+    ENV_DOMAIN: https://karpadev.karpalabs.com
+    ENV_URL: $ENV_DOMAIN/$APP_NAME
   before_script:
     - apt-get update -qq
     - apt-get install -qq git
     - 'which ssh-agent || ( apt-get install -qq openssh-client )'
     - eval $(ssh-agent -s)
-    - ssh-add <(echo "${SSH_PRIVATE_KEY}")
+    - ssh-add <(echo "$DEPLOY_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} rm -rf ${DEPLOY_PATH}*
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} rm -rf ${ZIP_PATH}${FILE_NAME}
-    - scp ${FILE_NAME} ${DEPLOY_USER}@${DEPLOY_HOST}:${ZIP_PATH}
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} unzip -o ${FILE_NAME} -d ${DEPLOY_PATH}
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'sed -i "s/\/assets/\/sfh-dev\/assets/g" /var/www/karpadev.karpalabs.com/public_html/sfh-dev/static/css/main.*.chunk.css'
+    - export DATE=`date +%Y%m%d`
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" '[[ -e '"$DEPLOY_PATH"' ]] && mv '"$DEPLOY_PATH"' '"$DEPLOY_PATH"'-'"$DATE"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" '[[ -e '"$ZIP_PATH/$ZIP_NAME"' ]] && mv '"$ZIP_PATH/$ZIP_NAME"' '"$ZIP_PATH/$APP_NAME"'-'"$DATE"'.zip'
+    - scp "$ZIP_NAME" "$DEPLOY_USER@$DEPLOY_HOST:$ZIP_PATH"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" unzip -o "$ZIP_NAME" -d "$DEPLOY_PATH"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" 'sed -i.bak "s/\/assets/\/'"$APP_NAME"'\/assets/g" '"$DEPLOY_PATH"'/static/css/main.*.chunk.css'
   environment:
-    name: ${ENV_NAME}
+    name: dev
     url: ${ENV_URL}
   only:
     - dev
+
+deploy_prod:
+  stage: deploy
+  variables:
+    # WARNING! Make sure "$DEPLOY_USER" have RW previleges to "$DEPLOY_PATH/.."
+    APP_NAME: sfh
+    DEPLOY_USER: deploy
+    DEPLOY_HOST: 144.91.77.116
+    DEPLOY_PATH: /var/www/karpadev.karpalabs.com/public_html/$APP_NAME
+    ZIP_PATH: /home/$DEPLOY_USER
+    ZIP_NAME: $APP_NAME.zip
+    ENV_DOMAIN: https://karpadev.karpalabs.com
+    ENV_URL: $ENV_DOMAIN/$APP_NAME
+  before_script:
+    - apt-get update -qq
+    - apt-get install -qq git
+    - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$DEPLOY_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - export DATE=`date +%Y%m%d`
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" '[[ -e '"$DEPLOY_PATH"' ]] && mv '"$DEPLOY_PATH"' '"$DEPLOY_PATH"'-'"$DATE"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" '[[ -e '"$ZIP_PATH/$ZIP_NAME"' ]] && mv '"$ZIP_PATH/$ZIP_NAME"' '"$ZIP_PATH/$APP_NAME"'-'"$DATE"'.zip'
+    - scp "$ZIP_NAME" "$DEPLOY_USER@$DEPLOY_HOST:$ZIP_PATH"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" unzip -o "$ZIP_NAME" -d "$DEPLOY_PATH"
+    - ssh "$DEPLOY_USER@$DEPLOY_HOST" 'sed -i.bak "s/\/assets/\/'"$APP_NAME"'\/assets/g" '"$DEPLOY_PATH"'/static/css/main.*.chunk.css'
+  environment:
+    name: prod
+    url: ${ENV_URL}
+  only:
+    - master

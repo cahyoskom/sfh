@@ -5,6 +5,7 @@ import {
   SET_PROFILE_SUCCESS,
   SET_PROFILE_FAILED,
   SET_PROFILE,
+  SET_UPDATE_PASSWORD,
   ON_CHANGE_STATE_EDIT_PROFILE
 } from '../constants/ActionTypes';
 import { fail, success } from '../components/common/toast-message';
@@ -23,7 +24,7 @@ export function* requestUserData() {
 
     yield put({
       type: GET_USER_DATA,
-      value: reqUserData.data[0]
+      value: reqUserData.data
     });
   } catch (e) {
     // yield put(e);
@@ -35,12 +36,36 @@ export function* updateProfile() {
     const profileState = yield select(getProfileState);
     const profileInfoState = profileState.data;
     const profileEditState = profileState.profile;
+
+    let old_password = {
+      password: profileInfoState.password
+    };
+
     let param = {
       email: profileEditState.email,
       password: profileEditState.password,
       phone: profileEditState.phone,
-      name: profileEditState.name
+      name: profileEditState.name,
+      avatar: profileEditState.avatar,
+      new_password: profileEditState.new_password,
+      re_new_password: profileEditState.re_new_password
     };
+
+    // if (old_password.password != param.password) {
+    //   yield put({
+    //     type: ON_CHANGE_STATE_EDIT_PROFILE,
+    //     value: 'Password Lama Salah',
+    //     field: 'errormsg'
+    //   });
+    // }
+
+    // if (param.new_password != param.re_new_password) {
+    //   yield put({
+    //     type: ON_CHANGE_STATE_EDIT_PROFILE,
+    //     value: 'Password Tidak Sama',
+    //     field: 'errormsg'
+    //   });
+    // }
 
     if (param.name == '') {
       yield put({

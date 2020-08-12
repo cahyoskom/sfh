@@ -145,6 +145,26 @@ export const setFilter = value => ({
   type: types.SET_FILTER,
   value
 });
+export const getSchoolMembers = id => ({
+  type: types.GET_SCHOOL_MEMBERS,
+  id
+});
+export const changeOwner = id => ({
+  type: types.CHANGE_SCHOOL_OWNER,
+  id
+});
+export const removeMember = id => ({
+  type: types.REMOVE_SCHOOL_MEMBER,
+  id
+});
+export const onChangeAddMember = (field, value) => ({
+  type: types.SET_MODAL_ADD_SCHOOL_MEMBER,
+  field,
+  value
+});
+export const addMember = () => ({
+  type: types.ADD_SCHOOL_MEMBER
+});
 
 /////////////
 

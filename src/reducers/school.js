@@ -21,8 +21,14 @@ import {
   APPROVE_JOIN_SCHOOL,
   DECLINE_JOIN_SCHOOL,
   SET_FILTER,
-  SET_FILTERED_CLASS
-} from "../constants/ActionTypes";
+  SET_FILTERED_CLASS,
+  SET_MODAL_ADD_SCHOOL_MEMBER,
+  SET_SCHOOL_MEMBERS,
+  SUCCESS_CHANGE_OWNER,
+  SUCCESS_DELETE_MEMBER,
+  SUCCESS_ADD_MEMBER,
+  FAILED_ADD_MEMBER
+} from '../constants/ActionTypes';
 const initialState = {
   data: {},
   listClass: [],
@@ -30,57 +36,65 @@ const initialState = {
   modal: {
     show: false,
     failed: false,
-    errormsg: "",
-    name: "",
-    phone: "",
-    address: "",
-    zipcode: "",
-    avatar: "",
-    showSpinner: false,
+    errormsg: '',
+    name: '',
+    phone: '',
+    address: '',
+    zipcode: '',
+    avatar: '',
+    showSpinner: false
   },
   deleteSchoolFailed: false,
-  deleteErrormsg: "",
+  deleteErrormsg: '',
   successDeleteSchool: false,
   successUpdateSchool: false,
   connectClassModal: {
     show: false,
-    code: "",
+    code: '',
     error: false,
-    errormsg: "",
+    errormsg: ''
   },
   createClassModal: {
     show: false,
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     error: false,
-    errormsg: "",
+    errormsg: ''
   },
   successModal: {
     show: false,
-    message: "",
+    message: ''
   },
-  filter: "",
-  filteredClassList:[]
+  filter: '',
+  filteredClassList: [],
+  listMembers: [],
+  isOwner: false,
+  addMemberModal: {
+    show: false,
+    email: '',
+    error: false,
+    errormsg: ''
+  }
 };
 export default function loginReducer(state = initialState, action) {
   switch (action.type) {
     case SET_SCHOOL_DATA:
       return {
         ...state,
-        data: action.value,
+        data: action.value
       };
     case SET_SCHOOL_AUTHORITY:
       return {
         ...state,
-        userHasAuthority: action.value,
+        userHasAuthority: action.value
       };
     case SET_SCHOOL_MODAL:
       return {
         ...state,
         modal: {
           ...state.modal,
-          [action.field]: action.value,
-        },
+          [action.field]: action.value
+        }
       };
     case ON_UPDATE_SCHOOL:
       return {
@@ -92,16 +106,16 @@ export default function loginReducer(state = initialState, action) {
           phone: state.data.phone,
           zipcode: state.data.zipcode,
           avatar: state.data.avatar,
-          show: true,
-        },
+          show: true
+        }
       };
     case UPDATE_SCHOOL_SPINNER:
       return {
         ...state,
         modal: {
           ...state.modal,
-          showSpinner: action.value,
-        },
+          showSpinner: action.value
+        }
       };
     case SUCCESS_UPDATE_SCHOOL:
       return {
@@ -112,26 +126,26 @@ export default function loginReducer(state = initialState, action) {
           address: state.modal.address,
           phone: state.modal.phone,
           zipcode: state.modal.zipcode,
-          avatar: state.modal.avatar,
+          avatar: state.modal.avatar
         },
         modal: {
           ...state.modal,
           show: false,
-          name: "",
-          phone: "",
-          address: "",
-          zipcode: "",
-          avatar: "",
+          name: '',
+          phone: '',
+          address: '',
+          zipcode: '',
+          avatar: '',
           failed: false,
-          errormsg: "",
-          showSpinner: false,
+          errormsg: '',
+          showSpinner: false
         },
-        successUpdateSchool: true,
+        successUpdateSchool: true
       };
     case DONE_UPDATE_SCHOOL:
       return {
         ...state,
-        successUpdateSchool: false,
+        successUpdateSchool: false
       };
     case FAILED_UPDATE_SCHOOL:
       return {
@@ -140,60 +154,60 @@ export default function loginReducer(state = initialState, action) {
           ...state.modal,
           failed: true,
           errormsg: action.value,
-          showSpinner: false,
-        },
+          showSpinner: false
+        }
       };
     case REMOVE_SCHOOL_DATA:
       return {
         ...state,
         data: {},
-        successDeleteSchool: true,
+        successDeleteSchool: true
       };
     case DELETE_SCHOOL_FAILED:
       return {
         ...state,
         deleteSchoolFailed: true,
-        deleteErrormsg: action.value,
+        deleteErrormsg: action.value
       };
     case SET_LIST_CLASS:
       return {
         ...state,
-        listClass: action.value,
+        listClass: action.value
       };
     case SET_CONNECT_CLASS:
       return {
         ...state,
         connectClassModal: {
           ...state.connectClassModal,
-          [action.field]: action.value,
-        },
+          [action.field]: action.value
+        }
       };
     case SET_MODAL_CREATE_SCHOOL_CLASS:
       return {
         ...state,
         createClassModal: {
           ...state.createClassModal,
-          [action.field]: action.value,
-        },
+          [action.field]: action.value
+        }
       };
     case SUCCESS_CONNECT_CLASS:
-      const newList = state.listClass.concat(action.value)
+      const newList = state.listClass.concat(action.value);
       return {
         ...state,
         connectClassModal: {
           ...state.connectClassModal,
           show: false,
-          code: "",
+          code: '',
           error: false,
-          errormsg: "",
+          errormsg: ''
         },
         successModal: {
           show: false,
-          message: "Kelas berhasil dihubungkan!",
+          message: 'Kelas berhasil dihubungkan!'
         },
         listClass: newList,
         filteredClassList: newList,
-        filter: '',
+        filter: ''
       };
     case FAILED_CONNECT_CLASS:
       return {
@@ -201,18 +215,18 @@ export default function loginReducer(state = initialState, action) {
         connectClassModal: {
           ...state.connectClassModal,
           error: true,
-          errormsg: action.value,
-        },
+          errormsg: action.value
+        }
       };
     case CLOSE_MODAL_CONNECT_CLASS:
       return {
         ...state,
         connectClassModal: {
           show: false,
-          code: "",
+          code: '',
           error: false,
-          errormsg: "",
-        },
+          errormsg: ''
+        }
       };
     case FAILED_CREATE_SCHOOL_CLASS:
       return {
@@ -220,8 +234,8 @@ export default function loginReducer(state = initialState, action) {
         createClassModal: {
           ...state.createClassModal,
           error: true,
-          errormsg: action.value,
-        },
+          errormsg: action.value
+        }
       };
     case SUCCESS_CREATE_SCHOOL_CLASS:
       const createdList = state.listClass.concat(action.value);
@@ -229,66 +243,125 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         createClassModal: {
           show: false,
-          name: "",
-          description: "",
+          name: '',
+          description: '',
           error: false,
-          errormsg: "",
+          errormsg: ''
         },
         successModal: {
           show: true,
-          message: "Kelas berhasil dibuat!",
+          message: 'Kelas berhasil dibuat!'
         },
         listClass: createdList,
         filteredClassList: createdList,
-        filter: '',
+        filter: ''
       };
     case CLOSE_SCHOOL_SUCCESS_MODAL:
       return {
         ...state,
         successModal: {
           show: false,
-          message: "",
-        },
+          message: ''
+        }
       };
     case APPROVE_JOIN_SCHOOL:
       var objIndex = state.listClass.findIndex(obj => obj.id == action.field);
       var updatedObj = { ...state.listClass[objIndex], link_status: 0 };
-      const updatedList = [
-        ...state.listClass.slice(0, objIndex),
-        updatedObj,
-        ...state.listClass.slice(objIndex + 1),
-      ];
+      const updatedList = [...state.listClass.slice(0, objIndex), updatedObj, ...state.listClass.slice(objIndex + 1)];
       return {
         ...state,
         listClass: updatedList,
         filteredClassList: updatedList,
         successModal: {
           show: true,
-          message: "Kelas berhasil dihubungkan!",
-        },
-      }
+          message: 'Kelas berhasil dihubungkan!'
+        }
+      };
     case DECLINE_JOIN_SCHOOL:
-      const removedList = state.listClass.filter(obj => obj.id !== action.field)
+      const removedList = state.listClass.filter(obj => obj.id !== action.field);
       return {
         ...state,
         listClass: removedList,
         filteredClassList: removedList,
         successModal: {
           show: true,
-          message: "Kelas telah ditolak untuk disambungkan!",
-        },
-      }
+          message: 'Kelas telah ditolak untuk disambungkan!'
+        }
+      };
     case SET_FILTER:
       return {
         ...state,
         filter: action.value
-      }
+      };
     case SET_FILTERED_CLASS:
       return {
         ...state,
-        filteredClassList: action.value,
-      }
-      
+        filteredClassList: action.value
+      };
+    case SET_SCHOOL_MEMBERS:
+      return {
+        ...state,
+        listMembers: action.list,
+        isOwner: action.value
+      };
+    case SET_MODAL_ADD_SCHOOL_MEMBER:
+      return {
+        ...state,
+        addMemberModal: {
+          ...state.addMemberModal,
+          [action.field]: action.value
+        }
+      };
+    case SUCCESS_ADD_MEMBER:
+      return {
+        ...state,
+        addMemberModal: {
+          show: false,
+          email: '',
+          error: false,
+          errormsg: ''
+        },
+        successModal: {
+          show: true,
+          message: action.value
+        }
+      };
+    case FAILED_ADD_MEMBER: {
+      return {
+        ...state,
+        addMemberModal: {
+          ...state.addMemberModal,
+          error: true,
+          errormsg: action.value
+        }
+      };
+    }
+    case SUCCESS_CHANGE_OWNER:
+      return {
+        ...state,
+        isOwner: false,
+        listMembers: state.listMembers.map(member =>
+          member.id == action.newOwnerId
+            ? { ...member, sec_group_id: 1 }
+            : member.sec_user_id == action.oldOwnerId
+            ? { ...member, sec_group_id: 2 }
+            : { ...member }
+        ),
+        successModal: {
+          show: true,
+          message: 'Koordinator kelas berhasil diubah'
+        }
+      };
+    case SUCCESS_DELETE_MEMBER:
+      return {
+        ...state,
+        listMembers: state.listMembers.filter(obj => obj.id !== action.field),
+        userHasAuthority: action.value ? false : { ...state.userHasAuthority },
+        successModal: {
+          show: true,
+          message: 'Anggota berhasil dikeluarkan'
+        }
+      };
     default:
   }
   return state;

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const m_class_member = require('../models/m_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -16,7 +17,7 @@ module.exports = sequelize => {
     },
     m_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -62,6 +63,24 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'avatar'
+    },
+    link_status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link_status'
+    },
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'note'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -123,5 +142,6 @@ module.exports = sequelize => {
     ]
   };
   const MClassModel = sequelize.define('m_class_model', attributes, options);
+  MClassModel.hasMany(m_class_member(), { foreignKey: 'm_class_id' });
   return MClassModel;
 };

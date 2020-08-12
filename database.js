@@ -22,3 +22,7 @@ module.exports.getDB = async () => {
 module.exports.sequelize = () => {
   return db;
 };
+
+module.exports.beginTransaction = () => {
+  return db.transaction();
+};

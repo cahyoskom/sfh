@@ -104,7 +104,7 @@ export const onChangeStateEditProfile = (field, value) => ({
   field
 });
 
-export const saveProfile = () => ({
+export const postUpdateProfile = () => ({
   type: types.SET_PROFILE
 });
 /////////////

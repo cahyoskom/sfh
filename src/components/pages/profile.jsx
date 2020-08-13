@@ -83,11 +83,13 @@ class Profile extends Component {
   closeSuccessEditModal = () => {
     const { onChangeStateEditProfile } = this.props;
     onChangeStateEditProfile('success', false);
+    window.location.reload();
   };
 
   closeFailEditModal = () => {
     const { onChangeStateEditProfile } = this.props;
     onChangeStateEditProfile('updateFail', false);
+    window.location.reload();
   };
 
   toggleEditProfileForm = () => {

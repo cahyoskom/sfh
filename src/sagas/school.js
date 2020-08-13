@@ -70,7 +70,8 @@ export function* updateSchool() {
     address: modal.address,
     zipcode: modal.zipcode,
     phone: modal.phone,
-    avatar: modal.avatar
+    avatar: modal.avatar,
+    note: modal.note
   };
   const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.school, param, HeaderAuth());
   if (_res.status === 200) {

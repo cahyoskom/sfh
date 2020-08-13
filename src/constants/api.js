@@ -18,5 +18,6 @@ export const API_PATH = {
   editClass: '/class',
   schoolByCode: '/school/code',
   duplicateClass: '/class/duplicate',
-  checkEmail: '/check_email'
+  checkEmail: '/check_email',
+  updateMember: '/class/link-update/1'
 };

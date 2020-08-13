@@ -42,6 +42,14 @@ export const postDeleteClass = () => ({
 export const postDuplicateClass = () => ({
   type: types.SET_CLASS_DUPLICATE
 });
+export const onChangeStateUpdateMember = (field, value) => ({
+  type: types.ON_CHANGE_STATE_UPDATE_MEMBER,
+  value,
+  field
+});
+export const postUpdateMember = () => ({
+  type: types.SET_UPDATE_MEMBER
+});
 
 //LOGIN
 export const googleLogin = data => ({

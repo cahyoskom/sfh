@@ -51,9 +51,33 @@ exports.update = async function (req, res) {
     throw new Error('Nomor telepon yang dimasukkan tidak sesuai kriteria');
   }
 
-  if (req.body.name == '') {
+  if (req.body.name == '' && req.body.phone == '') {
+    var getNamePhone = await model_user.findOne({
+      attributes: ['name', 'phone'],
+      where: { id: req.user.dataValues.id }
+    });
+
+    update_obj.name = getNamePhone.name;
+    update_obj.phone = getNamePhone.phone;
+
+    res.status(401).json({ error: null, message: 'Nama dan Nomor Telepon Tidak Boleh Kosong' });
+  } else if (req.body.name == '') {
+    var getName = await model_user.findOne({
+      attributes: ['name'],
+      where: { id: req.user.dataValues.id }
+    });
+
+    update_obj.name = getName.name;
+
     res.status(401).json({ error: null, message: 'Nama Tidak Boleh Kosong' });
   } else if (req.body.phone == '') {
+    var getPhone = await model_user.findOne({
+      attributes: ['phone'],
+      where: { id: req.user.dataValues.id }
+    });
+
+    update_obj.phone = getPhone.phone;
+
     res.status(401).json({ error: null, message: 'Nomor Telepon Tidak Boleh Kosong' });
   }
 

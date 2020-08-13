@@ -13,10 +13,14 @@ const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
 const sec_user = require('../models/sec_user');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const crypto = require('crypto');
 const isBase64 = require('is-base64');
 const { sequelize } = require('../database');
+const sec_confirmation = require('../models/sec_confirmation');
+const m_param = require('../models/m_param');
+const Confirmation = require('./confirmation');
+const { env } = process;
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {
@@ -474,5 +478,237 @@ exports.approval = async function (req, res) {
     res.json({ message: 'Link status berhasil diubah' });
   } catch (err) {
     res.status(411).json({ error: null, message: err.message });
+  }
+};
+
+exports.getMembers = async function (req, res) {
+  const school_id = req.params.id;
+  try {
+    var listMembers = await m_school_member().findAll({
+      attributes: ['id', 'sec_group_id', 'sec_user_id'],
+      where: { m_school_id: school_id, status: ACTIVE },
+      include: [
+        {
+          model: sec_user(),
+          attributes: ['name', 'email', 'phone'],
+          required: true
+        }
+      ]
+    });
+    var checkOwner = await m_school_member().findOne({
+      where: { sec_user_id: req.user.id, status: ACTIVE }
+    });
+    var isOwner = checkOwner.sec_group_id == 1 ? true : false;
+    res.json({ listMembers, isOwner });
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
+};
+
+exports.changeOwner = async function (req, res) {
+  const new_owner_id = req.body.id;
+  const school_id = req.body.school_id;
+  const old_owner_id = req.user.id;
+  var new_owner = {
+    sec_group_id: 1,
+    updated_date: moment().format(),
+    updated_by: req.user.email
+  };
+  var old_owner = {
+    sec_group_id: 2,
+    updated_date: moment().format(),
+    updated_by: req.user.email
+  };
+  var user = await m_school_member().findOne({
+    where: { sec_user_id: old_owner_id, m_school_id: school_id, status: ACTIVE }
+  });
+  if (user.sec_group_id !== 1) {
+    res
+      .status(403)
+      .json({ message: 'Hanya pemilik sekolah yang dapat mengubah kepemilikan sekolah' });
+  } else {
+    try {
+      var update_new_owner = await m_school_member().update(new_owner, {
+        where: { id: new_owner_id }
+      });
+      var update_old_owner = await m_school_member().update(old_owner, {
+        where: { sec_user_id: old_owner_id, m_school_id: school_id, status: ACTIVE }
+      });
+
+      res.json({
+        message: 'Pemilik sekolah berhasil diubah!',
+        new_owner_id: new_owner_id,
+        old_owner_id: old_owner_id
+      });
+    } catch (err) {
+      res.status(411).json({ error: null, message: err.message });
+    }
+  }
+};
+
+exports.removeMember = async function (req, res) {
+  const target_id = req.body.id;
+
+  var target_user = await m_school_member().findOne({
+    where: { id: target_id }
+  });
+  if (target_user.sec_group_id === 1) {
+    res.status(403).json({ error: null, message: 'Pemilik sekolah tidak dapat dikeluarkan' });
+    return;
+  }
+
+  var obj = {
+    status: DELETED,
+    updated_date: moment().format(),
+    updated_by: req.user.email
+  };
+  try {
+    var update = await m_school_member().update(obj, {
+      where: { id: target_id }
+    });
+
+    var change_authority;
+    if (target_user.sec_user_id == req.user.id) {
+      change_authority = true;
+    } else {
+      change_authority = false;
+    }
+    res.json({ message: 'Anggota berhasil dikeluarkan', changeAuthority: change_authority });
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
+};
+
+async function checkResendInvitation(invitation) {
+  const timeNow = moment();
+  const dateCr = moment(invitation.created_date);
+  const parameter = m_param();
+  const DURATION = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' }
+  });
+  dateCr.add(DURATION.value, 'hours');
+  if (dateCr < timeNow) {
+    invitation.status = DEACTIVE;
+    await invitation.save();
+    return true;
+  }
+  return false;
+}
+
+exports.inviteMember = async function (req, res) {
+  const school_id = req.body.school_id;
+  const sender_name = req.user.name;
+  const sender_email = req.user.email;
+  var check_user = await sec_user().findOne({
+    where: { email: req.body.email, status: ACTIVE }
+  });
+  if (check_user) {
+    var check_member = await m_school_member().findOne({
+      where: { sec_user_id: check_user.id, m_school_id: req.body.school_id, status: ACTIVE }
+    });
+    if (check_member) {
+      res
+        .status(411)
+        .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota sekolah' });
+    } else {
+      var invitation = await sec_confirmation().findOne({
+        where: { sec_user_id: check_user.id, m_school_id: school_id, status: ACTIVE }
+      });
+      var description;
+      if (invitation) {
+        var resend = await checkResendInvitation(invitation);
+        if (resend) {
+          // resend email
+          description = 'SCHOOL_MEMBER_REINVITATION';
+        } else {
+          res.status(411).json({ error: null, message: 'Email berisi undangan sudah dikirim' });
+          return;
+        }
+      } else {
+        description = 'SCHOOL_MEMBER_INVITATION';
+      }
+      var school = await m_school().findOne({
+        where: { id: school_id, status: ACTIVE }
+      });
+      //send invitation
+      const code = crypto.randomBytes(16).toString('hex');
+      const subject = `Undangan bergabung dengan ${school.name}`;
+      const to_addr = check_user.email;
+      const url = env.APP_BASEURL || req.headers.host;
+      const content =
+        'Halo,\n\n' +
+        `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${school.name}. Klik link untuk menerima undangan: \n` +
+        `${url}/invitation?q=school&code=${code}`;
+      const datum = {
+        description: description,
+        sec_user_id: check_user.id,
+        m_school_id: school_id,
+        code: code
+      };
+      try {
+        const sendEmail = await Confirmation.sendEmail({
+          subject,
+          to_addr,
+          content,
+          datum
+        });
+        if (!sendEmail) throw sendEmail;
+        res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
+      } catch (err) {
+        res.status(411).json({ error: null, message: err.message });
+      }
+    }
+  } else {
+    res.status(411).json({ error: null, message: 'Email belum terdaftar sebagai pengguna' });
+  }
+};
+
+exports.acceptInvitation = async function (req, res) {
+  const code = req.query.code;
+  var invitation = await sec_confirmation().findOne({
+    where: { code: code }
+  });
+  var school = await m_school().findOne({
+    where: { id: invitation.m_school_id }
+  });
+  if (invitation.status === DEACTIVE) {
+    var check_member = await m_school_member().findOne({
+      where: {
+        sec_user_id: invitation.sec_user_id,
+        m_school_id: invitation.m_school_id,
+        status: ACTIVE
+      }
+    });
+    if (check_member) {
+      res.status(200).json({ is_new_member: false, school_name: school.name });
+    } else {
+      res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
+    }
+  } else if (invitation.status === ACTIVE) {
+    var new_obj = {
+      status: DEACTIVE,
+      updated_by: 'SYSTEM',
+      updated_date: moment().format()
+    };
+    try {
+      var updated = await sec_confirmation().update(new_obj, {
+        where: { id: invitation.id }
+      });
+      var new_member = {
+        m_school_id: invitation.m_school_id,
+        sec_user_id: invitation.sec_user_id,
+        status: ACTIVE,
+        sec_group_id: 2, //MAINTAINER
+        created_date: moment().format(),
+        created_by: 'SYSTEM'
+      };
+      var created = await m_school_member().create(new_member);
+      res.json({ school_name: school.name, is_new_member: true });
+    } catch (err) {
+      res.status(401).json({ error: null, message: err.message });
+    }
+  } else {
+    res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
   }
 };

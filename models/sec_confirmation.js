@@ -49,6 +49,19 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
+    m_school_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'm_school_id',
+      references: {
+        key: 'id',
+        model: 'm_school_id'
+      }
+    },
     sender_addr: {
       type: DataTypes.STRING(50),
       allowNull: false,

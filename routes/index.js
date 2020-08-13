@@ -2,6 +2,7 @@ const { version } = require('../package.json');
 const auth = require('../controllers/authentication');
 const authGoogle = require('../controllers/google-auth');
 const registration = require('../controllers/registration');
+const school = require('../controllers/school');
 
 module.exports = function (router) {
   router.all('/', async function (req, res) {
@@ -31,4 +32,5 @@ module.exports = function (router) {
     res.status(401).end();
   });
   router.get('/check_email', registration.checkEmail);
+  router.get('/school_invitation', school.acceptInvitation);
 };

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const sec_user = require('../models/sec_user');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -125,5 +126,6 @@ module.exports = sequelize => {
     ]
   };
   const MSchoolMemberModel = sequelize.define('m_school_member_model', attributes, options);
+  MSchoolMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
   return MSchoolMemberModel;
 };

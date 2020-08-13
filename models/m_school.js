@@ -81,6 +81,15 @@ module.exports = sequelize => {
       comment: null,
       field: 'avatar'
     },
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'note'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -140,6 +149,14 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSchoolModel = sequelize.define('m_school_model', attributes, options);
+  const methods = {
+    classMethods: {
+      associate: function (models) {
+        m_school_model.hasMany(models.m_class_model, { foreignKey: 'm_school_id' });
+      }
+    }
+  };
+
+  const MSchoolModel = sequelize.define('m_school_model', attributes, options, methods);
   return MSchoolModel;
 };

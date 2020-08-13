@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const sec_user = require('../models/sec_user');
+const sec_group = require('../models/sec_group');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -134,5 +136,7 @@ module.exports = sequelize => {
     ]
   };
   const MClassMemberModel = sequelize.define('m_class_member_model', attributes, options);
+  MClassMemberModel.belongsTo(sec_group(), { foreignKey: 'sec_group_id' });
+  MClassMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
   return MClassMemberModel;
 };

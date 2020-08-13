@@ -1,6 +1,6 @@
 {
   "name": "sfh-api",
-  "version": "1.0.0",
+  "version": "1.1.11",
   "description": "School From Home - API",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
   },
   "homepage": "https://gitlab.com/karpalabs/sfh/api#readme",
   "dependencies": {
+    "base-64": "^0.1.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -35,11 +36,11 @@
     "moment": "^2.27.0",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
+    "nodejs-base64": "^1.0.3",
     "nodemailer": "^6.4.10",
     "password-validator": "^5.0.3",
     "sequelize": "^5.22.3",
-    "sequelize-automate": "^1.2.2",
-    "validate-phone-number-node-js": "0.0.1"
+    "sequelize-automate": "^1.2.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",

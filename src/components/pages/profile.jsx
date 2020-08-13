@@ -53,6 +53,13 @@ class Profile extends Component {
 
   uploadImage = e => {
     const file = e.target.files[0];
+
+    if (file.size > 2097152) {
+      // 2 mb for bytes
+      alert('File Harus Dibawah 2MB');
+      return;
+    }
+
     this.getBase64(file, result => {
       this.props.onChangeStateEditProfile('avatar', result);
     });

@@ -8,4 +8,5 @@ module.exports = function (router) {
   router.delete('/:id', cls.delete);
   router.put('/duplicate/:id', cls.duplicate);
   router.get('/member/:id', cls.member);
+  router.post('/link-update/:id', cls.classMemberLinkStatus);
 };

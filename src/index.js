@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
 import { IntlReducer as Intl, IntlProvider } from 'react-redux-multilingual';
 import { IntlActions } from 'react-redux-multilingual';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import './index.scss';
 
 // Import custom components
@@ -332,4 +333,32 @@ class Root extends React.Component {
   }
 }
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#0170E3',
+      contrastText: '#fff'
+    },
+    secondary: {
+      main: '#FF2E2E',
+      contrastText: '#fff'
+    }
+  },
+  overrides: {
+    MuiButton: {
+      label: {
+        textTransform: 'none'
+      }
+    }
+  },
+  shape: {
+    borderRadius: 10
+  }
+});
+
+ReactDOM.render(
+  <ThemeProvider theme={theme}>
+    <Root />
+  </ThemeProvider>,
+  document.getElementById('root')
+);

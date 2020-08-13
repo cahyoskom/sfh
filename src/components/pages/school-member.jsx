@@ -16,9 +16,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  InputBase
+  InputBase,
+  Breadcrumbs,
+  Typography
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
+import { default as MaterialLink } from '@material-ui/core/Link';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Image } from 'react-bootstrap';
@@ -122,8 +126,14 @@ class SchoolMember extends Component {
     const { schoolState, onChangeAddMember, closeSuccessModal, addMember } = this.props;
     return (
       <div>
-        <section className='school-member-page section-b-space'>
-          <Container>
+        <Container>
+          <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+            <MaterialLink color='inherit' href={`${process.env.PUBLIC_URL}/`}>
+              Beranda
+            </MaterialLink>
+            <Typography color='textPrimary'>{schoolState.data.name}</Typography>
+          </Breadcrumbs>
+          <section className='school-member-page section-b-space'>
             <Grid container directions='col' spacing={2} justify='center' alignItems='center'>
               <Grid item xs={12} lg={5}>
                 <Paper variant='outlined' width={1}>
@@ -142,7 +152,7 @@ class SchoolMember extends Component {
 
                           {schoolState.userHasAuthority ? (
                             <div>
-                              Kode sekolah: <stong>{schoolState.data.code}</stong>
+                              Kode sekolah: <strong>{schoolState.data.code}</strong>
                             </div>
                           ) : (
                             <div></div>
@@ -173,7 +183,6 @@ class SchoolMember extends Component {
                     <Button
                       variant='contained'
                       color='primary'
-                      style={{ textTransform: 'none' }}
                       startIcon={<AddIcon />}
                       onClick={() => onChangeAddMember('show', true)}
                     >
@@ -222,7 +231,6 @@ class SchoolMember extends Component {
                                       variant='contained'
                                       color='primary'
                                       size='small'
-                                      style={{ textTransform: 'none' }}
                                       onClick={() => this.openOwnerConfirmation(row.id, row.sec_user_model.name)}
                                     >
                                       Jadikan sebagai pemilik sekolah
@@ -235,7 +243,6 @@ class SchoolMember extends Component {
                                       variant='contained'
                                       color='secondary'
                                       size='small'
-                                      style={{ textTransform: 'none' }}
                                       onClick={() => this.openRemoveConfirmation(row.id, row.sec_user_model.name)}
                                     >
                                       Keluarkan
@@ -252,171 +259,141 @@ class SchoolMember extends Component {
                 </TableContainer>
               </Grid>
             </Grid>
-          </Container>
-          {/* modal add member */}
-          <Modal isOpen={schoolState.addMemberModal.show} centered>
-            <ModalHeader toggle={() => onChangeAddMember('show', false)}>
-              <strong>Tambah anggota</strong>
-            </ModalHeader>
-            <ValidatorForm onSubmit={addMember}>
+
+            {/* modal add member */}
+            <Modal isOpen={schoolState.addMemberModal.show} centered>
+              <ModalHeader toggle={() => onChangeAddMember('show', false)}>
+                <strong>Tambah anggota</strong>
+              </ModalHeader>
+              <ValidatorForm onSubmit={addMember}>
+                <ModalBody>
+                  <div className='form-group'>
+                    <label>
+                      Masukkan email anggota yang ingin kamu tambahkan sebagai <strong>anggota</strong>. Kami akan memberikan
+                      undangan berupa tautan yang akan dikirimkan melalui email.
+                    </label>
+                    <TextValidator
+                      id='email'
+                      label='Email'
+                      type='email'
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      margin='dense'
+                      fullWidth
+                      variant='outlined'
+                      onChange={e => onChangeAddMember(e.target.id, e.target.value)}
+                      onBlur={this.validateEmail}
+                      error={!this.state.isEmailValid}
+                      helperText={this.state.emailErrorText}
+                      value={schoolState.addMemberModal.email}
+                      validators={['required']}
+                      errorMessages={['masukkan email']}
+                    />
+                  </div>
+
+                  <Collapse in={schoolState.addMemberModal.error}>
+                    <Alert
+                      severity='error'
+                      action={
+                        <IconButton
+                          aria-label='close'
+                          color='inherit'
+                          size='small'
+                          onClick={() => onChangeAddMember('error', false)}
+                        >
+                          <CloseIcon fontSize='inherit' />
+                        </IconButton>
+                      }
+                    >
+                      {schoolState.addMemberModal.errormsg}
+                    </Alert>
+                  </Collapse>
+                </ModalBody>
+                <ModalFooter>
+                  <div>
+                    <Button
+                      color='default'
+                      variant='contained'
+                      disableElevation
+                      onClick={() => onChangeAddMember('show', false)}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                  <div>
+                    <Button color='primary' variant='contained' disableElevation type='submit'>
+                      Kirim
+                    </Button>
+                  </div>
+                </ModalFooter>
+              </ValidatorForm>
+            </Modal>
+            {/* Modal confirmation change owner */}
+            <Modal isOpen={this.state.ownerConfirmation} centered>
               <ModalBody>
-                <div className='form-group'>
-                  <label>
-                    Masukkan email anggota yang ingin kamu tambahkan sebagai <strong>anggota</strong>. Kami akan memberikan
-                    undangan berupa tautan yang akan dikirimkan melalui email.
-                  </label>
-                  <TextValidator
-                    id='email'
-                    label='Email'
-                    type='email'
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    margin='dense'
-                    fullWidth
-                    variant='outlined'
-                    onChange={e => onChangeAddMember(e.target.id, e.target.value)}
-                    onBlur={this.validateEmail}
-                    error={!this.state.isEmailValid}
-                    helperText={this.state.emailErrorText}
-                    value={schoolState.addMemberModal.email}
-                    validators={['required']}
-                    errorMessages={['masukkan email']}
-                  />
-                </div>
-
-                <Collapse in={schoolState.addMemberModal.error}>
-                  <Alert
-                    severity='error'
-                    action={
-                      <IconButton
-                        aria-label='close'
-                        color='inherit'
-                        size='small'
-                        onClick={() => onChangeAddMember('error', false)}
-                      >
-                        <CloseIcon fontSize='inherit' />
-                      </IconButton>
-                    }
-                  >
-                    {schoolState.addMemberModal.errormsg}
-                  </Alert>
-                </Collapse>
+                <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
+                  <Grid item>
+                    Apakah Anda sudah yakin akan mengganti <strong>{this.state.ownerTargetName}</strong> menjadi koordinator
+                    sekolah?
+                  </Grid>
+                  <Grid item container justify='space-around'>
+                    <Grid item>
+                      <Button color='default' variant='contained' disableElevation onClick={this.closeOwnerConfirmation}>
+                        Batal
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button color='primary' variant='contained' disableElevation onClick={this.handleChangeOwner}>
+                        Ya, sudah yakin
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </ModalBody>
-              <ModalFooter>
-                <div>
-                  <Button
-                    style={{ textTransform: 'none' }}
-                    color='default'
-                    variant='contained'
-                    disableElevation
-                    onClick={() => onChangeAddMember('show', false)}
-                  >
-                    Batal
-                  </Button>
-                </div>
-                <div>
-                  <Button style={{ textTransform: 'none' }} color='primary' variant='contained' disableElevation type='submit'>
-                    Kirim
-                  </Button>
-                </div>
-              </ModalFooter>
-            </ValidatorForm>
-          </Modal>
-          {/* Modal confirmation change owner */}
-          <Modal isOpen={this.state.ownerConfirmation} centered>
-            <ModalBody>
-              <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
-                <Grid item>
-                  Apakah Anda sudah yakin akan mengganti <strong>{this.state.ownerTargetName}</strong> menjadi koordinator
-                  sekolah?
-                </Grid>
-                <Grid item container justify='space-around'>
+            </Modal>
+            {/* Modal confirmation change owner */}
+            <Modal isOpen={this.state.removeConfirmation} centered>
+              <ModalBody>
+                <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
                   <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='default'
-                      variant='contained'
-                      disableElevation
-                      onClick={this.closeOwnerConfirmation}
-                    >
-                      Batal
-                    </Button>
+                    Apakah Anda sudah yakin akan menghapus <strong>{this.state.removeTargetName}</strong> dari sekolah?
                   </Grid>
-                  <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='primary'
-                      variant='contained'
-                      disableElevation
-                      onClick={this.handleChangeOwner}
-                    >
-                      Ya, sudah yakin
-                    </Button>
+                  <Grid item container justify='space-around'>
+                    <Grid item>
+                      <Button color='default' variant='contained' disableElevation onClick={this.closeRemoveConfirmation}>
+                        Batal
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button color='primary' variant='contained' disableElevation onClick={this.handleRemoveMember}>
+                        Ya, sudah yakin
+                      </Button>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </ModalBody>
-          </Modal>
-          {/* Modal confirmation change owner */}
-          <Modal isOpen={this.state.removeConfirmation} centered>
-            <ModalBody>
-              <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
-                <Grid item>
-                  Apakah Anda sudah yakin akan menghapus <strong>{this.state.removeTargetName}</strong> dari sekolah?
-                </Grid>
-                <Grid item container justify='space-around'>
-                  <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='default'
-                      variant='contained'
-                      disableElevation
-                      onClick={this.closeRemoveConfirmation}
-                    >
-                      Batal
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='primary'
-                      variant='contained'
-                      disableElevation
-                      onClick={this.handleRemoveMember}
-                    >
-                      Ya, sudah yakin
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </ModalBody>
-          </Modal>
+              </ModalBody>
+            </Modal>
 
-          {/* Success modal  */}
-          <Modal isOpen={schoolState.successModal.show} centered>
-            <ModalBody>
-              <Grid container direction='col' spacing={2} justify='center' alignItems='center'>
-                <Grid item>
-                  <strong>{schoolState.successModal.message}</strong>
-                </Grid>
-                <Grid container justify='center'>
+            {/* Success modal  */}
+            <Modal isOpen={schoolState.successModal.show} centered>
+              <ModalBody>
+                <Grid container direction='col' spacing={2} justify='center' alignItems='center'>
                   <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='primary'
-                      variant='contained'
-                      disableElevation
-                      onClick={closeSuccessModal}
-                    >
-                      Oke
-                    </Button>
+                    <strong>{schoolState.successModal.message}</strong>
+                  </Grid>
+                  <Grid container justify='center'>
+                    <Grid item>
+                      <Button color='primary' variant='contained' disableElevation onClick={closeSuccessModal}>
+                        Oke
+                      </Button>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </ModalBody>
-          </Modal>
-        </section>
+              </ModalBody>
+            </Modal>
+          </section>
+        </Container>
       </div>
     );
   }

@@ -18,9 +18,13 @@ import {
   TableRow,
   InputBase,
   Menu,
-  MenuItem
+  MenuItem,
+  Breadcrumbs,
+  Typography
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
+import { default as MaterialLink } from '@material-ui/core/Link';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Image } from 'react-bootstrap';
@@ -104,8 +108,14 @@ class SchoolClass extends Component {
     } = this.props;
     return (
       <div>
-        <section className='school-member-page section-b-space'>
-          <Container>
+        <Container>
+          <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+            <MaterialLink color='inherit' href={`${process.env.PUBLIC_URL}/`}>
+              Beranda
+            </MaterialLink>
+            <Typography color='textPrimary'>{schoolState.data.name}</Typography>
+          </Breadcrumbs>
+          <section className='school-member-page section-b-space'>
             <Grid container directions='col' spacing={2} justify='center' alignItems='center'>
               <Grid item xs={12} lg={5}>
                 <Paper variant='outlined' width={1}>
@@ -124,7 +134,7 @@ class SchoolClass extends Component {
 
                           {schoolState.userHasAuthority ? (
                             <div>
-                              Kode sekolah: <stong>{schoolState.data.code}</stong>
+                              Kode sekolah: <strong>{schoolState.data.code}</strong>
                             </div>
                           ) : (
                             <div></div>
@@ -153,7 +163,6 @@ class SchoolClass extends Component {
                       <Button
                         variant='contained'
                         color='primary'
-                        style={{ textTransform: 'none' }}
                         startIcon={<ShareOutlinedIcon />}
                         onClick={() => setModalConnectClass('show', true)}
                       >
@@ -166,7 +175,6 @@ class SchoolClass extends Component {
                       <Button
                         variant='contained'
                         color='primary'
-                        style={{ textTransform: 'none' }}
                         startIcon={<AddIcon />}
                         onClick={() => setModalCreateSchoolClass('show', true)}
                       >
@@ -190,7 +198,7 @@ class SchoolClass extends Component {
               </Grid>
               <Grid item container xs={12} lg={8}>
                 <TableContainer component={Paper}>
-                  <Table aria-label='simple table'>
+                  <Table aria-label='simple table' size='small'>
                     <TableHead>
                       <TableRow>
                         <TableCell>
@@ -212,11 +220,13 @@ class SchoolClass extends Component {
                       {schoolState.filteredClassList.map(row => (
                         <TableRow key={row.id}>
                           <TableCell component='th' scope='row'>
-                            {row.link_status == 0
-                              ? 'Terhubung'
-                              : row.link_status == 1
-                              ? 'Menunggu persetujuan'
-                              : 'Menunggu persetujuan pemilik kelas'}
+                            {row.link_status == 0 ? (
+                              <span style={{ color: '#3475E0', fontWeight: 'bold' }}>Terhubung</span>
+                            ) : row.link_status == 1 ? (
+                              <span style={{ color: '#F4A31E', fontWeight: 'bold' }}>Menunggu persetujuan</span>
+                            ) : (
+                              <span style={{ color: '#15A3B8', fontWeight: 'bold' }}>Menunggu persetujuan pemilik kelas</span>
+                            )}
                           </TableCell>
                           <TableCell>{row.name}</TableCell>
                           <TableCell>{row.ownerName}</TableCell>
@@ -267,212 +277,187 @@ class SchoolClass extends Component {
                 </TableContainer>
               </Grid>
             </Grid>
-          </Container>
 
-          {/* Modal connect class */}
-          <Modal isOpen={schoolState.connectClassModal.show} centered>
-            <ModalHeader toggle={closeModalConnectClass}>
-              <strong>Sambungkan Kelas</strong>
-            </ModalHeader>
-            <ValidatorForm onSubmit={schoolConnectClass}>
-              <ModalBody>
-                <div className='form-group'>
-                  <TextValidator
-                    id='code'
-                    type='text'
-                    label='Kode kelas'
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    margin='dense'
-                    fullWidth
-                    variant='outlined'
-                    onChange={e => setModalConnectClass(e.target.id, e.target.value)}
-                    value={schoolState.connectClassModal.code}
-                    validators={['required']}
-                    errorMessages={['masukkan kode kelas']}
-                  />
-                </div>
+            {/* Modal connect class */}
+            <Modal isOpen={schoolState.connectClassModal.show} centered>
+              <ModalHeader toggle={closeModalConnectClass}>
+                <strong>Sambungkan Kelas</strong>
+              </ModalHeader>
+              <ValidatorForm onSubmit={schoolConnectClass}>
+                <ModalBody>
+                  <div className='form-group'>
+                    <TextValidator
+                      id='code'
+                      type='text'
+                      label='Kode kelas'
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      margin='dense'
+                      fullWidth
+                      variant='outlined'
+                      onChange={e => setModalConnectClass(e.target.id, e.target.value)}
+                      value={schoolState.connectClassModal.code}
+                      validators={['required']}
+                      errorMessages={['masukkan kode kelas']}
+                    />
+                  </div>
 
-                <Collapse in={schoolState.connectClassModal.error}>
-                  <Alert
-                    severity='error'
-                    action={
-                      <IconButton
-                        aria-label='close'
-                        color='inherit'
-                        size='small'
-                        onClick={() => setModalConnectClass('error', false)}
-                      >
-                        <CloseIcon fontSize='inherit' />
-                      </IconButton>
-                    }
-                  >
-                    {schoolState.connectClassModal.errormsg}
-                  </Alert>
-                </Collapse>
-              </ModalBody>
-              <ModalFooter>
-                <div>
-                  <Button
-                    style={{ textTransform: 'none' }}
-                    color='default'
-                    variant='contained'
-                    disableElevation
-                    onClick={closeModalConnectClass}
-                  >
-                    Batal
-                  </Button>
-                </div>
-                <div>
-                  <Button style={{ textTransform: 'none' }} color='primary' variant='contained' disableElevation type='submit'>
-                    Sambungkan
-                  </Button>
-                </div>
-              </ModalFooter>
-            </ValidatorForm>
-          </Modal>
-
-          {/* Modal form create class */}
-          <Modal isOpen={schoolState.createClassModal.show} centered>
-            <ModalHeader toggle={() => setModalCreateSchoolClass('show', false)}>
-              <strong>Buat Kelas</strong>
-            </ModalHeader>
-            <ValidatorForm onSubmit={schoolCreateClass}>
-              <ModalBody>
-                <div className='form-group'>
-                  <span>Nama kelas*</span>
-
-                  <TextValidator
-                    id='name'
-                    type='text'
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    placeholder='Contoh: Kelas 1B'
-                    margin='dense'
-                    fullWidth
-                    variant='outlined'
-                    onChange={e => setModalCreateSchoolClass(e.target.id, e.target.value)}
-                    value={schoolState.createClassModal.name}
-                    validators={['required']}
-                    errorMessages={['masukkan nama kelas']}
-                  />
-                </div>
-                <div className='form-group'>
-                  <span>Deskripsi</span>
-
-                  <TextField
-                    id='description'
-                    type='text'
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    placeholder='Masukkan deskripsi kelas'
-                    margin='dense'
-                    fullWidth
-                    variant='outlined'
-                    onChange={e => setModalCreateSchoolClass(e.target.id, e.target.value)}
-                    value={schoolState.createClassModal.description}
-                  />
-                </div>
-
-                <Collapse in={schoolState.createClassModal.error}>
-                  <Alert
-                    severity='error'
-                    action={
-                      <IconButton
-                        aria-label='close'
-                        color='inherit'
-                        size='small'
-                        onClick={() => setModalCreateSchoolClass('error', false)}
-                      >
-                        <CloseIcon fontSize='inherit' />
-                      </IconButton>
-                    }
-                  >
-                    {schoolState.createClassModal.errormsg}
-                  </Alert>
-                </Collapse>
-              </ModalBody>
-              <ModalFooter>
-                <div>
-                  <Button
-                    color='default'
-                    style={{ textTransform: 'none' }}
-                    variant='contained'
-                    disableElevation
-                    onClick={() => setModalCreateSchoolClass('show', false)}
-                  >
-                    Batal
-                  </Button>
-                </div>
-                <div>
-                  <Button style={{ textTransform: 'none' }} color='primary' variant='contained' disableElevation type='submit'>
-                    Buat
-                  </Button>
-                </div>
-              </ModalFooter>
-            </ValidatorForm>
-          </Modal>
-
-          {/* Success modal */}
-          <Modal isOpen={schoolState.successModal.show} centered>
-            <ModalBody>
-              <Grid container direction='col' spacing={2} justify='center' alignItems='center'>
-                <Grid item>
-                  <strong>{schoolState.successModal.message}</strong>
-                </Grid>
-                <Grid container justify='center'>
-                  <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='primary'
-                      variant='contained'
-                      disableElevation
-                      onClick={closeSuccessModal}
+                  <Collapse in={schoolState.connectClassModal.error}>
+                    <Alert
+                      severity='error'
+                      action={
+                        <IconButton
+                          aria-label='close'
+                          color='inherit'
+                          size='small'
+                          onClick={() => setModalConnectClass('error', false)}
+                        >
+                          <CloseIcon fontSize='inherit' />
+                        </IconButton>
+                      }
                     >
-                      Oke
+                      {schoolState.connectClassModal.errormsg}
+                    </Alert>
+                  </Collapse>
+                </ModalBody>
+                <ModalFooter>
+                  <div>
+                    <Button color='default' variant='contained' disableElevation onClick={closeModalConnectClass}>
+                      Batal
                     </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </ModalBody>
-          </Modal>
+                  </div>
+                  <div>
+                    <Button color='primary' variant='contained' disableElevation type='submit'>
+                      Sambungkan
+                    </Button>
+                  </div>
+                </ModalFooter>
+              </ValidatorForm>
+            </Modal>
 
-          {/* Decline join school confirmation dialog */}
-          <Modal isOpen={this.state.declineConfirmation} centered>
-            <ModalBody>
-              <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
-                <Grid item>Apakah kamu yakin ingin membatalkan sambungkan kelas?</Grid>
-                <Grid item container justify='space-around'>
-                  <Grid item>
+            {/* Modal form create class */}
+            <Modal isOpen={schoolState.createClassModal.show} centered>
+              <ModalHeader toggle={() => setModalCreateSchoolClass('show', false)}>
+                <strong>Buat Kelas</strong>
+              </ModalHeader>
+              <ValidatorForm onSubmit={schoolCreateClass}>
+                <ModalBody>
+                  <div className='form-group'>
+                    <span>Nama kelas*</span>
+
+                    <TextValidator
+                      id='name'
+                      type='text'
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      placeholder='Contoh: Kelas 1B'
+                      margin='dense'
+                      fullWidth
+                      variant='outlined'
+                      onChange={e => setModalCreateSchoolClass(e.target.id, e.target.value)}
+                      value={schoolState.createClassModal.name}
+                      validators={['required']}
+                      errorMessages={['masukkan nama kelas']}
+                    />
+                  </div>
+                  <div className='form-group'>
+                    <span>Deskripsi</span>
+
+                    <TextField
+                      id='description'
+                      type='text'
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      placeholder='Masukkan deskripsi kelas'
+                      margin='dense'
+                      fullWidth
+                      variant='outlined'
+                      onChange={e => setModalCreateSchoolClass(e.target.id, e.target.value)}
+                      value={schoolState.createClassModal.description}
+                    />
+                  </div>
+
+                  <Collapse in={schoolState.createClassModal.error}>
+                    <Alert
+                      severity='error'
+                      action={
+                        <IconButton
+                          aria-label='close'
+                          color='inherit'
+                          size='small'
+                          onClick={() => setModalCreateSchoolClass('error', false)}
+                        >
+                          <CloseIcon fontSize='inherit' />
+                        </IconButton>
+                      }
+                    >
+                      {schoolState.createClassModal.errormsg}
+                    </Alert>
+                  </Collapse>
+                </ModalBody>
+                <ModalFooter>
+                  <div>
                     <Button
-                      style={{ textTransform: 'none' }}
                       color='default'
                       variant='contained'
                       disableElevation
-                      onClick={this.closeDeclineConfirmation}
+                      onClick={() => setModalCreateSchoolClass('show', false)}
                     >
                       Batal
                     </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      style={{ textTransform: 'none' }}
-                      color='primary'
-                      variant='contained'
-                      disableElevation
-                      onClick={this.handleDecline}
-                    >
-                      Ya, sudah yakin
+                  </div>
+                  <div>
+                    <Button color='primary' variant='contained' disableElevation type='submit'>
+                      Buat
                     </Button>
+                  </div>
+                </ModalFooter>
+              </ValidatorForm>
+            </Modal>
+
+            {/* Success modal */}
+            <Modal isOpen={schoolState.successModal.show} centered>
+              <ModalBody>
+                <Grid container direction='col' spacing={2} justify='center' alignItems='center'>
+                  <Grid item>
+                    <strong>{schoolState.successModal.message}</strong>
+                  </Grid>
+                  <Grid container justify='center'>
+                    <Grid item>
+                      <Button color='primary' variant='contained' disableElevation onClick={closeSuccessModal}>
+                        Oke
+                      </Button>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </ModalBody>
-          </Modal>
-        </section>
+              </ModalBody>
+            </Modal>
+
+            {/* Decline join school confirmation dialog */}
+            <Modal isOpen={this.state.declineConfirmation} centered>
+              <ModalBody>
+                <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
+                  <Grid item>Apakah kamu yakin ingin membatalkan sambungkan kelas?</Grid>
+                  <Grid item container justify='space-around'>
+                    <Grid item>
+                      <Button color='default' variant='contained' disableElevation onClick={this.closeDeclineConfirmation}>
+                        Batal
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button color='primary' variant='contained' disableElevation onClick={this.handleDecline}>
+                        Ya, sudah yakin
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </ModalBody>
+            </Modal>
+          </section>
+        </Container>
       </div>
     );
   }

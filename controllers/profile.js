@@ -3,8 +3,7 @@ const moment = require('moment');
 const isBase64 = require('is-base64');
 const { sha256 } = require('../common/sha');
 const pwValidator = /(?=.{6,}$)/;
-const passwordValidator = require('password-validator');
-//const pwValidator = new passwordValidator().is().min(6);
+const phoneValidator = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;
 
 exports.findOne = async function (req, res) {
   const model_user = sec_user();
@@ -35,17 +34,28 @@ exports.getProfile = async function (req, res) {
 exports.update = async function (req, res) {
   const model_user = sec_user();
 
-  var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
-  if (!checkAvatar) {
-    res.status(401).json({ error: null, message: 'Format gambar tidak sesuai' });
-  }
-
   var update_obj = {
     name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
     avatar: req.body.avatar
   };
+
+  var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
+  if (!checkAvatar) {
+    res.status(401).json({ error: null, message: 'Format gambar tidak sesuai' });
+  }
+
+  var checkPhone = req.body.phone ? phoneValidator.test(req.body.phone) : true;
+  if (checkPhone == false) {
+    throw new Error('Nomor telepon yang dimasukkan tidak sesuai kriteria');
+  }
+
+  if (req.body.name == '') {
+    res.status(401).json({ error: null, message: 'Nama Tidak Boleh Kosong' });
+  } else if (req.body.phone == '') {
+    res.status(401).json({ error: null, message: 'Nomor Telepon Tidak Boleh Kosong' });
+  }
 
   if (req.body.password != '' && req.body.new_password != '') {
     var update_obj = {

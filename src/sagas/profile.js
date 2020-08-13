@@ -51,36 +51,6 @@ export function* updateProfile() {
       re_new_password: profileEditState.re_new_password
     };
 
-    // if (old_password.password != param.password) {
-    //   yield put({
-    //     type: ON_CHANGE_STATE_EDIT_PROFILE,
-    //     value: 'Password Lama Salah',
-    //     field: 'errormsg'
-    //   });
-    // }
-
-    // if (param.new_password != param.re_new_password) {
-    //   yield put({
-    //     type: ON_CHANGE_STATE_EDIT_PROFILE,
-    //     value: 'Password Tidak Sama',
-    //     field: 'errormsg'
-    //   });
-    // }
-
-    if (param.name == '') {
-      yield put({
-        type: ON_CHANGE_STATE_EDIT_PROFILE,
-        value: 'Nama tidak boleh kosong',
-        field: 'errormsg'
-      });
-      yield put({
-        type: ON_CHANGE_STATE_EDIT_PROFILE,
-        value: true,
-        field: 'openAlert'
-      });
-      return;
-    }
-
     console.log(param);
 
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.profile, param, HeaderAuth());

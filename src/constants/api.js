@@ -1,5 +1,5 @@
 export const API_BASE_URL_DEV = 'http://localhost:3000';
-//export const API_BASE_URL_DEV = "https://karpadev.karpalabs.com/sfhapi-dev";
+// export const API_BASE_URL_DEV = 'https://karpadev.karpalabs.com/sfhapi-dev';
 
 export const API_PATH = {
   login: '/login',
@@ -11,6 +11,10 @@ export const API_PATH = {
   register: '/registration',
   requestActivation: '/request_activation',
   activating: '/activating',
+  checkEmail: '/check_email',
+  profile: '/profile',
+  school: '/school',
+  schoolInvitation: '/school_invitation',
   getClassInfo: '/class',
   getClassMembers: '/class/member',
   getSchoolInfo: '/school',

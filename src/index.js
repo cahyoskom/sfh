@@ -89,6 +89,7 @@ import SchoolMember from './components/pages/school-member';
 import Invitation from './components/pages/accept-invitation';
 import ClassInfo from './components/pages/class-info';
 import ClassMember from './components/pages/class-member';
+import ManageUser from './components/pages/manage-user';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -177,6 +178,12 @@ class Root extends React.Component {
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/class-info/:id`} component={ClassInfo} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/class-member/:id`} component={ClassMember} />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/manage-user`}
+                    component={ManageUser}
+                    authenticated={this.authCheck()}
+                  />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}

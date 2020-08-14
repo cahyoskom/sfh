@@ -14,7 +14,7 @@ const t_task_collection = require('../models/t_task_collection');
 const t_task_collection_file = require('../models/t_task_collection_file');
 const sec_user = require('../models/sec_user');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
-const crypto = require('crypto');
+var randomstring = require('randomstring');
 const isBase64 = require('is-base64');
 const { sequelize } = require('../database');
 const sec_confirmation = require('../models/sec_confirmation');
@@ -372,7 +372,6 @@ exports.createClass = async function (req, res) {
   const model_class = m_class();
   var new_obj = {
     m_school_id: req.body.m_school_id,
-    code: crypto.randomBytes(7).toString('hex'),
     name: req.body.name,
     description: req.body.description,
     link_status: 0, //CONNECTED
@@ -380,27 +379,31 @@ exports.createClass = async function (req, res) {
     created_date: moment().format(),
     created_by: req.user.email
   };
-  try {
-    var datum = await model_class.create(new_obj);
-    var new_member = {
-      m_class_id: datum.id,
-      sec_user_id: req.user.id,
-      sec_group_id: 1, // OWNER
-      status: ACTIVE,
-      created_date: moment().format()
-    };
+  var datum;
+  while (!datum) {
+    new_obj.code = randomstring.generate(7);
     try {
-      var member = await m_class_member().create(new_member);
-      res.json({
-        id: datum.id,
-        name: datum.name,
-        link_status: datum.link_status,
-        ownerName: req.user.name,
-        countMembers: 1
-      });
+      datum = await model_class.create(new_obj);
     } catch (err) {
-      res.status(411).json({ error: null, message: err.message });
+      datum = null;
     }
+  }
+  var new_member = {
+    m_class_id: datum.id,
+    sec_user_id: req.user.id,
+    sec_group_id: 1, // OWNER
+    status: ACTIVE,
+    created_date: moment().format()
+  };
+  try {
+    var member = await m_class_member().create(new_member);
+    res.json({
+      id: datum.id,
+      name: datum.name,
+      link_status: datum.link_status,
+      ownerName: req.user.name,
+      countMembers: 1
+    });
   } catch (err) {
     res.status(411).json({ error: null, message: err.message });
   }

@@ -6,7 +6,6 @@ module.exports = function (router) {
   router.get('/members/:id', school.getMembers);
   router.get('/:id', school.findOne);
   router.get('/code/:code', school.findByCode);
-  router.post('/:id', school.update);
   router.put('/', school.create);
   router.delete('/:id', school.delete);
   router.put('/join', school.join);
@@ -16,4 +15,5 @@ module.exports = function (router) {
   router.post('/change_owner', school.changeOwner);
   router.post('/remove_member', school.removeMember);
   router.post('/add_member', school.inviteMember);
+  router.post('/', school.update);
 };

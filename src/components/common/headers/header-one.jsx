@@ -102,11 +102,9 @@ class HeaderOne extends Component {
                       </Link>
                     </span>
                     <span style={{ marginLeft: '5px' }}>
-                      <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/SinauNgomah.svg`}
-                        alt='login-page-img'
-                        height='30'
-                      ></img>
+                      <Link to={`${process.env.PUBLIC_URL}/`}>
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/SinauNgomah.svg`} alt='logo-text' height='30' />
+                      </Link>
                     </span>
                   </div>
                 </div>

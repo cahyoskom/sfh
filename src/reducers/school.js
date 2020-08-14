@@ -42,6 +42,7 @@ const initialState = {
     address: '',
     zipcode: '',
     avatar: '',
+    note: '',
     showSpinner: false
   },
   deleteSchoolFailed: false,
@@ -106,6 +107,7 @@ export default function loginReducer(state = initialState, action) {
           phone: state.data.phone,
           zipcode: state.data.zipcode,
           avatar: state.data.avatar,
+          note: state.data.note,
           show: true
         }
       };
@@ -126,7 +128,8 @@ export default function loginReducer(state = initialState, action) {
           address: state.modal.address,
           phone: state.modal.phone,
           zipcode: state.modal.zipcode,
-          avatar: state.modal.avatar
+          avatar: state.modal.avatar,
+          note: state.modal.note
         },
         modal: {
           ...state.modal,
@@ -136,6 +139,7 @@ export default function loginReducer(state = initialState, action) {
           address: '',
           zipcode: '',
           avatar: '',
+          note: '',
           failed: false,
           errormsg: '',
           showSpinner: false

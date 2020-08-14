@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
 import { IntlReducer as Intl, IntlProvider } from 'react-redux-multilingual';
 import { IntlActions } from 'react-redux-multilingual';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import './index.scss';
 
 // Import custom components
@@ -89,6 +90,7 @@ import SchoolMember from './components/pages/school-member';
 import Invitation from './components/pages/accept-invitation';
 import ClassInfo from './components/pages/class-info';
 import ClassMember from './components/pages/class-member';
+import ManageUser from './components/pages/manage-user';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -177,6 +179,12 @@ class Root extends React.Component {
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/class-info/:id`} component={ClassInfo} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/class-member/:id`} component={ClassMember} />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/manage-user`}
+                    component={ManageUser}
+                    authenticated={this.authCheck()}
+                  />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}
@@ -343,4 +351,32 @@ class Root extends React.Component {
   }
 }
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#0170E3',
+      contrastText: '#fff'
+    },
+    secondary: {
+      main: '#FF2E2E',
+      contrastText: '#fff'
+    }
+  },
+  overrides: {
+    MuiButton: {
+      label: {
+        textTransform: 'none'
+      }
+    }
+  },
+  shape: {
+    borderRadius: 10
+  }
+});
+
+ReactDOM.render(
+  <ThemeProvider theme={theme}>
+    <Root />
+  </ThemeProvider>,
+  document.getElementById('root')
+);

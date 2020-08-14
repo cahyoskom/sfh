@@ -50,6 +50,14 @@ export const onChangeStateUpdateMember = (field, value) => ({
 export const postUpdateMember = () => ({
   type: types.SET_UPDATE_MEMBER
 });
+export const onChangeStateAddMember = (field, value) => ({
+  type: types.ON_CHANGE_STATE_ADD_MEMBER,
+  value,
+  field
+});
+export const postAddMember = () => ({
+  type: types.SET_ADD_MEMBER
+});
 
 //LOGIN
 export const googleLogin = data => ({

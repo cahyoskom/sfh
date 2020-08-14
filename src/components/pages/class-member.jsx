@@ -13,13 +13,21 @@ import {
   getDataClassInfo,
   onChangeStateClassInfo,
   onChangeStateUpdateMember,
-  postUpdateMember
+  postUpdateMember,
+  onChangeStateAddMember,
+  postAddMember
 } from '../../actions';
+
+import Alert from '@material-ui/lab/Alert';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 
-import { Grid, Box } from '@material-ui/core';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Grid, Box, Collapse, IconButton } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import CloseIcon from '@material-ui/icons/Close';
 
 class ClassMember extends Component {
   constructor(props) {
@@ -73,9 +81,19 @@ class ClassMember extends Component {
     onChangeStateUpdateMember('userId', e);
     postUpdateMember();
   }
+  onClickAddTeacher(e) {
+    const { onChangeStateAddMember } = this.props;
+    onChangeStateAddMember('position', 'teacher');
+    onChangeStateAddMember('modal', true);
+  }
+  onClickAddStudent(e) {
+    const { onChangeStateAddMember } = this.props;
+    onChangeStateAddMember('position', 'student');
+    onChangeStateAddMember('modal', true);
+  }
 
   render() {
-    const { classState } = this.props;
+    const { classState, postAddMember, onChangeStateAddMember } = this.props;
     let students = [];
     let teachers = [];
     if (classState.members.data != '') {
@@ -141,7 +159,7 @@ class ClassMember extends Component {
                   <h3>Pengajar</h3>
                 </Grid>
                 <Grid item>
-                  <Button color='primary' variant='contained'>
+                  <Button color='primary' variant='contained' onClick={() => this.onClickAddTeacher()}>
                     tambah pengajar +
                   </Button>
                 </Grid>
@@ -171,7 +189,7 @@ class ClassMember extends Component {
                   <h3>Pelajar</h3>
                 </Grid>
                 <Grid item>
-                  <Button color='primary' variant='contained'>
+                  <Button color='primary' variant='contained' onClick={() => this.onClickAddStudent()}>
                     tambah pelajar +
                   </Button>
                 </Grid>
@@ -234,6 +252,75 @@ class ClassMember extends Component {
             </Box>
           </Grid>
         </Grid>
+        {/* modal add member */}
+        <Modal isOpen={classState.addMember.modal} centered>
+          <ModalHeader toggle={() => onChangeStateAddMember('modal', false)}>
+            <strong>Tambah anggota</strong>
+          </ModalHeader>
+          <ValidatorForm onSubmit={postAddMember}>
+            <ModalBody>
+              <div className='form-group'>
+                <label>
+                  Masukkan email anggota yang ingin kamu tambahkan sebagai <strong>anggota</strong>. Kami akan memberikan
+                  undangan berupa tautan yang akan dikirimkan melalui email.
+                </label>
+                <TextValidator
+                  id='email'
+                  label='Email'
+                  type='email'
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                  margin='dense'
+                  fullWidth
+                  variant='outlined'
+                  onChange={e => onChangeStateAddMember(e.target.id, e.target.value)}
+                  onBlur={this.validateEmail}
+                  error={!this.state.isEmailValid}
+                  helperText={this.state.emailErrorText}
+                  value={classState.addMember.email}
+                  validators={['required']}
+                  errorMessages={['masukkan email']}
+                />
+              </div>
+
+              <Collapse in={classState.addMember.error}>
+                <Alert
+                  severity='error'
+                  action={
+                    <IconButton
+                      aria-label='close'
+                      color='inherit'
+                      size='small'
+                      onClick={() => onChangeStateAddMember('error', false)}
+                    >
+                      <CloseIcon fontSize='inherit' />
+                    </IconButton>
+                  }
+                >
+                  {classState.addMember.errormsg}
+                </Alert>
+              </Collapse>
+            </ModalBody>
+            <ModalFooter>
+              <div>
+                <Button
+                  color='default'
+                  variant='contained'
+                  disableElevation
+                  onClick={() => onChangeStateAddMember('modal', false)}
+                >
+                  Batal
+                </Button>
+              </div>
+              <div>
+                <Button color='primary' variant='contained' disableElevation type='submit'>
+                  Kirim
+                </Button>
+              </div>
+            </ModalFooter>
+          </ValidatorForm>
+        </Modal>
       </section>
     );
   }
@@ -249,5 +336,7 @@ export default connect(mapStateToProps, {
   getDataClassMembers,
   onChangeStateClassInfo,
   onChangeStateUpdateMember,
-  postUpdateMember
+  postUpdateMember,
+  onChangeStateAddMember,
+  postAddMember
 })(ClassMember);

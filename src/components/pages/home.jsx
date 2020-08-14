@@ -10,34 +10,30 @@ import Avatar from "@material-ui/core/Avatar";
 import { connect } from "react-redux";
 import ClassIcon from "@material-ui/icons/Class";
 import AddIcon from "@material-ui/icons/Add";
+import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
 import Alert from "@material-ui/lab/Alert";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
 
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-} from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from "reactstrap";
 import {
   onChangeStateNewClass,
   setNewClassSuccess,
   onChangeStateNewSchool,
-  setNewSchoolSuccess
-} from "../../actions"
+  setNewSchoolSuccess,
+} from "../../actions";
+
 //testing
 
 class Home extends Component {
   state = {
+    joinClassModal: false,
     newClassModal: false,
     newSchoolModal: false,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {
-      
       listClass: [
         {
           name: "Kelas 2A",
@@ -65,7 +61,16 @@ class Home extends Component {
       ],
     };
   }
-
+  openModalJoinClass = () => {
+    this.setState({
+      joinClassModal: true,
+    });
+  };
+  closeModalJoinClass = () => {
+    this.setState({
+      joinClassModal: false,
+    });
+  };
   openModalNewSchool = () => {
     this.setState({
       newSchoolModal: true,
@@ -87,22 +92,29 @@ class Home extends Component {
     });
   };
   openAlert = () => {
-    const {onChangeStateNewClass, onChangeStateNewSchool} = this.props
-    onChangeStateNewClass("errormsg", "Kelas gagal dibuat")
-    onChangeStateNewClass("openAlert", "true")
-    onChangeStateNewSchool("errormsg", "Sekolah gagal dibuat")
-    onChangeStateNewSchool("openAlert", "true")
-  }
+    const {
+      onChangeStateJoinClass,
+      onChangeStateNewClass,
+      onChangeStateNewSchool,
+    } = this.props;
+    onChangeStateJoinClass("errormsg", "Gagal bergabung ke kelas");
+    onChangeStateJoinClass("openAlert", "true");
+    onChangeStateNewClass("errormsg", "Kelas gagal dibuat");
+    onChangeStateNewClass("openAlert", "true");
+    onChangeStateNewSchool("errormsg", "Sekolah gagal dibuat");
+    onChangeStateNewSchool("openAlert", "true");
+  };
 
   render() {
     const {
-      onChangeStateNewClass, 
       accountState,
+      onChangeStateJoinClass,
+      setJoinClassSuccess,
+      onChangeStateNewClass,
       setNewClassSuccess,
-      onChangeStateNewSchool, 
+      onChangeStateNewSchool,
       setNewSchoolSuccess,
-      
-    } = this.props
+    } = this.props;
     return (
       <section className="home-page section-b-space">
         <Container>
@@ -120,6 +132,7 @@ class Home extends Component {
                     direction="row"
                     justify="flex-start"
                     alignItems="flex-start"
+                    style={{ padding: "2em" }}
                   >
                     <Grid item xs={12} lg={5}>
                       <Grid
@@ -139,24 +152,28 @@ class Home extends Component {
                             justify="flex-start"
                             alignItems="stretch"
                             spacing={2}
+                            style={{ marginBottom: "0.3em" }}
                           >
                             <Grid item>
                               <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<ClassIcon />}
+                                style={{ textTransform: "none" }}
+                                startIcon={<OpenInBrowserIcon />}
+                                onClick={this.openModalJoinClass}
                               >
-                                Gabung Kelas
+                                Gabung ke kelas
                               </Button>
                             </Grid>
                             <Grid item>
                               <Button
                                 variant="contained"
                                 color="primary"
+                                style={{ textTransform: "none" }}
                                 startIcon={<AddIcon />}
-                                onClick = {this.openModalNewClass}
+                                onClick={this.openModalNewClass}
                               >
-                                Buat Kelas
+                                Buat kelas
                               </Button>
                             </Grid>
                           </Grid>
@@ -226,15 +243,17 @@ class Home extends Component {
                             justify="flex-start"
                             alignItems="stretch"
                             spacing={2}
+                            style={{ marginBottom: "0.3em" }}
                           >
                             <Grid item>
                               <Button
                                 variant="contained"
                                 color="primary"
+                                style={{ textTransform: "none" }}
                                 startIcon={<AddIcon />}
-                                onClick = {this.openModalNewSchool}
+                                onClick={this.openModalNewSchool}
                               >
-                                Buat Sekolah
+                                Buat sekolah
                               </Button>
                             </Grid>
                           </Grid>
@@ -281,217 +300,276 @@ class Home extends Component {
             </Grid>
           </Grid>
         </Container>
+        {/* Modal Join Class <<<<<<<<<<<<<<<<<<<<<<<<<*/}
+        <Modal centered isOpen={this.state.joinClassModal}>
+          <ModalHeader toggle={this.closeModalJoinClass}>
+            <strong>Gabung ke kelas</strong>
+          </ModalHeader>
+          {!accountState.newClass.success && (
+            <ModalBody style={{ padding: "1rem 2rem 1rem 2rem" }}>
+              <label>Kode kelas: </label>
+              <Input
+                type="text"
+                id="name"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan kode kelas"
+                value={accountState.newClass.name}
+                onChange={(e) =>
+                  onChangeStateNewClass(e.target.id, e.target.value)
+                }
+              />
+              <Collapse in={accountState.newClass.openAlert}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => onChangeStateJoinClass("openAlert", false)}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {accountState.newClass.errormsg}
+                </Alert>
+              </Collapse>
+            </ModalBody>
+          )}
+          {accountState.newClass.success && (
+            <ModalBody>
+              <Alert severity="success">
+                <p>
+                  <strong>Berhasil bergabung ke kelas!</strong>
+                </p>
+                <p>{accountState.newClass.successmsg}</p>
+              </Alert>
+            </ModalBody>
+          )}
+          {!accountState.newClass.success && (
+            <ModalFooter>
+              <Button
+                disableElevation
+                style={{ textTransform: "none", marginRight: "1.5em" }}
+                onClick={this.closeModalJoinClass}
+              >
+                Batal
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                style={{ textTransform: "none" }}
+                disableElevation
+                onClick={setJoinClassSuccess}
+              >
+                Gabung
+              </Button>
+            </ModalFooter>
+          )}
+        </Modal>
         {/* Modal New Class <<<<<<<<<<<<<<<<<<<<<<<<<*/}
-        <Modal isOpen={this.state.newClassModal}>
-              <ModalHeader toggle={this.closeModalNewClass}>
-                <strong>Buat Kelas</strong>
-              </ModalHeader>
-              {!accountState.newClass.success && (
-                <ModalBody>
-                  <label>Nama Kelas: </label>
-                  <Input
-                    type="text"
-                    id="name"
-                    placeholder="Contoh: Kelas 1B"
-                    value={accountState.newClass.name}
-                    onChange={(e) =>
-                      onChangeStateNewClass(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Deskripsi: </label>
-                  <Input
-                    type="text"
-                    id="description"
-                    placeholder="Masukkan deskripsi kelas"
-                    value={accountState.newClass.description}
-                    onChange={(e) =>
-                      onChangeStateNewClass(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Sekolah: </label>
-                  <Input
-                    type="text"
-                    id="school"
-                    placeholder="Masukkan link atau kode sekolah"
-                    value={accountState.newClass.school}
-                    onChange={(e) =>
-                      onChangeStateNewClass(e.target.id, e.target.value)
-                    }
-                  />
-                  <Collapse in={accountState.newClass.openAlert}>
-                    <Alert
-                      severity="error"
-                      action={
-                        <IconButton
-                          aria-label="close"
-                          color="inherit"
-                          size="small"
-                          onClick={() => onChangeStateNewClass("openAlert", false)}
-                        >
-                          <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                      }
+        <Modal centered isOpen={this.state.newClassModal}>
+          <ModalHeader toggle={this.closeModalNewClass}>
+            <strong>Buat kelas</strong>
+          </ModalHeader>
+          {!accountState.newClass.success && (
+            <ModalBody style={{ padding: "1rem 2rem 2rem 2rem" }}>
+              <label>Nama kelas: </label>
+              <Input
+                type="text"
+                id="name"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Contoh: Kelas 1B"
+                value={accountState.newClass.name}
+                onChange={(e) =>
+                  onChangeStateNewClass(e.target.id, e.target.value)
+                }
+              />
+              <label>Deskripsi: </label>
+              <Input
+                type="text"
+                id="description"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan deskripsi kelas"
+                value={accountState.newClass.description}
+                onChange={(e) =>
+                  onChangeStateNewClass(e.target.id, e.target.value)
+                }
+              />
+              <label>Sekolah: </label>
+              <Input
+                type="text"
+                id="school"
+                placeholder="Masukkan link atau kode sekolah"
+                value={accountState.newClass.school}
+                onChange={(e) =>
+                  onChangeStateNewClass(e.target.id, e.target.value)
+                }
+              />
+              <Collapse in={accountState.newClass.openAlert}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => onChangeStateNewClass("openAlert", false)}
                     >
-                      {accountState.newClass.errormsg}
-                    </Alert>
-                  </Collapse>
-                </ModalBody>
-              )}
-              {accountState.newClass.success && (
-                <ModalBody>
-                  <Alert severity="success">
-                    <p>
-                      <strong>Kelas berhasil dibuat!</strong>
-                    </p>
-                    <p>{accountState.newClass.successmsg}</p>
-                  </Alert>
-                </ModalBody>
-              )}
-              {!accountState.newClass.success && (
-                <ModalFooter>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disableElevation
-                    onClick = {setNewClassSuccess}
-                  >
-                    Buat Kelas
-                  </Button>
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                    disableElevation
-                    onClick = {this.closeModalNewClass}
-                  >
-                    Batal
-                  </Button>
-                  <Button
-                    color="danger"
-                    variant="contained"
-                    disableElevation
-                    onClick = {this.openAlert}
-                  >
-                    Gagal
-                  </Button>
-                </ModalFooter>
-              )}
-            </Modal>
-{/* Modal New School <<<<<<<<<<<<<<<<<<<<<<<<<*/}
-            <Modal isOpen={this.state.newSchoolModal}>
-              <ModalHeader toggle={this.closeModalNewSchool}>
-                <strong>Buat Sekolah</strong>
-              </ModalHeader>
-              {!accountState.newSchool.success && (
-                <ModalBody>
-                  <label>Nama Sekolah: </label>
-                  <Input
-                    type="text"
-                    id="name"
-                    placeholder="Contoh: SMAN 99 Jakarta"
-                    value={accountState.newSchool.name}
-                    onChange={(e) =>
-                      onChangeStateNewSchool(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Alamat Sekolah: </label>
-                  <Input
-                    type="textarea"
-                    id="address"
-                    placeholder="Masukkan alamat sekolah"
-                    value={accountState.newSchool.address}
-                    onChange={(e) =>
-                      onChangeStateNewSchool(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Kode Pos: </label>
-                  <Input
-                    type="text"
-                    id="postalCode"
-                    placeholder="Masukkan kode pos sekolah"
-                    value={accountState.newSchool.postalCode}
-                    onChange={(e) =>
-                      onChangeStateNewSchool(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Nomor telepon sekolah: </label>
-                  <Input
-                    type="text"
-                    id="phoneNumber"
-                    placeholder="Masukkan nomor telepon sekolah"
-                    value={accountState.newSchool.phoneNumber}
-                    onChange={(e) =>
-                      onChangeStateNewSchool(e.target.id, e.target.value)
-                    }
-                  />
-                  <label>Logo Sekolah: </label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    id="picture"
-                    placeholder="Masukkan foto logo sekolah"
-                    value={accountState.newSchool.picture}
-                    onChange={(e) =>
-                      onChangeStateNewSchool(e.target.id, e.target.value)
-                    }
-                  />
-                  <Collapse in={accountState.newSchool.openAlert}>
-                    <Alert
-                      severity="error"
-                      action={
-                        <IconButton
-                          aria-label="close"
-                          color="inherit"
-                          size="small"
-                          onClick={() => onChangeStateNewSchool("openAlert", false)}
-                        >
-                          <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                      }
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {accountState.newClass.errormsg}
+                </Alert>
+              </Collapse>
+            </ModalBody>
+          )}
+          {accountState.newClass.success && (
+            <ModalBody>
+              <Alert severity="success">
+                <p>
+                  <strong>Kelas berhasil dibuat!</strong>
+                </p>
+                <p>{accountState.newClass.successmsg}</p>
+              </Alert>
+            </ModalBody>
+          )}
+          {!accountState.newClass.success && (
+            <ModalFooter>
+              <Button
+                style={{ textTransform: "none", marginRight: "1.5em" }}
+                disableElevation
+                onClick={this.closeModalNewClass}
+              >
+                Batal
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                style={{ textTransform: "none" }}
+                disableElevation
+                onClick={setNewClassSuccess}
+              >
+                Buat kelas
+              </Button>
+            </ModalFooter>
+          )}
+        </Modal>
+        {/* Modal New School <<<<<<<<<<<<<<<<<<<<<<<<<*/}
+        <Modal centered isOpen={this.state.newSchoolModal}>
+          <ModalHeader toggle={this.closeModalNewSchool}>
+            <strong>Buat sekolah</strong>
+          </ModalHeader>
+          {!accountState.newSchool.success && (
+            <ModalBody style={{ padding: "1rem 2rem 2rem 2rem" }}>
+              <label>Nama sekolah: </label>
+              <Input
+                type="text"
+                id="name"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan nama sekolah"
+                value={accountState.newSchool.name}
+                onChange={(e) =>
+                  onChangeStateNewSchool(e.target.id, e.target.value)
+                }
+              />
+              <label>Alamat sekolah: </label>
+              <Input
+                type="textarea"
+                id="address"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan alamat sekolah"
+                value={accountState.newSchool.address}
+                onChange={(e) =>
+                  onChangeStateNewSchool(e.target.id, e.target.value)
+                }
+              />
+              <label>Kode pos: </label>
+              <Input
+                type="text"
+                id="postalCode"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan kode pos sekolah"
+                value={accountState.newSchool.postalCode}
+                onChange={(e) =>
+                  onChangeStateNewSchool(e.target.id, e.target.value)
+                }
+              />
+              <label>Nomor telepon sekolah: </label>
+              <Input
+                type="text"
+                id="phoneNumber"
+                style={{ marginBottom: "0.5em" }}
+                placeholder="Masukkan nomor telepon sekolah"
+                value={accountState.newSchool.phoneNumber}
+                onChange={(e) =>
+                  onChangeStateNewSchool(e.target.id, e.target.value)
+                }
+              />
+              <label>Logo sekolah: </label>
+              <Input
+                type="file"
+                accept="image/*"
+                style={{ marginBottom: "0.5em" }}
+                id="picture"
+                placeholder="Masukkan foto logo sekolah"
+                value={accountState.newSchool.picture}
+                onChange={(e) =>
+                  onChangeStateNewSchool(e.target.id, e.target.value)
+                }
+              />
+              <Collapse in={accountState.newSchool.openAlert}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => onChangeStateNewSchool("openAlert", false)}
                     >
-                      {accountState.newSchool.errormsg}
-                    </Alert>
-                  </Collapse>
-                </ModalBody>
-              )}
-              {accountState.newSchool.success && (
-                <ModalBody>
-                  <Alert severity="success">
-                    <p>
-                      <strong>Sekolah berhasil dibuat!</strong>
-                    </p>
-                    <p>{accountState.newSchool.successmsg}</p>
-                  </Alert>
-                </ModalBody>
-              )}
-              {!accountState.newSchool.success && (
-                <ModalFooter>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disableElevation
-                    onClick = {setNewSchoolSuccess}
-                  >
-                    Buat Sekolah
-                  </Button>
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                    disableElevation
-                    onClick = {this.closeModalNewSchool}
-                  >
-                    Batal
-                  </Button>
-                  <Button
-                    color="danger"
-                    variant="contained"
-                    disableElevation
-                    onClick = {this.openAlert}
-                  >
-                    Gagal
-                  </Button>
-                </ModalFooter>
-              )}
-            </Modal>
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {accountState.newSchool.errormsg}
+                </Alert>
+              </Collapse>
+            </ModalBody>
+          )}
+          {accountState.newSchool.success && (
+            <ModalBody>
+              <Alert severity="success">
+                <p>
+                  <strong>Sekolah berhasil dibuat!</strong>
+                </p>
+                <p>{accountState.newSchool.successmsg}</p>
+              </Alert>
+            </ModalBody>
+          )}
+          {!accountState.newSchool.success && (
+            <ModalFooter>
+              <Button
+                style={{ textTransform: "none", marginRight: "1.5em" }}
+                disableElevation
+                onClick={this.closeModalNewSchool}
+              >
+                Batal
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                style={{ textTransform: "none" }}
+                disableElevation
+                onClick={setNewSchoolSuccess}
+              >
+                Buat sekolah
+              </Button>
+            </ModalFooter>
+          )}
+        </Modal>
       </section>
     );
   }
@@ -502,8 +580,9 @@ const mapStateToProps = (state) => ({
   accountState: state.account,
 });
 
-export default connect(mapStateToProps,
-  {
-    onChangeStateNewClass,setNewClassSuccess,
-    onChangeStateNewSchool,setNewSchoolSuccess,
-  })(Home);
+export default connect(mapStateToProps, {
+  onChangeStateNewClass,
+  setNewClassSuccess,
+  onChangeStateNewSchool,
+  setNewSchoolSuccess,
+})(Home);

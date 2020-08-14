@@ -16,6 +16,115 @@ const moment = require('moment');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const enums = require('../enums/group.enums');
 
+exports.classMemberLinkStatus = async function (req, res) {
+  const userId = req.body.user;
+  const classId = req.body.class;
+  const model_class_member = m_class_member();
+  let rel = await model_class_member.findOne({
+    where: {
+      status: ACTIVE,
+      sec_user_id: userId,
+      m_class_id: classId
+    }
+  });
+  if (!rel) {
+    res.status(401).json({ message: 'tidak ada pengguna tersebut di kelas ini' });
+    return;
+  }
+  const request = req.body.request;
+  if (request == 'setujui') {
+    if (rel.link_status != 1) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Permintaan gabung disetujui' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  } else if (request == 'tolak') {
+    if (rel.link_status != 1) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update(
+        { link_status: 0, status: DELETED },
+        { where: { id: rel.id } }
+      );
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Permintaan gabung ditolak' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  } else if (request == 'aktifkan') {
+    if (rel.link_status != 3) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Member diaktifkan' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  } else if (request == 'nonaktifkan') {
+    if (rel.link_status != 0) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update({ link_status: 3 }, { where: { id: rel.id } });
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Member dinonaktifkan' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  } else if (request == 'batalkan') {
+    if (rel.link_status != 2) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update(
+        { link_status: 0, status: DELETED },
+        { where: { id: rel.id } }
+      );
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Permintaan gabung dibatalkan' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  } else if (request == 'keluarkan') {
+    if (rel.link_status != 0) {
+      res.status(401).json({ message: 'aksi tidak cocok' });
+      return;
+    }
+    try {
+      const datum = await model_class_member.update({ status: DELETED }, { where: { id: rel.id } });
+      if (!datum[0]) {
+        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+      }
+      res.json({ message: 'Berhasil dikeluarkan' });
+    } catch (err) {
+      res.status(401).json({ message: err });
+    }
+  }
+};
+
 exports.member = async function (req, res) {
   const classId = req.params.id;
   const model_class = m_class();

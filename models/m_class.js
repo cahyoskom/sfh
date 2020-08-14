@@ -30,6 +30,7 @@ module.exports = sequelize => {
     },
     code: {
       type: DataTypes.STRING(10),
+      unique: true,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,

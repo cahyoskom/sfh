@@ -9,4 +9,5 @@ module.exports = function (router) {
   router.put('/join', cls.join);
   router.put('/duplicate/:id', cls.duplicate);
   router.get('/member/:id', cls.member);
+  router.post('/link-update/:id', cls.classMemberLinkStatus);
 };

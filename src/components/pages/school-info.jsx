@@ -42,6 +42,8 @@ class SchoolInfo extends Component {
       phoneErrorText: '',
       isZipcodeValid: true,
       zipcodeErrorText: '',
+      isFileValid: true,
+      fileErrorText: '',
 
       openDialog: false,
       updateConfirmation: false
@@ -63,11 +65,34 @@ class SchoolInfo extends Component {
     };
   };
 
+  checkFileSize = file => {
+    var fileSize = file.size / 1024 / 1024;
+    if (fileSize > 2) {
+      this.setState({
+        isFileValid: false,
+        fileErrorText: 'ukuran gambar tidak boleh melebihi 2MB'
+      });
+      return false;
+    }
+    return true;
+  };
+
   uploadImage = e => {
     const file = e.target.files[0];
-    this.getBase64(file, result => {
-      this.props.setModalSchool('avatar', result);
-    });
+    console.log(file);
+    if (file) {
+      var isValid = this.checkFileSize(file);
+      if (isValid) {
+        this.getBase64(file, result => {
+          this.props.setModalSchool('avatar', result);
+        });
+      }
+    } else {
+      this.setState({
+        isFileValid: true,
+        fileErrorText: ''
+      });
+    }
   };
 
   validatePhone = () => {
@@ -127,8 +152,20 @@ class SchoolInfo extends Component {
     window.location.href = process.env.PUBLIC_URL + '/';
   };
 
+  discardUpdate = () => {
+    this.setState({
+      isPhoneValid: true,
+      phoneErrorText: '',
+      isZipcodeValid: true,
+      zipcodeErrorText: '',
+      isFileValid: true,
+      fileErrorText: ''
+    });
+    this.props.setModalSchool('show', false);
+  };
+
   render() {
-    const { schoolState, onUpdateSchool, setModalSchool, saveUpdateSchool, deleteSchool, handleDoneUpdateSchool } = this.props;
+    const { schoolState, onUpdateSchool, setModalSchool, deleteSchool, handleDoneUpdateSchool } = this.props;
     return (
       <div>
         <Container>
@@ -225,7 +262,7 @@ class SchoolInfo extends Component {
 
             {/*Modal edit school */}
             <Modal isOpen={schoolState.successUpdateSchool == true ? false : schoolState.modal.show}>
-              <ModalHeader toggle={() => setModalSchool('show', false)}>
+              <ModalHeader toggle={this.discardUpdate}>
                 <strong>Ubah Sekolah</strong>
               </ModalHeader>
               <ValidatorForm onSubmit={this.handleUpdate}>
@@ -266,6 +303,29 @@ class SchoolInfo extends Component {
                               Pilih file
                             </Button>
                           </label>
+                        </div>
+                        <div
+                          style={{
+                            color: '#f44336',
+                            fontSize: '0.75rem',
+                            fontFamily: [
+                              '-apple-system',
+                              'BlinkMacSystemFont',
+                              '"Segoe UI"',
+                              'Roboto',
+                              '"Helvetica Neue"',
+                              'Arial',
+                              'sans-serif',
+                              '"Apple Color Emoji"',
+                              '"Segoe UI Emoji"',
+                              '"Segoe UI Symbol"'
+                            ].join(','),
+                            fontWeight: '400',
+                            lineHeight: '1.66',
+                            letterSpacing: '0.03333em'
+                          }}
+                        >
+                          {this.state.fileErrorText}
                         </div>
                       </Grid>
                     </Grid>
@@ -423,12 +483,7 @@ class SchoolInfo extends Component {
                   {!schoolState.modal.showSpinner && (
                     <Grid container justify='flex-end' spacing={2}>
                       <Grid item>
-                        <Button
-                          color='default'
-                          variant='contained'
-                          disableElevation
-                          onClick={() => setModalSchool('show', false)}
-                        >
+                        <Button color='default' variant='contained' disableElevation onClick={this.discardUpdate}>
                           Batal
                         </Button>
                       </Grid>

@@ -8,7 +8,9 @@ import taskOrtuReducer from './taskortu';
 import taskKepsekReducer from './taskkepsek';
 import taskGuruReducer from './taskguru';
 import adminReducer from './admin';
+import profileReducer from './profile';
 import schoolReducer from './school';
+import classReducer from './classinfo';
 
 const rootReducer = combineReducers({
   account: accountReducer,
@@ -17,7 +19,9 @@ const rootReducer = combineReducers({
   taskKepsek: taskKepsekReducer,
   taskGuru: taskGuruReducer,
   admin: adminReducer,
+  profile: profileReducer,
   school: schoolReducer,
+  class: classReducer,
   Intl
 });
 

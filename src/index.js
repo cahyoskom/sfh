@@ -83,10 +83,13 @@ import Class from './components/usermanagement/class';
 import Student from './components/usermanagement/student';
 import Role from './components/usermanagement/role';
 import Confirmation from './components/pages/confirmation';
+import Profile from './components/pages/profile';
 import SchoolInfo from './components/pages/school-info';
 import SchoolClass from './components/pages/school-class';
 import SchoolMember from './components/pages/school-member';
 import Invitation from './components/pages/accept-invitation';
+import ClassInfo from './components/pages/class-info';
+import ClassMember from './components/pages/class-member';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -172,11 +175,19 @@ class Root extends React.Component {
                   {/* Custom Routes */}
                   <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
 
-                  <PublicRouteConfirmation path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/class-info/:id`} component={ClassInfo} />
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/class-member/:id`} component={ClassMember} />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}
                     component={Register}
+                    authenticated={this.authCheck()}
+                  />
+
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/profile`}
+                    component={Profile}
                     authenticated={this.authCheck()}
                   />
 

@@ -11,6 +11,38 @@ export const newPassword = () => ({
   type: types.SET_NEW_PASSWORD
 });
 
+//CLASS
+export const getDataClassInfo = () => ({
+  type: types.SET_CLASS_INFO
+});
+export const getDataClassMembers = () => ({
+  type: types.SET_CLASS_MEMBERS
+});
+export const onChangeStateClassMembers = (field, value) => ({
+  type: types.ON_CHANGE_STATE_CLASS_MEMBERS,
+  value,
+  field
+});
+export const onChangeStateClassInfo = (field, value) => ({
+  type: types.ON_CHANGE_STATE_CLASS_INFO,
+  value,
+  field
+});
+export const onChangeStateEditClass = (field, value) => ({
+  type: types.ON_CHANGE_STATE_EDIT_CLASS,
+  value,
+  field
+});
+export const postUpdateClass = () => ({
+  type: types.UPDATE_CLASS_INFO
+});
+export const postDeleteClass = () => ({
+  type: types.SET_CLASS_DELETE
+});
+export const postDuplicateClass = () => ({
+  type: types.SET_CLASS_DUPLICATE
+});
+
 //LOGIN
 export const googleLogin = data => ({
   type: types.SET_GOOGLE_LOGIN,
@@ -83,6 +115,29 @@ export const closeRegistAlert = () => ({
 });
 export const saveRegister = () => ({
   type: types.SET_REGISTER
+});
+
+//profile
+export const requestUserData = (id, value) => ({
+  type: types.REQUEST_USER_DATA,
+  id,
+  value
+});
+
+export const onChangeStateProfile = (field, value) => ({
+  type: types.ON_CHANGE_STATE_PROFILE,
+  value,
+  field
+});
+
+export const onChangeStateEditProfile = (field, value) => ({
+  type: types.ON_CHANGE_STATE_EDIT_PROFILE,
+  value,
+  field
+});
+
+export const postUpdateProfile = () => ({
+  type: types.SET_PROFILE
 });
 
 //SCHOOL INFO

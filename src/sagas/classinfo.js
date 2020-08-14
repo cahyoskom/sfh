@@ -13,7 +13,8 @@ import {
   SET_DUPLICATE_CLASS_SUCCESS,
   SET_DUPLICATE_CLASS_FAIL,
   SET_CLASS_MEMBERS,
-  SET_CLASS_MEMBERS_DATA
+  SET_CLASS_MEMBERS_DATA,
+  SET_UPDATE_MEMBER
 } from '../constants/ActionTypes';
 import { fail, success } from '../components/common/toast-message';
 import * as services from '../services';
@@ -68,7 +69,7 @@ export function* setclassinfo() {
       try {
         let urlSchool = API_BASE_URL_DEV + API_PATH.getSchoolInfo + '/' + schoolId;
         const _responseSchool = yield call(services.GET, urlSchool, HeaderAuth());
-        if (_responseSchool) {
+        if (_responseSchool.data.data) {
           console.log(_responseSchool);
           data.data.school = _responseSchool.data.data.name;
           data.data.schoolCode = _responseSchool.data.data.code;
@@ -211,6 +212,31 @@ export function* updateClass() {
   }
   return;
 }
+export function* setUpdateMember() {
+  const classState = yield select(getClassInfoState);
+  const classInfoState = classState.classInfo;
+  const updateMemberState = classState.updateMember;
+  const classId = classInfoState.id;
+  const userId = updateMemberState.userId;
+  const request = updateMemberState.request;
+  console.log(classId + userId + request);
+  let param = {
+    class: classId,
+    user: userId,
+    request: request
+  };
+  const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.updateMember, param, HeaderAuth());
+  console.log(_res);
+  if (_res.status != 200) {
+    console.log(_res);
+  }
+  success(_res.data.message);
+  yield put({
+    type: SET_CLASS_MEMBERS
+  });
+
+  return;
+}
 
 export default function* rootSaga() {
   yield all([
@@ -218,6 +244,7 @@ export default function* rootSaga() {
     takeEvery(SET_CLASS_DELETE, deleteClass),
     takeEvery(UPDATE_CLASS_INFO, updateClass),
     takeEvery(SET_CLASS_DUPLICATE, duplicateClass),
-    takeEvery(SET_CLASS_MEMBERS, setclassmembers)
+    takeEvery(SET_CLASS_MEMBERS, setclassmembers),
+    takeEvery(SET_UPDATE_MEMBER, setUpdateMember)
   ]);
 }

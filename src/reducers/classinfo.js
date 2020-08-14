@@ -10,7 +10,8 @@ import {
   SET_DUPLICATE_CLASS_SUCCESS,
   SET_DUPLICATE_CLASS_FAIL,
   SET_CLASS_MEMBERS_DATA,
-  ON_CHANGE_STATE_CLASS_MEMBERS
+  ON_CHANGE_STATE_CLASS_MEMBERS,
+  ON_CHANGE_STATE_UPDATE_MEMBER
 } from '../constants/ActionTypes';
 import Config from '../constants/config';
 import { ErrorMessage } from 'formik';
@@ -51,6 +52,10 @@ const initialState = {
   },
   members: {
     data: ''
+  },
+  updateMember: {
+    request: '',
+    userId: ''
   }
 };
 
@@ -167,6 +172,14 @@ export default function classReducer(state = initialState, action) {
           duplicateSuccess: true,
           confirmDuplicate: false,
           duplicatedId: action.value
+        }
+      };
+    case ON_CHANGE_STATE_UPDATE_MEMBER:
+      return {
+        ...state,
+        updateMember: {
+          ...state.updateMember,
+          [action.field]: action.value
         }
       };
     default:

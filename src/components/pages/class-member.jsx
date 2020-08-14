@@ -8,7 +8,13 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { getDataClassMembers, getDataClassInfo, onChangeStateClassInfo } from '../../actions';
+import {
+  getDataClassMembers,
+  getDataClassInfo,
+  onChangeStateClassInfo,
+  onChangeStateUpdateMember,
+  postUpdateMember
+} from '../../actions';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -29,6 +35,43 @@ class ClassMember extends Component {
     onChangeStateClassInfo('id', this.props.match.params.id);
     getDataClassMembers();
     getDataClassInfo();
+  }
+
+  onClickNonaktifkan(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'nonaktifkan');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
+  }
+  onClickAktifkan(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'aktifkan');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
+  }
+  onClickSetujui(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'setujui');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
+  }
+  onClickTolak(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'tolak');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
+  }
+  onClickBatalkan(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'batalkan');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
+  }
+  onClickKeluarkan(e) {
+    const { onChangeStateUpdateMember, postUpdateMember } = this.props;
+    onChangeStateUpdateMember('request', 'keluarkan');
+    onChangeStateUpdateMember('userId', e);
+    postUpdateMember();
   }
 
   render() {
@@ -150,29 +193,36 @@ class ClassMember extends Component {
                         </TableCell>
                         {classState.members.data.hasAuthority && row.link_status == 'Disetujui' && (
                           <TableCell>
-                            <Button color='secondary' variant='contained'>
+                            <Button color='secondary' onClick={() => this.onClickNonaktifkan(row.id)}>
                               Nonaktifkan
                             </Button>
-                            <Button variant='contained'>Keluarkan</Button>
+                            <Button onClick={() => this.onClickKeluarkan(row.id)}>Keluarkan</Button>
                           </TableCell>
                         )}
                         {classState.members.data.hasAuthority && row.link_status == 'Menunggu persetujuan' && (
                           <TableCell>
-                            <Button color='secondary' variant='contained'>
+                            <Button color='secondary' onClick={() => this.onClickTolak(row.id)}>
                               Tolak
                             </Button>
-                            <Button color='primary' variant='contained'>
+                            <Button color='primary' onClick={() => this.onClickSetujui(row.id)}>
                               Setujui
                             </Button>
                           </TableCell>
                         )}
                         {classState.members.data.hasAuthority && row.link_status == 'Dinonaktifkan' && (
                           <TableCell>
-                            <Button color='secondary' variant='contained'>
+                            <Button color='secondary' onClick={() => this.onClickKeluarkan(row.id)}>
                               Keluarkan
                             </Button>
-                            <Button color='primary' variant='contained'>
+                            <Button color='primary' onClick={() => this.onClickAktifkan(row.id)}>
                               Aktifkan
+                            </Button>
+                          </TableCell>
+                        )}
+                        {classState.members.data.hasAuthority && row.link_status == 'Undangan terkirim' && (
+                          <TableCell>
+                            <Button color='secondary' onClick={() => this.onClickBatalkan(row.id)}>
+                              Batalkan
                             </Button>
                           </TableCell>
                         )}
@@ -197,5 +247,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getDataClassInfo,
   getDataClassMembers,
-  onChangeStateClassInfo
+  onChangeStateClassInfo,
+  onChangeStateUpdateMember,
+  postUpdateMember
 })(ClassMember);

@@ -9,12 +9,11 @@ import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import { connect } from 'react-redux';
 import ClassIcon from '@material-ui/icons/Class';
-import AddIcon from '@material-ui/icons/Add';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
-
+import AddIcon from '@material-ui/icons/Add';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { onChangeStateNewClass, setNewClassSuccess, onChangeStateNewSchool, setNewSchoolSuccess } from '../../actions';
 
@@ -108,6 +107,11 @@ class Home extends Component {
     } = this.props;
     return (
       <section className='home-page section-b-space'>
+        {/* <div className='container'>
+          <Button color='warning' onClick={postLogout}>
+            Logout
+          </Button>
+        </div> */}
         <Container>
           <Grid container direction='row' justify='flex-start' alignItems='center'>
             <Grid item xs={12} lg={12}>

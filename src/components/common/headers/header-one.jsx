@@ -12,6 +12,8 @@ import CartContainer from './../../../containers/CartContainer';
 import TopBar from './common/topbar';
 import { changeCurrency } from '../../../actions';
 import { connect } from 'react-redux';
+import $ from 'jquery';
+import '../../stylesheet/header.css';
 
 class HeaderOne extends Component {
   constructor(props) {
@@ -23,6 +25,7 @@ class HeaderOne extends Component {
   }
 
   componentWillMount() {
+    $('#logo-image').css('margin', '30000px');
     // window.addEventListener('scroll', this.handleScroll);
   }
   componentWillUnmount() {
@@ -80,34 +83,39 @@ class HeaderOne extends Component {
               <div className='main-menu'>
                 <div className='menu-left'>
                   <div className='navbar'>
-                    <a href='javascript:void(0)' onClick={this.openNav}>
-                      <div className='bar-style'>
-                        {' '}
-                        <i className='fa fa-bars sidebar-bar' aria-hidden='true'></i>
+                    {/* <a href="javascript:void(0)" onClick={this.openNav}>
+                      <div className="bar-style">
+                        {" "}
+                        <i
+                          className="fa fa-bars sidebar-bar"
+                          aria-hidden="true"
+                        ></i>
                       </div>
-                    </a>
+                    </a> */}
                     {/*SideBar Navigation Component*/}
                     <SideBar />
                   </div>
-                  <div className='brand-logo'>
-                    <span>
-                      <Link to={`${process.env.PUBLIC_URL}/`}>
-                        <img
-                          src={`${process.env.PUBLIC_URL}/assets/images/logo-sinaungomah.svg`}
-                          width='30'
-                          height='30'
-                          className='img-fluid'
-                          alt='logo'
-                        />
-                      </Link>
-                    </span>
-                    <span style={{ marginLeft: '5px' }}>
+                  <div className='brand-logo row'>
+                    <a href='/'>
                       <img
-                        src={`${process.env.PUBLIC_URL}/assets/images/SinauNgomah.svg`}
-                        alt='login-page-img'
-                        height='30'
-                      ></img>
-                    </span>
+                        id='logo-image-navbar'
+                        src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`}
+                        className='img-fluid'
+                        alt=''
+                      />
+                    </a>
+                    <a href='/'>
+                      <img
+                        id='brand-name-navbar'
+                        src={`${process.env.PUBLIC_URL}/assets/images/icon/brand-name.png`}
+                        className='img-fluid'
+                        alt=''
+                      />
+                    </a>
+
+                    {/* <Link to={`${process.env.PUBLIC_URL}/`}>
+											<img src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`} className="img-fluid" alt="" />
+										</Link> */}
                   </div>
                 </div>
                 <div className='menu-right pull-right'>

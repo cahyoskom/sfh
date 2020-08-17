@@ -66,6 +66,26 @@ const initialState = {
     code: '',
     success: false
   },
+  newClass: {
+    name: '',
+    description: '',
+    school: '',
+    success: false,
+    successmsg: '',
+    openAlert: false,
+    errormsg: ''
+  },
+  newSchool: {
+    name: '',
+    address: '',
+    postalCode: '',
+    phoneNumber: '',
+    picture: '',
+    success: false,
+    successmsg: '',
+    openAlert: false,
+    errormsg: ''
+  },
   // roles:[],
   // roles: localStorage.getItem("roles")
   //   ? JSON.parse(localStorage.getItem("roles"))

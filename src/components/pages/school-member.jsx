@@ -270,7 +270,7 @@ class SchoolMember extends Component {
                   <div className='form-group'>
                     <label>
                       Masukkan email anggota yang ingin kamu tambahkan sebagai <strong>anggota</strong>. Kami akan memberikan
-                      undangan berupa tautan yang akan dikirimkan melalui email.
+                      undangan berupa tautan yang akan dikirimkan melalui email jika email tersebut telah terdaftar.
                     </label>
                     <TextValidator
                       id='email'

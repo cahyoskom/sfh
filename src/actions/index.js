@@ -137,6 +137,9 @@ export const createNewClass = () => ({
 export const createNewSchool = () => ({
   type: types.ATTEMPT_CREATE_SCHOOL
 });
+export const openCreateSchool = () => ({
+  type: types.ON_OPEN_CREATE_SCHOOL
+});
 
 //REGISTER
 export const onChangeStateRegister = (field, value) => ({

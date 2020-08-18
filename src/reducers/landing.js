@@ -1,9 +1,9 @@
 import {
   ON_CHANGE_STATE_NEW_CLASS,
-  SET_NEW_CLASS_SUCCESS,
   ON_CHANGE_STATE_NEW_SCHOOL,
-  SET_NEW_SCHOOL_SUCCESS,
-  ON_CHANGE_STATE_JOIN_CLASS
+  ON_CHANGE_STATE_JOIN_CLASS,
+  CREATE_SCHOOL_SUCCESS,
+  ON_OPEN_CREATE_SCHOOL
 } from '../constants/ActionTypes';
 const initialState = {
   newClass: {
@@ -17,14 +17,14 @@ const initialState = {
     errormsg: ''
   },
   newSchool: {
-    show: '',
+    show: false,
     name: '',
     address: '',
     postalCode: '',
     phoneNumber: '',
     picture: '',
+    note: '',
     success: false,
-    successmsg: '',
     openAlert: false,
     errormsg: ''
   },
@@ -47,14 +47,6 @@ export default function landingReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-    case SET_NEW_CLASS_SUCCESS:
-      return {
-        ...state,
-        newClass: {
-          ...state.newClass,
-          success: true
-        }
-      };
     case ON_CHANGE_STATE_NEW_SCHOOL:
       return {
         ...state,
@@ -63,20 +55,45 @@ export default function landingReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-    case SET_NEW_SCHOOL_SUCCESS:
-      return {
-        ...state,
-        newSchool: {
-          ...state.newSchool,
-          success: true
-        }
-      };
     case ON_CHANGE_STATE_JOIN_CLASS:
       return {
         ...state,
         modaljoinClass: {
           ...state.modaljoinClass,
           [action.field]: action.value
+        }
+      };
+    case CREATE_SCHOOL_SUCCESS:
+      return {
+        ...state,
+        newSchool: {
+          ...state.newSchool,
+          success: true,
+          show: false,
+          name: '',
+          address: '',
+          postalCode: '',
+          phoneNumber: '',
+          picture: '',
+          note: '',
+          openAlert: false,
+          errormsg: ''
+        }
+      };
+    case ON_OPEN_CREATE_SCHOOL:
+      return {
+        ...state,
+        newSchool: {
+          name: '',
+          address: '',
+          postalCode: '',
+          phoneNumber: '',
+          picture: '',
+          note: '',
+          success: false,
+          openAlert: false,
+          errormsg: '',
+          show: true
         }
       };
     default:

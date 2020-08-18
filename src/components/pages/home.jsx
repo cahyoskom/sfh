@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Container from '@material-ui/core/Container';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -7,7 +8,6 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
-import { connect } from 'react-redux';
 import ClassIcon from '@material-ui/icons/Class';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
@@ -15,16 +15,18 @@ import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
-import { onChangeStateNewClass, setNewClassSuccess, onChangeStateNewSchool, setNewSchoolSuccess } from '../../actions';
+import {
+  onChangeStateJoinClass,
+  joinClass,
+  onChangeStateNewClass,
+  createNewClass,
+  onChangeStateNewSchool,
+  createNewSchool
+} from '../../actions';
 
 //testing
 
 class Home extends Component {
-  state = {
-    joinClassModal: false,
-    newClassModal: false,
-    newSchoolModal: false
-  };
   constructor(props) {
     super(props);
     this.state = {
@@ -55,63 +57,19 @@ class Home extends Component {
       ]
     };
   }
-  openModalJoinClass = () => {
-    this.setState({
-      joinClassModal: true
-    });
-  };
-  closeModalJoinClass = () => {
-    this.setState({
-      joinClassModal: false
-    });
-  };
-  openModalNewSchool = () => {
-    this.setState({
-      newSchoolModal: true
-    });
-  };
-  closeModalNewSchool = () => {
-    this.setState({
-      newSchoolModal: false
-    });
-  };
-  openModalNewClass = () => {
-    this.setState({
-      newClassModal: true
-    });
-  };
-  closeModalNewClass = () => {
-    this.setState({
-      newClassModal: false
-    });
-  };
-  openAlert = () => {
-    const { onChangeStateJoinClass, onChangeStateNewClass, onChangeStateNewSchool } = this.props;
-    onChangeStateJoinClass('errormsg', 'Gagal bergabung ke kelas');
-    onChangeStateJoinClass('openAlert', 'true');
-    onChangeStateNewClass('errormsg', 'Kelas gagal dibuat');
-    onChangeStateNewClass('openAlert', 'true');
-    onChangeStateNewSchool('errormsg', 'Sekolah gagal dibuat');
-    onChangeStateNewSchool('openAlert', 'true');
-  };
 
   render() {
     const {
-      accountState,
+      landingState,
       onChangeStateJoinClass,
-      setJoinClassSuccess,
+      joinClass,
       onChangeStateNewClass,
-      setNewClassSuccess,
+      createNewClass,
       onChangeStateNewSchool,
-      setNewSchoolSuccess
+      createNewSchool
     } = this.props;
     return (
       <section className='home-page section-b-space'>
-        {/* <div className='container'>
-          <Button color='warning' onClick={postLogout}>
-            Logout
-          </Button>
-        </div> */}
         <Container>
           <Grid container direction='row' justify='flex-start' alignItems='center'>
             <Grid item xs={12} lg={12}>
@@ -138,7 +96,7 @@ class Home extends Component {
                                 color='primary'
                                 style={{ textTransform: 'none' }}
                                 startIcon={<OpenInBrowserIcon />}
-                                onClick={this.openModalJoinClass}
+                                onClick={() => onChangeStateJoinClass('show', true)}
                               >
                                 Gabung ke kelas
                               </Button>
@@ -149,7 +107,7 @@ class Home extends Component {
                                 color='primary'
                                 style={{ textTransform: 'none' }}
                                 startIcon={<AddIcon />}
-                                onClick={this.openModalNewClass}
+                                onClick={() => onChangeStateNewClass('show', true)}
                               >
                                 Buat kelas
                               </Button>
@@ -213,7 +171,7 @@ class Home extends Component {
                                 color='primary'
                                 style={{ textTransform: 'none' }}
                                 startIcon={<AddIcon />}
-                                onClick={this.openModalNewSchool}
+                                onClick={() => onChangeStateNewSchool('show', true)}
                               >
                                 Buat sekolah
                               </Button>
@@ -253,22 +211,22 @@ class Home extends Component {
           </Grid>
         </Container>
         {/* Modal Join Class <<<<<<<<<<<<<<<<<<<<<<<<<*/}
-        <Modal centered isOpen={this.state.joinClassModal}>
-          <ModalHeader toggle={this.closeModalJoinClass}>
+        <Modal centered isOpen={landingState.modaljoinClass.show}>
+          <ModalHeader toggle={() => onChangeStateJoinClass('show', false)}>
             <strong>Gabung ke kelas</strong>
           </ModalHeader>
-          {!accountState.newClass.success && (
+          {!landingState.newClass.success && (
             <ModalBody style={{ padding: '1rem 2rem 1rem 2rem' }}>
               <label>Kode kelas: </label>
               <Input
                 type='text'
-                id='name'
+                id='code'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan kode kelas'
-                value={accountState.newClass.name}
-                onChange={e => onChangeStateNewClass(e.target.id, e.target.value)}
+                value={landingState.modaljoinClass.code}
+                onChange={e => onChangeStateJoinClass(e.target.id, e.target.value)}
               />
-              <Collapse in={accountState.newClass.openAlert}>
+              <Collapse in={landingState.modaljoinClass.openAlert}>
                 <Alert
                   severity='error'
                   action={
@@ -282,27 +240,27 @@ class Home extends Component {
                     </IconButton>
                   }
                 >
-                  {accountState.newClass.errormsg}
+                  {landingState.modaljoinClass.errormsg}
                 </Alert>
               </Collapse>
             </ModalBody>
           )}
-          {accountState.newClass.success && (
+          {landingState.modaljoinClass.success && (
             <ModalBody>
               <Alert severity='success'>
                 <p>
                   <strong>Berhasil bergabung ke kelas!</strong>
                 </p>
-                <p>{accountState.newClass.successmsg}</p>
+                <p>{landingState.modaljoinClass.successmsg}</p>
               </Alert>
             </ModalBody>
           )}
-          {!accountState.newClass.success && (
+          {!landingState.modaljoinClass.success && (
             <ModalFooter>
               <Button
                 disableElevation
                 style={{ textTransform: 'none', marginRight: '1.5em' }}
-                onClick={this.closeModalJoinClass}
+                onClick={() => onChangeStateJoinClass('show', false)}
               >
                 Batal
               </Button>
@@ -311,7 +269,7 @@ class Home extends Component {
                 variant='contained'
                 style={{ textTransform: 'none' }}
                 disableElevation
-                onClick={setJoinClassSuccess}
+                onClick={joinClass}
               >
                 Gabung
               </Button>
@@ -319,11 +277,11 @@ class Home extends Component {
           )}
         </Modal>
         {/* Modal New Class <<<<<<<<<<<<<<<<<<<<<<<<<*/}
-        <Modal centered isOpen={this.state.newClassModal}>
-          <ModalHeader toggle={this.closeModalNewClass}>
+        <Modal centered isOpen={landingState.newClass.show}>
+          <ModalHeader toggle={() => onChangeStateNewClass('show', false)}>
             <strong>Buat kelas</strong>
           </ModalHeader>
-          {!accountState.newClass.success && (
+          {!landingState.newClass.success && (
             <ModalBody style={{ padding: '1rem 2rem 2rem 2rem' }}>
               <label>Nama kelas: </label>
               <Input
@@ -331,7 +289,7 @@ class Home extends Component {
                 id='name'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Contoh: Kelas 1B'
-                value={accountState.newClass.name}
+                value={landingState.newClass.name}
                 onChange={e => onChangeStateNewClass(e.target.id, e.target.value)}
               />
               <label>Deskripsi: </label>
@@ -340,7 +298,7 @@ class Home extends Component {
                 id='description'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan deskripsi kelas'
-                value={accountState.newClass.description}
+                value={landingState.newClass.description}
                 onChange={e => onChangeStateNewClass(e.target.id, e.target.value)}
               />
               <label>Sekolah: </label>
@@ -348,10 +306,10 @@ class Home extends Component {
                 type='text'
                 id='school'
                 placeholder='Masukkan link atau kode sekolah'
-                value={accountState.newClass.school}
+                value={landingState.newClass.school}
                 onChange={e => onChangeStateNewClass(e.target.id, e.target.value)}
               />
-              <Collapse in={accountState.newClass.openAlert}>
+              <Collapse in={landingState.newClass.openAlert}>
                 <Alert
                   severity='error'
                   action={
@@ -365,27 +323,27 @@ class Home extends Component {
                     </IconButton>
                   }
                 >
-                  {accountState.newClass.errormsg}
+                  {landingState.newClass.errormsg}
                 </Alert>
               </Collapse>
             </ModalBody>
           )}
-          {accountState.newClass.success && (
+          {landingState.newClass.success && (
             <ModalBody>
               <Alert severity='success'>
                 <p>
                   <strong>Kelas berhasil dibuat!</strong>
                 </p>
-                <p>{accountState.newClass.successmsg}</p>
+                <p>{landingState.newClass.successmsg}</p>
               </Alert>
             </ModalBody>
           )}
-          {!accountState.newClass.success && (
+          {!landingState.newClass.success && (
             <ModalFooter>
               <Button
                 style={{ textTransform: 'none', marginRight: '1.5em' }}
                 disableElevation
-                onClick={this.closeModalNewClass}
+                onClick={() => onChangeStateNewClass('show', false)}
               >
                 Batal
               </Button>
@@ -394,7 +352,7 @@ class Home extends Component {
                 variant='contained'
                 style={{ textTransform: 'none' }}
                 disableElevation
-                onClick={setNewClassSuccess}
+                onClick={createNewClass}
               >
                 Buat kelas
               </Button>
@@ -402,11 +360,11 @@ class Home extends Component {
           )}
         </Modal>
         {/* Modal New School <<<<<<<<<<<<<<<<<<<<<<<<<*/}
-        <Modal centered isOpen={this.state.newSchoolModal}>
-          <ModalHeader toggle={this.closeModalNewSchool}>
+        <Modal centered isOpen={landingState.newSchool.show}>
+          <ModalHeader toggle={() => onChangeStateNewSchool('show', false)}>
             <strong>Buat sekolah</strong>
           </ModalHeader>
-          {!accountState.newSchool.success && (
+          {!landingState.newSchool.success && (
             <ModalBody style={{ padding: '1rem 2rem 2rem 2rem' }}>
               <label>Nama sekolah: </label>
               <Input
@@ -414,7 +372,7 @@ class Home extends Component {
                 id='name'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan nama sekolah'
-                value={accountState.newSchool.name}
+                value={landingState.newSchool.name}
                 onChange={e => onChangeStateNewSchool(e.target.id, e.target.value)}
               />
               <label>Alamat sekolah: </label>
@@ -423,7 +381,7 @@ class Home extends Component {
                 id='address'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan alamat sekolah'
-                value={accountState.newSchool.address}
+                value={landingState.newSchool.address}
                 onChange={e => onChangeStateNewSchool(e.target.id, e.target.value)}
               />
               <label>Kode pos: </label>
@@ -432,7 +390,7 @@ class Home extends Component {
                 id='postalCode'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan kode pos sekolah'
-                value={accountState.newSchool.postalCode}
+                value={landingState.newSchool.postalCode}
                 onChange={e => onChangeStateNewSchool(e.target.id, e.target.value)}
               />
               <label>Nomor telepon sekolah: </label>
@@ -441,7 +399,7 @@ class Home extends Component {
                 id='phoneNumber'
                 style={{ marginBottom: '0.5em' }}
                 placeholder='Masukkan nomor telepon sekolah'
-                value={accountState.newSchool.phoneNumber}
+                value={landingState.newSchool.phoneNumber}
                 onChange={e => onChangeStateNewSchool(e.target.id, e.target.value)}
               />
               <label>Logo sekolah: </label>
@@ -451,10 +409,10 @@ class Home extends Component {
                 style={{ marginBottom: '0.5em' }}
                 id='picture'
                 placeholder='Masukkan foto logo sekolah'
-                value={accountState.newSchool.picture}
+                value={landingState.newSchool.picture}
                 onChange={e => onChangeStateNewSchool(e.target.id, e.target.value)}
               />
-              <Collapse in={accountState.newSchool.openAlert}>
+              <Collapse in={landingState.newSchool.openAlert}>
                 <Alert
                   severity='error'
                   action={
@@ -468,27 +426,27 @@ class Home extends Component {
                     </IconButton>
                   }
                 >
-                  {accountState.newSchool.errormsg}
+                  {landingState.newSchool.errormsg}
                 </Alert>
               </Collapse>
             </ModalBody>
           )}
-          {accountState.newSchool.success && (
+          {landingState.newSchool.success && (
             <ModalBody>
               <Alert severity='success'>
                 <p>
                   <strong>Sekolah berhasil dibuat!</strong>
                 </p>
-                <p>{accountState.newSchool.successmsg}</p>
+                <p>{landingState.newSchool.successmsg}</p>
               </Alert>
             </ModalBody>
           )}
-          {!accountState.newSchool.success && (
+          {!landingState.newSchool.success && (
             <ModalFooter>
               <Button
                 style={{ textTransform: 'none', marginRight: '1.5em' }}
                 disableElevation
-                onClick={this.closeModalNewSchool}
+                onClick={() => onChangeStateNewSchool('show', false)}
               >
                 Batal
               </Button>
@@ -497,7 +455,7 @@ class Home extends Component {
                 variant='contained'
                 style={{ textTransform: 'none' }}
                 disableElevation
-                onClick={setNewSchoolSuccess}
+                onClick={createNewSchool}
               >
                 Buat sekolah
               </Button>
@@ -511,12 +469,14 @@ class Home extends Component {
 
 // export default SignIn
 const mapStateToProps = state => ({
-  accountState: state.account
+  landingState: state.landingpage
 });
 
 export default connect(mapStateToProps, {
+  onChangeStateJoinClass,
+  joinClass,
   onChangeStateNewClass,
-  setNewClassSuccess,
+  createNewClass,
   onChangeStateNewSchool,
-  setNewSchoolSuccess
+  createNewSchool
 })(Home);

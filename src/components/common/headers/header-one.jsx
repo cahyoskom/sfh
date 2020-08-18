@@ -95,27 +95,23 @@ class HeaderOne extends Component {
                     {/*SideBar Navigation Component*/}
                     <SideBar />
                   </div>
-                  <div className='brand-logo row'>
-                    <a href='/'>
-                      <img
-                        id='logo-image-navbar'
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`}
-                        className='img-fluid'
-                        alt=''
-                      />
-                    </a>
-                    <a href='/'>
-                      <img
-                        id='brand-name-navbar'
-                        src={`${process.env.PUBLIC_URL}/assets/images/icon/brand-name.png`}
-                        className='img-fluid'
-                        alt=''
-                      />
-                    </a>
-
-                    {/* <Link to={`${process.env.PUBLIC_URL}/`}>
-											<img src={`${process.env.PUBLIC_URL}/assets/images/icon/logo.png`} className="img-fluid" alt="" />
-										</Link> */}
+                  <div className='brand-logo'>
+                    <span>
+                      <Link to={`${process.env.PUBLIC_URL}/`}>
+                        <img
+                          src={`${process.env.PUBLIC_URL}/assets/images/logo-sinaungomah.svg`}
+                          width='30'
+                          height='30'
+                          className='img-fluid'
+                          alt='logo'
+                        />
+                      </Link>
+                    </span>
+                    <span style={{ marginLeft: '5px' }}>
+                      <Link to={`${process.env.PUBLIC_URL}/`}>
+                        <img src={`${process.env.PUBLIC_URL}/assets/images/SinauNgomah.svg`} alt='logo-text' height='30' />
+                      </Link>
+                    </span>
                   </div>
                 </div>
                 <div className='menu-right pull-right'>

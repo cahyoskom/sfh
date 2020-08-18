@@ -14,7 +14,10 @@ import {
   SET_DUPLICATE_CLASS_FAIL,
   SET_CLASS_MEMBERS,
   SET_CLASS_MEMBERS_DATA,
-  SET_UPDATE_MEMBER
+  SET_UPDATE_MEMBER,
+  SET_ADD_MEMBER,
+  SET_ADD_MEMBER_FAIL,
+  SET_ADD_MEMBER_SUCCESS
 } from '../constants/ActionTypes';
 import { fail, success } from '../components/common/toast-message';
 import * as services from '../services';
@@ -60,7 +63,7 @@ export function* setclassinfo() {
 
     const _response = yield call(services.GET, url, HeaderAuth());
     if (_response.status != 200) {
-      fail(_response.data.message);
+      window.location.href = process.env.PUBLIC_URL + '/404';
       return;
     }
     let data = _response.data;
@@ -132,7 +135,7 @@ export function* duplicateClass() {
   console.log(data);
   yield put({
     type: SET_DUPLICATE_CLASS_SUCCESS,
-    value: '/class-info/' + data.data.id
+    value: `${process.env.PUBLIC_URL}/class-info/` + data.data.id
   });
 }
 export function* updateClass() {
@@ -237,6 +240,26 @@ export function* setUpdateMember() {
 
   return;
 }
+export function* setAddMember() {
+  const classState = yield select(getClassInfoState);
+  const classInfoState = classState.classInfo;
+  const addMemberState = classState.addMember;
+  const email = addMemberState.email;
+  const position = addMemberState.position;
+  const param = {
+    email: email,
+    position: position
+  };
+  const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.addMember, param, HeaderAuth());
+  console.log(_res);
+  if (_res.status != 200) {
+    yield put({ type: SET_ADD_MEMBER_FAIL });
+  }
+  success('Undangan berhasil terkirim');
+  yield put({
+    type: SET_CLASS_MEMBERS
+  });
+}
 
 export default function* rootSaga() {
   yield all([
@@ -245,6 +268,7 @@ export default function* rootSaga() {
     takeEvery(UPDATE_CLASS_INFO, updateClass),
     takeEvery(SET_CLASS_DUPLICATE, duplicateClass),
     takeEvery(SET_CLASS_MEMBERS, setclassmembers),
-    takeEvery(SET_UPDATE_MEMBER, setUpdateMember)
+    takeEvery(SET_UPDATE_MEMBER, setUpdateMember),
+    takeEvery(SET_ADD_MEMBER, setAddMember)
   ]);
 }

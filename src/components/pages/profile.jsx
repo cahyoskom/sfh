@@ -54,6 +54,7 @@ class Profile extends Component {
   uploadImage = e => {
     const file = e.target.files[0];
 
+    //check image file size
     if (file.size > 2097152) {
       // 2 mb for bytes
       alert('File Harus Dibawah 2MB');
@@ -83,12 +84,14 @@ class Profile extends Component {
   closeSuccessEditModal = () => {
     const { onChangeStateEditProfile } = this.props;
     onChangeStateEditProfile('success', false);
+    //add reload page function
     window.location.reload();
   };
 
   closeFailEditModal = () => {
     const { onChangeStateEditProfile } = this.props;
     onChangeStateEditProfile('updateFail', false);
+    //add reload page function
     window.location.reload();
   };
 
@@ -122,29 +125,13 @@ class Profile extends Component {
                         <Avatar
                           class-name='Avatar-profile'
                           style={{ height: '140px', width: '140px' }}
+                          //add image default in folder assets/images/avatar jane doe.png
                           src={user.data.avatar || `${process.env.PUBLIC_URL}/assets/images/avatar jane doe.png`}
                         ></Avatar>
                       </Grid>
                     </Grid>
                     <ValidatorForm onSubmit={this.handleSubmit}>
                       <CardContent>
-                        {/* <div className='form-group'>
-                          <Grid container direction='row' justify='center' alignItems='center'>
-                            <Grid item xs={3}>
-                              Foto Profil
-                            </Grid>
-                            <Grid item xs={3}>
-                              <Button
-                                variant='contained'
-                                color='primary'
-                                className='Button-upload'
-                                startIcon={<CloudUploadIcon />}
-                              >
-                                Upload
-                              </Button>
-                            </Grid>
-                          </Grid>
-                        </div> */}
                         <div className='form-group'>
                           <Grid container direction='row' justify='center' alignItems='center'>
                             <Grid item xs={3}>
@@ -180,52 +167,6 @@ class Profile extends Component {
                             </Grid>
                           </Grid>
                         </div>
-                        {/* <Grid container direction='row' justify='center' alignItems='center'>
-                          <Grid item xs={3}>
-                            Kata Sandi
-                          </Grid>
-                          <Grid item xs={3}>
-                            <TextField
-                              id='password'
-                              value={user.data.password}
-                              className='retype-pass'
-                              margin='normal'
-                              variant='outlined'
-                              type='password'
-                              disabled
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid container direction='row' justify='center' alignItems='center'>
-                          <Grid item xs={3}>
-                            Kata Sandi Baru
-                          </Grid>
-                          <Grid item xs={3}>
-                            <TextField
-                              id='outlined-margin-normal'
-                              placeholder='Kata Sandi Baru'
-                              className='retype-pass'
-                              margin='normal'
-                              variant='outlined'
-                              type='password'
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid container direction='row' justify='center' alignItems='center'>
-                          <Grid item xs={3}>
-                            Ulangi Kata Sandi Baru
-                          </Grid>
-                          <Grid item xs={3}>
-                            <TextField
-                              id='outlined-margin-normal'
-                              placeholder='Ulangi Kata Sandi'
-                              className='retype-pass'
-                              margin='normal'
-                              variant='outlined'
-                              type='password'
-                            />
-                          </Grid>
-                        </Grid> */}
                         <Grid container direction='row' justify='center' alignItems='center'>
                           <Grid item xs={3}>
                             Nomor Telepon
@@ -241,13 +182,6 @@ class Profile extends Component {
                             />
                           </Grid>
                         </Grid>
-                        {/* <Grid container direction='row' justify='flex-end' alignItems='center'>
-                        <Grid item xs={3}>
-                          <Button variant='contained' color='primary'>
-                            Simpan
-                          </Button>
-                        </Grid>
-                      </Grid> */}
                       </CardContent>
                       <CardActions>
                         <Grid container direction='column' alignItems='center' justify='space-around' spacing={2}>
@@ -311,7 +245,7 @@ class Profile extends Component {
                               Nama
                             </Grid>
                             <Grid item xs={3}>
-                              <TextField
+                              <TextValidator
                                 type='text'
                                 id='name'
                                 fullWidth
@@ -319,6 +253,8 @@ class Profile extends Component {
                                 onChange={e => onChangeStateEditProfile(e.target.id, e.target.value)}
                                 margin='normal'
                                 variant='outlined'
+                                validators={['required']}
+                                errorMessages={['masukkan nama']}
                               />
                             </Grid>
                           </Grid>
@@ -345,7 +281,7 @@ class Profile extends Component {
                             Kata Sandi Lama
                           </Grid>
                           <Grid item xs={3}>
-                            <TextField
+                            <TextValidator
                               id='password'
                               placeholder='Kata Sandi Lama'
                               className='retype-pass'
@@ -353,6 +289,8 @@ class Profile extends Component {
                               margin='normal'
                               variant='outlined'
                               type='password'
+                              validators={['required']}
+                              errorMessages={['Kata Sandi Lama Salah']}
                             />
                           </Grid>
                         </Grid>
@@ -379,7 +317,7 @@ class Profile extends Component {
                             Ulangi Kata Sandi Baru
                           </Grid>
                           <Grid item xs={3}>
-                            <TextField
+                            <TextValidator
                               id='re_new_password'
                               placeholder='Ulangi Kata Sandi'
                               className='retype-pass'
@@ -387,6 +325,8 @@ class Profile extends Component {
                               variant='outlined'
                               type='password'
                               onChange={e => onChangeStateEditProfile(e.target.id, e.target.value)}
+                              validators={['isPasswordMatch', 'required']}
+                              errorMessages={['kata sandi tidak sama', 'masukkan kata sandi']}
                             />
                           </Grid>
                         </Grid>
@@ -412,7 +352,7 @@ class Profile extends Component {
                             <Button variant='contained' color='secondary' onClick={this.toggleEditProfileForm}>
                               Batal
                             </Button>
-                            <Button variant='contained' color='primary' onClick={this.toggleConfirmUpdate}>
+                            <Button variant='contained' color='primary' type='submit' onClick={this.toggleConfirmUpdate}>
                               Simpan
                             </Button>
                           </Grid>

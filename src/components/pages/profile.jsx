@@ -281,7 +281,7 @@ class Profile extends Component {
                             Kata Sandi Lama
                           </Grid>
                           <Grid item xs={3}>
-                            <TextValidator
+                            <TextField
                               id='password'
                               placeholder='Kata Sandi Lama'
                               className='retype-pass'
@@ -299,7 +299,7 @@ class Profile extends Component {
                             Kata Sandi Baru
                           </Grid>
                           <Grid item xs={3}>
-                            <TextValidator
+                            <TextField
                               id='new_password'
                               placeholder='Kata Sandi Baru'
                               className='retype-pass'
@@ -317,7 +317,7 @@ class Profile extends Component {
                             Ulangi Kata Sandi Baru
                           </Grid>
                           <Grid item xs={3}>
-                            <TextValidator
+                            <TextField
                               id='re_new_password'
                               placeholder='Ulangi Kata Sandi'
                               className='retype-pass'
@@ -335,13 +335,15 @@ class Profile extends Component {
                             Nomor Telepon
                           </Grid>
                           <Grid item xs={3}>
-                            <TextField
+                            <TextValidator
                               id='phone'
                               value={user.profile.phone}
                               onChange={e => onChangeStateEditProfile(e.target.id, e.target.value)}
                               className='no-telp'
                               margin='normal'
                               variant='outlined'
+                              validators={['required']}
+                              errorMessages={['Nomor Telepon Tidak Boleh Kosong']}
                             />
                           </Grid>
                         </Grid>

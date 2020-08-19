@@ -114,6 +114,18 @@ exports.create = async function (req, res) {
       }
     }
   }
+  var new_member = {
+    m_school_id: datum.id,
+    sec_user_id: req.user.id,
+    sec_group_id: 1, // OWNER
+    status: ACTIVE,
+    created_date: moment().format()
+  };
+  try {
+    var member = await m_school_member().create(new_member);
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
   res.json({ data: datum });
 };
 

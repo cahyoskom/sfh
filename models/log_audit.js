@@ -20,7 +20,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_username'
+      field: 'sec_user_email'
     },
     action_date: {
       type: DataTypes.DATE,

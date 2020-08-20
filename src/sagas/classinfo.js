@@ -229,9 +229,10 @@ export function* setUpdateMember() {
     request: request
   };
   const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.updateMember, param, HeaderAuth());
-  console.log(_res);
   if (_res.status != 200) {
+    fail(_res.data.message);
     console.log(_res);
+    return;
   }
   success(_res.data.message);
   yield put({
@@ -248,7 +249,8 @@ export function* setAddMember() {
   const position = addMemberState.position;
   const param = {
     email: email,
-    position: position
+    position: position,
+    classId: classInfoState.id
   };
   const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.addMember, param, HeaderAuth());
   console.log(_res);

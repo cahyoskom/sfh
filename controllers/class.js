@@ -697,21 +697,33 @@ exports.acceptInvitation = async function (req, res) {
         where: { id: invitation.id }
       });
       const check_member = await m_class_member().findOne({
-        where: { sec_user_id: invitation.sec_user_id, status: ACTIVE }
+        where: { sec_user_id: invitation.sec_user_id, m_class_id: classId, sec_group_id: position }
       });
       if (!check_member) {
         res.status(411).json({ error: null, message: 'Undangan dibatalkan pengirim' });
         return;
+      } else {
+        if (check_member.status == DELETED) {
+          const datum = await m_class_member().update(
+            { status: ACTIVE, link_status: 0 },
+            { where: { id: check_member.id } }
+          );
+          if (!datum[0]) {
+            res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+            return;
+          } else return;
+        } else {
+          const datum = await m_class_member().update(
+            { link_status: 0 },
+            { where: { sec_user_id: invitation.sec_user_id, status: ACTIVE } }
+          );
+          if (!datum[0]) {
+            res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+            return;
+          }
+        }
       }
 
-      const datum = await m_class_member().update(
-        { link_status: 0 },
-        { where: { sec_user_id: invitation.sec_user_id, status: ACTIVE } }
-      );
-      if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
-        return;
-      }
       // var new_member = {
       //   m_class_id: classId,
       //   sec_user_id: invitation.sec_user_id,

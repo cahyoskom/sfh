@@ -16,7 +16,7 @@ exports.findAll = async function (req, res) {
 
   if (!!req.query.class) {
     filter.class_id = req.query.class;
-    where.push('c.class_id IN (:class_id)');
+    where.push('c.id IN (:class_id)');
   }
 
   if (!!req.query.subject) {
@@ -37,12 +37,14 @@ exports.findAll = async function (req, res) {
     );
   }
 
-  var sql = `SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, 
-    publish_date, s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
+  var sql = `SELECT t.sec_user_id, t.id, t.title, t.notes, t.weight, t.start_date, t.finish_date, 
+    t.publish_date, s.id, s.name as subjectName, c.id, c.name as className, COUNT(*) as countSubmitted
   FROM t_task t
-  JOIN m_subject s ON s.subject_id=t.subject_id
-  JOIN m_class c ON c.class_id=t.class_id
-  WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
+  JOIN m_subject s ON s.id=t.m_subject_id
+  JOIN m_class c ON c.id=t.m_class_id
+  LEFT OUTER JOIN t_task_collection tc ON tc.t_task_id = t.id
+  WHERE t.status = 1 AND s.status=1 AND c.status = 1 AND tc.status=1
+  GROUP BY t.id`;
 
   if (Object.keys(filter).length > 0) {
     sql = sql + ' AND ' + where.join(' AND ');

@@ -1,6 +1,7 @@
 const m_class = require('../models/m_class');
 const m_class_member = require('../models/m_class_member');
 const m_subject = require('../models/m_subject');
+const m_school = require('../models/m_school');
 const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
 const t_task_collection = require('../models/t_task_collection');
@@ -15,6 +16,7 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const enums = require('../enums/group.enums');
+const crypto = require('crypto');
 
 exports.classMemberLinkStatus = async function (req, res) {
   const userId = req.body.user;
@@ -364,9 +366,27 @@ exports.findOne = async function (req, res) {
 
 exports.create = async function (req, res) {
   const model_class = m_class();
+  let schoolId;
+  if (req.body.schoolCode) {
+    let check_school = await m_school().findOne({
+      where: { code: req.body.schoolCode }
+    });
+    if (!check_school) {
+      res.status(411).json({ error: 11, message: 'kode sekolah tidak ditemukan' });
+      return;
+    } else schoolId = check_school.id;
+  }
+  let loop = true;
+  while (loop) {
+    var code = crypto.randomBytes(3).toString('hex');
+    let check_code = await m_class().findOne({
+      where: { code: code }
+    });
+    if (!check_code) loop = false;
+  }
   var new_obj = {
-    m_school_id: req.body.m_school_id,
-    code: req.body.code,
+    m_school_id: schoolId,
+    code: code,
     name: req.body.name,
     note: req.body.note,
     description: req.body.description,
@@ -374,8 +394,17 @@ exports.create = async function (req, res) {
     created_date: moment().format(),
     created_by: req.user.name
   };
+
   try {
     var datum = await model_class.create(new_obj);
+    var new_member = {
+      m_class: datum.id,
+      sec_user_id: req.user.id,
+      sec_group_id: 1,
+      status: ACTIVE,
+      link_status: 0
+    };
+    var member = await m_class_member().create(new_member);
     res.json({ data: datum });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
@@ -504,4 +533,30 @@ exports.delete = async function (req, res) {
 
     res.status(411).json({ message: 'Failed delete class' });
   }
+};
+exports.userClasses = async function (req, res) {
+  if (!req.user) {
+    res.status(411).json({ message: 'Mohon login terlebih dahulu' });
+  }
+  const user = req.user;
+  let memberData = await m_class_member().findAll({
+    where: { sec_user_id: user.id, status: ACTIVE }
+  });
+  data = [];
+  for (i in memberData) {
+    let getclass = await m_class().findOne({
+      where: { id: memberData[i].m_class_id, status: ACTIVE }
+    });
+    let classData = JSON.parse(JSON.stringify(getclass));
+    let ownerMember = await m_class_member().findOne({
+      where: { m_class_id: getclass.id, sec_group_id: 1, status: ACTIVE }
+    });
+    let owner = await sec_user().findOne({
+      where: { id: ownerMember.sec_user_id, status: ACTIVE }
+    });
+    classData['owner'] = owner.name;
+    data.push(classData);
+  }
+  res.json({ data: data });
+  return;
 };

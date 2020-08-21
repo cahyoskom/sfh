@@ -148,6 +148,9 @@ export const createNewSchool = () => ({
 export const openCreateSchool = () => ({
   type: types.ON_OPEN_CREATE_SCHOOL
 });
+export const getClasses = () => ({
+  type: types.SET_GET_CLASSES
+});
 
 //REGISTER
 export const onChangeStateRegister = (field, value) => ({

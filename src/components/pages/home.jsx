@@ -18,7 +18,8 @@ import {
   onChangeStateNewClass,
   createNewClass,
   onChangeStateNewSchool,
-  createNewSchool
+  createNewSchool,
+  getClasses
 } from '../../actions';
 const pattern = /^[0-9]*$/;
 
@@ -60,6 +61,12 @@ class Home extends Component {
       ]
     };
   }
+  componentDidMount() {
+    const { getClasses } = this.props;
+    getClasses();
+    console.log("ah bambang")
+  }
+
 
   getBase64 = (file, cb) => {
     let reader = new FileReader();
@@ -148,6 +155,8 @@ class Home extends Component {
       onChangeStateNewSchool,
       createNewSchool
     } = this.props;
+    let classes = []
+    if(landingState.classes.data) classes = landingState.classes.data
     return (
       <section className='home-page section-b-space'>
         <Container>
@@ -195,24 +204,26 @@ class Home extends Component {
                           </Grid>
                         </Grid>
 
-                        {this.state.listClass.map((kelas, index) => (
+                        {classes.map((kelas, index) => (
+                          
                           <Grid item xs={12} lg={12}>
+                            <a href={kelas.url}>
                             <Card variant='outlined'>
                               <CardContent>
                                 <Grid container direction='row' justify='center' alignItems='center'>
                                   <Grid item xs={12} lg={9}>
                                     <Grid container direction='column' justify='center' alignItems='flex-start'>
                                       <Grid item>
-                                        <p>{kelas.name}</p>
+                                        <strong>{kelas.name}</strong>
                                       </Grid>
                                       <Grid item>
-                                        <p>{kelas.username}</p>
+                                        <p>{kelas.owner}</p>
                                       </Grid>
                                       <Grid item>
-                                        <p>{kelas.tahun}</p>
+                                        <p>{kelas.description}</p>
                                       </Grid>
                                       <Grid item>
-                                        <p>{kelas.statusnya}</p>
+                                        <p>{kelas.link_status}</p>
                                       </Grid>
                                     </Grid>
                                   </Grid>
@@ -222,7 +233,8 @@ class Home extends Component {
                                 </Grid>
                               </CardContent>
                             </Card>
-                          </Grid>
+                            </a>
+                            </Grid>
                         ))}
                       </Grid>
                     </Grid>
@@ -696,5 +708,6 @@ export default connect(mapStateToProps, {
   onChangeStateNewClass,
   createNewClass,
   onChangeStateNewSchool,
-  createNewSchool
+  createNewSchool,
+  getClasses
 })(Home);

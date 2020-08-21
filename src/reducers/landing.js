@@ -3,11 +3,20 @@ import {
   ON_CHANGE_STATE_NEW_SCHOOL,
   ON_CHANGE_STATE_JOIN_CLASS,
   CREATE_SCHOOL_SUCCESS,
-  ON_OPEN_CREATE_SCHOOL
+  ON_OPEN_CREATE_SCHOOL,
+  CREATE_CLASS_SUCCESS,
+  ON_OPEN_CREATE_CLASS,
+  GET_CLASSES_SUCCESS
 } from '../constants/ActionTypes';
 const initialState = {
+  classes: {
+    data: ""
+  },
+  schools: {
+    data: ""
+  },
   newClass: {
-    show: '',
+    show: false,
     name: '',
     description: '',
     school: '',
@@ -83,12 +92,9 @@ export default function landingReducer(state = initialState, action) {
     case ON_OPEN_CREATE_SCHOOL:
       return {
         ...state,
-        newSchool: {
+        newClass: {
           name: '',
-          address: '',
-          postalCode: '',
-          phoneNumber: '',
-          picture: '',
+          description: '',
           note: '',
           success: false,
           openAlert: false,
@@ -96,6 +102,28 @@ export default function landingReducer(state = initialState, action) {
           show: true
         }
       };
+    case CREATE_CLASS_SUCCESS:
+      return {
+        ...state,
+        newClass: {
+          show: true,
+          name: '',
+          description: '',
+          school: '',
+          success: true,
+          successmsg: '',
+          openAlert: false,
+          errormsg: ''
+        }
+      };
+    case GET_CLASSES_SUCCESS:
+      return {
+        ...state,
+        classes: {
+          data: action.value
+        }
+        
+      }
     default:
   }
   return state;

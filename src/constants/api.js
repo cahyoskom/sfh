@@ -24,5 +24,7 @@ export const API_PATH = {
   duplicateClass: '/class/duplicate',
   checkEmail: '/check_email',
   updateMember: '/class/link-update/1',
-  addMember: '/class/add-member/1'
+  addMember: '/class/add-member/1',
+  createClass: '/class',
+  getClasses: '/class/user-classes'
 };

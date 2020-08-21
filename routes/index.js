@@ -34,5 +34,4 @@ module.exports = function (router) {
   });
   router.get('/check_email', registration.checkEmail);
   router.get('/school_invitation', school.acceptInvitation);
-  router.get('/audit_trail', audit.getData);
 };

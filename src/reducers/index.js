@@ -13,6 +13,8 @@ import schoolReducer from './school';
 import classReducer from './classinfo';
 import userReducer from './manageuser';
 import landingReducer from './landing';
+import taskReducer from './task';
+
 const rootReducer = combineReducers({
   account: accountReducer,
   taskSiswa: taskSiswaReducer,
@@ -25,6 +27,7 @@ const rootReducer = combineReducers({
   class: classReducer,
   manageUser: userReducer,
   landingpage: landingReducer,
+  task: taskReducer,
   Intl
 });
 

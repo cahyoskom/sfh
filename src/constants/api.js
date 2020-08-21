@@ -27,4 +27,5 @@ export const API_PATH = {
   classInvitation: '/class_invitation',
   createClass: '/class',
   getClasses: '/class/user-classes'
+  task: '/task'
 };

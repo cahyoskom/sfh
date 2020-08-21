@@ -9,18 +9,20 @@ import profile from './profile';
 import school from './school';
 import classinfo from './classinfo';
 import landing from './landing';
+import task from './task';
 
 export default function* rootSaga(getState) {
   yield all([
     account(),
+    admin(),
     taskSiswa(),
     taskOrtu(),
     taskKepsek(),
     taskGuru(),
-    admin(),
     profile(),
     school(),
     classinfo(),
-    landing()
+    landing(),
+    task()
   ]);
 }

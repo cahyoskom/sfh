@@ -68,12 +68,12 @@ import PrivateRouteAdmin from './PrivateRouteAdmin';
 import PrivateRouteKepsek from './PrivateRouteAdmin';
 import PublicRoute from './PublicRoute';
 import PublicRouteConfirmation from './PublicRouteConfirmation';
-import TaskSiswa from './components/tasklist/tasksiswa';
-import TaskOrtu from './components/tasklist/taskortu';
-import TaskKepsek from './components/tasklist/taskkepsek';
-import TaskKepsekPerId from './components/tasklist/taskkepsek_perid';
-import TaskGuru from './components/tasklist/taskguru';
-import TaskGuruPerId from './components/tasklist/taskguru_perid';
+// import TaskSiswa from './components/tasklist/tasksiswa';
+// import TaskOrtu from './components/tasklist/taskortu';
+// import TaskKepsek from './components/tasklist/taskkepsek';
+// import TaskKepsekPerId from './components/tasklist/taskkepsek_perid';
+// import TaskGuru from './components/tasklist/taskguru';
+// import TaskGuruPerId from './components/tasklist/taskguru_perid';
 import Admin from './components/usermanagement/admin';
 import Group from './components/usermanagement/group';
 import User from './components/usermanagement/user';
@@ -91,6 +91,7 @@ import Invitation from './components/pages/accept-invitation';
 import ClassInfo from './components/pages/class-info';
 import ClassMember from './components/pages/class-member';
 import ManageUser from './components/pages/manage-user';
+import TaskList from './components/pages/task-list';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -220,7 +221,13 @@ class Root extends React.Component {
 
                   <Route path={`${process.env.PUBLIC_URL}/invitation`} component={Invitation} />
 
-                  <PrivateRouteSiswa
+                  <PrivateRoute
+                    path={`${process.env.PUBLIC_URL}/class_task/:id`}
+                    component={TaskList}
+                    authenticated={this.authCheck()}
+                  />
+
+                  {/* <PrivateRouteSiswa
                     path={`${process.env.PUBLIC_URL}/tasksiswa`}
                     component={TaskSiswa}
                     // authenticated={this.authCheck()}
@@ -262,7 +269,7 @@ class Root extends React.Component {
                     // authenticated={this.authCheck()}
                     role={this.roleGuruCheck()}
                     exact={true}
-                  />
+                  /> */}
 
                   <PrivateRouteAdmin
                     path={`${process.env.PUBLIC_URL}/usermanagement/group`}

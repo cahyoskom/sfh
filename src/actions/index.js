@@ -237,6 +237,17 @@ export const addMember = () => ({
   type: types.ADD_SCHOOL_MEMBER
 });
 
+//TASK
+export const setFormAddTask = (field, value) => ({
+  type: types.SET_FORM_ADD_TASK,
+  field,
+  value
+});
+export const getTaskList = id => ({
+  type: types.GET_TASK,
+  id
+});
+
 /////////////
 
 export const fetchProductsBegin = () => ({

@@ -12,6 +12,7 @@ import profileReducer from './profile';
 import schoolReducer from './school';
 import classReducer from './classinfo';
 import userReducer from './manageuser';
+import taskReducer from './task';
 const rootReducer = combineReducers({
   account: accountReducer,
   taskSiswa: taskSiswaReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   school: schoolReducer,
   class: classReducer,
   manageUser: userReducer,
+  task: taskReducer,
   Intl
 });
 

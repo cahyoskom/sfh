@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_forum_id: {
+    t_class_forum_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_forum_id',
+      field: 't_class_forum_id',
       references: {
         key: 'id',
-        model: 'm_school_forum_model'
+        model: 't_class_forum_model'
       }
     },
     sec_user_id: {
@@ -39,24 +39,6 @@ module.exports = sequelize => {
         key: 'id',
         model: 'sec_user_model'
       }
-    },
-    published_date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'published_date'
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -106,14 +88,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_forum_comment',
+    tableName: 't_class_forum_reader',
     comment: '',
     indexes: [
       {
-        name: 'm_school_forum_id',
+        name: 't_class_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_forum_id']
+        fields: ['t_class_forum_id']
       },
       {
         name: 'sec_user_id',
@@ -123,10 +105,10 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSchoolForumCommentModel = sequelize.define(
-    'm_school_forum_comment_model',
+  const TClassForumReaderModel = sequelize.define(
+    't_class_forum_reader_model',
     attributes,
     options
   );
-  return MSchoolForumCommentModel;
+  return TClassForumReaderModel;
 };

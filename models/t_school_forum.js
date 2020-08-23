@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_forum_comment_id: {
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_forum_comment_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 'm_school_forum_comment_model'
+        model: 't_school_model'
       }
     },
     sec_user_id: {
@@ -39,6 +39,33 @@ module.exports = sequelize => {
         key: 'id',
         model: 'sec_user_model'
       }
+    },
+    published_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'published_date'
+    },
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'title'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -88,14 +115,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_forum_comment_mention',
+    tableName: 't_school_forum',
     comment: '',
     indexes: [
       {
-        name: 'm_school_forum_comment_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_forum_comment_id']
+        fields: ['t_school_id']
       },
       {
         name: 'sec_user_id',
@@ -105,10 +132,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSchoolForumCommentMentionModel = sequelize.define(
-    'm_school_forum_comment_mention_model',
-    attributes,
-    options
-  );
-  return MSchoolForumCommentMentionModel;
+  const TSchoolForumModel = sequelize.define('t_school_forum_model', attributes, options);
+  return TSchoolForumModel;
 };

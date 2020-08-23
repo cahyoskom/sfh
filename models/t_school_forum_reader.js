@@ -14,26 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'name'
-    },
-    m_school_id: {
+    t_school_forum_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_school_forum_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_school_forum_model'
       }
     },
     sec_user_id: {
@@ -48,46 +39,6 @@ module.exports = sequelize => {
         key: 'id',
         model: 'sec_user_model'
       }
-    },
-    m_recurrent_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'm_recurrent_id',
-      references: {
-        key: 'id',
-        model: 'm_recurrent_model'
-      }
-    },
-    subscriber: {
-      type: DataTypes.ENUM('all', 'maintener', 'participant'),
-      allowNull: false,
-      defaultValue: 'all',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'subscriber'
-    },
-    start_datetime: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'start_datetime'
-    },
-    end_datetime: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'end_datetime'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -137,29 +88,27 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_todo',
+    tableName: 't_school_forum_reader',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_school_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_school_forum_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
-      },
-      {
-        name: 'm_recurrent_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['m_recurrent_id']
       }
     ]
   };
-  const MSchoolTodoModel = sequelize.define('m_school_todo_model', attributes, options);
-  return MSchoolTodoModel;
+  const TSchoolForumReaderModel = sequelize.define(
+    't_school_forum_reader_model',
+    attributes,
+    options
+  );
+  return TSchoolForumReaderModel;
 };

@@ -14,31 +14,27 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_forum_id: {
+    t_school_todo_detail_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_forum_id',
+      field: 't_school_todo_detail_id',
       references: {
         key: 'id',
-        model: 'm_class_forum_model'
+        model: 't_school_todo_detail_model'
       }
     },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    value: {
+      type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
+      field: 'value'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -88,27 +84,21 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_forum_reader',
+    tableName: 't_school_todo_option',
     comment: '',
     indexes: [
       {
-        name: 'm_class_forum_id',
+        name: 't_school_todo_detail_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_forum_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['t_school_todo_detail_id']
       }
     ]
   };
-  const MClassForumReaderModel = sequelize.define(
-    'm_class_forum_reader_model',
+  const TSchoolTodoOptionModel = sequelize.define(
+    't_school_todo_option_model',
     attributes,
     options
   );
-  return MClassForumReaderModel;
+  return TSchoolTodoOptionModel;
 };

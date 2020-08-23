@@ -14,30 +14,30 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_todo_id: {
+    t_class_todo_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_todo_id',
+      field: 't_class_todo_id',
       references: {
         key: 'id',
-        model: 'm_class_todo_model'
+        model: 't_class_todo_model'
       }
     },
-    m_class_todo_detail_id: {
+    t_class_todo_detail_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_todo_detail_id',
+      field: 't_class_todo_detail_id',
       references: {
         key: 'id',
-        model: 'm_class_todo_detail_model'
+        model: 't_class_todo_detail_model'
       }
     },
     sec_user_id: {
@@ -110,20 +110,20 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_todo_answer',
+    tableName: 't_class_todo_answer',
     comment: '',
     indexes: [
       {
-        name: 'm_class_todo_id',
+        name: 't_class_todo_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_todo_id']
+        fields: ['t_class_todo_id']
       },
       {
-        name: 'm_class_todo_detail_id',
+        name: 't_class_todo_detail_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_todo_detail_id']
+        fields: ['t_class_todo_detail_id']
       },
       {
         name: 'sec_user_id',
@@ -133,6 +133,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MClassTodoAnswerModel = sequelize.define('m_class_todo_answer_model', attributes, options);
-  return MClassTodoAnswerModel;
+  const TClassTodoAnswerModel = sequelize.define('t_class_todo_answer_model', attributes, options);
+  return TClassTodoAnswerModel;
 };

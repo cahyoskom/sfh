@@ -1,5 +1,5 @@
-const m_class = require('../models/m_class');
-const m_class_member = require('../models/m_class_member');
+const t_class = require('../models/t_class');
+const t_class_member = require('../models/t_class_member');
 const m_subject = require('../models/m_subject');
 const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
@@ -19,12 +19,12 @@ const enums = require('../enums/group.enums');
 exports.classMemberLinkStatus = async function (req, res) {
   const userId = req.body.user;
   const classId = req.body.class;
-  const model_class_member = m_class_member();
+  const model_class_member = t_class_member();
   let rel = await model_class_member.findOne({
     where: {
       status: ACTIVE,
       sec_user_id: userId,
-      m_class_id: classId
+      t_class_id: classId
     }
   });
   if (!rel) {
@@ -127,8 +127,8 @@ exports.classMemberLinkStatus = async function (req, res) {
 
 exports.member = async function (req, res) {
   const classId = req.params.id;
-  const model_class = m_class();
-  const model_class_member = m_class_member();
+  const model_class = t_class();
+  const model_class_member = t_class_member();
   const model_user = sec_user();
   const link_status_enums = [
     'Disetujui',
@@ -152,7 +152,7 @@ exports.member = async function (req, res) {
   if (hasAuthority) {
     students = await model_class_member.findAll({
       where: {
-        m_class_id: classId,
+        t_class_id: classId,
         status: ACTIVE,
         sec_group_id: enums.STUDENT
       }
@@ -160,7 +160,7 @@ exports.member = async function (req, res) {
   } else {
     students = await model_class_member.findAll({
       where: {
-        m_class_id: classId,
+        t_class_id: classId,
         status: ACTIVE,
         sec_group_id: enums.STUDENT,
         link_status: 0
@@ -188,7 +188,7 @@ exports.member = async function (req, res) {
   let teachersData = [];
   let teachers = await model_class_member.findAll({
     where: {
-      m_class_id: classId,
+      t_class_id: classId,
       status: ACTIVE,
       sec_group_id: 2
     }
@@ -213,14 +213,14 @@ exports.member = async function (req, res) {
 };
 
 exports.findAll = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var data = await model_class.findAll();
 
   res.json({ data: data });
 };
 
 async function checkAuthority(userId) {
-  const model_class_member = m_class_member();
+  const model_class_member = t_class_member();
   const model_sec_group = sec_group();
   var member = await model_class_member.findAll({
     where: {
@@ -237,7 +237,7 @@ async function checkAuthority(userId) {
 
 async function deleting(classId, transaction) {
   // delete class within id from classId
-  const model_class = m_class();
+  const model_class = t_class();
   const datum = await model_class.update(
     { status: DELETED },
     { where: { id: classId, status: ACTIVE }, transaction }
@@ -246,10 +246,10 @@ async function deleting(classId, transaction) {
 
   if (!datum[0]) return;
 
-  // delete related class member within m_class_id from classId
-  const model_class_member = m_class_member();
+  // delete related class member within t_class_id from classId
+  const model_class_member = t_class_member();
   const classmemberFilter = {
-    m_class_id: classId
+    t_class_id: classId
   };
   const classmemberIds = await model_class_member
     .findAll({
@@ -262,10 +262,10 @@ async function deleting(classId, transaction) {
   await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
   //------------------------------------------------------------------------
 
-  // delete related subject within m_class_id from classId
+  // delete related subject within t_class_id from classId
   const model_subject = m_subject();
   const subjectFilter = {
-    m_class_id: classId
+    t_class_id: classId
   };
   const subjectIds = await model_subject
     .findAll({
@@ -278,10 +278,10 @@ async function deleting(classId, transaction) {
   await model_subject.update({ status: DELETED }, { where: subjectFilter, transaction });
   //------------------------------------------------------------------------
 
-  // delete related task within m_class_id from classId
+  // delete related task within t_class_id from classId
   const model_task = t_task();
   const taskFilter = {
-    m_class_id: classId
+    t_class_id: classId
   };
   const taskIds = await model_task
     .findAll({
@@ -348,7 +348,7 @@ async function deleting(classId, transaction) {
 }
 
 exports.findOne = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var datum = await model_class.findOne({
     where: { id: req.params.id, status: ACTIVE }
   });
@@ -363,9 +363,9 @@ exports.findOne = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var new_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     code: req.body.code,
     name: req.body.name,
     note: req.body.note,
@@ -383,7 +383,7 @@ exports.create = async function (req, res) {
 };
 
 exports.duplicate = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var datum = await model_class.findOne({
     where: { id: req.params.id, status: ACTIVE }
   });
@@ -392,7 +392,7 @@ exports.duplicate = async function (req, res) {
     return;
   }
   var new_obj = {
-    m_school_id: datum.m_school_id,
+    t_school_id: datum.t_school_id,
     code: datum.code,
     name: datum.name,
     note: datum.note,
@@ -407,11 +407,11 @@ exports.duplicate = async function (req, res) {
     res.status(411).json({ error: 11, message: err.message });
     return;
   }
-  const model_class_member = m_class_member();
+  const model_class_member = t_class_member();
   let members = await model_class_member.findAll({
     where: {
       status: ACTIVE,
-      m_class_id: datum.id
+      t_class_id: datum.id
     }
   });
   if (members.length == 0) {
@@ -421,7 +421,7 @@ exports.duplicate = async function (req, res) {
   for (const indexMember in members) {
     member = members[indexMember];
     var new_member = {
-      m_class_id: savedDuplicate.id,
+      t_class_id: savedDuplicate.id,
       sec_user_id: member.sec_user_id,
       sec_group_id: member.sec_group_id,
       status: ACTIVE
@@ -437,9 +437,9 @@ exports.duplicate = async function (req, res) {
 };
 
 exports.join = async function (req, res) {
-  const model_class_member = m_class_member();
+  const model_class_member = t_class_member();
   var new_obj = {
-    m_class_id: req.body.m_class_id,
+    t_class_id: req.body.t_class_id,
     sec_user_id: req.body.sec_user_id,
     sec_group_id: req.body.sec_group_id,
     status: 1,
@@ -455,9 +455,9 @@ exports.join = async function (req, res) {
 };
 
 exports.update = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var update_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     code: req.body.code,
     name: req.body.name,
     note: req.body.note,

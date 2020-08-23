@@ -14,19 +14,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_todo_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'm_school_todo_id',
-      references: {
-        key: 'id',
-        model: 'm_school_todo_model'
-      }
-    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -36,23 +23,71 @@ module.exports = sequelize => {
       comment: null,
       field: 'name'
     },
-    description: {
-      type: DataTypes.TEXT,
+    t_school_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 't_school_id',
+      references: {
+        key: 'id',
+        model: 't_school_model'
+      }
+    },
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
+    m_recurrent_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'description'
+      field: 'm_recurrent_id',
+      references: {
+        key: 'id',
+        model: 'm_recurrent_model'
+      }
     },
-    value_datetime: {
+    subscriber: {
+      type: DataTypes.ENUM('all', 'maintener', 'participant'),
+      allowNull: false,
+      defaultValue: 'all',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'subscriber'
+    },
+    start_datetime: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'value_datetime'
+      field: 'start_datetime'
+    },
+    end_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'end_datetime'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -102,21 +137,29 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_todo_exception',
+    tableName: 't_school_todo',
     comment: '',
     indexes: [
       {
-        name: 'm_school_todo_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_todo_id']
+        fields: ['t_school_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
+      },
+      {
+        name: 'm_recurrent_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['m_recurrent_id']
       }
     ]
   };
-  const MSchoolTodoExceptionModel = sequelize.define(
-    'm_school_todo_exception_model',
-    attributes,
-    options
-  );
-  return MSchoolTodoExceptionModel;
+  const TSchoolTodoModel = sequelize.define('t_school_todo_model', attributes, options);
+  return TSchoolTodoModel;
 };

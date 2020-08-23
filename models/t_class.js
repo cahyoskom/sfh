@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const t_class_member = require('../models/t_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -14,76 +15,73 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_todo_id: {
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_todo_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 'm_school_todo_model'
+        model: 't_school_model'
       }
     },
-    m_answer_type_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    code: {
+      type: DataTypes.STRING(10),
+      unique: true,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_answer_type_id',
-      references: {
-        key: 'id',
-        model: 'm_answer_type_model'
-      }
+      field: 'code'
     },
-    type: {
-      type: DataTypes.ENUM('todo', 'popquiz'),
+    name: {
+      type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: 'todo',
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'type'
+      field: 'name'
     },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: null,
+    description: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'content'
+      field: 'description'
     },
-    valid_answer: {
+    avatar: {
       type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'valid_answer'
+      field: 'avatar'
     },
-    is_recurrent: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
+    link_status: {
+      type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_recurrent'
+      field: 'link_status'
     },
-    todo_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'todo_date'
+      field: 'note'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -133,27 +131,18 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_todo_detail',
+    tableName: 't_class',
     comment: '',
     indexes: [
       {
-        name: 'm_school_todo_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_todo_id']
-      },
-      {
-        name: 'm_answer_type_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['m_answer_type_id']
+        fields: ['t_school_id']
       }
     ]
   };
-  const MSchoolTodoDetailModel = sequelize.define(
-    'm_school_todo_detail_model',
-    attributes,
-    options
-  );
-  return MSchoolTodoDetailModel;
+  const TClassModel = sequelize.define('t_class_model', attributes, options);
+  TClassModel.hasMany(t_class_member(), { foreignKey: 't_class_id' });
+  return TClassModel;
 };

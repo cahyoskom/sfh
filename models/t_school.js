@@ -14,6 +14,29 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
+    t_school_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 't_school_id',
+      references: {
+        key: 'id',
+        model: 't_school_model'
+      }
+    },
+    code: {
+      type: DataTypes.STRING(10),
+      unique: true,
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'code'
+    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -23,71 +46,50 @@ module.exports = sequelize => {
       comment: null,
       field: 'name'
     },
-    m_class_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
+    address: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
-      references: {
-        key: 'id',
-        model: 'm_class_model'
-      }
+      field: 'address'
     },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
+    zipcode: {
+      type: DataTypes.STRING(8),
+      allowNull: true,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
+      field: 'zipcode'
     },
-    m_recurrent_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    phone: {
+      type: DataTypes.STRING(15),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_recurrent_id',
-      references: {
-        key: 'id',
-        model: 'm_recurrent_model'
-      }
+      field: 'phone'
     },
-    subscriber: {
-      type: DataTypes.ENUM('all', 'maintener', 'participant'),
-      allowNull: false,
-      defaultValue: 'all',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'subscriber'
-    },
-    start_datetime: {
-      type: DataTypes.DATE,
-      allowNull: false,
+    avatar: {
+      type: DataTypes.TEXT,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'start_datetime'
+      field: 'avatar'
     },
-    end_datetime: {
-      type: DataTypes.DATE,
-      allowNull: false,
+    note: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'end_datetime'
+      field: 'note'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -137,29 +139,25 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_todo',
+    tableName: 't_school',
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
-      },
-      {
-        name: 'm_recurrent_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['m_recurrent_id']
+        fields: ['t_school_id']
       }
     ]
   };
-  const MClassTodoModel = sequelize.define('m_class_todo_model', attributes, options);
-  return MClassTodoModel;
+  const methods = {
+    classMethods: {
+      associate: function (models) {
+        t_school_model.hasMany(models.t_class_model, { foreignKey: 't_school_id' });
+      }
+    }
+  };
+
+  const TSchoolModel = sequelize.define('t_school_model', attributes, options, methods);
+  return TSchoolModel;
 };

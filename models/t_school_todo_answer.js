@@ -14,82 +14,53 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_school_todo_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_school_todo_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_school_todo_model'
       }
     },
-    code: {
-      type: DataTypes.STRING(10),
-      unique: true,
+    t_school_todo_detail_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'code'
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'name'
-    },
-    address: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'address'
-    },
-    zipcode: {
-      type: DataTypes.STRING(8),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'zipcode'
-    },
-    phone: {
-      type: DataTypes.STRING(15),
-      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'phone'
+      field: 't_school_todo_detail_id',
+      references: {
+        key: 'id',
+        model: 't_school_todo_detail_model'
+      }
     },
-    avatar: {
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
+    value: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'avatar'
-    },
-    note: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'note'
+      field: 'value'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -139,25 +110,33 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school',
+    tableName: 't_school_todo_answer',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_school_todo_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_school_todo_id']
+      },
+      {
+        name: 't_school_todo_detail_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['t_school_todo_detail_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
       }
     ]
   };
-  const methods = {
-    classMethods: {
-      associate: function (models) {
-        m_school_model.hasMany(models.m_class_model, { foreignKey: 'm_school_id' });
-      }
-    }
-  };
-
-  const MSchoolModel = sequelize.define('m_school_model', attributes, options, methods);
-  return MSchoolModel;
+  const TSchoolTodoAnswerModel = sequelize.define(
+    't_school_todo_answer_model',
+    attributes,
+    options
+  );
+  return TSchoolTodoAnswerModel;
 };

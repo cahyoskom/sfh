@@ -41,7 +41,7 @@ exports.findAll = async function (req, res) {
     publish_date, s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
   FROM t_task t
   JOIN m_subject s ON s.subject_id=t.subject_id
-  JOIN m_class c ON c.class_id=t.class_id
+  JOIN t_class c ON c.class_id=t.class_id
   WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
 
   if (Object.keys(filter).length > 0) {

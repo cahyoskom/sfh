@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const sec_user = require('../models/sec_user');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -14,17 +15,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_school_model'
       }
     },
     sec_user_id: {
@@ -40,32 +41,18 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    published_date: {
-      type: DataTypes.DATE,
+    sec_group_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'published_date'
-    },
-    title: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'title'
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'content'
+      field: 'sec_group_id',
+      references: {
+        key: 'id',
+        model: 'sec_group_model'
+      }
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -115,23 +102,30 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_forum',
+    tableName: 't_school_member',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_school_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
+      },
+      {
+        name: 'sec_group_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_group_id']
       }
     ]
   };
-  const MSchoolForumModel = sequelize.define('m_school_forum_model', attributes, options);
-  return MSchoolForumModel;
+  const TSchoolMemberModel = sequelize.define('t_school_member_model', attributes, options);
+  TSchoolMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
+  return TSchoolMemberModel;
 };

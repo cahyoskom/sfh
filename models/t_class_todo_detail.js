@@ -14,31 +14,76 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_forum_comment_id: {
+    t_class_todo_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_forum_comment_id',
+      field: 't_class_todo_id',
       references: {
         key: 'id',
-        model: 'm_class_forum_comment_model'
+        model: 't_class_todo_model'
       }
     },
-    sec_user_id: {
+    m_answer_type_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
+      field: 'm_answer_type_id',
       references: {
         key: 'id',
-        model: 'sec_user_model'
+        model: 'm_answer_type_model'
       }
+    },
+    type: {
+      type: DataTypes.ENUM('todo', 'popquiz'),
+      allowNull: false,
+      defaultValue: 'todo',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'type'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
+    },
+    valid_answer: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'valid_answer'
+    },
+    is_recurrent: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'is_recurrent'
+    },
+    todo_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'todo_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -88,27 +133,23 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_forum_comment_mention',
+    tableName: 't_class_todo_detail',
     comment: '',
     indexes: [
       {
-        name: 'm_class_forum_comment_id',
+        name: 't_class_todo_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_forum_comment_id']
+        fields: ['t_class_todo_id']
       },
       {
-        name: 'sec_user_id',
+        name: 'm_answer_type_id',
         unique: false,
         type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['m_answer_type_id']
       }
     ]
   };
-  const MClassForumCommentMentionModel = sequelize.define(
-    'm_class_forum_comment_mention_model',
-    attributes,
-    options
-  );
-  return MClassForumCommentMentionModel;
+  const TClassTodoDetailModel = sequelize.define('t_class_todo_detail_model', attributes, options);
+  return TClassTodoDetailModel;
 };

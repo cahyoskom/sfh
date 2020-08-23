@@ -14,43 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_todo_id: {
+    t_class_todo_detail_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_todo_id',
+      field: 't_class_todo_detail_id',
       references: {
         key: 'id',
-        model: 'm_school_todo_model'
-      }
-    },
-    m_school_todo_detail_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'm_school_todo_detail_id',
-      references: {
-        key: 'id',
-        model: 'm_school_todo_detail_model'
-      }
-    },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
+        model: 't_class_todo_detail_model'
       }
     },
     value: {
@@ -110,33 +84,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_todo_answer',
+    tableName: 't_class_todo_option',
     comment: '',
     indexes: [
       {
-        name: 'm_school_todo_id',
+        name: 't_class_todo_detail_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_todo_id']
-      },
-      {
-        name: 'm_school_todo_detail_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['m_school_todo_detail_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['t_class_todo_detail_id']
       }
     ]
   };
-  const MSchoolTodoAnswerModel = sequelize.define(
-    'm_school_todo_answer_model',
-    attributes,
-    options
-  );
-  return MSchoolTodoAnswerModel;
+  const TClassTodoOptionModel = sequelize.define('t_class_todo_option_model', attributes, options);
+  return TClassTodoOptionModel;
 };

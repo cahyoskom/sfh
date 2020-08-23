@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_forum_id: {
+    t_class_forum_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_forum_id',
+      field: 't_class_forum_id',
       references: {
         key: 'id',
-        model: 'm_school_forum_model'
+        model: 't_class_forum_model'
       }
     },
     sec_user_id: {
@@ -88,14 +88,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_forum_mention',
+    tableName: 't_class_forum_mention',
     comment: '',
     indexes: [
       {
-        name: 'm_school_forum_id',
+        name: 't_class_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_forum_id']
+        fields: ['t_class_forum_id']
       },
       {
         name: 'sec_user_id',
@@ -105,10 +105,10 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSchoolForumMentionModel = sequelize.define(
-    'm_school_forum_mention_model',
+  const TClassForumMentionModel = sequelize.define(
+    't_class_forum_mention_model',
     attributes,
     options
   );
-  return MSchoolForumMentionModel;
+  return TClassForumMentionModel;
 };

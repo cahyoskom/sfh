@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
 const sec_user = require('../models/sec_user');
+const sec_group = require('../models/sec_group');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -15,17 +16,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_class_model'
       }
     },
     sec_user_id: {
@@ -53,6 +54,15 @@ module.exports = sequelize => {
         key: 'id',
         model: 'sec_group_model'
       }
+    },
+    link_status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link_status'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -102,14 +112,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_member',
+    tableName: 't_class_member',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_class_id']
       },
       {
         name: 'sec_user_id',
@@ -125,7 +135,8 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSchoolMemberModel = sequelize.define('m_school_member_model', attributes, options);
-  MSchoolMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
-  return MSchoolMemberModel;
+  const TClassMemberModel = sequelize.define('t_class_member_model', attributes, options);
+  TClassMemberModel.belongsTo(sec_group(), { foreignKey: 'sec_group_id' });
+  TClassMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
+  return TClassMemberModel;
 };

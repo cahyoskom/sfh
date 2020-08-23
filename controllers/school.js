@@ -2,11 +2,11 @@ const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
-const m_school = require('../models/m_school');
-const m_school_member = require('../models/m_school_member');
+const t_school = require('../models/t_school');
+const t_school_member = require('../models/t_school_member');
 const sec_group = require('../models/sec_group');
-const m_class = require('../models/m_class');
-const m_class_member = require('../models/m_class_member');
+const t_class = require('../models/t_class');
+const t_class_member = require('../models/t_class_member');
 const m_subject = require('../models/m_subject');
 const t_task = require('../models/t_task');
 const t_task_file = require('../models/t_task_file');
@@ -24,7 +24,7 @@ const { env } = process;
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {
-  const model_school_member = m_school_member();
+  const model_school_member = t_school_member();
   const model_sec_group = sec_group();
   var member = await model_school_member.findAll({
     where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [1, 2] } }
@@ -46,14 +46,14 @@ async function checkAuthority(userId) {
 }
 
 exports.findAll = async function (req, res) {
-  const model_school = m_school();
+  const model_school = t_school();
   var data = await model_school.findAll();
 
   res.json({ data: data });
 };
 
 exports.findOne = async function (req, res) {
-  const model_school = m_school();
+  const model_school = t_school();
   var datum = await model_school.findOne({
     where: { id: req.params.id, status: ACTIVE }
   });
@@ -66,7 +66,7 @@ exports.findOne = async function (req, res) {
 };
 
 exports.findByCode = async function (req, res) {
-  const model_school = m_school();
+  const model_school = t_school();
   var datum = await model_school.findOne({
     where: { code: req.params.code }
   });
@@ -75,7 +75,7 @@ exports.findByCode = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
-  const model_school = m_school();
+  const model_school = t_school();
   var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
   if (!checkAvatar) {
     res.status(401).json({ error: null, message: 'Format gambar tidak sesuai' });
@@ -89,7 +89,7 @@ exports.create = async function (req, res) {
     res.status(401).json({ error: null, message: 'Kode pos tidak valid' });
   }
   var new_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     code: req.body.code,
     name: req.body.name,
     address: req.body.address,
@@ -110,9 +110,9 @@ exports.create = async function (req, res) {
 };
 
 exports.join = async function (req, res) {
-  const model_school_member = m_school_member();
+  const model_school_member = t_school_member();
   var new_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     sec_user_id: req.body.sec_user_id,
     sec_group_id: req.body.sec_group_id,
     status: 1,
@@ -134,7 +134,7 @@ exports.update = async function (req, res) {
       .status(403)
       .json({ error: null, message: 'Pengguna tidak memiliki otoritas untuk mengubah sekolah' });
   }
-  const model_school = m_school();
+  const model_school = t_school();
   var checkAvatar = isBase64(req.body.avatar, { allowMime: true });
   if (!checkAvatar) {
     res.status(401).json({ error: null, message: 'Format gambar tidak sesuai' });
@@ -149,7 +149,7 @@ exports.update = async function (req, res) {
   }
 
   var update_obj = {
-    m_school_id: req.body.id,
+    t_school_id: req.body.id,
     name: req.body.name,
     address: req.body.address,
     zipcode: req.body.zipcode,
@@ -179,15 +179,15 @@ exports.delete = async function (req, res) {
       .json({ error: null, message: 'User tidak memiliki otoritas untuk menghapus sekolah' });
   }
   // delete school within id from req.params.id
-  const model_school = m_school();
+  const model_school = t_school();
   const schoolId = req.params.id;
   await model_school.update({ status: DELETED }, { where: { id: schoolId } });
   //------------------------------------------------------------------------
 
-  // delete related school member within m_school_id from req.params.id
-  const model_school_member = m_school_member();
+  // delete related school member within t_school_id from req.params.id
+  const model_school_member = t_school_member();
   const schoolmemberFilter = {
-    m_school_id: schoolId
+    t_school_id: schoolId
   };
   const schoolmemberIds = await model_school_member
     .findAll({
@@ -199,10 +199,10 @@ exports.delete = async function (req, res) {
   await model_school_member.update({ status: DELETED }, { where: schoolmemberFilter });
   //------------------------------------------------------------------------
 
-  // delete related class within m_school_id from req.params.id
-  const model_class = m_class();
+  // delete related class within t_school_id from req.params.id
+  const model_class = t_class();
   const classFilter = {
-    m_school_id: schoolId
+    t_school_id: schoolId
   };
   const classIds = await model_class
     .findAll({
@@ -214,10 +214,10 @@ exports.delete = async function (req, res) {
   await model_class.update({ status: DELETED }, { where: classFilter });
   //------------------------------------------------------------------------
 
-  // delete related class member within m_class_id from previous process when getting class ids
-  const model_class_member = m_class_member();
+  // delete related class member within t_class_id from previous process when getting class ids
+  const model_class_member = t_class_member();
   const classmemberFilter = {
-    m_class_id: { [Op.in]: classIds }
+    t_class_id: { [Op.in]: classIds }
   };
   const classmembertIds = await model_class_member
     .findAll({
@@ -229,10 +229,10 @@ exports.delete = async function (req, res) {
   await model_class_member.update({ status: DELETED }, { where: classmemberFilter });
   //------------------------------------------------------------------------
 
-  // delete related subject within m_class_id from previous process when getting class ids
+  // delete related subject within t_class_id from previous process when getting class ids
   const model_subject = m_subject();
   const subjectFilter = {
-    m_class_id: { [Op.in]: classIds }
+    t_class_id: { [Op.in]: classIds }
   };
   const subjectIds = await model_subject
     .findAll({
@@ -311,7 +311,7 @@ exports.delete = async function (req, res) {
 };
 
 exports.connectClass = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var targetClass = await model_class.findOne({
     where: { code: req.body.code, status: ACTIVE }
   });
@@ -321,7 +321,7 @@ exports.connectClass = async function (req, res) {
       message: 'Kelas tidak ditemukan'
     });
   }
-  if (targetClass.m_school_id) {
+  if (targetClass.t_school_id) {
     res.status(409).json({
       error: null,
       message: 'Kelas sudah terhubung ke sekolah'
@@ -329,7 +329,7 @@ exports.connectClass = async function (req, res) {
   }
 
   var update_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     link_status: 2 //request by school
   };
   try {
@@ -337,14 +337,14 @@ exports.connectClass = async function (req, res) {
       where: { id: targetClass.id }
     });
 
-    const model_class_member = m_class_member();
+    const model_class_member = t_class_member();
     var members = await model_class_member.findAndCountAll({
-      where: { m_class_id: targetClass.id, status: ACTIVE }
+      where: { t_class_id: targetClass.id, status: ACTIVE }
     });
 
     var owner_id = await model_class_member.findOne({
       attributes: ['sec_user_id'],
-      where: { m_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
+      where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
     });
     console.log(owner_id);
     var owner_name = await sec_user().findOne({
@@ -369,9 +369,9 @@ exports.connectClass = async function (req, res) {
 };
 
 exports.createClass = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var new_obj = {
-    m_school_id: req.body.m_school_id,
+    t_school_id: req.body.t_school_id,
     name: req.body.name,
     description: req.body.description,
     link_status: 0, //CONNECTED
@@ -389,14 +389,14 @@ exports.createClass = async function (req, res) {
     }
   }
   var new_member = {
-    m_class_id: datum.id,
+    t_class_id: datum.id,
     sec_user_id: req.user.id,
     sec_group_id: 1, // OWNER
     status: ACTIVE,
     created_date: moment().format()
   };
   try {
-    var member = await m_class_member().create(new_member);
+    var member = await t_class_member().create(new_member);
     res.json({
       id: datum.id,
       name: datum.name,
@@ -416,7 +416,7 @@ exports.getAllClass = async function (req, res) {
   if (filter !== '') {
     condition = {
       [Op.and]: [
-        { m_school_id: school_id, status: ACTIVE },
+        { t_school_id: school_id, status: ACTIVE },
         sequelize().where(sequelize().fn('lower', sequelize().col('name')), {
           [Op.like]: '%' + filter + '%'
         })
@@ -424,13 +424,13 @@ exports.getAllClass = async function (req, res) {
     };
   } else {
     condition = {
-      m_school_id: school_id,
+      t_school_id: school_id,
       status: ACTIVE
     };
   }
 
   try {
-    var listClass = await m_class().findAll({
+    var listClass = await t_class().findAll({
       attributes: [
         'id',
         'link_status',
@@ -442,12 +442,12 @@ exports.getAllClass = async function (req, res) {
       where: condition,
       include: [
         {
-          model: m_class_member(),
+          model: t_class_member(),
           required: true,
           where: { status: ACTIVE }
         }
       ],
-      group: 'm_class_model.id'
+      group: 't_class_model.id'
     });
 
     res.json({ listClass });
@@ -457,7 +457,7 @@ exports.getAllClass = async function (req, res) {
 };
 
 exports.approval = async function (req, res) {
-  const model_class = m_class();
+  const model_class = t_class();
   var update_obj;
   if (req.body.status) {
     update_obj = {
@@ -467,7 +467,7 @@ exports.approval = async function (req, res) {
     };
   } else {
     update_obj = {
-      m_school_id: null,
+      t_school_id: null,
       link_status: 0, //DECLINE
       updated_date: moment().format(),
       updated_by: req.user.email
@@ -487,9 +487,9 @@ exports.approval = async function (req, res) {
 exports.getMembers = async function (req, res) {
   const school_id = req.params.id;
   try {
-    var listMembers = await m_school_member().findAll({
+    var listMembers = await t_school_member().findAll({
       attributes: ['id', 'sec_group_id', 'sec_user_id'],
-      where: { m_school_id: school_id, status: ACTIVE },
+      where: { t_school_id: school_id, status: ACTIVE },
       include: [
         {
           model: sec_user(),
@@ -498,7 +498,7 @@ exports.getMembers = async function (req, res) {
         }
       ]
     });
-    var checkOwner = await m_school_member().findOne({
+    var checkOwner = await t_school_member().findOne({
       where: { sec_user_id: req.user.id, status: ACTIVE }
     });
     var isOwner = checkOwner.sec_group_id == 1 ? true : false;
@@ -522,8 +522,8 @@ exports.changeOwner = async function (req, res) {
     updated_date: moment().format(),
     updated_by: req.user.email
   };
-  var user = await m_school_member().findOne({
-    where: { sec_user_id: old_owner_id, m_school_id: school_id, status: ACTIVE }
+  var user = await t_school_member().findOne({
+    where: { sec_user_id: old_owner_id, t_school_id: school_id, status: ACTIVE }
   });
   if (user.sec_group_id !== 1) {
     res
@@ -531,11 +531,11 @@ exports.changeOwner = async function (req, res) {
       .json({ message: 'Hanya pemilik sekolah yang dapat mengubah kepemilikan sekolah' });
   } else {
     try {
-      var update_new_owner = await m_school_member().update(new_owner, {
+      var update_new_owner = await t_school_member().update(new_owner, {
         where: { id: new_owner_id }
       });
-      var update_old_owner = await m_school_member().update(old_owner, {
-        where: { sec_user_id: old_owner_id, m_school_id: school_id, status: ACTIVE }
+      var update_old_owner = await t_school_member().update(old_owner, {
+        where: { sec_user_id: old_owner_id, t_school_id: school_id, status: ACTIVE }
       });
 
       res.json({
@@ -552,7 +552,7 @@ exports.changeOwner = async function (req, res) {
 exports.removeMember = async function (req, res) {
   const target_id = req.body.id;
 
-  var target_user = await m_school_member().findOne({
+  var target_user = await t_school_member().findOne({
     where: { id: target_id }
   });
   if (target_user.sec_group_id === 1) {
@@ -566,7 +566,7 @@ exports.removeMember = async function (req, res) {
     updated_by: req.user.email
   };
   try {
-    var update = await m_school_member().update(obj, {
+    var update = await t_school_member().update(obj, {
       where: { id: target_id }
     });
 
@@ -607,8 +607,8 @@ exports.inviteMember = async function (req, res) {
     where: { email: req.body.email, status: ACTIVE }
   });
   if (check_user) {
-    var check_member = await m_school_member().findOne({
-      where: { sec_user_id: check_user.id, m_school_id: req.body.school_id, status: ACTIVE }
+    var check_member = await t_school_member().findOne({
+      where: { sec_user_id: check_user.id, t_school_id: req.body.school_id, status: ACTIVE }
     });
     if (check_member) {
       res
@@ -616,7 +616,7 @@ exports.inviteMember = async function (req, res) {
         .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota sekolah' });
     } else {
       var invitation = await sec_confirmation().findOne({
-        where: { sec_user_id: check_user.id, m_school_id: school_id, status: ACTIVE }
+        where: { sec_user_id: check_user.id, t_school_id: school_id, status: ACTIVE }
       });
       var description;
       if (invitation) {
@@ -631,7 +631,7 @@ exports.inviteMember = async function (req, res) {
       } else {
         description = 'SCHOOL_MEMBER_INVITATION';
       }
-      var school = await m_school().findOne({
+      var school = await t_school().findOne({
         where: { id: school_id, status: ACTIVE }
       });
       //send invitation
@@ -646,7 +646,7 @@ exports.inviteMember = async function (req, res) {
       const datum = {
         description: description,
         sec_user_id: check_user.id,
-        m_school_id: school_id,
+        t_school_id: school_id,
         code: code
       };
       try {
@@ -672,14 +672,14 @@ exports.acceptInvitation = async function (req, res) {
   var invitation = await sec_confirmation().findOne({
     where: { code: code }
   });
-  var school = await m_school().findOne({
-    where: { id: invitation.m_school_id }
+  var school = await t_school().findOne({
+    where: { id: invitation.t_school_id }
   });
   if (invitation.status === DEACTIVE) {
-    var check_member = await m_school_member().findOne({
+    var check_member = await t_school_member().findOne({
       where: {
         sec_user_id: invitation.sec_user_id,
-        m_school_id: invitation.m_school_id,
+        t_school_id: invitation.t_school_id,
         status: ACTIVE
       }
     });
@@ -699,14 +699,14 @@ exports.acceptInvitation = async function (req, res) {
         where: { id: invitation.id }
       });
       var new_member = {
-        m_school_id: invitation.m_school_id,
+        t_school_id: invitation.t_school_id,
         sec_user_id: invitation.sec_user_id,
         status: ACTIVE,
         sec_group_id: 2, //MAINTAINER
         created_date: moment().format(),
         created_by: 'SYSTEM'
       };
-      var created = await m_school_member().create(new_member);
+      var created = await t_school_member().create(new_member);
       res.json({ school_name: school.name, is_new_member: true });
     } catch (err) {
       res.status(401).json({ error: null, message: err.message });

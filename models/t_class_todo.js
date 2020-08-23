@@ -14,17 +14,26 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_id: {
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'name'
+    },
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 't_class_model'
       }
     },
     sec_user_id: {
@@ -40,32 +49,45 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    published_date: {
+    m_recurrent_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'm_recurrent_id',
+      references: {
+        key: 'id',
+        model: 'm_recurrent_model'
+      }
+    },
+    subscriber: {
+      type: DataTypes.ENUM('all', 'maintener', 'participant'),
+      allowNull: false,
+      defaultValue: 'all',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'subscriber'
+    },
+    start_datetime: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'published_date'
+      field: 'start_datetime'
     },
-    title: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'title'
-    },
-    content: {
-      type: DataTypes.TEXT,
+    end_datetime: {
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'content'
+      field: 'end_datetime'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -115,23 +137,29 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_forum',
+    tableName: 't_class_todo',
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
+      },
+      {
+        name: 'm_recurrent_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['m_recurrent_id']
       }
     ]
   };
-  const MClassForumModel = sequelize.define('m_class_forum_model', attributes, options);
-  return MClassForumModel;
+  const TClassTodoModel = sequelize.define('t_class_todo_model', attributes, options);
+  return TClassTodoModel;
 };

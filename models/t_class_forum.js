@@ -14,40 +14,49 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_todo_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_todo_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_class_todo_model'
+        model: 't_class_model'
       }
     },
-    m_answer_type_id: {
+    sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_answer_type_id',
+      field: 'sec_user_id',
       references: {
         key: 'id',
-        model: 'm_answer_type_model'
+        model: 'sec_user_model'
       }
     },
-    type: {
-      type: DataTypes.ENUM('todo', 'popquiz'),
+    published_date: {
+      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: 'todo',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'type'
+      field: 'published_date'
+    },
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'title'
     },
     content: {
       type: DataTypes.TEXT,
@@ -57,33 +66,6 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'content'
-    },
-    valid_answer: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'valid_answer'
-    },
-    is_recurrent: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'is_recurrent'
-    },
-    todo_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'todo_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -133,23 +115,23 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class_todo_detail',
+    tableName: 't_class_forum',
     comment: '',
     indexes: [
       {
-        name: 'm_class_todo_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_todo_id']
+        fields: ['t_class_id']
       },
       {
-        name: 'm_answer_type_id',
+        name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_answer_type_id']
+        fields: ['sec_user_id']
       }
     ]
   };
-  const MClassTodoDetailModel = sequelize.define('m_class_todo_detail_model', attributes, options);
-  return MClassTodoDetailModel;
+  const TClassForumModel = sequelize.define('t_class_forum_model', attributes, options);
+  return TClassForumModel;
 };

@@ -27,17 +27,17 @@ module.exports = sequelize => {
         model: 'm_subject_model'
       }
     },
-    m_class_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 't_class_model'
       }
     },
     sec_user_id: {
@@ -165,10 +165,10 @@ module.exports = sequelize => {
         fields: ['m_subject_id']
       },
       {
-        name: 'm_class_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_id']
       },
       {
         name: 'sec_user_id',

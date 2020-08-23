@@ -14,31 +14,45 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_forum_id: {
+    t_class_todo_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_forum_id',
+      field: 't_class_todo_id',
       references: {
         key: 'id',
-        model: 'm_school_forum_model'
+        model: 't_class_todo_model'
       }
     },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'name'
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'description'
+    },
+    value_datetime: {
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
+      field: 'value_datetime'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -88,27 +102,21 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_forum_reader',
+    tableName: 't_class_todo_exception',
     comment: '',
     indexes: [
       {
-        name: 'm_school_forum_id',
+        name: 't_class_todo_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_forum_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['t_class_todo_id']
       }
     ]
   };
-  const MSchoolForumReaderModel = sequelize.define(
-    'm_school_forum_reader_model',
+  const TClassTodoExceptionModel = sequelize.define(
+    't_class_todo_exception_model',
     attributes,
     options
   );
-  return MSchoolForumReaderModel;
+  return TClassTodoExceptionModel;
 };

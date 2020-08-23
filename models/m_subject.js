@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 't_class_model'
       }
     },
     name: {
@@ -88,10 +88,10 @@ module.exports = sequelize => {
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_id']
       }
     ]
   };

@@ -54,32 +54,32 @@ module.exports = sequelize => {
       comment: null,
       field: 'out_name'
     },
-    is_recieve_web: {
+    is_receive_web: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_recieve_web'
+      field: 'is_receive_web'
     },
-    is_recieve_email: {
+    is_receive_email: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_recieve_email'
+      field: 'is_receive_email'
     },
-    is_recieve_sms: {
+    is_receive_sms: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_recieve_sms'
+      field: 'is_receive_sms'
     },
     status: {
       type: DataTypes.INTEGER(4),

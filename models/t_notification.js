@@ -27,14 +27,14 @@ module.exports = sequelize => {
         model: 'm_notification_type_model'
       }
     },
-    sec_user_id: {
+    sender_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
+      field: 'sender_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
@@ -80,32 +80,32 @@ module.exports = sequelize => {
       comment: null,
       field: 'variable'
     },
-    notificatin_datetime: {
+    notification_datetime: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'notificatin_datetime'
+      field: 'notification_datetime'
     },
-    notificatin_year: {
+    notification_year: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'notificatin_year'
+      field: 'notification_year'
     },
-    notificatin_month: {
+    notification_month: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'notificatin_month'
+      field: 'notification_month'
     },
     is_read: {
       type: DataTypes.INTEGER(4).UNSIGNED,

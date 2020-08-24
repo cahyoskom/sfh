@@ -72,6 +72,15 @@ module.exports = sequelize => {
       comment: null,
       field: 'sequence'
     },
+    link: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

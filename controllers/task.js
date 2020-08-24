@@ -8,7 +8,8 @@ const m_param = require('../models/m_param');
 const { query } = require('../models/query');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
-const TASK_STATUS = require('../enums/status.enums');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
+const m_subject = require('../models/m_subject');
 
 exports.findAll = async function (req, res) {
   let filter = {};
@@ -38,13 +39,11 @@ exports.findAll = async function (req, res) {
   }
 
   var sql = `SELECT t.sec_user_id, t.id, t.title, t.notes, t.weight, t.start_date, t.finish_date, 
-    t.publish_date, s.id, s.name as subjectName, c.id, c.name as className, COUNT(*) as countSubmitted
+    t.publish_date, s.id, s.name as subjectName, c.id as classId, c.name as className
   FROM t_task t
   JOIN m_subject s ON s.id=t.m_subject_id
   JOIN m_class c ON c.id=t.m_class_id
-  LEFT OUTER JOIN t_task_collection tc ON tc.t_task_id = t.id
-  WHERE t.status = 1 AND s.status=1 AND c.status = 1 AND tc.status=1
-  GROUP BY t.id`;
+  WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
 
   if (Object.keys(filter).length > 0) {
     sql = sql + ' AND ' + where.join(' AND ');
@@ -90,10 +89,34 @@ exports.findOneInclCollection = async function (req, res) {
 
 exports.create = async function (req, res) {
   const model_task = t_task();
+  const model_subject = m_subject();
+  var subject_id;
+  var existed_subject = model_subject.findOne({
+    where: { name: req.body.subject, m_class_id: req.body.class_id, status: ACTIVE }
+  });
+  if (existed_subject) {
+    //subject already existed
+    subject_id = existed_subject.id;
+  } else {
+    //create new subject
+    var new_obj = {
+      name: req.body.subject,
+      m_class_id: req.body.class_id,
+      status: ACTIVE,
+      created_date: moment().format(),
+      created_by: req.user.email
+    };
+    try {
+      var datum = await model_subject.create(new_obj);
+      subject_id = datum.id;
+    } catch (err) {
+      res.status(411).json({ error: 11, message: err.message });
+    }
+  }
   var new_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    sec_user_id: req.body.user_id,
+    m_class_id: req.body.class_id,
+    m_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
     weight: req.body.weight,
@@ -114,17 +137,41 @@ exports.create = async function (req, res) {
 
 exports.update = async function (req, res) {
   const model_task = t_task();
+  const model_subject = m_subject();
+  var subject_id;
+  var existed_subject = model_subject.findOne({
+    where: { name: req.body.subject, m_class_id: req.body.class_id, status: ACTIVE }
+  });
+  if (existed_subject) {
+    //subject already existed
+    subject_id = existed_subject.id;
+  } else {
+    //create new subject
+    var new_obj = {
+      name: req.body.subject,
+      m_class_id: req.body.class_id,
+      status: ACTIVE,
+      created_date: moment().format(),
+      created_by: req.user.email
+    };
+    try {
+      var datum = await model_subject.create(new_obj);
+      subject_id = datum.id;
+    } catch (err) {
+      res.status(411).json({ error: 11, message: err.message });
+    }
+  }
   var update_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    sec_user_id: req.body.user_id,
+    m_class_id: req.body.class_id,
+    m_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
     weight: req.body.weight,
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
     publish_date: req.body.publish_date,
-    status: TASK_STATUS.ACTIVE,
+    status: ACTIVE,
     updated_date: moment().format(),
     updated_by: req.user.user_name
   };
@@ -146,7 +193,7 @@ exports.setStatus = async function (req, res) {
   }
 
   let update_obj = {};
-  let status = TASK_STATUS.ACTIVE;
+  let status = ACTIVE;
 
   switch (req.params.status) {
     case 'archived':
@@ -187,7 +234,7 @@ exports.upload = async function (req, res) {
   const form = formidable({ multiples: true });
   const task_id = req.params.id;
 
-  var task = await t_task().findOne({ where: { task_id: req.params.id } });
+  var task = await t_task().findOne({ where: { t_task_id: req.params.id } });
   let result = [];
   if (!task) {
     res.status(404).json({ error: 31, message: 'Task not found.' });
@@ -225,25 +272,35 @@ exports.upload = async function (req, res) {
     let filename = upload_dir + element.name;
     await MoveFile(element.path, filename);
     let new_file = {
-      task_id: task_id,
+      t_task_id: task_id,
       filename: element.name,
       ext: filename.split('.').pop(),
       mime_type: element.type,
       location: filename,
       sequence: 0, //todo ambil dari terakhir
-      status: 1,
-      created_date: moment().format(),
-      created_by: req.user.user_name
+      status: 1
     };
 
     var task_file = await t_task_file().findOne({
-      where: { task_id: task_id, filename: element.name }
+      where: { t_task_id: task_id, filename: element.name }
     });
     if (!task_file) {
       // belum ada, insert baru
+      new_file.created_date = moment().format();
+      new_file.created_by = req.user.email;
       task_file = await t_task_file().create(new_file);
     } else {
       // todo, update ganti updated date
+      new_file.updated_date = moment().format();
+      new_file.updated_by = req.user.email;
+      try {
+        var update = await t_task_file().update(new_file, {
+          where: { id: task_file.id }
+        });
+      } catch (err) {
+        res.status(411).json({ error: 11, message: err.message });
+      }
+      task_file = new_file;
     }
 
     result.push(task_file);
@@ -254,24 +311,21 @@ exports.upload = async function (req, res) {
 
 exports.delete = async function (req, res) {
   const model_task = t_task();
-  model_task.update({ status: TASK_STATUS.DELETED }, { where: { task_id: req.params.id } });
+  model_task.update({ status: DELETED }, { where: { id: req.params.id } });
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.deleteFileById = async function (req, res) {
   const model_task = t_task_file();
-  model_task.update(
-    { status: TASK_STATUS.DELETED },
-    { where: { task_file_id: req.params.file_id } }
-  );
+  model_task.update({ status: DELETED }, { where: { id: req.params.file_id } });
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.download = async function (req, res) {
   var file = await t_task_file().findOne({
-    where: { task_file_id: req.params.file_id }
+    where: { id: req.params.file_id }
   });
 
   if (!!file) {

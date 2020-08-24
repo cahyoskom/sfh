@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.26)
 # Database: sfh-dev
-# Generation Time: 2020-08-23 08:54:44 +0000
+# Generation Time: 2020-08-24 03:03:57 +0000
 # ************************************************************
 
 
@@ -856,6 +856,32 @@ CREATE TABLE `t_school_forum_reader` (
   CONSTRAINT `t_school_forum_reader_ibfk_1` FOREIGN KEY (`t_school_forum_id`) REFERENCES `t_school_forum` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `t_school_forum_reader_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table t_school_member
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `t_school_member`;
+
+CREATE TABLE `t_school_member` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `t_school_id` int(11) unsigned DEFAULT NULL,
+  `sec_user_id` int(11) unsigned NOT NULL,
+  `sec_group_id` int(11) unsigned NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT '0',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
+  `updated_date` datetime DEFAULT NULL,
+  `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `t_school_id` (`t_school_id`),
+  KEY `sec_user_id` (`sec_user_id`),
+  KEY `sec_group_id` (`sec_group_id`),
+  CONSTRAINT `t_school_member_ibfk_1` FOREIGN KEY (`t_school_id`) REFERENCES `t_school` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `t_school_member_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `t_school_member_ibfk_3` FOREIGN KEY (`sec_group_id`) REFERENCES `sec_group` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 

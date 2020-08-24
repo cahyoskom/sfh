@@ -38,7 +38,7 @@ module.exports = sequelize => {
     },
     out_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -47,7 +47,7 @@ module.exports = sequelize => {
     },
     out_name: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
@@ -57,7 +57,7 @@ module.exports = sequelize => {
     is_receive_web: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '1',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -66,7 +66,7 @@ module.exports = sequelize => {
     is_receive_email: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
@@ -75,7 +75,7 @@ module.exports = sequelize => {
     is_receive_sms: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,

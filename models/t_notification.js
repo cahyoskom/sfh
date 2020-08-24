@@ -29,7 +29,7 @@ module.exports = sequelize => {
     },
     sender_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -55,7 +55,7 @@ module.exports = sequelize => {
     },
     out_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -64,7 +64,7 @@ module.exports = sequelize => {
     },
     out_name: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
@@ -73,7 +73,7 @@ module.exports = sequelize => {
     },
     variable: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -90,7 +90,7 @@ module.exports = sequelize => {
       field: 'notification_datetime'
     },
     notification_year: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
+      type: DataTypes.INTEGER(5).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,

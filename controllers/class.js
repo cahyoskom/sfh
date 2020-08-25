@@ -21,7 +21,6 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const enums = require('../enums/group.enums');
-const crypto = require('crypto');
 
 exports.classMemberLinkStatus = async function (req, res) {
   const userId = req.body.user;

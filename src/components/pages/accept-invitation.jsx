@@ -31,6 +31,17 @@ class Invitation extends Component {
         .catch(err => {
           this.setState({ success: false });
         });
+    } else if (queryStringObj.q == 'class') {
+      axios
+        .get(API_BASE_URL_DEV + API_PATH.classInvitation + '?code=' + queryStringObj.code)
+        .then(res => {
+          console.log(res);
+          this.setState({ success: true, accepted: !res.data.is_new_member, schoolName: res.data.class_name });
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({ success: false });
+        });
     }
   }
 

@@ -26,4 +26,6 @@ export const API_PATH = {
   updateMember: '/class/link-update/1',
   addMember: '/class/add-member/1',
   classInvitation: '/class_invitation'
+  createClass: '/class',
+  getClasses: '/class/user-classes'
 };

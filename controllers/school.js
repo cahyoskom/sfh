@@ -698,15 +698,28 @@ exports.acceptInvitation = async function (req, res) {
       var updated = await sec_confirmation().update(new_obj, {
         where: { id: invitation.id }
       });
-      var new_member = {
-        m_school_id: invitation.m_school_id,
-        sec_user_id: invitation.sec_user_id,
-        status: ACTIVE,
-        sec_group_id: 2, //MAINTAINER
-        created_date: moment().format(),
-        created_by: 'SYSTEM'
-      };
-      var created = await m_school_member().create(new_member);
+      var ever_added_member = await m_school_member().findOne({
+        where: {
+          sec_user_id: invitation.sec_user_id,
+          m_school_id: invitation.m_school_id
+        }
+      });
+      if (ever_added_member) {
+        ever_added_member.status = ACTIVE;
+        ever_added_member.sec_group_id = 2;
+        ever_added_member.updated_date = moment().format();
+        var re_add = await ever_added_member.save();
+      } else {
+        var new_member = {
+          m_school_id: invitation.m_school_id,
+          sec_user_id: invitation.sec_user_id,
+          status: ACTIVE,
+          sec_group_id: 2, //MAINTAINER
+          created_date: moment().format(),
+          created_by: 'SYSTEM'
+        };
+        var created = await m_school_member().create(new_member);
+      }
       res.json({ school_name: school.name, is_new_member: true });
     } catch (err) {
       res.status(401).json({ error: null, message: err.message });

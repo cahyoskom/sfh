@@ -15,6 +15,7 @@ const t_task_collection_file = require('../models/t_task_collection_file');
 const sec_user = require('../models/sec_user');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 var randomstring = require('randomstring');
+const crypto = require('crypto');
 const isBase64 = require('is-base64');
 const { sequelize } = require('../database');
 const sec_confirmation = require('../models/sec_confirmation');
@@ -89,8 +90,6 @@ exports.create = async function (req, res) {
     res.status(401).json({ error: null, message: 'Kode pos tidak valid' });
   }
   var new_obj = {
-    m_school_id: req.body.m_school_id,
-    code: req.body.code,
     name: req.body.name,
     address: req.body.address,
     zipcode: req.body.zipcode,
@@ -101,12 +100,33 @@ exports.create = async function (req, res) {
     created_date: moment().format(),
     created_by: req.user.email
   };
-  try {
-    var datum = await model_school.create(new_obj);
-    res.json({ data: datum });
-  } catch (err) {
-    res.status(411).json({ error: 11, message: err.message });
+  var datum;
+  while (!datum) {
+    new_obj.code = randomstring.generate(7);
+    try {
+      datum = await model_school.create(new_obj);
+    } catch (error) {
+      if (error.name == 'SequelizeUniqueConstraintError') {
+        datum = null;
+      } else {
+        res.status(400).json({ error: null, message: error.message });
+        return;
+      }
+    }
   }
+  var new_member = {
+    m_school_id: datum.id,
+    sec_user_id: req.user.id,
+    sec_group_id: 1, // OWNER
+    status: ACTIVE,
+    created_date: moment().format()
+  };
+  try {
+    var member = await m_school_member().create(new_member);
+  } catch (err) {
+    res.status(411).json({ error: null, message: err.message });
+  }
+  res.json({ data: datum });
 };
 
 exports.join = async function (req, res) {
@@ -385,7 +405,12 @@ exports.createClass = async function (req, res) {
     try {
       datum = await model_class.create(new_obj);
     } catch (err) {
-      datum = null;
+      if (error.name == 'SequelizeUniqueConstraintError') {
+        datum = null;
+      } else {
+        res.status(400).json({ error: null, message: error.message });
+        return;
+      }
     }
   }
   var new_member = {

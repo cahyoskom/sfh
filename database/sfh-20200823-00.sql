@@ -386,8 +386,7 @@ CREATE TABLE `t_class_forum` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `t_class_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL,
-  `published_date` datetime NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `published_datetime` datetime NOT NULL,
   `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -412,7 +411,7 @@ CREATE TABLE `t_class_forum_comment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `t_class_forum_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL,
-  `published_date` datetime NOT NULL,
+  `published_datetime` datetime NOT NULL,
   `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -451,6 +450,31 @@ CREATE TABLE `t_class_forum_comment_mention` (
 
 
 
+# Dump of table t_class_forum_file
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `t_class_forum_file`;
+
+CREATE TABLE `t_class_forum_file` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `t_class_forum_id` int(11) unsigned NOT NULL,
+  `filename` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ext` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `mime_type` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `location` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `sequence` mediumint(8) unsigned DEFAULT '0',
+  `status` tinyint(4) NOT NULL DEFAULT '0',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
+  `updated_date` datetime DEFAULT NULL,
+  `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `t_class_forum_id` (`t_class_forum_id`),
+  CONSTRAINT `t_class_forum_file_ibfk_1` FOREIGN KEY (`t_class_forum_id`) REFERENCES `t_class_forum` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table t_class_forum_mention
 # ------------------------------------------------------------
 
@@ -470,29 +494,6 @@ CREATE TABLE `t_class_forum_mention` (
   KEY `sec_user_id` (`sec_user_id`),
   CONSTRAINT `t_class_forum_mention_ibfk_1` FOREIGN KEY (`t_class_forum_id`) REFERENCES `t_class_forum` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `t_class_forum_mention_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-# Dump of table t_class_forum_reader
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `t_class_forum_reader`;
-
-CREATE TABLE `t_class_forum_reader` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_class_forum_id` int(11) unsigned NOT NULL,
-  `sec_user_id` int(11) unsigned NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT '0',
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
-  `updated_date` datetime DEFAULT NULL,
-  `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `t_class_forum_id` (`t_class_forum_id`),
-  KEY `sec_user_id` (`sec_user_id`),
-  CONSTRAINT `t_class_forum_reader_ibfk_1` FOREIGN KEY (`t_class_forum_id`) REFERENCES `t_class_forum` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_class_forum_reader_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -748,8 +749,7 @@ CREATE TABLE `t_school_forum` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `t_school_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL,
-  `published_date` datetime NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `published_datetime` datetime NOT NULL,
   `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -774,7 +774,7 @@ CREATE TABLE `t_school_forum_comment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `t_school_forum_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL,
-  `published_date` datetime NOT NULL,
+  `published_datetime` datetime NOT NULL,
   `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -813,6 +813,31 @@ CREATE TABLE `t_school_forum_comment_mention` (
 
 
 
+# Dump of table t_school_forum_file
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `t_school_forum_file`;
+
+CREATE TABLE `t_school_forum_file` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `t_school_forum_id` int(11) unsigned NOT NULL,
+  `filename` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ext` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `mime_type` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `location` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `sequence` mediumint(8) unsigned DEFAULT '0',
+  `status` tinyint(4) NOT NULL DEFAULT '0',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
+  `updated_date` datetime DEFAULT NULL,
+  `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `t_school_forum_id` (`t_school_forum_id`),
+  CONSTRAINT `t_school_forum_file_ibfk_1` FOREIGN KEY (`t_school_forum_id`) REFERENCES `t_school_forum` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table t_school_forum_mention
 # ------------------------------------------------------------
 
@@ -832,29 +857,6 @@ CREATE TABLE `t_school_forum_mention` (
   KEY `sec_user_id` (`sec_user_id`),
   CONSTRAINT `t_school_forum_mention_ibfk_1` FOREIGN KEY (`t_school_forum_id`) REFERENCES `t_school_forum` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `t_school_forum_mention_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-# Dump of table t_school_forum_reader
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `t_school_forum_reader`;
-
-CREATE TABLE `t_school_forum_reader` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_school_forum_id` int(11) unsigned NOT NULL,
-  `sec_user_id` int(11) unsigned NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT '0',
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
-  `updated_date` datetime DEFAULT NULL,
-  `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `t_school_forum_id` (`t_school_forum_id`),
-  KEY `sec_user_id` (`sec_user_id`),
-  CONSTRAINT `t_school_forum_reader_ibfk_1` FOREIGN KEY (`t_school_forum_id`) REFERENCES `t_school_forum` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_school_forum_reader_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

@@ -27,18 +27,50 @@ module.exports = sequelize => {
         model: 't_school_forum_model'
       }
     },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    filename: {
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
+      field: 'filename'
+    },
+    ext: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'ext'
+    },
+    mime_type: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'mime_type'
+    },
+    location: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'location'
+    },
+    sequence: {
+      type: DataTypes.INTEGER(8).UNSIGNED,
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sequence'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -88,7 +120,7 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_school_forum_reader',
+    tableName: 't_school_forum_file',
     comment: '',
     indexes: [
       {
@@ -96,19 +128,9 @@ module.exports = sequelize => {
         unique: false,
         type: 'BTREE',
         fields: ['t_school_forum_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
       }
     ]
   };
-  const TSchoolForumReaderModel = sequelize.define(
-    't_school_forum_reader_model',
-    attributes,
-    options
-  );
-  return TSchoolForumReaderModel;
+  const TSchoolForumFileModel = sequelize.define('t_school_forum_file_model', attributes, options);
+  return TSchoolForumFileModel;
 };

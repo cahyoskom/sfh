@@ -90,7 +90,7 @@ class SchoolClass extends Component {
   };
   handleDisconnect = id => {
     this.handleCloseMore();
-    this.openDeclineConfirmation(id, false);
+    this.openDeclineConfirmation(id, -1);
   };
 
   render() {
@@ -236,12 +236,12 @@ class SchoolClass extends Component {
                               {row.link_status === 1 ? (
                                 <Grid container>
                                   <div style={{ marginRight: '3px' }}>
-                                    <IconButton color='inherit' onClick={() => changeLinkStatus(row.id, true)}>
+                                    <IconButton color='inherit' onClick={() => changeLinkStatus(row.id, 1)}>
                                       <CheckSharpIcon />
                                     </IconButton>
                                   </div>
                                   <div>
-                                    <IconButton color='inherit' onClick={() => this.openDeclineConfirmation(row.id, false)}>
+                                    <IconButton color='inherit' onClick={() => this.openDeclineConfirmation(row.id, 0)}>
                                       <CloseIcon />
                                     </IconButton>
                                   </div>
@@ -440,7 +440,7 @@ class SchoolClass extends Component {
             <Modal isOpen={this.state.declineConfirmation} centered>
               <ModalBody>
                 <Grid container direction='col' spacing={1} justify='center' alignItems='center'>
-                  <Grid item>Apakah kamu yakin ingin membatalkan sambungkan kelas?</Grid>
+                  <Grid item>Apakah kamu yakin ingin memutuskankan sambungan kelas?</Grid>
                   <Grid item container justify='space-around'>
                     <Grid item>
                       <Button color='default' variant='contained' disableElevation onClick={this.closeDeclineConfirmation}>

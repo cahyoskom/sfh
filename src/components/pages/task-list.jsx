@@ -41,9 +41,7 @@ import CheckSharpIcon from '@material-ui/icons/CheckSharp';
 import CloseIcon from '@material-ui/icons/Close';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MUIDataTable from 'mui-datatables';
-import { onChangeStateClassInfo, getDataClassInfo, setFormAddTask, getTaskList } from '../../actions';
-import { datastore_v1 } from 'googleapis';
-import { datastore } from 'googleapis/build/src/apis/datastore';
+import { onChangeStateClassInfo, getDataClassInfo, getTaskList } from '../../actions';
 
 class TaskList extends Component {
   constructor(props) {
@@ -60,7 +58,7 @@ class TaskList extends Component {
   };
 
   render() {
-    const { taskState, setFormAddTask } = this.props;
+    const { taskState } = this.props;
     return (
       <Container>
         <section className='school-member-page section-b-space'>
@@ -97,126 +95,10 @@ class TaskList extends Component {
               </Paper>
             </Grid>
             <Grid item xs={12} lg={10}>
-              <Paper variant='outlined' width={1}>
-                <Box p={2}>
-                  <div style={{ marginBottom: '10px' }}>
-                    <Button variant='contained' color='primary' startIcon={<AddIcon />} onClick=''>
-                      Tambah tugas
-                    </Button>
-                  </div>
-                  <TaskListOwner />
-                </Box>
-              </Paper>
+              <TaskListOwner />
             </Grid>
           </Grid>
         </section>
-
-        {/* Modal form create class */}
-        <Modal isOpen='true' centered>
-          <ModalHeader toggle={() => setFormAddTask('show', false)}>
-            <strong>Tambah Tugas</strong>
-          </ModalHeader>
-          <ValidatorForm onSubmit=''>
-            <ModalBody>
-              <div className='form-group'>
-                <TextValidator
-                  id='name'
-                  label='Nama tugas*'
-                  type='text'
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  margin='dense'
-                  fullWidth
-                  variant='outlined'
-                  onChange={e => setFormAddTask(e.target.id, e.target.value)}
-                  value={taskState.formAddTask.name}
-                  validators={['required']}
-                  errorMessages={['masukkan nama tugas']}
-                />
-              </div>
-              <div className='form-group'>
-                <TextField
-                  id='description'
-                  type='text'
-                  label='Deskripsi tugas'
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  margin='dense'
-                  fullWidth
-                  variant='outlined'
-                  onChange={e => setFormAddTask(e.target.id, e.target.value)}
-                  value={taskState.formAddTask.description}
-                />
-              </div>
-              <div className='form-group'>
-                <FormControl variant='outlined' fullWidth>
-                  <InputLabel id='demo-simple-select-outlined-label'>Mata pelajaran</InputLabel>
-                  <Select
-                    labelId='demo-simple-select-outlined-label'
-                    id='demo-simple-select-outlined'
-                    value={taskState.formAddTask.subject}
-                    margin='dense'
-                    onChange={e => setFormAddTask(e.target.id, e.target.value)}
-                    label='Mata pelajaran'
-                  >
-                    <MenuItem value=''>
-                      <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-              <div className='form-group'>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid container justify='space-around'>
-                    <KeyboardDatePicker
-                      disableToolbar
-                      variant='inline'
-                      format='MM/dd/yyyy'
-                      margin='normal'
-                      id='startDate'
-                      label='Periode mulai'
-                      value={taskState.formAddTask.startDate}
-                      onChange={e => setFormAddTask(e.target.id, e.target.value)}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date'
-                      }}
-                    />
-                  </Grid>
-                </MuiPickersUtilsProvider>
-              </div>
-
-              <Collapse in={taskState.formAddTask.error}>
-                <Alert
-                  severity='error'
-                  action={
-                    <IconButton aria-label='close' color='inherit' size='small' onClick={() => setFormAddTask('error', false)}>
-                      <CloseIcon fontSize='inherit' />
-                    </IconButton>
-                  }
-                >
-                  {taskState.formAddTask.errormsg}
-                </Alert>
-              </Collapse>
-            </ModalBody>
-            <ModalFooter>
-              <div>
-                <Button color='default' variant='contained' disableElevation onClick={() => setFormAddTask('show', false)}>
-                  Batal
-                </Button>
-              </div>
-              <div>
-                <Button color='primary' variant='contained' disableElevation type='submit'>
-                  Buat
-                </Button>
-              </div>
-            </ModalFooter>
-          </ValidatorForm>
-        </Modal>
       </Container>
     );
   }
@@ -226,4 +108,4 @@ const mapStateToProps = state => ({
   taskState: state.task,
   classState: state.class
 });
-export default connect(mapStateToProps, { onChangeStateClassInfo, getDataClassInfo, setFormAddTask, getTaskList })(TaskList);
+export default connect(mapStateToProps, { onChangeStateClassInfo, getDataClassInfo, getTaskList })(TaskList);

@@ -2,6 +2,7 @@ import { SET_FORM_ADD_TASK, SET_LIST_TASK } from '../constants/ActionTypes';
 
 const initialState = {
   taskList: [],
+  subjectList: [],
   formAddTask: {
     show: false,
     error: false,
@@ -11,9 +12,9 @@ const initialState = {
     subject: '',
     startDate: '',
     EndDate: '',
-    startTime: '',
-    endTime: '',
-    files: []
+    files: [],
+    modalLink: false,
+    link: []
   }
 };
 export default function taskReducer(state = initialState, action) {

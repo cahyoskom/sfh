@@ -14,98 +14,63 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_subject_id: {
+    t_class_task_collection_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_subject_id',
+      field: 't_class_task_collection_id',
       references: {
         key: 'id',
-        model: 'm_subject_model'
+        model: 't_class_task_collection_model'
       }
     },
-    t_class_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 't_class_id',
-      references: {
-        key: 'id',
-        model: 't_class_model'
-      }
-    },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'user assignor a task, in this case a teacher',
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
-    },
-    title: {
+    filename: {
       type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'title'
+      field: 'filename'
     },
-    notes: {
+    ext: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'ext'
+    },
+    mime_type: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'mime_type'
+    },
+    location: {
       type: DataTypes.STRING(200),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'notes'
+      field: 'location'
     },
-    weight: {
-      type: DataTypes.DECIMAL,
+    sequence: {
+      type: DataTypes.INTEGER(8).UNSIGNED,
       allowNull: true,
-      defaultValue: '0.00',
+      defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'weight'
-    },
-    start_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'start_date'
-    },
-    finish_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'finish_date'
-    },
-    publish_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'publish_date'
+      field: 'sequence'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -155,29 +120,21 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task',
+    tableName: 't_class_task_collection_file',
     comment: '',
     indexes: [
       {
-        name: 'm_subject_id',
+        name: 't_class_task_collection_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_subject_id']
-      },
-      {
-        name: 't_class_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['t_class_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['t_class_task_collection_id']
       }
     ]
   };
-  const TTaskModel = sequelize.define('t_task_model', attributes, options);
-  return TTaskModel;
+  const TClassTaskCollectionFileModel = sequelize.define(
+    't_class_task_collection_file_model',
+    attributes,
+    options
+  );
+  return TClassTaskCollectionFileModel;
 };

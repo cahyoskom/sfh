@@ -14,17 +14,30 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    t_class_subject_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_class_subject_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_class_subject_model'
+      }
+    },
+    t_class_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 't_class_id',
+      references: {
+        key: 'id',
+        model: 't_class_model'
       }
     },
     sec_user_id: {
@@ -33,21 +46,66 @@ module.exports = sequelize => {
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: 'user that given finished task, in this case student',
+      comment: 'user assignor a task, in this case a teacher',
       field: 'sec_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
       }
     },
-    submitted_date: {
+    title: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'title'
+    },
+    notes: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'notes'
+    },
+    weight: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: '0.00',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'weight'
+    },
+    start_date: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'submitted_date'
+      field: 'start_date'
+    },
+    finish_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'finish_date'
+    },
+    publish_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'publish_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -97,14 +155,20 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection',
+    tableName: 't_class_task',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_class_subject_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_class_subject_id']
+      },
+      {
+        name: 't_class_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['t_class_id']
       },
       {
         name: 'sec_user_id',
@@ -114,6 +178,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const TTaskCollectionModel = sequelize.define('t_task_collection_model', attributes, options);
-  return TTaskCollectionModel;
+  const TClassTaskModel = sequelize.define('t_class_task_model', attributes, options);
+  return TClassTaskModel;
 };

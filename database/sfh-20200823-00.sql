@@ -198,12 +198,12 @@ VALUES
 UNLOCK TABLES;
 
 
-# Dump of table m_subject
+# Dump of table t_class_subject
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `m_subject`;
+DROP TABLE IF EXISTS `t_class_subject`;
 
-CREATE TABLE `m_subject` (
+CREATE TABLE `t_class_subject` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `t_class_id` int(10) unsigned NOT NULL,
   `name` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -214,7 +214,7 @@ CREATE TABLE `m_subject` (
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `t_class_id` (`t_class_id`),
-  CONSTRAINT `m_subject_ibfk_1` FOREIGN KEY (`t_class_id`) REFERENCES `t_class` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `t_class_subject_ibfk_1` FOREIGN KEY (`t_class_id`) REFERENCES `t_class` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
@@ -1016,14 +1016,14 @@ CREATE TABLE `t_school_todo_option` (
 
 
 
-# Dump of table t_task
+# Dump of table t_class_task
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `t_task`;
+DROP TABLE IF EXISTS `t_class_task`;
 
-CREATE TABLE `t_task` (
+CREATE TABLE `t_class_task` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_subject_id` int(11) unsigned NOT NULL,
+  `t_class_subject_id` int(11) unsigned NOT NULL,
   `t_class_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL COMMENT 'user assignor a task, in this case a teacher',
   `title` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -1038,24 +1038,24 @@ CREATE TABLE `t_task` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `m_subject_id` (`m_subject_id`),
+  KEY `t_class_subject_id` (`t_class_subject_id`),
   KEY `t_class_id` (`t_class_id`),
   KEY `sec_user_id` (`sec_user_id`),
-  CONSTRAINT `t_task_ibfk_1` FOREIGN KEY (`m_subject_id`) REFERENCES `m_subject` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_task_ibfk_2` FOREIGN KEY (`t_class_id`) REFERENCES `t_class` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_task_ibfk_3` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `t_class_task_ibfk_1` FOREIGN KEY (`t_class_subject_id`) REFERENCES `t_class_subject` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `t_class_task_ibfk_2` FOREIGN KEY (`t_class_id`) REFERENCES `t_class` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `t_class_task_ibfk_3` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 
-# Dump of table t_task_collection
+# Dump of table t_class_task_collection
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `t_task_collection`;
+DROP TABLE IF EXISTS `t_class_task_collection`;
 
-CREATE TABLE `t_task_collection` (
+CREATE TABLE `t_class_task_collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_task_id` int(11) unsigned NOT NULL,
+  `t_class_task_id` int(11) unsigned NOT NULL,
   `sec_user_id` int(11) unsigned NOT NULL COMMENT 'user that given finished task, in this case student',
   `submitted_date` datetime DEFAULT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
@@ -1064,22 +1064,22 @@ CREATE TABLE `t_task_collection` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `t_task_id` (`t_task_id`),
+  KEY `t_class_task_id` (`t_class_task_id`),
   KEY `sec_user_id` (`sec_user_id`),
-  CONSTRAINT `t_task_collection_ibfk_1` FOREIGN KEY (`t_task_id`) REFERENCES `t_task` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_task_collection_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `t_class_task_collection_ibfk_1` FOREIGN KEY (`t_class_task_id`) REFERENCES `t_class_task` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `t_class_task_collection_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 
-# Dump of table t_task_collection_file
+# Dump of table t_class_task_collection_file
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `t_task_collection_file`;
+DROP TABLE IF EXISTS `t_class_task_collection_file`;
 
-CREATE TABLE `t_task_collection_file` (
+CREATE TABLE `t_class_task_collection_file` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_task_collection_id` int(11) unsigned NOT NULL,
+  `t_class_task_collection_id` int(11) unsigned NOT NULL,
   `filename` varchar(100) COLLATE utf8_bin NOT NULL,
   `ext` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `mime_type` varchar(100) COLLATE utf8_bin DEFAULT NULL,
@@ -1091,20 +1091,20 @@ CREATE TABLE `t_task_collection_file` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `t_task_collection_id` (`t_task_collection_id`),
-  CONSTRAINT `t_task_collection_file_ibfk_1` FOREIGN KEY (`t_task_collection_id`) REFERENCES `t_task_collection` (`id`) ON UPDATE CASCADE
+  KEY `t_class_task_collection_id` (`t_class_task_collection_id`),
+  CONSTRAINT `t_class_task_collection_file_ibfk_1` FOREIGN KEY (`t_class_task_collection_id`) REFERENCES `t_class_task_collection` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 
-# Dump of table t_task_file
+# Dump of table t_class_task_file
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `t_task_file`;
+DROP TABLE IF EXISTS `t_class_task_file`;
 
-CREATE TABLE `t_task_file` (
+CREATE TABLE `t_class_task_file` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_task_id` int(11) unsigned NOT NULL,
+  `t_class_task_id` int(11) unsigned NOT NULL,
   `filename` varchar(100) COLLATE utf8_bin NOT NULL,
   `ext` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `mime_type` varchar(100) COLLATE utf8_bin DEFAULT NULL,
@@ -1116,8 +1116,8 @@ CREATE TABLE `t_task_file` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `t_task_id` (`t_task_id`),
-  CONSTRAINT `t_task_file_ibfk_1` FOREIGN KEY (`t_task_id`) REFERENCES `t_task` (`id`) ON UPDATE CASCADE
+  KEY `t_class_task_id` (`t_class_task_id`),
+  CONSTRAINT `t_class_task_file_ibfk_1` FOREIGN KEY (`t_class_task_id`) REFERENCES `t_class_task` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 

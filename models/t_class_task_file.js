@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    t_class_task_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_class_task_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_class_task_model'
       }
     },
     filename: {
@@ -120,17 +120,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_file',
+    tableName: 't_class_task_file',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_class_task_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_class_task_id']
       }
     ]
   };
-  const TTaskFileModel = sequelize.define('t_task_file_model', attributes, options);
-  return TTaskFileModel;
+  const TClassTaskFileModel = sequelize.define('t_class_task_file_model', attributes, options);
+  return TClassTaskFileModel;
 };

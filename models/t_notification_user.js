@@ -14,31 +14,18 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    description: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'email verification, forgot passwprd, etc.',
-      field: 'description'
-    },
-    sec_registrant_id: {
+    m_notification_type_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_registrant_id',
-      references: {
-        key: 'id',
-        model: 'sec_registrant_model'
-      }
+      field: 'm_notification_type_id'
     },
     sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -49,45 +36,50 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    t_school_id: {
+    out_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_school_id',
-      references: {
-        key: 'id',
-        model: 't_school_id'
-      }
+      field: 'out_id'
     },
-    sender_addr: {
+    out_name: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sender_addr'
+      field: 'out_name'
     },
-    code: {
-      type: DataTypes.STRING(100),
+    is_receive_web: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: '1',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: 'is_receive_web'
     },
-    is_sent: {
+    is_receive_email: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_sent'
+      field: 'is_receive_email'
+    },
+    is_receive_sms: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'is_receive_sms'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -98,15 +90,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'status'
     },
-    created_by: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'SYSTEM',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_by'
-    },
     created_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -116,14 +99,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'created_date'
     },
-    updated_by: {
+    created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -133,19 +116,22 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'updated_date'
+    },
+    updated_by: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_by'
     }
   };
   const options = {
     timestamps: false,
-    tableName: 'sec_confirmation',
+    tableName: 't_notification_user',
     comment: '',
     indexes: [
-      {
-        name: 'sec_registrant_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_registrant_id']
-      },
       {
         name: 'sec_user_id',
         unique: false,
@@ -154,6 +140,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
-  return SecConfirmationModel;
+  const TNotificationUserModel = sequelize.define('t_notification_user_model', attributes, options);
+  return TNotificationUserModel;
 };

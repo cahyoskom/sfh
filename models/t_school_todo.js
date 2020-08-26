@@ -14,17 +14,26 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'name'
+    },
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_school_model'
       }
     },
     sec_user_id: {
@@ -33,21 +42,52 @@ module.exports = sequelize => {
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: 'user that given finished task, in this case student',
+      comment: null,
       field: 'sec_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
       }
     },
-    submitted_date: {
-      type: DataTypes.DATE,
+    m_recurrent_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'submitted_date'
+      field: 'm_recurrent_id',
+      references: {
+        key: 'id',
+        model: 'm_recurrent_model'
+      }
+    },
+    subscriber: {
+      type: DataTypes.ENUM('all', 'maintener', 'participant'),
+      allowNull: false,
+      defaultValue: 'all',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'subscriber'
+    },
+    start_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'start_datetime'
+    },
+    end_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'end_datetime'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -97,23 +137,29 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection',
+    tableName: 't_school_todo',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_school_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
+      },
+      {
+        name: 'm_recurrent_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['m_recurrent_id']
       }
     ]
   };
-  const TTaskCollectionModel = sequelize.define('t_task_collection_model', attributes, options);
-  return TTaskCollectionModel;
+  const TSchoolTodoModel = sequelize.define('t_school_todo_model', attributes, options);
+  return TSchoolTodoModel;
 };

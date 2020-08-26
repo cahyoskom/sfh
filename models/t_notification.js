@@ -14,80 +14,107 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    description: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'email verification, forgot passwprd, etc.',
-      field: 'description'
-    },
-    sec_registrant_id: {
+    m_notification_type_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_registrant_id',
+      field: 'm_notification_type_id',
       references: {
         key: 'id',
-        model: 'sec_registrant_model'
+        model: 'm_notification_type_model'
       }
     },
-    sec_user_id: {
+    sender_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_user_id',
+      field: 'sender_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
       }
     },
-    t_school_id: {
+    receiver_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'receiver_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
+    },
+    out_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_school_id',
-      references: {
-        key: 'id',
-        model: 't_school_id'
-      }
+      field: 'out_id'
     },
-    sender_addr: {
+    out_name: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sender_addr'
+      field: 'out_name'
     },
-    code: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
+    variable: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: 'variable'
     },
-    is_sent: {
+    notification_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'notification_datetime'
+    },
+    notification_year: {
+      type: DataTypes.INTEGER(5).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'notification_year'
+    },
+    notification_month: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'notification_month'
+    },
+    is_read: {
       type: DataTypes.INTEGER(4).UNSIGNED,
       allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'is_sent'
+      field: 'is_read'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -98,15 +125,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'status'
     },
-    created_by: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'SYSTEM',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_by'
-    },
     created_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -116,14 +134,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'created_date'
     },
-    updated_by: {
+    created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -133,27 +151,42 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'updated_date'
+    },
+    updated_by: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_by'
     }
   };
   const options = {
     timestamps: false,
-    tableName: 'sec_confirmation',
+    tableName: 't_notification',
     comment: '',
     indexes: [
-      {
-        name: 'sec_registrant_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_registrant_id']
-      },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
+      },
+      {
+        name: 'receiver_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['receiver_user_id']
+      },
+      {
+        name: 'm_notification_type_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['m_notification_type_id']
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
-  return SecConfirmationModel;
+  const TNotificationModel = sequelize.define('t_notification_model', attributes, options);
+  return TNotificationModel;
 };

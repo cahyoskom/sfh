@@ -1,4 +1,4 @@
-const m_class = require('../models/m_class');
+const t_class = require('../models/t_class');
 const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');

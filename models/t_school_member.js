@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const sec_user = require('../models/sec_user');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -14,41 +15,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    description: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'email verification, forgot passwprd, etc.',
-      field: 'description'
-    },
-    sec_registrant_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sec_registrant_id',
-      references: {
-        key: 'id',
-        model: 'sec_registrant_model'
-      }
-    },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
-    },
     t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: true,
@@ -59,35 +25,34 @@ module.exports = sequelize => {
       field: 't_school_id',
       references: {
         key: 'id',
-        model: 't_school_id'
+        model: 't_school_model'
       }
     },
-    sender_addr: {
-      type: DataTypes.STRING(50),
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sender_addr'
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
     },
-    code: {
-      type: DataTypes.STRING(100),
+    sec_group_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
-    },
-    is_sent: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'is_sent'
+      field: 'sec_group_id',
+      references: {
+        key: 'id',
+        model: 'sec_group_model'
+      }
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -98,15 +63,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'status'
     },
-    created_by: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'SYSTEM',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_by'
-    },
     created_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -116,14 +72,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'created_date'
     },
-    updated_by: {
+    created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -133,27 +89,43 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'updated_date'
+    },
+    updated_by: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_by'
     }
   };
   const options = {
     timestamps: false,
-    tableName: 'sec_confirmation',
+    tableName: 't_school_member',
     comment: '',
     indexes: [
       {
-        name: 'sec_registrant_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['sec_registrant_id']
+        fields: ['t_school_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
+      },
+      {
+        name: 'sec_group_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_group_id']
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
-  return SecConfirmationModel;
+  const TSchoolMemberModel = sequelize.define('t_school_member_model', attributes, options);
+  TSchoolMemberModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
+  return TSchoolMemberModel;
 };

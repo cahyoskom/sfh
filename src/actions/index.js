@@ -120,6 +120,38 @@ export const resendEmail = () => ({
   type: types.EMAIL_ACTIVATION
 });
 
+// LANDING PAGE
+export const onChangeStateNewClass = (field, value) => ({
+  type: types.ON_CHANGE_STATE_NEW_CLASS,
+  value,
+  field
+});
+export const onChangeStateNewSchool = (field, value) => ({
+  type: types.ON_CHANGE_STATE_NEW_SCHOOL,
+  value,
+  field
+});
+export const onChangeStateJoinClass = (field, value) => ({
+  type: types.ON_CHANGE_STATE_JOIN_CLASS,
+  value,
+  field
+});
+export const joinClass = () => ({
+  type: types.ATTEMPT_JOIN_CLASS
+});
+export const createNewClass = () => ({
+  type: types.ATTEMPT_CREATE_CLASS
+});
+export const createNewSchool = () => ({
+  type: types.ATTEMPT_CREATE_SCHOOL
+});
+export const openCreateSchool = () => ({
+  type: types.ON_OPEN_CREATE_SCHOOL
+});
+export const getClasses = () => ({
+  type: types.SET_GET_CLASSES
+});
+
 //REGISTER
 export const onChangeStateRegister = (field, value) => ({
   type: types.ON_CHANGE_STATE_REGISTER,

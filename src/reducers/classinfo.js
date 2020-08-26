@@ -26,7 +26,8 @@ const initialState = {
     note: '',
     success: false,
     id: '',
-    hasAuthority: false
+    hasAuthority: false,
+    owner: ''
   },
   editClass: {
     id: '',
@@ -80,7 +81,8 @@ export default function classReducer(state = initialState, action) {
           code: action.value.data.code,
           note: action.value.data.note,
           id: action.value.data.id,
-          hasAuthority: action.value.hasAuthority
+          hasAuthority: action.value.hasAuthority,
+          owner: action.value.owner
         },
         editClass: {
           ...state.editClass,

@@ -17,6 +17,7 @@ const { ACTIVE, DELETED } = require('../enums/status.enums');
 const enums = require('../enums/group.enums');
 
 exports.classMemberLinkStatus = async function (req, res) {
+  const transaction = await beginTransaction();
   const userId = req.body.user;
   const classId = req.body.class;
   const model_class_member = t_class_member();
@@ -39,12 +40,14 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Permintaan gabung disetujui' });
+      return res.json({ message: 'Permintaan gabung disetujui' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   } else if (request == 'tolak') {
     if (rel.link_status != 1) {
@@ -56,12 +59,14 @@ exports.classMemberLinkStatus = async function (req, res) {
         { link_status: 0, status: DELETED },
         { where: { id: rel.id } }
       );
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Permintaan gabung ditolak' });
+      return res.json({ message: 'Permintaan gabung ditolak' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   } else if (request == 'aktifkan') {
     if (rel.link_status != 3) {
@@ -70,12 +75,14 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Member diaktifkan' });
+      return res.json({ message: 'Member diaktifkan' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   } else if (request == 'nonaktifkan') {
     if (rel.link_status != 0) {
@@ -84,12 +91,14 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update({ link_status: 3 }, { where: { id: rel.id } });
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Member dinonaktifkan' });
+      return res.json({ message: 'Member dinonaktifkan' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   } else if (request == 'batalkan') {
     if (rel.link_status != 2) {
@@ -101,12 +110,14 @@ exports.classMemberLinkStatus = async function (req, res) {
         { link_status: 0, status: DELETED },
         { where: { id: rel.id } }
       );
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Permintaan gabung dibatalkan' });
+      return res.json({ message: 'Permintaan gabung dibatalkan' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   } else if (request == 'keluarkan') {
     if (rel.link_status != 0) {
@@ -115,12 +126,14 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update({ status: DELETED }, { where: { id: rel.id } });
+      await transaction.commit();
       if (!datum[0]) {
-        res.status(401).json({ message: 'Perubahan gagal dilakukan' });
+        return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
-      res.json({ message: 'Berhasil dikeluarkan' });
+      return res.json({ message: 'Berhasil dikeluarkan' });
     } catch (err) {
-      res.status(401).json({ message: err });
+      await transaction.rollback();
+      return res.status(401).json({ message: err });
     }
   }
 };
@@ -236,115 +249,128 @@ async function checkAuthority(userId) {
 }
 
 async function deleting(classId, transaction) {
+  const transaction = await beginTransaction();
   // delete class within id from classId
-  const model_class = t_class();
-  const datum = await model_class.update(
-    { status: DELETED },
-    { where: { id: classId, status: ACTIVE }, transaction }
-  );
-  //------------------------------------------------------------------------
+  try {
+    const model_class = t_class();
+    const datum = await model_class.update(
+      { status: DELETED },
+      { where: { id: classId, status: ACTIVE }, transaction }
+    );
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  if (!datum[0]) return;
+    if (!datum[0]) return;
 
-  // delete related class member within t_class_id from classId
-  const model_class_member = t_class_member();
-  const classmemberFilter = {
-    t_class_id: classId
-  };
-  const classmemberIds = await model_class_member
-    .findAll({
-      attributes: ['id'],
-      where: classmemberFilter,
-      transaction
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting class member ids for next process:', classmemberIds);
-  await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
-  //------------------------------------------------------------------------
+    // delete related class member within t_class_id from classId
+    const model_class_member = t_class_member();
+    const classmemberFilter = {
+      t_class_id: classId
+    };
+    const classmemberIds = await model_class_member
+      .findAll({
+        attributes: ['id'],
+        where: classmemberFilter,
+        transaction
+      })
+      .map(el => el.dataValues.id);
+    console.log('>> Getting class member ids for next process:', classmemberIds);
+    await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  // delete related subject within t_class_id from classId
-  const model_subject = m_subject();
-  const subjectFilter = {
-    t_class_id: classId
-  };
-  const subjectIds = await model_subject
-    .findAll({
-      attributes: ['id'],
-      where: subjectFilter,
-      transaction
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting subject ids for next process:', subjectIds);
-  await model_subject.update({ status: DELETED }, { where: subjectFilter, transaction });
-  //------------------------------------------------------------------------
+    // delete related subject within t_class_id from classId
+    const model_subject = m_subject();
+    const subjectFilter = {
+      t_class_id: classId
+    };
+    const subjectIds = await model_subject
+      .findAll({
+        attributes: ['id'],
+        where: subjectFilter,
+        transaction
+      })
+      .map(el => el.dataValues.id);
+    console.log('>> Getting subject ids for next process:', subjectIds);
+    await model_subject.update({ status: DELETED }, { where: subjectFilter, transaction });
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  // delete related task within t_class_id from classId
-  const model_task = t_task();
-  const taskFilter = {
-    t_class_id: classId
-  };
-  const taskIds = await model_task
-    .findAll({
-      attributes: ['id'],
-      where: taskFilter,
-      transaction
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task ids for next process:', taskIds);
-  await model_task.update({ status: DELETED }, { where: taskFilter, transaction });
-  //------------------------------------------------------------------------
+    // delete related task within t_class_id from classId
+    const model_task = t_task();
+    const taskFilter = {
+      t_class_id: classId
+    };
+    const taskIds = await model_task
+      .findAll({
+        attributes: ['id'],
+        where: taskFilter,
+        transaction
+      })
+      .map(el => el.dataValues.id);
+    console.log('>> Getting task ids for next process:', taskIds);
+    await model_task.update({ status: DELETED }, { where: taskFilter, transaction });
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  // delete related task file within t_task_id from previous process when getting task ids
-  const model_task_file = t_task_file();
-  const taskfileFilter = {
-    t_task_id: { [Op.in]: taskIds }
-  };
-  const taskfileIds = await model_task_file
-    .findAll({
-      attributes: ['id'],
-      where: taskfileFilter,
-      transaction
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task file ids for next process:', taskfileIds);
-  await model_task_file.update({ status: DELETED }, { where: taskfileFilter, transaction });
-  //------------------------------------------------------------------------
+    // delete related task file within t_task_id from previous process when getting task ids
+    const model_task_file = t_task_file();
+    const taskfileFilter = {
+      t_task_id: { [Op.in]: taskIds }
+    };
+    const taskfileIds = await model_task_file
+      .findAll({
+        attributes: ['id'],
+        where: taskfileFilter,
+        transaction
+      })
+      .map(el => el.dataValues.id);
+    console.log('>> Getting task file ids for next process:', taskfileIds);
+    await model_task_file.update({ status: DELETED }, { where: taskfileFilter, transaction });
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  // delete related task collection within t_task_id from previous process when getting task ids
-  const model_task_collection = t_task_collection();
-  const taskcollectionFilter = {
-    t_task_id: { [Op.in]: taskIds }
-  };
-  const taskcollectionIds = await model_task_collection
-    .findAll({
-      attributes: ['id'],
-      where: taskcollectionFilter,
-      transaction
-    })
-    .map(el => el.dataValues.id);
-  console.log('>> Getting task collection ids for next process:', taskcollectionIds);
-  await model_task_collection.update(
-    { status: DELETED },
-    { where: taskcollectionFilter, transaction }
-  );
-  //------------------------------------------------------------------------
+    // delete related task collection within t_task_id from previous process when getting task ids
+    const model_task_collection = t_task_collection();
+    const taskcollectionFilter = {
+      t_task_id: { [Op.in]: taskIds }
+    };
+    const taskcollectionIds = await model_task_collection
+      .findAll({
+        attributes: ['id'],
+        where: taskcollectionFilter,
+        transaction
+      })
+      .map(el => el.dataValues.id);
+    console.log('>> Getting task collection ids for next process:', taskcollectionIds);
+    await model_task_collection.update(
+      { status: DELETED },
+      { where: taskcollectionFilter, transaction }
+    );
+    await transaction.commit();
+    //------------------------------------------------------------------------
 
-  // delete related task collection file within t_task_id from previous process when getting task ids
-  const model_task_collection_file = t_task_collection_file();
-  const taskcollectionfileFilter = {
-    t_task_collection_id: {
-      [Op.in]: taskcollectionIds
-    }
-  };
-  await model_task_collection_file.update(
-    { status: DELETED },
-    {
-      where: taskcollectionfileFilter,
-      transaction
-    }
-  );
+    // delete related task collection file within t_task_id from previous process when getting task ids
+    const model_task_collection_file = t_task_collection_file();
+    const taskcollectionfileFilter = {
+      t_task_collection_id: {
+        [Op.in]: taskcollectionIds
+      }
+    };
+    await model_task_collection_file.update(
+      { status: DELETED },
+      {
+        where: taskcollectionfileFilter,
+        transaction
+      }
+    );
+    await transaction.commit();
 
-  return true;
+    return true;
+  } catch (err) {
+    console.log(err);
+    await transaction.rollback();
+  }
 }
 
 exports.findOne = async function (req, res) {
@@ -363,6 +389,7 @@ exports.findOne = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
+  const transaction = await beginTransaction();
   const model_class = t_class();
   var new_obj = {
     t_school_id: req.body.t_school_id,
@@ -376,13 +403,16 @@ exports.create = async function (req, res) {
   };
   try {
     var datum = await model_class.create(new_obj);
+    await transaction.commit();
     res.json({ data: datum });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
 
 exports.duplicate = async function (req, res) {
+  const transaction = await beginTransaction();
   const model_class = t_class();
   var datum = await model_class.findOne({
     where: { id: req.params.id, status: ACTIVE }
@@ -403,7 +433,9 @@ exports.duplicate = async function (req, res) {
   };
   try {
     var savedDuplicate = await model_class.create(new_obj);
+    await transaction.commit();
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
     return;
   }
@@ -428,7 +460,9 @@ exports.duplicate = async function (req, res) {
     };
     try {
       var savedMember = await model_class_member.create(new_member);
+      await transaction.commit();
     } catch (err) {
+      await transaction.rollback();
       console.log(err);
     }
   }
@@ -437,6 +471,7 @@ exports.duplicate = async function (req, res) {
 };
 
 exports.join = async function (req, res) {
+  const transaction = await beginTransaction();
   const model_class_member = t_class_member();
   var new_obj = {
     t_class_id: req.body.t_class_id,
@@ -448,13 +483,16 @@ exports.join = async function (req, res) {
   };
   try {
     var datum = await model_class_member.create(new_obj);
+    await transaction.commit();
     res.json({ data: datum });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
 
 exports.update = async function (req, res) {
+  const transaction = await beginTransaction();
   const model_class = t_class();
   var update_obj = {
     t_school_id: req.body.t_school_id,
@@ -469,6 +507,7 @@ exports.update = async function (req, res) {
     var datum = await model_class.update(update_obj, {
       where: { id: req.params.id, status: ACTIVE }
     });
+    await transaction.commit();
     if (!datum[0]) {
       res.status(411).json({ message: 'Kelas tidak ditemukan.' });
       console.log('class not found');
@@ -479,6 +518,7 @@ exports.update = async function (req, res) {
     });
     res.json({ message: 'Data has been updated.', data: updatedDatum });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };

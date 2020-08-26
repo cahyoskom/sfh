@@ -3,6 +3,7 @@ const auth = require('../controllers/authentication');
 const authGoogle = require('../controllers/google-auth');
 const registration = require('../controllers/registration');
 const school = require('../controllers/school');
+const classController = require('../controllers/class');
 const audit = require('../controllers/audit');
 
 module.exports = function (router) {
@@ -34,4 +35,6 @@ module.exports = function (router) {
   });
   router.get('/check_email', registration.checkEmail);
   router.get('/school_invitation', school.acceptInvitation);
+  router.get('/class_invitation', classController.acceptInvitation);
+  router.get('/audit_trail', audit.getData);
 };

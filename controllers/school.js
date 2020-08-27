@@ -17,6 +17,14 @@ const t_notification = require('../models/t_notification');
 const m_notification_type = require('../models/m_notification_type');
 const sec_user = require('../models/sec_user');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const {
+  SCHOOL_CHANGE_INFO,
+  SCHOOL_REQUEST_CLASS,
+  SCHOOL_ACCEPT_CLASS,
+  SCHOOL_REJECT_CLASS,
+  SCHOOL_REMOVE_CLASS,
+  SCHOOL_REMOVE_USER
+} = require('../enums/notification.type');
 const crypto = require('crypto');
 const randomstring = require('randomstring');
 const isBase64 = require('is-base64');
@@ -222,7 +230,7 @@ exports.update = async function (req, res) {
 
     for (member of all_members) {
       var notif_user = await isNotifNeeded(
-        'SCHOOL_CHANGE_INFO',
+        SCHOOL_CHANGE_INFO,
         member.sec_user_id,
         req.body.id,
         't_school'
@@ -436,7 +444,7 @@ exports.connectClass = async function (req, res) {
     });
 
     var notif_user = await isNotifNeeded(
-      'SCHOOL_REQUEST_CLASS',
+      SCHOOL_REQUEST_CLASS,
       owner_id.sec_user_id,
       targetClass.id,
       't_class'
@@ -591,10 +599,10 @@ exports.approval = async function (req, res) {
 
     var notif_user = await isNotifNeeded(
       req.body.status == 1
-        ? 'SCHOOL_ACCEPT_CLASS'
+        ? SCHOOL_ACCEPT_CLASS
         : req.body.status == 0
-        ? 'SCHOOL_REJECT_CLASS'
-        : 'SCHOOL_REMOVE_CLASS',
+        ? SCHOOL_REJECT_CLASS
+        : SCHOOL_REMOVE_CLASS,
       class_owner.sec_user_id,
       req.params.classId,
       't_class'
@@ -718,7 +726,7 @@ exports.removeMember = async function (req, res) {
     }
 
     var notif_user = await isNotifNeeded(
-      'SCHOOL_REMOVE_USER',
+      SCHOOL_REMOVE_USER,
       target_user.sec_user_id,
       target_user.t_school_id,
       't_school'

@@ -7,11 +7,11 @@ const t_school_member = require('../models/t_school_member');
 const sec_group = require('../models/sec_group');
 const t_class = require('../models/t_class');
 const t_class_member = require('../models/t_class_member');
-const m_subject = require('../models/m_subject');
-const t_task = require('../models/t_task');
-const t_task_file = require('../models/t_task_file');
-const t_task_collection = require('../models/t_task_collection');
-const t_task_collection_file = require('../models/t_task_collection_file');
+const t_class_subject = require('../models/t_class_subject');
+const t_class_task = require('../models/t_class_task');
+const t_class_task_file = require('../models/t_class_task_file');
+const t_class_task_collection = require('../models/t_class_task_collection');
+const t_class_task_collection_file = require('../models/t_class_task_collection_file');
 const t_notification_user = require('../models/t_notification_user');
 const t_notification = require('../models/t_notification');
 const m_notification_type = require('../models/m_notification_type');
@@ -318,7 +318,7 @@ exports.delete = async function (req, res) {
   //------------------------------------------------------------------------
 
   // delete related subject within t_class_id from previous process when getting class ids
-  const model_subject = m_subject();
+  const model_subject = t_class_subject();
   const subjectFilter = {
     t_class_id: { [Op.in]: classIds }
   };
@@ -332,10 +332,10 @@ exports.delete = async function (req, res) {
   await model_subject.update({ status: DELETED }, { where: subjectFilter });
   //------------------------------------------------------------------------
 
-  // delete related task within m_subject_id from previous process when getting subject ids
-  const model_task = t_task();
+  // delete related task within t_class_subject_id from previous process when getting subject ids
+  const model_task = t_class_task();
   const taskFilter = {
-    m_subject_id: {
+    t_class_subject_id: {
       [Op.in]: subjectIds
     }
   };
@@ -349,10 +349,10 @@ exports.delete = async function (req, res) {
   await model_task.update({ status: DELETED }, { where: taskFilter });
   //------------------------------------------------------------------------
 
-  // delete related task file within t_task_id from previous process when getting task ids
-  const model_task_file = t_task_file();
+  // delete related task file within t_class_task_id from previous process when getting task ids
+  const model_task_file = t_class_task_file();
   const taskfileFilter = {
-    t_task_id: { [Op.in]: taskIds }
+    t_class_task_id: { [Op.in]: taskIds }
   };
   const taskfileIds = await model_task_file
     .findAll({
@@ -364,10 +364,10 @@ exports.delete = async function (req, res) {
   await model_task_file.update({ status: DELETED }, { where: taskfileFilter });
   //------------------------------------------------------------------------
 
-  // delete related task collection within t_task_id from previous process when getting task ids
-  const model_task_collection = t_task_collection();
+  // delete related task collection within t_class_task_id from previous process when getting task ids
+  const model_task_collection = t_class_task_collection();
   const taskcollectionFilter = {
-    t_task_id: { [Op.in]: taskIds }
+    t_class_task_id: { [Op.in]: taskIds }
   };
   const taskcollectionIds = await model_task_collection
     .findAll({
@@ -379,10 +379,10 @@ exports.delete = async function (req, res) {
   await model_task_collection.update({ status: DELETED }, { where: taskcollectionFilter });
   //------------------------------------------------------------------------
 
-  // delete related task collection file within t_task_id from previous process when getting task ids
-  const model_task_collection_file = t_task_collection_file();
+  // delete related task collection file within t_class_task_id from previous process when getting task ids
+  const model_task_collection_file = t_class_task_collection_file();
   const taskcollectionfileFilter = {
-    t_task_collection_id: {
+    t_class_task_collection_id: {
       [Op.in]: taskcollectionIds
     }
   };

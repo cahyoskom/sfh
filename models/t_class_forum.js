@@ -40,23 +40,14 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    published_date: {
+    published_datetime: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'published_date'
-    },
-    title: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'title'
+      field: 'published_datetime'
     },
     content: {
       type: DataTypes.TEXT,

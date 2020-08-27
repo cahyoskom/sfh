@@ -7,7 +7,7 @@ module.exports.get = async user_id => {
   FROM sec_user_role r
   JOIN sec_group g ON r.group_id=g.group_id
   LEFT JOIN t_class c ON c.class_id=r.class_id
-  LEFT JOIN m_subject s ON s.subject_id=r.subject_id
+  LEFT JOIN t_class_subject s ON s.subject_id=r.subject_id
   LEFT JOIN t_student st ON st.student_id=r.student_id
   WHERE r.user_id = :user_id AND g.status = 1 AND r.status = 1`;
   var param = { user_id: user_id };

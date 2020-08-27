@@ -84,7 +84,7 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_subject',
+    tableName: 't_class_subject',
     comment: '',
     indexes: [
       {
@@ -95,6 +95,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const MSubjectModel = sequelize.define('m_subject_model', attributes, options);
-  return MSubjectModel;
+  const TClassSubjectModel = sequelize.define('t_class_subject_model', attributes, options);
+  return TClassSubjectModel;
 };

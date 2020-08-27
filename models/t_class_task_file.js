@@ -14,40 +14,63 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    t_class_task_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_class_task_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_class_task_model'
       }
     },
-    sec_user_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    filename: {
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: 'user that given finished task, in this case student',
-      field: 'sec_user_id',
-      references: {
-        key: 'id',
-        model: 'sec_user_model'
-      }
+      comment: null,
+      field: 'filename'
     },
-    submitted_date: {
-      type: DataTypes.DATE,
+    ext: {
+      type: DataTypes.STRING(10),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'submitted_date'
+      field: 'ext'
+    },
+    mime_type: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'mime_type'
+    },
+    location: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'location'
+    },
+    sequence: {
+      type: DataTypes.INTEGER(8).UNSIGNED,
+      allowNull: true,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'sequence'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -97,23 +120,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection',
+    tableName: 't_class_task_file',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_class_task_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
-      },
-      {
-        name: 'sec_user_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_user_id']
+        fields: ['t_class_task_id']
       }
     ]
   };
-  const TTaskCollectionModel = sequelize.define('t_task_collection_model', attributes, options);
-  return TTaskCollectionModel;
+  const TClassTaskFileModel = sequelize.define('t_class_task_file_model', attributes, options);
+  return TClassTaskFileModel;
 };

@@ -10,48 +10,69 @@ const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const m_subject = require('../models/m_subject');
+const m_class_member = require('../models/m_class_member');
+const { Op } = require('sequelize');
 
 exports.findAll = async function (req, res) {
-  let filter = {};
-  let where = [];
+  // let filter = {};
+  // let where = [];
 
-  if (!!req.query.class) {
-    filter.class_id = req.query.class;
-    where.push('c.id IN (:class_id)');
-  }
+  // if (!!req.query.class) {
+  //   filter.class_id = req.query.class;
+  // }
 
-  if (!!req.query.subject) {
-    filter.subject_id = req.query.subject;
-    where.push('s.subject_id IN (:subject_id)');
-  }
+  // if (!!req.query.subject) {
+  //   filter.subject_id = req.query.subject;
+  //   where.push('s.subject_id IN (:subject_id)');
+  // }
 
   // if start_date specified, by default finish_date=start_date, unless finish_date is specified
   // if start_date not specified, then finish_date will be skipped.
-  if (!!req.query.start_date) {
-    filter.start_date = req.query.start_date;
-    filter.finish_date = filter.start_date;
-    if (!!req.query.finish_date) {
-      filter.finish_date = req.query.finish_date;
-    }
-    where.push(
-      '((start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date))'
-    );
-  }
+  // if (!!req.query.start_date) {
+  //   filter.start_date = req.query.start_date;
+  //   filter.finish_date = filter.start_date;
+  //   if (!!req.query.finish_date) {
+  //     filter.finish_date = req.query.finish_date;
+  //   }
+  //   where.push(
+  //     '((start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date))'
+  //   );
+  // }
 
-  var sql = `SELECT t.sec_user_id, t.id, t.title, t.notes, t.weight, t.start_date, t.finish_date, 
-    t.publish_date, s.id, s.name as subjectName, c.id as classId, c.name as className
+  var sql = `SELECT t.sec_user_id, t.id, t.m_class_id, t.title, t.notes, t.start_date, t.finish_date, 
+  t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
   FROM t_task t
-  JOIN m_subject s ON s.id=t.m_subject_id
-  JOIN m_class c ON c.id=t.m_class_id
-  WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
+  JOIN m_subject s ON s.id=t.m_subject_id AND s.status=1
+  LEFT JOIN t_task_collection tc ON tc.t_task_id = t.id AND tc.status = 1
+  WHERE t.status = 1 AND t.m_class_id = :class_id
+  GROUP BY t.id`;
 
-  if (Object.keys(filter).length > 0) {
-    sql = sql + ' AND ' + where.join(' AND ');
+  // if (Object.keys(filter).length > 0) {
+  //   sql = sql + ' AND ' + where.join(' AND ');
+  // }
+  const model_class_member = m_class_member();
+  var students = await model_class_member.findAndCountAll({
+    where: { m_class_id: req.query.class, status: ACTIVE, sec_group_id: 3 }
+  });
+
+  var checkUser = await model_class_member.findOne({
+    where: {
+      m_class_id: req.query.class,
+      status: ACTIVE,
+      sec_user_id: req.user.id,
+      sec_group_id: { [Op.or]: [1, 2, 3] }
+    }
+  });
+  var data = [];
+  var isStudent = false;
+  if (checkUser) {
+    data = await query(sql, { class_id: req.query.class });
+    if (checkUser.sec_group_id == 3) {
+      isStudent = true;
+    }
   }
 
-  var data = await query(sql, filter);
-
-  res.json({ data: data });
+  res.json({ data: data, isStudent: isStudent, totalStudents: students.count });
 };
 
 exports.findOne = async function (req, res) {

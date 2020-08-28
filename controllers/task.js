@@ -10,7 +10,7 @@ const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
 const m_subject = require('../models/m_subject');
-const m_class_member = require('../models/m_class_member');
+const t_class_member = require('../models/t_class_member');
 const { Op } = require('sequelize');
 
 exports.findAll = async function (req, res) {
@@ -39,25 +39,36 @@ exports.findAll = async function (req, res) {
   //   );
   // }
 
-  var sql = `SELECT t.sec_user_id, t.id, t.m_class_id, t.title, t.notes, t.start_date, t.finish_date, 
+  var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
   t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
   FROM t_task t
   JOIN m_subject s ON s.id=t.m_subject_id AND s.status=1
   LEFT JOIN t_task_collection tc ON tc.t_task_id = t.id AND tc.status = 1
-  WHERE t.status = 1 AND t.m_class_id = :class_id
+  WHERE t.status = 1 AND t.t_class_id = :class_id
   GROUP BY t.id`;
 
   // if (Object.keys(filter).length > 0) {
   //   sql = sql + ' AND ' + where.join(' AND ');
   // }
-  const model_class_member = m_class_member();
+
+  // if (!!req.query.search) {
+  //   filter.search = req.query.search;
+  //   sql =
+  //     sql +
+  //     `AND t.title COLLATE UTF8_GENERAL_CI LIKE '%@search%'`
+  // }
+  const model_class_member = t_class_member();
   var students = await model_class_member.findAndCountAll({
-    where: { m_class_id: req.query.class, status: ACTIVE, sec_group_id: 3 }
+    where: {
+      t_class_id: req.query.class,
+      status: ACTIVE,
+      sec_group_id: 3
+    }
   });
 
   var checkUser = await model_class_member.findOne({
     where: {
-      m_class_id: req.query.class,
+      t_class_id: req.query.class,
       status: ACTIVE,
       sec_user_id: req.user.id,
       sec_group_id: { [Op.or]: [1, 2, 3] }
@@ -66,13 +77,20 @@ exports.findAll = async function (req, res) {
   var data = [];
   var isStudent = false;
   if (checkUser) {
-    data = await query(sql, { class_id: req.query.class });
+    data = await query(sql, {
+      class_id: req.query.class,
+      search: req.query.search
+    });
     if (checkUser.sec_group_id == 3) {
       isStudent = true;
     }
   }
 
-  res.json({ data: data, isStudent: isStudent, totalStudents: students.count });
+  res.json({
+    data: data,
+    isStudent: isStudent,
+    totalStudents: students.count
+  });
 };
 
 exports.findOne = async function (req, res) {
@@ -113,7 +131,7 @@ exports.create = async function (req, res) {
   const model_subject = m_subject();
   var subject_id;
   var existed_subject = model_subject.findOne({
-    where: { name: req.body.subject, m_class_id: req.body.class_id, status: ACTIVE }
+    where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
   });
   if (existed_subject) {
     //subject already existed
@@ -122,7 +140,7 @@ exports.create = async function (req, res) {
     //create new subject
     var new_obj = {
       name: req.body.subject,
-      m_class_id: req.body.class_id,
+      t_class_id: req.body.class_id,
       status: ACTIVE,
       created_date: moment().format(),
       created_by: req.user.email
@@ -136,7 +154,7 @@ exports.create = async function (req, res) {
   }
   var new_obj = {
     sec_user_id: req.body.user_id,
-    m_class_id: req.body.class_id,
+    t_class_id: req.body.class_id,
     m_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
@@ -161,7 +179,7 @@ exports.update = async function (req, res) {
   const model_subject = m_subject();
   var subject_id;
   var existed_subject = model_subject.findOne({
-    where: { name: req.body.subject, m_class_id: req.body.class_id, status: ACTIVE }
+    where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
   });
   if (existed_subject) {
     //subject already existed
@@ -170,7 +188,7 @@ exports.update = async function (req, res) {
     //create new subject
     var new_obj = {
       name: req.body.subject,
-      m_class_id: req.body.class_id,
+      t_class_id: req.body.class_id,
       status: ACTIVE,
       created_date: moment().format(),
       created_by: req.user.email
@@ -184,7 +202,7 @@ exports.update = async function (req, res) {
   }
   var update_obj = {
     sec_user_id: req.body.user_id,
-    m_class_id: req.body.class_id,
+    t_class_id: req.body.class_id,
     m_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,

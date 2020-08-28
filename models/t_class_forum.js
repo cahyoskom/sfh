@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
-const m_class_member = require('../models/m_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -15,73 +14,49 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_class_model'
       }
     },
-    code: {
-      type: DataTypes.STRING(10),
-      unique: true,
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
     },
-    name: {
-      type: DataTypes.STRING(100),
+    published_datetime: {
+      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'name'
+      field: 'published_datetime'
     },
-    description: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'description'
-    },
-    avatar: {
+    content: {
       type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'avatar'
-    },
-    link_status: {
-      type: DataTypes.INTEGER(4),
       allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'link_status'
-    },
-    note: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'note'
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -131,18 +106,23 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_class',
+    tableName: 't_class_forum',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_class_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
       }
     ]
   };
-  const MClassModel = sequelize.define('m_class_model', attributes, options);
-  MClassModel.hasMany(m_class_member(), { foreignKey: 'm_class_id' });
-  return MClassModel;
+  const TClassForumModel = sequelize.define('t_class_forum_model', attributes, options);
+  return TClassForumModel;
 };

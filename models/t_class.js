@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const t_class_member = require('../models/t_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -14,63 +15,73 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_collection_id: {
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_collection_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 't_task_collection_model'
+        model: 't_school_model'
       }
     },
-    filename: {
-      type: DataTypes.STRING(100),
+    code: {
+      type: DataTypes.STRING(10),
+      unique: true,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'filename'
+      field: 'code'
     },
-    ext: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'ext'
-    },
-    mime_type: {
+    name: {
       type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'name'
+    },
+    description: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      defaultValue: '',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'description'
+    },
+    avatar: {
+      type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'mime_type'
+      field: 'avatar'
     },
-    location: {
+    link_status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'link_status'
+    },
+    note: {
       type: DataTypes.STRING(200),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'location'
-    },
-    sequence: {
-      type: DataTypes.INTEGER(8).UNSIGNED,
-      allowNull: true,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sequence'
+      field: 'note'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -120,21 +131,18 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection_file',
+    tableName: 't_class',
     comment: '',
     indexes: [
       {
-        name: 't_task_collection_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_collection_id']
+        fields: ['t_school_id']
       }
     ]
   };
-  const TTaskCollectionFileModel = sequelize.define(
-    't_task_collection_file_model',
-    attributes,
-    options
-  );
-  return TTaskCollectionFileModel;
+  const TClassModel = sequelize.define('t_class_model', attributes, options);
+  TClassModel.hasMany(t_class_member(), { foreignKey: 't_class_id' });
+  return TClassModel;
 };

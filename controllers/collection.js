@@ -1,5 +1,5 @@
-const t_task_collection = require('../models/t_task_collection');
-const t_task_collection_file = require('../models/t_task_collection_file');
+const t_class_task_collection = require('../models/t_class_task_collection');
+const t_class_task_collection_file = require('../models/t_class_task_collection_file');
 const fs = require('fs');
 const { query } = require('../models/query');
 const TASK_STATUS = require('../enums/status.enums');
@@ -16,9 +16,9 @@ async function GetCollectionForStudent(student, filter = {}) {
       s.subject_name,
       COALESCE(tc.task_collection_id, 0) AS task_collection_id, 
       COALESCE(tc.status,0) AS collection_status
-    FROM t_task t
-    JOIN m_subject s ON s.subject_id=t.subject_id
-    LEFT JOIN (SELECT * FROM t_task_collection WHERE student_id = :student_id) tc ON tc.task_id=t.task_id
+    FROM t_class_task t
+    JOIN t_class_subject s ON s.subject_id=t.subject_id
+    LEFT JOIN (SELECT * FROM t_class_task_collection WHERE student_id = :student_id) tc ON tc.task_id=t.task_id
     WHERE t.class_id = :class_id AND t.status > 0 AND s.status = 1
   ) t`;
   var param = {
@@ -79,11 +79,11 @@ exports.findAll = async function (req, res) {
 };
 
 exports.findOne = async function (req, res) {
-  const model_task = t_task_collection();
+  const model_task = t_class_task_collection();
   var datum = await model_task.findOne({
     where: { task_collection_id: req.params.id }
   });
-  var files = await t_task_collection_file().findAll({
+  var files = await t_class_task_collection_file().findAll({
     where: { task_collection_id: req.params.id }
   });
   var result = datum.toJSON();
@@ -104,7 +104,7 @@ exports.create = async function (req, res) {
     created_by: req.user.user_name
   };
   try {
-    var datum = await t_task_collection().create(new_obj);
+    var datum = await t_class_task_collection().create(new_obj);
     res.json({ data: datum });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
@@ -124,7 +124,7 @@ exports.setStatus = async function (req, res) {
   update_obj.status = status;
 
   try {
-    var datum = await t_task_collection().update(update_obj, {
+    var datum = await t_class_task_collection().update(update_obj, {
       where: {
         task_collection_id: req.body.task_collection_id
       }
@@ -146,7 +146,7 @@ exports.upload = async function (req, res) {
   });
   const task_collection_id = req.params.id;
 
-  var task_collection = await t_task_collection().findOne({
+  var task_collection = await t_class_task_collection().findOne({
     where: {
       task_collection_id: req.params.id
     }
@@ -215,7 +215,7 @@ exports.upload = async function (req, res) {
       created_by: req.user.user_name
     };
 
-    var task_collection_file = await t_task_collection_file().findOne({
+    var task_collection_file = await t_class_task_collection_file().findOne({
       where: {
         task_collection_id: task_collection_id,
         filename: element.name
@@ -223,7 +223,7 @@ exports.upload = async function (req, res) {
     });
     if (!task_collection_file) {
       // belum ada, insert baru
-      task_collection_file = await t_task_collection_file().create(new_file);
+      task_collection_file = await t_class_task_collection_file().create(new_file);
     } else {
       // todo, update ganti updated date
     }
@@ -235,7 +235,7 @@ exports.upload = async function (req, res) {
 };
 
 exports.download = async function (req, res) {
-  var file = await t_task_collection_file().findOne({
+  var file = await t_class_task_collection_file().findOne({
     where: {
       task_collection_file_id: req.params.file_id
     }
@@ -244,7 +244,7 @@ exports.download = async function (req, res) {
   if (!!file) {
     var task_collection_id = file.task_collection_id;
 
-    var coll = await t_task_collection().findOne({
+    var coll = await t_class_task_collection().findOne({
       where: {
         task_collection_id: task_collection_id
       }

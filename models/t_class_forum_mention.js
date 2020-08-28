@@ -14,30 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_subject_id: {
+    t_class_forum_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_subject_id',
+      field: 't_class_forum_id',
       references: {
         key: 'id',
-        model: 'm_subject_model'
-      }
-    },
-    m_class_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'm_class_id',
-      references: {
-        key: 'id',
-        model: 'm_class_model'
+        model: 't_class_forum_model'
       }
     },
     sec_user_id: {
@@ -46,66 +33,12 @@ module.exports = sequelize => {
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: 'user assignor a task, in this case a teacher',
+      comment: null,
       field: 'sec_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
       }
-    },
-    title: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'title'
-    },
-    notes: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'notes'
-    },
-    weight: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: '0.00',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'weight'
-    },
-    start_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'start_date'
-    },
-    finish_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'finish_date'
-    },
-    publish_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'publish_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -155,20 +88,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task',
+    tableName: 't_class_forum_mention',
     comment: '',
     indexes: [
       {
-        name: 'm_subject_id',
+        name: 't_class_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_subject_id']
-      },
-      {
-        name: 'm_class_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_forum_id']
       },
       {
         name: 'sec_user_id',
@@ -178,6 +105,10 @@ module.exports = sequelize => {
       }
     ]
   };
-  const TTaskModel = sequelize.define('t_task_model', attributes, options);
-  return TTaskModel;
+  const TClassForumMentionModel = sequelize.define(
+    't_class_forum_mention_model',
+    attributes,
+    options
+  );
+  return TClassForumMentionModel;
 };

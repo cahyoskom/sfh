@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    t_class_forum_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_class_forum_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_class_forum_model'
       }
     },
     sec_user_id: {
@@ -33,21 +33,30 @@ module.exports = sequelize => {
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: 'user that given finished task, in this case student',
+      comment: null,
       field: 'sec_user_id',
       references: {
         key: 'id',
         model: 'sec_user_model'
       }
     },
-    submitted_date: {
+    published_datetime: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'submitted_date'
+      field: 'published_datetime'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -97,14 +106,14 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection',
+    tableName: 't_class_forum_comment',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_class_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_class_forum_id']
       },
       {
         name: 'sec_user_id',
@@ -114,6 +123,10 @@ module.exports = sequelize => {
       }
     ]
   };
-  const TTaskCollectionModel = sequelize.define('t_task_collection_model', attributes, options);
-  return TTaskCollectionModel;
+  const TClassForumCommentModel = sequelize.define(
+    't_class_forum_comment_model',
+    attributes,
+    options
+  );
+  return TClassForumCommentModel;
 };

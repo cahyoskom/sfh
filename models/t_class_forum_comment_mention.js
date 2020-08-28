@@ -14,31 +14,22 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    description: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'email verification, forgot passwprd, etc.',
-      field: 'description'
-    },
-    sec_registrant_id: {
+    t_class_forum_comment_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_registrant_id',
+      field: 't_class_forum_comment_id',
       references: {
         key: 'id',
-        model: 'sec_registrant_model'
+        model: 't_class_forum_comment_model'
       }
     },
     sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -49,46 +40,6 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    t_school_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 't_school_id',
-      references: {
-        key: 'id',
-        model: 't_school_id'
-      }
-    },
-    sender_addr: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sender_addr'
-    },
-    code: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'code'
-    },
-    is_sent: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'is_sent'
-    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -97,15 +48,6 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'status'
-    },
-    created_by: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'SYSTEM',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_by'
     },
     created_date: {
       type: DataTypes.DATE,
@@ -116,14 +58,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'created_date'
     },
-    updated_by: {
+    created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -133,18 +75,27 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'updated_date'
+    },
+    updated_by: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_by'
     }
   };
   const options = {
     timestamps: false,
-    tableName: 'sec_confirmation',
+    tableName: 't_class_forum_comment_mention',
     comment: '',
     indexes: [
       {
-        name: 'sec_registrant_id',
+        name: 't_class_forum_comment_id',
         unique: false,
         type: 'BTREE',
-        fields: ['sec_registrant_id']
+        fields: ['t_class_forum_comment_id']
       },
       {
         name: 'sec_user_id',
@@ -154,6 +105,10 @@ module.exports = sequelize => {
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
-  return SecConfirmationModel;
+  const TClassForumCommentMentionModel = sequelize.define(
+    't_class_forum_comment_mention_model',
+    attributes,
+    options
+  );
+  return TClassForumCommentMentionModel;
 };

@@ -14,72 +14,76 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
+    t_school_todo_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_school_todo_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_school_todo_model'
       }
     },
-    filename: {
-      type: DataTypes.STRING(100),
+    m_answer_type_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'filename'
+      field: 'm_answer_type_id',
+      references: {
+        key: 'id',
+        model: 'm_answer_type_model'
+      }
     },
-    ext: {
-      type: DataTypes.STRING(10),
+    type: {
+      type: DataTypes.ENUM('todo', 'popquiz'),
+      allowNull: false,
+      defaultValue: 'todo',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'type'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
+    },
+    valid_answer: {
+      type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'ext'
+      field: 'valid_answer'
     },
-    mime_type: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'mime_type'
-    },
-    location: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'location'
-    },
-    sequence: {
-      type: DataTypes.INTEGER(8).UNSIGNED,
-      allowNull: true,
+    is_recurrent: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sequence'
+      field: 'is_recurrent'
     },
-    link: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
+    todo_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'link'
+      field: 'todo_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -129,17 +133,27 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_file',
+    tableName: 't_school_todo_detail',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_school_todo_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_school_todo_id']
+      },
+      {
+        name: 'm_answer_type_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['m_answer_type_id']
       }
     ]
   };
-  const TTaskFileModel = sequelize.define('t_task_file_model', attributes, options);
-  return TTaskFileModel;
+  const TSchoolTodoDetailModel = sequelize.define(
+    't_school_todo_detail_model',
+    attributes,
+    options
+  );
+  return TSchoolTodoDetailModel;
 };

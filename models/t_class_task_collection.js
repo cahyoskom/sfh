@@ -14,82 +14,40 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_class_task_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_class_task_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_class_task_model'
       }
     },
-    code: {
-      type: DataTypes.STRING(10),
-      unique: true,
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: null,
-      field: 'code'
+      comment: 'user that given finished task, in this case student',
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
     },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'name'
-    },
-    address: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'address'
-    },
-    zipcode: {
-      type: DataTypes.STRING(8),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'zipcode'
-    },
-    phone: {
-      type: DataTypes.STRING(15),
+    submitted_date: {
+      type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'phone'
-    },
-    avatar: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'avatar'
-    },
-    note: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'note'
+      field: 'submitted_date'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -139,25 +97,27 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school',
+    tableName: 't_class_task_collection',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_class_task_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_class_task_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
       }
     ]
   };
-  const methods = {
-    classMethods: {
-      associate: function (models) {
-        m_school_model.hasMany(models.m_class_model, { foreignKey: 'm_school_id' });
-      }
-    }
-  };
-
-  const MSchoolModel = sequelize.define('m_school_model', attributes, options, methods);
-  return MSchoolModel;
+  const TClassTaskCollectionModel = sequelize.define(
+    't_class_task_collection_model',
+    attributes,
+    options
+  );
+  return TClassTaskCollectionModel;
 };

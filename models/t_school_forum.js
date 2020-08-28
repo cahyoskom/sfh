@@ -14,31 +14,22 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    description: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: 'email verification, forgot passwprd, etc.',
-      field: 'description'
-    },
-    sec_registrant_id: {
+    t_school_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_registrant_id',
+      field: 't_school_id',
       references: {
         key: 'id',
-        model: 'sec_registrant_model'
+        model: 't_school_model'
       }
     },
     sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
@@ -49,45 +40,23 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    t_school_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+    published_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_school_id',
-      references: {
-        key: 'id',
-        model: 't_school_id'
-      }
+      field: 'published_datetime'
     },
-    sender_addr: {
-      type: DataTypes.STRING(50),
+    content: {
+      type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sender_addr'
-    },
-    code: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'code'
-    },
-    is_sent: {
-      type: DataTypes.INTEGER(4).UNSIGNED,
-      allowNull: false,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'is_sent'
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -98,15 +67,6 @@ module.exports = sequelize => {
       comment: null,
       field: 'status'
     },
-    created_by: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'SYSTEM',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'created_by'
-    },
     created_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -116,14 +76,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'created_date'
     },
-    updated_by: {
+    created_by: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
+      defaultValue: 'SYSTEM',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'updated_by'
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -133,18 +93,27 @@ module.exports = sequelize => {
       autoIncrement: false,
       comment: null,
       field: 'updated_date'
+    },
+    updated_by: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'updated_by'
     }
   };
   const options = {
     timestamps: false,
-    tableName: 'sec_confirmation',
+    tableName: 't_school_forum',
     comment: '',
     indexes: [
       {
-        name: 'sec_registrant_id',
+        name: 't_school_id',
         unique: false,
         type: 'BTREE',
-        fields: ['sec_registrant_id']
+        fields: ['t_school_id']
       },
       {
         name: 'sec_user_id',
@@ -154,6 +123,6 @@ module.exports = sequelize => {
       }
     ]
   };
-  const SecConfirmationModel = sequelize.define('sec_confirmation_model', attributes, options);
-  return SecConfirmationModel;
+  const TSchoolForumModel = sequelize.define('t_school_forum_model', attributes, options);
+  return TSchoolForumModel;
 };

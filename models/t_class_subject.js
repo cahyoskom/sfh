@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 't_class_model'
       }
     },
     name: {
@@ -84,17 +84,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_subject',
+    tableName: 't_class_subject',
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_id']
       }
     ]
   };
-  const MSubjectModel = sequelize.define('m_subject_model', attributes, options);
-  return MSubjectModel;
+  const TClassSubjectModel = sequelize.define('t_class_subject_model', attributes, options);
+  return TClassSubjectModel;
 };

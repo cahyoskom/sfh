@@ -1,9 +1,9 @@
 const moment = require('moment');
 const fs = require('fs');
 const formidable = require('formidable');
-const t_task = require('../models/t_task');
-const t_task_file = require('../models/t_task_file');
-const t_task_collection = require('../models/t_task_collection');
+const t_class_task = require('../models/t_class_task');
+const t_class_task_file = require('../models/t_class_task_file');
+const t_class_task_collection = require('../models/t_class_task_collection');
 const m_param = require('../models/m_param');
 const { query } = require('../models/query');
 const { sha256 } = require('../common/sha');
@@ -41,9 +41,9 @@ exports.findAll = async function (req, res) {
 
   var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
   t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
-  FROM t_task t
+  FROM t_class_task t
   JOIN m_subject s ON s.id=t.m_subject_id AND s.status=1
-  LEFT JOIN t_task_collection tc ON tc.t_task_id = t.id AND tc.status = 1
+  LEFT JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id AND tc.status = 1
   WHERE t.status = 1 AND t.t_class_id = :class_id
   GROUP BY t.id`;
 
@@ -94,10 +94,10 @@ exports.findAll = async function (req, res) {
 };
 
 exports.findOne = async function (req, res) {
-  const model_task = t_task();
-  var datum = await model_task.findOne({ where: { task_id: req.params.id } });
-  var files = await t_task_file().findAll({
-    where: { task_id: req.params.id }
+  const model_task = t_class_task();
+  var datum = await model_task.findOne({ where: { id: req.params.id } });
+  var files = await t_class_task_file().findAll({
+    where: { t_class_task_id: req.params.id }
   });
   var result = datum.toJSON();
   result.files = files;
@@ -105,7 +105,7 @@ exports.findOne = async function (req, res) {
 };
 
 exports.findOneInclCollection = async function (req, res) {
-  const model_task = t_task();
+  const model_task = t_class_task();
   var task = await model_task.findOne({ where: { task_id: req.params.id } });
 
   if (!task) {
@@ -116,7 +116,7 @@ exports.findOneInclCollection = async function (req, res) {
   var sql = `SELECT
     s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
   FROM (SELECT * from t_student WHERE class_id = :class_id AND status=1) s
-  LEFT JOIN (SELECT * FROM t_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
+  LEFT JOIN (SELECT * FROM t_class_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
 
   var data = await query(sql, {
     class_id: task.class_id,
@@ -127,7 +127,7 @@ exports.findOneInclCollection = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
-  const model_task = t_task();
+  const model_task = t_class_task();
   const model_subject = m_subject();
   var subject_id;
   var existed_subject = model_subject.findOne({
@@ -175,7 +175,7 @@ exports.create = async function (req, res) {
 };
 
 exports.update = async function (req, res) {
-  const model_task = t_task();
+  const model_task = t_class_task();
   const model_subject = m_subject();
   var subject_id;
   var existed_subject = model_subject.findOne({
@@ -260,7 +260,7 @@ exports.setStatus = async function (req, res) {
   };
 
   try {
-    var datum = await t_task().update(update_obj, {
+    var datum = await t_class_task().update(update_obj, {
       where: { task_id: req.body.task_id }
     });
     res.json({ message: 'Data has been updated.' });
@@ -273,7 +273,7 @@ exports.upload = async function (req, res) {
   const form = formidable({ multiples: true });
   const task_id = req.params.id;
 
-  var task = await t_task().findOne({ where: { t_task_id: req.params.id } });
+  var task = await t_class_task().findOne({ where: { task_id: req.params.id } });
   let result = [];
   if (!task) {
     res.status(404).json({ error: 31, message: 'Task not found.' });
@@ -311,7 +311,7 @@ exports.upload = async function (req, res) {
     let filename = upload_dir + element.name;
     await MoveFile(element.path, filename);
     let new_file = {
-      t_task_id: task_id,
+      t_class_task_id: task_id,
       filename: element.name,
       ext: filename.split('.').pop(),
       mime_type: element.type,
@@ -320,20 +320,18 @@ exports.upload = async function (req, res) {
       status: 1
     };
 
-    var task_file = await t_task_file().findOne({
-      where: { t_task_id: task_id, filename: element.name }
+    var task_file = await t_class_task_file().findOne({
+      where: { task_id: task_id, filename: element.name }
     });
     if (!task_file) {
       // belum ada, insert baru
-      new_file.created_date = moment().format();
-      new_file.created_by = req.user.email;
-      task_file = await t_task_file().create(new_file);
+      task_file = await t_class_task_file().create(new_file);
     } else {
       // todo, update ganti updated date
       new_file.updated_date = moment().format();
       new_file.updated_by = req.user.email;
       try {
-        var update = await t_task_file().update(new_file, {
+        var update = await t_class_task_file().update(new_file, {
           where: { id: task_file.id }
         });
       } catch (err) {
@@ -349,22 +347,25 @@ exports.upload = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
-  const model_task = t_task();
-  model_task.update({ status: DELETED }, { where: { id: req.params.id } });
+  const model_task = t_class_task();
+  model_task.update({ status: TASK_STATUS.DELETED }, { where: { task_id: req.params.id } });
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.deleteFileById = async function (req, res) {
-  const model_task = t_task_file();
-  model_task.update({ status: DELETED }, { where: { id: req.params.file_id } });
+  const model_task = t_class_task_file();
+  model_task.update(
+    { status: TASK_STATUS.DELETED },
+    { where: { task_file_id: req.params.file_id } }
+  );
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.download = async function (req, res) {
-  var file = await t_task_file().findOne({
-    where: { id: req.params.file_id }
+  var file = await t_class_task_file().findOne({
+    where: { task_file_id: req.params.file_id }
   });
 
   if (!!file) {

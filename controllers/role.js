@@ -1,4 +1,4 @@
-const m_class_member = require('../models/m_class_member');
+const t_class_member = require('../models/t_class_member');
 const moment = require('moment');
 const TASK_STATUS = require('../enums/status.enums');
 const ROLES = require('../common/roles');
@@ -15,13 +15,13 @@ exports.findAll = async function (req, res) {
     filter.group_id = req.query.group_id;
   }
 
-  var data = await m_class_member().findAll({ where: filter });
+  var data = await t_class_member().findAll({ where: filter });
 
   res.json({ data: data });
 };
 
 exports.findOne = async function (req, res) {
-  var datum = await m_class_member().findOne({
+  var datum = await t_class_member().findOne({
     where: { user_role_id: req.params.id }
   });
   res.json({ data: datum });
@@ -45,7 +45,7 @@ exports.create = async function (req, res) {
     created_by: req.user.user_name
   };
   try {
-    var datum = await m_class_member().create(new_obj);
+    var datum = await t_class_member().create(new_obj);
     res.json({ data: datum });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
@@ -64,7 +64,7 @@ exports.update = async function (req, res) {
     updated_by: req.user.user_name
   };
   try {
-    var datum = await m_class_member().update(update_obj, {
+    var datum = await t_class_member().update(update_obj, {
       where: { user_role_id: req.params.id }
     });
     res.json({ message: 'Data has been updated.' });
@@ -74,7 +74,7 @@ exports.update = async function (req, res) {
 };
 
 exports.delete = async function (req, res) {
-  m_class_member().update(
+  t_class_member().update(
     { status: TASK_STATUS.DELETED },
     { where: { user_role_id: req.params.id } }
   );

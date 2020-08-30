@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const t_notification = require('./t_notification');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();

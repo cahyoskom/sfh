@@ -1,15 +1,27 @@
 const t_notification = require('../models/t_notification');
 const t_notification_user = require('../models/t_notification_user');
 const m_notification_default = require('../models/m_notification_default');
+const m_notification_type = require('../models/m_notification_type');
+const { query } = require('../models/query');
+
 const moment = require('moment');
 
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 
 exports.findAll = async (req, res) => {
-  const data = await t_notification().findAll({
-    where: { receiver_user_id: req.user.id, status: ACTIVE }
-  });
-  res.json({ data: data });
+  // const data = await t_notification().findAll({
+  //   where: { receiver_user_id: req.user.id, status: ACTIVE }
+  // });
+  const sql = `
+  SELECT m_notification_type.id, m_notification_type.content, m_notification_type.content_url,
+  t_notification.m_notification_type_id, t_notification.notification_datetime, t_notification.is_read, 
+  t_notification.receiver_user_id, sec_user.id FROM m_notification_type INNER JOIN t_notification INNER 
+  JOIN sec_user ON m_notification_type.id=t_notification.m_notification_type_id AND sec_user.id = 
+  t_notification.receiver_user_id WHERE t_notification.receiver_user_id = :id`
+  var test = await query(sql, {
+    id: req.user.id
+  })
+  res.json({ data: test });
 };
 
 exports.create = async (req, res) => {
@@ -39,6 +51,22 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.isRead = async (req, res) => {
+  const update_obj = {
+    is_read : 1,
+  }
+  try {
+    var read = await t_notification().update(update_obj, {
+      where: { receiver_user_id: req.body.id }
+    });
+
+    res.json('success update!')
+    res.json({ data: read })
+  } catch (error) {
+    res.json({ error })
+  }
+}
+
 exports.createUser = async (req, res) => {
   const defaults = await m_notification_default().findAll({
     where: { out_id: '', out_name: '', status: ACTIVE }
@@ -59,12 +87,13 @@ exports.updateDefaults = async (req, res) => {
   const new_obj = {
     is_receive_web: req.body.is_receive_web,
     is_receive_email: req.body.is_receive_email,
-    is_receive_sms: req.body.is_receive_sms
+    // is_receive_sms: req.body.is_receive_sms
   };
   try {
     const notif = t_notification_user().update(new_obj, {
       where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id }
     });
+    res.json({ update: notif })
   } catch (err) {
     console.log(err);
   }

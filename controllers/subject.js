@@ -35,9 +35,9 @@ exports.create = async function (req, res) {
 };
 
 exports.findByClass = async function (req, res) {
-  const model_subject = m_subject();
+  const model_subject = t_class_subject();
   var data = await model_subject.findAll({
-    where: { m_class_id: req.params.id, status: ACTIVE }
+    where: { t_class_id: req.params.id, status: ACTIVE }
   });
 
   res.json({ data: data });

@@ -8,13 +8,58 @@ const t_task_collection_file = require('../models/t_task_collection_file');
 const sec_group = require('../models/sec_group');
 const sec_user = require('../models/sec_user');
 
+const t_notification_user = require('../models/t_notification_user');
+const t_notification = require('../models/t_notification');
+const m_notification_type = require('../models/m_notification_type');
+const {
+  CLASS_CHANGE_INFO,
+  CLASS_DEACTIVATE_USER,
+  CLASS_ACTIVATE_USER,
+  CLASS_ACCEPT_USER,
+  CLASS_REJECT_USER,
+  CLASS_CANCEL_INVITATION_USER,
+  CLASS_REMOVE_USER,
+  CLASS_DELETED
+} = require('../enums/notification.type');
+
 const { beginTransaction } = require('../database');
 const { sha256 } = require('../common/sha');
 const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const enums = require('../enums/group.enums');
+
+async function isNotifNeeded(type, receiver_id, out_id, out_name) {
+  var NOTIFICATION_TYPE = await m_notification_type().findOne({
+    attributes: ['id'],
+    where: { type: type }
+  });
+
+  var user_notif = await t_notification_user().findOne({
+    where: {
+      m_notification_type_id: NOTIFICATION_TYPE.id,
+      sec_user_id: receiver_id,
+      out_id: out_id,
+      out_name: out_name
+    }
+  });
+  if (!user_notif) {
+    user_notif = await t_notification_user().findOne({
+      where: {
+        m_notification_type_id: NOTIFICATION_TYPE.id,
+        sec_user_id: receiver_id,
+        out_id: null,
+        out_name: null
+      }
+    });
+  }
+  if (user_notif.is_receive_web == 1) {
+    return user_notif;
+  } else {
+    return null;
+  }
+}
 
 exports.classMemberLinkStatus = async function (req, res) {
   const transaction = await beginTransaction();
@@ -39,7 +84,29 @@ exports.classMemberLinkStatus = async function (req, res) {
       return;
     }
     try {
-      const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      const datum = await model_class_member.update(
+        { link_status: 0 },
+        { where: { id: rel.id } },
+        { transaction }
+      );
+      var notif_user = await isNotifNeeded(CLASS_ACCEPT_USER, userId, classId, 't_class');
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+      await transaction.commit();
+
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -57,8 +124,25 @@ exports.classMemberLinkStatus = async function (req, res) {
     try {
       const datum = await model_class_member.update(
         { link_status: 0, status: DELETED },
-        { where: { id: rel.id } }
+        { where: { id: rel.id } },
+        { transaction }
       );
+      var notif_user = await isNotifNeeded(CLASS_REJECT_USER, userId, classId, 't_class');
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -74,7 +158,27 @@ exports.classMemberLinkStatus = async function (req, res) {
       return;
     }
     try {
-      const datum = await model_class_member.update({ link_status: 0 }, { where: { id: rel.id } });
+      const datum = await model_class_member.update(
+        { link_status: 0 },
+        { where: { id: rel.id } },
+        { transaction }
+      );
+      var notif_user = await isNotifNeeded(CLASS_ACTIVATE_USER, userId, classId, 't_class');
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -90,7 +194,27 @@ exports.classMemberLinkStatus = async function (req, res) {
       return;
     }
     try {
-      const datum = await model_class_member.update({ link_status: 3 }, { where: { id: rel.id } });
+      const datum = await model_class_member.update(
+        { link_status: 3 },
+        { where: { id: rel.id } },
+        { transaction }
+      );
+      var notif_user = await isNotifNeeded(CLASS_DEACTIVATE_USER, userId, classId, 't_class');
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -108,8 +232,30 @@ exports.classMemberLinkStatus = async function (req, res) {
     try {
       const datum = await model_class_member.update(
         { link_status: 0, status: DELETED },
-        { where: { id: rel.id } }
+        { where: { id: rel.id } },
+        { transaction }
       );
+      var notif_user = await isNotifNeeded(
+        CLASS_CANCEL_INVITATION_USER,
+        userId,
+        classId,
+        't_class'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -125,7 +271,27 @@ exports.classMemberLinkStatus = async function (req, res) {
       return;
     }
     try {
-      const datum = await model_class_member.update({ status: DELETED }, { where: { id: rel.id } });
+      const datum = await model_class_member.update(
+        { status: DELETED },
+        { where: { id: rel.id } },
+        { transaction }
+      );
+      var notif_user = await isNotifNeeded(CLASS_REMOVE_USER, userId, classId, 't_class');
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: userId,
+          out_id: classId,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
       await transaction.commit();
       if (!datum[0]) {
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
@@ -249,128 +415,123 @@ async function checkAuthority(userId) {
 }
 
 async function deleting(classId, transaction) {
-  const transaction = await beginTransaction();
+  // const transaction = await beginTransaction();
   // delete class within id from classId
-  try {
-    const model_class = t_class();
-    const datum = await model_class.update(
-      { status: DELETED },
-      { where: { id: classId, status: ACTIVE }, transaction }
-    );
-    await transaction.commit();
-    //------------------------------------------------------------------------
 
-    if (!datum[0]) return;
+  const model_class = t_class();
+  const datum = await model_class.update(
+    { status: DELETED },
+    { where: { id: classId, status: ACTIVE }, transaction }
+  );
 
-    // delete related class member within t_class_id from classId
-    const model_class_member = t_class_member();
-    const classmemberFilter = {
-      t_class_id: classId
-    };
-    const classmemberIds = await model_class_member
-      .findAll({
-        attributes: ['id'],
-        where: classmemberFilter,
-        transaction
-      })
-      .map(el => el.dataValues.id);
-    console.log('>> Getting class member ids for next process:', classmemberIds);
-    await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
-    await transaction.commit();
-    //------------------------------------------------------------------------
+  //------------------------------------------------------------------------
 
-    // delete related subject within t_class_id from classId
-    const model_subject = m_subject();
-    const subjectFilter = {
-      t_class_id: classId
-    };
-    const subjectIds = await model_subject
-      .findAll({
-        attributes: ['id'],
-        where: subjectFilter,
-        transaction
-      })
-      .map(el => el.dataValues.id);
-    console.log('>> Getting subject ids for next process:', subjectIds);
-    await model_subject.update({ status: DELETED }, { where: subjectFilter, transaction });
-    await transaction.commit();
-    //------------------------------------------------------------------------
+  if (!datum[0]) return;
 
-    // delete related task within t_class_id from classId
-    const model_task = t_task();
-    const taskFilter = {
-      t_class_id: classId
-    };
-    const taskIds = await model_task
-      .findAll({
-        attributes: ['id'],
-        where: taskFilter,
-        transaction
-      })
-      .map(el => el.dataValues.id);
-    console.log('>> Getting task ids for next process:', taskIds);
-    await model_task.update({ status: DELETED }, { where: taskFilter, transaction });
-    await transaction.commit();
-    //------------------------------------------------------------------------
+  // delete related class member within t_class_id from classId
+  const model_class_member = t_class_member();
+  const classmemberFilter = {
+    t_class_id: classId
+  };
+  const classmemberIds = await model_class_member
+    .findAll({
+      attributes: ['id'],
+      where: classmemberFilter,
+      transaction
+    })
+    .map(el => el.dataValues.id);
+  console.log('>> Getting class member ids for next process:', classmemberIds);
+  await model_class_member.update({ status: DELETED }, { where: classmemberFilter, transaction });
 
-    // delete related task file within t_task_id from previous process when getting task ids
-    const model_task_file = t_task_file();
-    const taskfileFilter = {
-      t_task_id: { [Op.in]: taskIds }
-    };
-    const taskfileIds = await model_task_file
-      .findAll({
-        attributes: ['id'],
-        where: taskfileFilter,
-        transaction
-      })
-      .map(el => el.dataValues.id);
-    console.log('>> Getting task file ids for next process:', taskfileIds);
-    await model_task_file.update({ status: DELETED }, { where: taskfileFilter, transaction });
-    await transaction.commit();
-    //------------------------------------------------------------------------
+  //------------------------------------------------------------------------
 
-    // delete related task collection within t_task_id from previous process when getting task ids
-    const model_task_collection = t_task_collection();
-    const taskcollectionFilter = {
-      t_task_id: { [Op.in]: taskIds }
-    };
-    const taskcollectionIds = await model_task_collection
-      .findAll({
-        attributes: ['id'],
-        where: taskcollectionFilter,
-        transaction
-      })
-      .map(el => el.dataValues.id);
-    console.log('>> Getting task collection ids for next process:', taskcollectionIds);
-    await model_task_collection.update(
-      { status: DELETED },
-      { where: taskcollectionFilter, transaction }
-    );
-    await transaction.commit();
-    //------------------------------------------------------------------------
+  // delete related subject within t_class_id from classId
+  const model_subject = m_subject();
+  const subjectFilter = {
+    t_class_id: classId
+  };
+  const subjectIds = await model_subject
+    .findAll({
+      attributes: ['id'],
+      where: subjectFilter,
+      transaction
+    })
+    .map(el => el.dataValues.id);
+  console.log('>> Getting subject ids for next process:', subjectIds);
+  await model_subject.update({ status: DELETED }, { where: subjectFilter, transaction });
 
-    // delete related task collection file within t_task_id from previous process when getting task ids
-    const model_task_collection_file = t_task_collection_file();
-    const taskcollectionfileFilter = {
-      t_task_collection_id: {
-        [Op.in]: taskcollectionIds
-      }
-    };
-    await model_task_collection_file.update(
-      { status: DELETED },
-      {
-        where: taskcollectionfileFilter,
-        transaction
-      }
-    );
-    await transaction.commit();
+  //------------------------------------------------------------------------
 
-    return true;
-  } catch (err) {
-    console.log(err);
-    await transaction.rollback();
-  }
+  // delete related task within t_class_id from classId
+  const model_task = t_task();
+  const taskFilter = {
+    t_class_id: classId
+  };
+  const taskIds = await model_task
+    .findAll({
+      attributes: ['id'],
+      where: taskFilter,
+      transaction
+    })
+    .map(el => el.dataValues.id);
+  console.log('>> Getting task ids for next process:', taskIds);
+  await model_task.update({ status: DELETED }, { where: taskFilter, transaction });
+
+  //------------------------------------------------------------------------
+
+  // delete related task file within t_task_id from previous process when getting task ids
+  const model_task_file = t_task_file();
+  const taskfileFilter = {
+    t_task_id: { [Op.in]: taskIds }
+  };
+  const taskfileIds = await model_task_file
+    .findAll({
+      attributes: ['id'],
+      where: taskfileFilter,
+      transaction
+    })
+    .map(el => el.dataValues.id);
+  console.log('>> Getting task file ids for next process:', taskfileIds);
+  await model_task_file.update({ status: DELETED }, { where: taskfileFilter, transaction });
+
+  //------------------------------------------------------------------------
+
+  // delete related task collection within t_task_id from previous process when getting task ids
+  const model_task_collection = t_task_collection();
+  const taskcollectionFilter = {
+    t_task_id: { [Op.in]: taskIds }
+  };
+  const taskcollectionIds = await model_task_collection
+    .findAll({
+      attributes: ['id'],
+      where: taskcollectionFilter,
+      transaction
+    })
+    .map(el => el.dataValues.id);
+  console.log('>> Getting task collection ids for next process:', taskcollectionIds);
+  await model_task_collection.update(
+    { status: DELETED },
+    { where: taskcollectionFilter, transaction }
+  );
+
+  //------------------------------------------------------------------------
+
+  // delete related task collection file within t_task_id from previous process when getting task ids
+  const model_task_collection_file = t_task_collection_file();
+  const taskcollectionfileFilter = {
+    t_task_collection_id: {
+      [Op.in]: taskcollectionIds
+    }
+  };
+  await model_task_collection_file.update(
+    { status: DELETED },
+    {
+      where: taskcollectionfileFilter,
+      transaction
+    }
+  );
+
+  return true;
 }
 
 exports.findOne = async function (req, res) {
@@ -402,7 +563,7 @@ exports.create = async function (req, res) {
     created_by: req.user.name
   };
   try {
-    var datum = await model_class.create(new_obj);
+    var datum = await model_class.create(new_obj, { transaction });
     await transaction.commit();
     res.json({ data: datum });
   } catch (err) {
@@ -432,7 +593,7 @@ exports.duplicate = async function (req, res) {
     //created_by: req.user.name,
   };
   try {
-    var savedDuplicate = await model_class.create(new_obj);
+    var savedDuplicate = await model_class.create(new_obj, { transaction });
     await transaction.commit();
   } catch (err) {
     await transaction.rollback();
@@ -459,7 +620,7 @@ exports.duplicate = async function (req, res) {
       status: ACTIVE
     };
     try {
-      var savedMember = await model_class_member.create(new_member);
+      var savedMember = await model_class_member.create(new_member, { transaction });
       await transaction.commit();
     } catch (err) {
       await transaction.rollback();
@@ -482,7 +643,7 @@ exports.join = async function (req, res) {
     created_by: req.body.name
   };
   try {
-    var datum = await model_class_member.create(new_obj);
+    var datum = await model_class_member.create(new_obj, { transaction });
     await transaction.commit();
     res.json({ data: datum });
   } catch (err) {
@@ -504,9 +665,13 @@ exports.update = async function (req, res) {
     updated_by: req.body.name
   };
   try {
-    var datum = await model_class.update(update_obj, {
-      where: { id: req.params.id, status: ACTIVE }
-    });
+    var datum = await model_class.update(
+      update_obj,
+      {
+        where: { id: req.params.id, status: ACTIVE }
+      },
+      { transaction }
+    );
     await transaction.commit();
     if (!datum[0]) {
       res.status(411).json({ message: 'Kelas tidak ditemukan.' });
@@ -529,6 +694,41 @@ exports.delete = async function (req, res) {
   try {
     let message = 'Data has been deleted.';
     const process = await deleting(req.params.id, transaction);
+    // await transaction.commit();
+    let all_members = [];
+    var class_members = await t_class_member().findAll({
+      attributes: ['sec_user_id'],
+      where: { t_class_id: req.params.id, status: ACTIVE, link_status: 0 }
+    });
+    for (membership in class_members) {
+      const user = await sec_user().findOne({
+        where: { id: class_members[membership].sec_user_id }
+      });
+      if (user) all_members.push(user);
+    }
+    for (member in all_members) {
+      var notif_user = await isNotifNeeded(
+        CLASS_DELETED,
+        all_members[member].id,
+        req.params.id,
+        't_class'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: all_members[member].id,
+          out_id: req.params.id,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+    }
     await transaction.commit();
 
     if (!process) {

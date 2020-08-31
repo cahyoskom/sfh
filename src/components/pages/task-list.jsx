@@ -52,13 +52,13 @@ class TaskList extends Component {
 
   componentDidMount = () => {
     const { getDataClassInfo, onChangeStateClassInfo, getTaskList } = this.props;
-    // onChangeStateClassInfo('id', this.props.match.params.id);
-    // getDataClassInfo();
-    // getTaskList(this.props.match.params.id);
+    onChangeStateClassInfo('id', this.props.match.params.id);
+    getDataClassInfo();
+    getTaskList();
   };
 
   render() {
-    const { taskState } = this.props;
+    const { taskState, classState } = this.props;
     return (
       <Container>
         <section className='school-member-page section-b-space'>
@@ -70,14 +70,16 @@ class TaskList extends Component {
                     <Grid item lg={8}>
                       <div>
                         <div style={{ fontSize: '36px', color: '#0170E3' }}>
-                          <strong>Kelas 1 B</strong>
+                          <strong>{classState.classInfo.name}</strong>
                         </div>
                         <div>
-                          <strong>Jane Doe</strong>
+                          <strong>{classState.classInfo.owner.name}</strong>
                         </div>
-                        <div>Tahun ajaran 2020/2021</div>
-                        <div>Kode kelas: abcdes</div>
-                        <div>jumlah peserta: 88</div>
+                        <div>{classState.classInfo.description}</div>
+                        <div>
+                          Kode kelas: <strong>{classState.classInfo.code}</strong>
+                        </div>
+                        {taskState.totalStudents !== -1 && <div>Jumlah peserta: {taskState.totalStudents}</div>}
                       </div>
                     </Grid>
                     <Grid item>
@@ -85,7 +87,7 @@ class TaskList extends Component {
                         <Image
                           className='school-logo'
                           style={{ height: '140px', width: '140px' }}
-                          src={`${process.env.PUBLIC_URL}/assets/images/school-logo.svg`}
+                          src={classState.classInfo.owner.avatar || `${process.env.PUBLIC_URL}/assets/images/school-logo.svg`}
                           roundedCircle
                         ></Image>
                       </div>
@@ -95,7 +97,7 @@ class TaskList extends Component {
               </Paper>
             </Grid>
             <Grid item xs={12} lg={10}>
-              <TaskListOwner />
+              {classState.classInfo.hasAuthority && <TaskListOwner />}
             </Grid>
           </Grid>
         </section>

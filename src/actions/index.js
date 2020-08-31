@@ -275,9 +275,38 @@ export const setFormAddTask = (field, value) => ({
   field,
   value
 });
-export const getTaskList = id => ({
-  type: types.GET_TASK,
+export const getTaskList = () => ({
+  type: types.GET_TASK
+});
+export const deleteAddTaskFile = value => ({
+  type: types.DELETE_ADD_TASK_FILE,
+  value
+});
+export const addNewTaskFile = value => ({
+  type: types.ADD_NEW_TASK_FILE,
+  value
+});
+export const addTaskLink = () => ({
+  type: types.ADD_TASK_LINK
+});
+export const deleteAddTaskLink = value => ({
+  type: types.DELETE_TASK_LINK,
+  value
+});
+export const addNewTask = () => ({
+  type: types.ADD_NEW_TASK
+});
+export const getSubjectList = () => ({
+  type: types.GET_SUBJECT_LIST
+});
+export const deleteTask = id => ({
+  type: types.DELETE_TASK,
   id
+});
+export const setTaskFilter = (field, value) => ({
+  type: types.ON_CHANGE_TASK_FILTER,
+  field,
+  value
 });
 
 /////////////
@@ -454,11 +483,6 @@ export const setUrlPath = id => ({
   payload: id
 });
 
-export const deleteTask = ids => ({
-  type: types.DELETE_TASK,
-  payload: ids
-});
-
 export const archivedTask = ids => ({
   type: types.ARCHIVED_TASK,
   payload: ids
@@ -476,11 +500,6 @@ export const guruGetTaskCollectionList = data => ({
 
 export const guruGetUploadedCollectionList = data => ({
   type: types.GURU_GET_UPLOADED_COLLECTION_LIST,
-  payload: data
-});
-
-export const getSubjectList = data => ({
-  type: types.GET_SUBJECT_LIST,
   payload: data
 });
 

@@ -148,11 +148,11 @@ export default function taskGuruReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-    case DELETE_TASK:
-      return {
-        ...state,
-        deletedIds: action.payload
-      };
+    // case DELETE_TASK:
+    //   return {
+    //     ...state,
+    //     deletedIds: action.payload
+    //   };
     case SET_URL_PATH:
       return {
         ...state,

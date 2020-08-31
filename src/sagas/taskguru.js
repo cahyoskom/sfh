@@ -663,7 +663,7 @@ export default function* rootSaga() {
     takeEvery(GET_CLASS_LIST, getClassList),
     takeEvery(POST_TASK, postTask),
     takeEvery(UPDATE_TASK, updateTask),
-    takeEvery(DELETE_TASK, deleteTask),
+    // takeEvery(DELETE_TASK, deleteTask),
     takeEvery(ARCHIVED_TASK, archivedTask),
     takeEvery(GET_TASK_GURU_BY_ID, getTaskGuruById),
     takeEvery(GURU_DELETE_TASK_FILE, guruDeleteTaskFile)

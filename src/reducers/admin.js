@@ -384,11 +384,11 @@ export default function adminReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-    case DELETE_TASK:
-      return {
-        ...state,
-        deletedIds: action.payload
-      };
+    // case DELETE_TASK:
+    //   return {
+    //     ...state,
+    //     deletedIds: action.payload
+    //   };
     case SET_STATE_TASK_DETAIL:
       return {
         ...state,

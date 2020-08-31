@@ -14,7 +14,6 @@ import classReducer from './classinfo';
 import userReducer from './manageuser';
 import taskReducer from './task';
 import landingReducer from './landing';
-import taskReducer from './task';
 
 const rootReducer = combineReducers({
   account: accountReducer,

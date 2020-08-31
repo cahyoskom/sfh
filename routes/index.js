@@ -37,4 +37,12 @@ module.exports = function (router) {
   router.get('/school_invitation', school.acceptInvitation);
   router.get('/class_invitation', classController.acceptInvitation);
   router.get('/audit_trail', audit.getData);
+  router.get('/is_admin', function (req, res) {
+    let is_admin = false;
+    if (req.user.is_admin == 1) {
+      is_admin = true;
+    }
+
+    res.json({ data: is_admin });
+  });
 };

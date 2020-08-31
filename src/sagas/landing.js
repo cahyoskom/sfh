@@ -46,10 +46,10 @@ export function* createClass() {
   const state = yield select(getLandingState);
   const classState = state.newClass;
   if (!classState.name) {
-    fail("Nama kelas tidak boleh kosong")
+    fail('Nama kelas tidak boleh kosong');
     return;
   }
-  
+
   let param = {
     name: classState.name,
     description: classState.description,
@@ -66,15 +66,15 @@ export function* createClass() {
 }
 export function* getClasses() {
   const state = yield select(getLandingState);
-  let param = {}
+  let param = {};
   // const _response = {data: {data:[],message:'bacot'}}
   const _response = yield call(services.GET, API_BASE_URL_DEV + API_PATH.getClasses, HeaderAuth());
-  console.log(_response)
+  console.log(_response);
   if (_response.status === 200) {
-    let data = _response.data.data
+    let data = _response.data.data;
     for (let i in data) {
-      console.log(i)
-      data[i]['url'] = `${process.env.PUBLIC_URL}/class-info/`+data[i].id
+      console.log(i);
+      data[i]['url'] = `${process.env.PUBLIC_URL}/class-info/` + data[i].id;
     }
     yield put({
       type: GET_CLASSES_SUCCESS,
@@ -83,9 +83,7 @@ export function* getClasses() {
   } else {
     console.log(_response.data.message);
   }
-  
 }
-
 
 export default function* rootSaga() {
   yield all([

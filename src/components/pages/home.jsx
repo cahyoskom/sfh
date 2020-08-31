@@ -64,9 +64,7 @@ class Home extends Component {
   componentDidMount() {
     const { getClasses } = this.props;
     getClasses();
-    console.log("ah bambang")
   }
-
 
   getBase64 = (file, cb) => {
     let reader = new FileReader();
@@ -155,8 +153,8 @@ class Home extends Component {
       onChangeStateNewSchool,
       createNewSchool
     } = this.props;
-    let classes = []
-    if(landingState.classes.data) classes = landingState.classes.data
+    let classes = [];
+    if (landingState.classes.data) classes = landingState.classes.data;
     return (
       <section className='home-page section-b-space'>
         <Container>
@@ -205,36 +203,35 @@ class Home extends Component {
                         </Grid>
 
                         {classes.map((kelas, index) => (
-                          
                           <Grid item xs={12} lg={12}>
                             <a href={kelas.url}>
-                            <Card variant='outlined'>
-                              <CardContent>
-                                <Grid container direction='row' justify='center' alignItems='center'>
-                                  <Grid item xs={12} lg={9}>
-                                    <Grid container direction='column' justify='center' alignItems='flex-start'>
-                                      <Grid item>
-                                        <strong>{kelas.name}</strong>
-                                      </Grid>
-                                      <Grid item>
-                                        <p>{kelas.owner}</p>
-                                      </Grid>
-                                      <Grid item>
-                                        <p>{kelas.description}</p>
-                                      </Grid>
-                                      <Grid item>
-                                        <p>{kelas.link_status}</p>
+                              <Card variant='outlined'>
+                                <CardContent>
+                                  <Grid container direction='row' justify='center' alignItems='center'>
+                                    <Grid item xs={12} lg={9}>
+                                      <Grid container direction='column' justify='center' alignItems='flex-start'>
+                                        <Grid item>
+                                          <strong>{kelas.name}</strong>
+                                        </Grid>
+                                        <Grid item>
+                                          <p>{kelas.owner}</p>
+                                        </Grid>
+                                        <Grid item>
+                                          <p>{kelas.description}</p>
+                                        </Grid>
+                                        <Grid item>
+                                          <p>{kelas.link_status}</p>
+                                        </Grid>
                                       </Grid>
                                     </Grid>
+                                    <Grid item xs={12} lg={3}>
+                                      <Avatar>N</Avatar>
+                                    </Grid>
                                   </Grid>
-                                  <Grid item xs={12} lg={3}>
-                                    <Avatar>N</Avatar>
-                                  </Grid>
-                                </Grid>
-                              </CardContent>
-                            </Card>
+                                </CardContent>
+                              </Card>
                             </a>
-                            </Grid>
+                          </Grid>
                         ))}
                       </Grid>
                     </Grid>

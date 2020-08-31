@@ -10,10 +10,10 @@ import {
 } from '../constants/ActionTypes';
 const initialState = {
   classes: {
-    data: ""
+    data: ''
   },
   schools: {
-    data: ""
+    data: ''
   },
   newClass: {
     show: false,
@@ -122,8 +122,7 @@ export default function landingReducer(state = initialState, action) {
         classes: {
           data: action.value
         }
-        
-      }
+      };
     default:
   }
   return state;

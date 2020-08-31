@@ -1,10 +1,14 @@
-const { sha256 } = require('../common/sha');
-const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
+const crypto = require('crypto');
+const randomstring = require('randomstring');
+const isBase64 = require('is-base64');
+const { env } = process;
+
+const query = require('../models/query');
+const m_param = require('../models/m_param');
 const t_school = require('../models/t_school');
 const t_school_member = require('../models/t_school_member');
-const sec_group = require('../models/sec_group');
 const t_class = require('../models/t_class');
 const t_class_member = require('../models/t_class_member');
 const t_class_subject = require('../models/t_class_subject');
@@ -12,16 +16,25 @@ const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_task_collection_file = require('../models/t_class_task_collection_file');
+const t_notification_user = require('../models/t_notification_user');
+const t_notification = require('../models/t_notification');
+const m_notification_type = require('../models/m_notification_type');
+const sec_group = require('../models/sec_group');
 const sec_user = require('../models/sec_user');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
-var randomstring = require('randomstring');
-const crypto = require('crypto');
-const isBase64 = require('is-base64');
-const { sequelize } = require('../database');
 const sec_confirmation = require('../models/sec_confirmation');
-const m_param = require('../models/m_param');
+
+const { sha256 } = require('../common/sha');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { sequelize, beginTransaction } = require('../database');
 const Confirmation = require('./confirmation');
-const { env } = process;
+const {
+  SCHOOL_CHANGE_INFO,
+  SCHOOL_REQUEST_CLASS,
+  SCHOOL_ACCEPT_CLASS,
+  SCHOOL_REJECT_CLASS,
+  SCHOOL_REMOVE_CLASS,
+  SCHOOL_REMOVE_USER
+} = require('../enums/notification.type');
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {
@@ -44,6 +57,37 @@ async function checkAuthority(userId) {
     return true;
   }
   return false;
+}
+
+async function isNotifNeeded(type, receiver_id, out_id, out_name) {
+  var NOTIFICATION_TYPE = await m_notification_type().findOne({
+    attributes: ['id'],
+    where: { type: type }
+  });
+
+  var user_notif = await t_notification_user().findOne({
+    where: {
+      m_notification_type_id: NOTIFICATION_TYPE.id,
+      sec_user_id: receiver_id,
+      out_id: out_id,
+      out_name: out_name
+    }
+  });
+  if (!user_notif) {
+    user_notif = await t_notification_user().findOne({
+      where: {
+        m_notification_type_id: NOTIFICATION_TYPE.id,
+        sec_user_id: receiver_id,
+        out_id: null,
+        out_name: null
+      }
+    });
+  }
+  if (user_notif.is_receive_web == 1) {
+    return user_notif;
+  } else {
+    return null;
+  }
 }
 
 exports.findAll = async function (req, res) {
@@ -183,12 +227,56 @@ exports.update = async function (req, res) {
     updated_by: req.user.email
   };
 
+  const transaction = await beginTransaction();
   try {
     var datum = await model_school.update(update_obj, {
-      where: { id: req.body.id }
+      where: { id: req.body.id },
+      transaction
     });
+
+    var all_class = await t_class().findAll({
+      attributes: ['id'],
+      where: { t_school_id: req.body.id, status: ACTIVE, link_status: 0 }
+    });
+    var all_members = [];
+    for (each_class of all_class) {
+      var class_members = await t_class_member().findAll({
+        attributes: ['sec_user_id'],
+        where: { t_class_id: each_class.id, status: ACTIVE, link_status: 0 }
+      });
+      const result = all_members.concat(class_members).filter(function (o) {
+        return this.has(o.sec_user_id) ? false : this.add(o.sec_user_id);
+      }, new Set());
+      all_members = result;
+    }
+
+    for (member of all_members) {
+      var notif_user = await isNotifNeeded(
+        SCHOOL_CHANGE_INFO,
+        member.sec_user_id,
+        req.body.id,
+        't_school'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: notif_user.sec_user_id,
+          out_id: req.body.id,
+          out_name: 't_school',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: 1,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+    }
+    await transaction.commit();
     res.json({ message: 'Data has been updated.' });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
@@ -354,9 +442,12 @@ exports.connectClass = async function (req, res) {
     t_school_id: req.body.t_school_id,
     link_status: 2 //request by school
   };
+
+  const transaction = await beginTransaction();
   try {
     var datum = await model_class.update(update_obj, {
-      where: { id: targetClass.id }
+      where: { id: targetClass.id },
+      transaction
     });
 
     const model_class_member = t_class_member();
@@ -368,13 +459,34 @@ exports.connectClass = async function (req, res) {
       attributes: ['sec_user_id'],
       where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
     });
-    console.log(owner_id);
+
     var owner_name = await sec_user().findOne({
       attributes: ['name'],
       where: { id: owner_id.sec_user_id }
     });
-    console.log(owner_name);
 
+    var notif_user = await isNotifNeeded(
+      SCHOOL_REQUEST_CLASS,
+      owner_id.sec_user_id,
+      targetClass.id,
+      't_class'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: targetClass.id,
+        out_name: 't_class',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: 1,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, { transaction });
+    }
+    await transaction.commit();
     res.json({
       id: targetClass.id,
       name: targetClass.name,
@@ -383,6 +495,7 @@ exports.connectClass = async function (req, res) {
       countMembers: members.count
     });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({
       error: null,
       message: err.message
@@ -486,7 +599,7 @@ exports.getAllClass = async function (req, res) {
 exports.approval = async function (req, res) {
   const model_class = t_class();
   var update_obj;
-  if (req.body.status) {
+  if (req.body.status == 1) {
     update_obj = {
       link_status: 0, //ACCEPT
       updated_date: moment().format(),
@@ -495,18 +608,51 @@ exports.approval = async function (req, res) {
   } else {
     update_obj = {
       t_school_id: null,
-      link_status: 0, //DECLINE
+      link_status: 0, //DECLINE or REMOVE
       updated_date: moment().format(),
       updated_by: req.user.email
     };
   }
-
+  const transaction = await beginTransaction();
   try {
     var update = await model_class.update(update_obj, {
-      where: { id: req.params.classId }
+      where: { id: req.params.classId },
+      transaction
     });
+
+    var class_owner = await t_class_member().findOne({
+      where: { t_class_id: req.params.classId, sec_group_id: 1, status: ACTIVE }
+    });
+
+    var notif_user = await isNotifNeeded(
+      req.body.status == 1
+        ? SCHOOL_ACCEPT_CLASS
+        : req.body.status == 0
+        ? SCHOOL_REJECT_CLASS
+        : SCHOOL_REMOVE_CLASS,
+      class_owner.sec_user_id,
+      req.params.classId,
+      't_class'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: req.params.classId,
+        out_name: 't_class',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: 1,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, transaction);
+    }
+    await transaction.commit();
     res.json({ message: 'Link status berhasil diubah' });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: null, message: err.message });
   }
 };
@@ -592,9 +738,11 @@ exports.removeMember = async function (req, res) {
     updated_date: moment().format(),
     updated_by: req.user.email
   };
+  const transaction = await beginTransaction();
   try {
     var update = await t_school_member().update(obj, {
-      where: { id: target_id }
+      where: { id: target_id },
+      transaction
     });
 
     var change_authority;
@@ -603,8 +751,32 @@ exports.removeMember = async function (req, res) {
     } else {
       change_authority = false;
     }
+
+    var notif_user = await isNotifNeeded(
+      SCHOOL_REMOVE_USER,
+      target_user.sec_user_id,
+      target_user.t_school_id,
+      't_school'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: target_user.t_school_id,
+        out_name: 't_school',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: 1,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, { transaction });
+    }
+    await transaction.commit();
     res.json({ message: 'Anggota berhasil dikeluarkan', changeAuthority: change_authority });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: null, message: err.message });
   }
 };

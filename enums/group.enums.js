@@ -1,8 +1,6 @@
 module.exports = {
-  ADMIN: 1,
-  HEADMASTER: 2,
-  HOMEROOM_TEACHER: 3,
-  TEACHER: 4,
-  GUARDIAN: 5,
-  STUDENT: 6
+  OWNER: 1,
+  MAINTENER: 2, // Teacher equivalent with this flag
+  PARTICIPANT: 3, // Student equivalent with this flag
+  GUEST: 4
 };

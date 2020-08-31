@@ -27,7 +27,7 @@ const {
   CLASS_REMOVE_USER,
   CLASS_DELETED,
   CLASS_DUPLICATED
-} = require('../enums/notification.type');
+} = require('../enums/notification-type.enums');
 
 const { beginTransaction } = require('../database');
 const { sha256 } = require('../common/sha');
@@ -346,7 +346,7 @@ exports.member = async function (req, res) {
       where: {
         t_class_id: classId,
         status: { [Op.or]: [ACTIVE, DEACTIVE] },
-        sec_group_id: enums.STUDENT
+        sec_group_id: enums.PARTICIPANT
       }
     });
   } else {
@@ -354,7 +354,7 @@ exports.member = async function (req, res) {
       where: {
         t_class_id: classId,
         status: ACTIVE,
-        sec_group_id: enums.STUDENT,
+        sec_group_id: enums.PARTICIPANT,
         link_status: 0
       }
     });
@@ -384,7 +384,7 @@ exports.member = async function (req, res) {
     where: {
       t_class_id: classId,
       status: { [Op.or]: [ACTIVE, DEACTIVE] },
-      sec_group_id: enums.TEACHER
+      sec_group_id: enums.MAINTENER
     }
   });
   for (i in teachers) {
@@ -437,7 +437,7 @@ async function getClassOwner(classId) {
     where: {
       t_class_id: classId,
       status: ACTIVE,
-      sec_group_id: enums.ADMIN
+      sec_group_id: enums.OWNER
     }
   });
   var owner = await sec_user().findOne({
@@ -888,7 +888,7 @@ exports.inviteMember = async function (req, res) {
   const sender_name = req.user.name;
   const sender_email = req.user.email;
   const position = req.body.position;
-  let positions = { teacher: enums.TEACHER, student: enums.STUDENT };
+  let positions = { teacher: enums.MAINTENER, student: enums.PARTICIPANT };
   let positionEnum = positions[position.toLowerCase()];
   var check_user = await sec_user().findOne({
     where: { email: req.body.email, status: ACTIVE }
@@ -990,7 +990,7 @@ exports.acceptInvitation = async function (req, res) {
   }
   let desc = invitation.description.split('_');
   let classId = desc[1];
-  let positions = { teacher: enums.TEACHER, student: enums.STUDENT };
+  let positions = { teacher: enums.MAINTENER, student: enums.PARTICIPANT };
   let position = positions[desc[2].toLowerCase()];
   console.log(position);
 

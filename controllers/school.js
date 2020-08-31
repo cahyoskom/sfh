@@ -34,7 +34,7 @@ const {
   SCHOOL_REJECT_CLASS,
   SCHOOL_REMOVE_CLASS,
   SCHOOL_REMOVE_USER
-} = require('../enums/notification.type');
+} = require('../enums/notification-type.enums');
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {

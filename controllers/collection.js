@@ -66,9 +66,9 @@ exports.findAll = async function (req, res) {
     ];
   }
 
-  if (!!req.user.roles[GROUP_ENUMS.STUDENT]) {
+  if (!!req.user.roles[GROUP_ENUMS.PARTICIPANT]) {
     // student
-    var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.STUDENT][0], filter);
+    var cols = await GetCollectionForStudent(req.user.roles[GROUP_ENUMS.PARTICIPANT][0], filter);
   } else {
     // not student
     if (!!req.query.class) {
@@ -92,13 +92,13 @@ exports.findOne = async function (req, res) {
 };
 
 exports.create = async function (req, res) {
-  if (!req.user.roles[GROUP_ENUMS.STUDENT]) {
+  if (!req.user.roles[GROUP_ENUMS.PARTICIPANT]) {
     res.status(401).json({ error: 10, message: 'Not a student' });
     return;
   }
   var new_obj = {
     task_id: req.body.task_id,
-    student_id: req.user.roles[GROUP_ENUMS.STUDENT][0].student_id,
+    student_id: req.user.roles[GROUP_ENUMS.PARTICIPANT][0].student_id,
     status: 1,
     created_date: moment().format(),
     created_by: req.user.user_name

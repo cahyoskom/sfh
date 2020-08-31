@@ -136,8 +136,6 @@ exports.create = async function (req, res) {
     res.status(401).json({ error: null, message: 'Kode pos tidak valid' });
   }
   var new_obj = {
-    t_school_id: req.body.t_school_id,
-    code: req.body.code,
     name: req.body.name,
     address: req.body.address,
     zipcode: req.body.zipcode,

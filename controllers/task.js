@@ -1,13 +1,19 @@
 const moment = require('moment');
 const fs = require('fs');
+const { Op } = require('sequelize');
 const formidable = require('formidable');
+
+const { query } = require('../models/query');
+const m_param = require('../models/m_param');
 const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
-const m_param = require('../models/m_param');
-const { query } = require('../models/query');
+const t_class_subject = require('../models/t_class_subject');
+const t_class_member = require('../models/t_class_member');
+
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
+const { beginTransaction } = require('../database');
 const {
   DELETED,
   DEACTIVE,
@@ -19,26 +25,59 @@ const {
 } = require('../enums/task-status.enums');
 
 exports.findAll = async function (req, res) {
-  let filter = {};
-  let where = [];
+  // get total students of class
+  const model_class_member = t_class_member();
+  var students = await model_class_member.findAndCountAll({
+    where: {
+      t_class_id: req.query.class,
+      status: ACTIVE,
+      sec_group_id: 3
+    }
+  });
 
-  if (!!req.query.class) {
-    filter.class_id = req.query.class;
-    where.push('c.id IN (:class_id)');
-  }
+  //authorization check
+  var checkUser = await model_class_member.findOne({
+    where: {
+      t_class_id: req.query.class,
+      status: ACTIVE,
+      sec_user_id: req.user.id,
+      sec_group_id: { [Op.or]: [1, 2, 3] }
+    }
+  });
+  var data = [];
+  var isStudent = false;
+  if (checkUser) {
+    var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
+    t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
+    FROM t_class_task t
+    JOIN t_class_subject s ON s.id=t.t_class_subject_id AND s.status=1
+    LEFT JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id AND tc.status = 1
+    WHERE t.status = 1 AND t.t_class_id = :class_id
+    `;
 
-  if (!!req.query.subject) {
-    filter.subject_id = req.query.subject;
-    where.push('s.subject_id IN (:subject_id)');
-  }
+    if (!!req.query.search) {
+      sql = sql + ` AND t.title COLLATE UTF8_GENERAL_CI LIKE '%` + req.query.search + `%'`;
+    }
+    var start_date = '';
+    var finish_date = '';
+    if (!!req.query.startDate) {
+      start_date = moment(moment(req.query.startDate).add(1, 'day')).format();
+      sql = sql + ` AND t.start_date > :start_date`;
+    }
+    if (!!req.query.finishDate) {
+      finish_date = moment(moment(req.query.finishDate).add(1, 'day')).format();
+      sql = sql + ` AND t.finish_date < :finish_date`;
+    }
 
-  // if start_date specified, by default finish_date=start_date, unless finish_date is specified
-  // if start_date not specified, then finish_date will be skipped.
-  if (!!req.query.start_date) {
-    filter.start_date = req.query.start_date;
-    filter.finish_date = filter.start_date;
-    if (!!req.query.finish_date) {
-      filter.finish_date = req.query.finish_date;
+    sql = sql + ` GROUP BY t.id`;
+
+    data = await query(sql, {
+      class_id: req.query.class,
+      start_date: start_date,
+      finish_date: finish_date
+    });
+    if (checkUser.sec_group_id == 3) {
+      isStudent = true;
     }
     where.push(
       '((start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date))'
@@ -47,10 +86,10 @@ exports.findAll = async function (req, res) {
 
   var sql = `SELECT t.sec_user_id, t.id, t.title, t.notes, t.weight, t.start_date, t.finish_date, 
     t.publish_date, s.id, s.name as subjectName, c.id, c.name as className, COUNT(*) as countSubmitted
-  FROM t_task t
-  JOIN m_subject s ON s.id=t.m_subject_id
-  JOIN m_class c ON c.id=t.m_class_id
-  LEFT OUTER JOIN t_task_collection tc ON tc.t_task_id = t.id
+  FROM t_class_task t
+  JOIN t_class_subject s ON s.id=t.t_class_subject_id
+  JOIN t_class c ON c.id=t.t_class_id
+  LEFT OUTER JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id
   WHERE t.status = ${ACTIVE} AND s.status = ${ACTIVE} AND c.status = ${ACTIVE} AND tc.status = ${ACTIVE}
   GROUP BY t.id`;
 
@@ -58,16 +97,18 @@ exports.findAll = async function (req, res) {
     sql = sql + ' AND ' + where.join(' AND ');
   }
 
-  var data = await query(sql, filter);
-
-  res.json({ data: data });
+  res.json({
+    data: data,
+    isStudent: isStudent,
+    totalStudents: students.count
+  });
 };
 
 exports.findOne = async function (req, res) {
   const model_task = t_class_task();
-  var datum = await model_task.findOne({ where: { task_id: req.params.id } });
+  var datum = await model_task.findOne({ where: { id: req.params.id } });
   var files = await t_class_task_file().findAll({
-    where: { task_id: req.params.id }
+    where: { t_class_task_id: req.params.id }
   });
   var result = datum.toJSON();
   result.files = files;
@@ -98,23 +139,55 @@ exports.findOneInclCollection = async function (req, res) {
 
 exports.create = async function (req, res) {
   const model_task = t_class_task();
+  const model_subject = t_class_subject();
+  var subject_id;
+  var existed_subject = await model_subject.findOne({
+    where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
+  });
+  if (existed_subject) {
+    //subject already existed
+    subject_id = existed_subject.id;
+  } else {
+    //create new subject
+    var new_obj = {
+      name: req.body.subject,
+      t_class_id: req.body.class_id,
+      status: ACTIVE,
+      created_date: moment().format(),
+      created_by: req.user.email
+    };
+    var datum = await model_subject.create(new_obj);
+    subject_id = datum.id;
+  }
   var new_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    sec_user_id: req.user.id,
+    t_class_id: req.body.class_id,
+    t_class_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
-    weight: req.body.weight,
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
-    publish_date: req.body.publish_date,
+    publish_date: moment().format(),
     status: ACTIVE,
     created_date: moment().format(),
-    created_by: req.user.user_name
+    created_by: req.user.email
   };
   try {
-    var datum = await model_task.create(new_obj);
-    res.json({ data: datum });
+    var task = await model_task.create(new_obj);
+    const task_link = req.body.task_link;
+    if (task_link.length > 0) {
+      for (let link of task_link) {
+        console.log(task.id);
+        let new_link = {
+          t_class_task_id: task.id,
+          filename: task.title,
+          status: ACTIVE,
+          link: link
+        };
+        var save_link = await t_class_task_file().create(new_link);
+      }
+    }
+    res.json({ data: task });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
@@ -122,10 +195,34 @@ exports.create = async function (req, res) {
 
 exports.update = async function (req, res) {
   const model_task = t_class_task();
+  const model_subject = t_class_subject();
+  var subject_id;
+  var existed_subject = await model_subject.findOne({
+    where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
+  });
+  if (existed_subject) {
+    //subject already existed
+    subject_id = existed_subject.id;
+  } else {
+    //create new subject
+    var new_obj = {
+      name: req.body.subject,
+      t_class_id: req.body.class_id,
+      status: ACTIVE,
+      created_date: moment().format(),
+      created_by: req.user.email
+    };
+    try {
+      var datum = await model_subject.create(new_obj);
+      subject_id = datum.id;
+    } catch (err) {
+      res.status(411).json({ error: 11, message: err.message });
+    }
+  }
   var update_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    sec_user_id: req.body.user_id,
+    t_class_id: req.body.class_id,
+    t_class_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
     weight: req.body.weight,
@@ -195,7 +292,7 @@ exports.upload = async function (req, res) {
   const form = formidable({ multiples: true });
   const task_id = req.params.id;
 
-  var task = await t_class_task().findOne({ where: { task_id: req.params.id } });
+  var task = await t_class_task().findOne({ where: { id: req.params.id } });
   let result = [];
   if (!task) {
     res.status(404).json({ error: 31, message: 'Task not found.' });
@@ -233,25 +330,33 @@ exports.upload = async function (req, res) {
     let filename = upload_dir + element.name;
     await MoveFile(element.path, filename);
     let new_file = {
-      task_id: task_id,
+      t_class_task_id: task_id,
       filename: element.name,
       ext: filename.split('.').pop(),
       mime_type: element.type,
       location: filename,
       sequence: 0, //todo ambil dari terakhir
-      status: 1,
-      created_date: moment().format(),
-      created_by: req.user.user_name
+      status: ACTIVE
     };
 
     var task_file = await t_class_task_file().findOne({
-      where: { task_id: task_id, filename: element.name }
+      where: { t_class_task_id: task_id, filename: element.name }
     });
     if (!task_file) {
       // belum ada, insert baru
       task_file = await t_class_task_file().create(new_file);
     } else {
       // todo, update ganti updated date
+      new_file.updated_date = moment().format();
+      new_file.updated_by = req.user.email;
+      try {
+        var update = await t_class_task_file().update(new_file, {
+          where: { id: task_file.id }
+        });
+      } catch (err) {
+        res.status(411).json({ error: 11, message: err.message });
+      }
+      task_file = new_file;
     }
 
     result.push(task_file);
@@ -262,14 +367,14 @@ exports.upload = async function (req, res) {
 
 exports.delete = async function (req, res) {
   const model_task = t_class_task();
-  model_task.update({ status: DELETED }, { where: { task_id: req.params.id } });
+  model_task.update({ status: DELETED }, { where: { id: req.params.id } });
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.deleteFileById = async function (req, res) {
   const model_task = t_class_task_file();
-  model_task.update({ status: DELETED }, { where: { task_file_id: req.params.file_id } });
+  model_task.update({ status: DELETED }, { where: { t_class_task_file_id: req.params.file_id } });
 
   res.json({ message: 'Data has been deleted.' });
 };

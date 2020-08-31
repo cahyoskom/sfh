@@ -8,3 +8,4 @@ ALTER TABLE `sec_confirmation` ADD `m_school_id` INT(11) UNSIGNED NULL DEFAULT N
 INSERT INTO `m_param` (`id`, `name`, `value`, `description`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES (7, 'MAIL_INTERVAL_MEMBER_INVITATION', '1', 'hour', '1', '2020-07-23 20:58:04', 'SYSTEM', NULL, NULL);
 ALTER TABLE `m_class` ADD UNIQUE(`code`);
 ALTER TABLE `m_school` ADD UNIQUE(`code`); 
+ALTER TABLE `t_task_file` ADD `link` VARCHAR(1000) NULL DEFAULT NULL AFTER `sequence`; 

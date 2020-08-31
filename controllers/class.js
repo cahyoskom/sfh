@@ -107,7 +107,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -146,7 +146,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -183,7 +183,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -220,7 +220,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -262,7 +262,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -299,7 +299,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -585,7 +585,6 @@ exports.findOne = async function (req, res) {
 
 exports.create = async function (req, res) {
   const transaction = await beginTransaction();
-  const model_class = t_class();
   let schoolId;
   if (req.body.schoolCode) {
     let check_school = await t_school().findOne({
@@ -610,13 +609,13 @@ exports.create = async function (req, res) {
     name: req.body.name,
     note: req.body.note,
     description: req.body.description,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.name
   };
 
   try {
-    var datum = await model_class.create(new_obj, { transaction });
+    var datum = await t_class.create(new_obj, { transaction });
     var new_member = {
       t_class: datum.id,
       sec_user_id: req.user.id,
@@ -624,7 +623,7 @@ exports.create = async function (req, res) {
       status: ACTIVE,
       link_status: DONE
     };
-    var member = await t_class_member().create(new_member);
+    var member = await t_class_member().create(new_member, { transaction });
     await transaction.commit();
     res.json({ data: datum });
   } catch (err) {
@@ -699,7 +698,7 @@ exports.duplicate = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -722,7 +721,7 @@ exports.join = async function (req, res) {
     t_class_id: req.body.t_class_id,
     sec_user_id: req.body.sec_user_id,
     sec_group_id: req.body.sec_group_id,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.body.name
   };
@@ -784,7 +783,7 @@ exports.update = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -842,7 +841,7 @@ exports.delete = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -1067,6 +1066,7 @@ exports.acceptInvitation = async function (req, res) {
       //   created_by: 'SYSTEM'
       // };
       // var created = await t_class_member().create(new_member);
+
       transaction.commit();
       res.json({ school_name: getClass.name, is_new_member: true });
       return;

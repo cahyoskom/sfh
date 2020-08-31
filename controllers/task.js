@@ -8,7 +8,7 @@ const m_param = require('../models/m_param');
 const { query } = require('../models/query');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
-const TASK_STATUS = require('../enums/status.enums');
+const { DELETED, ACTIVE } = require('../enums/task-status.enums');
 
 exports.findAll = async function (req, res) {
   let filter = {};
@@ -16,7 +16,7 @@ exports.findAll = async function (req, res) {
 
   if (!!req.query.class) {
     filter.class_id = req.query.class;
-    where.push('c.class_id IN (:class_id)');
+    where.push('c.id IN (:class_id)');
   }
 
   if (!!req.query.subject) {
@@ -37,12 +37,14 @@ exports.findAll = async function (req, res) {
     );
   }
 
-  var sql = `SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, 
-    publish_date, s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
-  FROM t_class_task t
-  JOIN t_class_subject s ON s.subject_id=t.subject_id
-  JOIN t_class c ON c.class_id=t.class_id
-  WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
+  var sql = `SELECT t.sec_user_id, t.id, t.title, t.notes, t.weight, t.start_date, t.finish_date, 
+    t.publish_date, s.id, s.name as subjectName, c.id, c.name as className, COUNT(*) as countSubmitted
+  FROM t_task t
+  JOIN m_subject s ON s.id=t.m_subject_id
+  JOIN m_class c ON c.id=t.m_class_id
+  LEFT OUTER JOIN t_task_collection tc ON tc.t_task_id = t.id
+  WHERE t.status = 1 AND s.status = 1 AND c.status = 1 AND tc.status = 1
+  GROUP BY t.id`;
 
   if (Object.keys(filter).length > 0) {
     sql = sql + ' AND ' + where.join(' AND ');
@@ -75,7 +77,7 @@ exports.findOneInclCollection = async function (req, res) {
 
   var sql = `SELECT
     s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
-  FROM (SELECT * from t_student WHERE class_id = :class_id AND status=1) s
+  FROM (SELECT * from t_student WHERE class_id = :class_id AND status = 1) s
   LEFT JOIN (SELECT * FROM t_class_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
 
   var data = await query(sql, {
@@ -122,7 +124,7 @@ exports.update = async function (req, res) {
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
     publish_date: req.body.publish_date,
-    status: TASK_STATUS.ACTIVE,
+    status: ACTIVE,
     updated_date: moment().format(),
     updated_by: req.user.user_name
   };
@@ -144,7 +146,7 @@ exports.setStatus = async function (req, res) {
   }
 
   let update_obj = {};
-  let status = TASK_STATUS.ACTIVE;
+  let status = ACTIVE;
 
   switch (req.params.status) {
     case 'archived':
@@ -252,17 +254,14 @@ exports.upload = async function (req, res) {
 
 exports.delete = async function (req, res) {
   const model_task = t_class_task();
-  model_task.update({ status: TASK_STATUS.DELETED }, { where: { task_id: req.params.id } });
+  model_task.update({ status: DELETED }, { where: { task_id: req.params.id } });
 
   res.json({ message: 'Data has been deleted.' });
 };
 
 exports.deleteFileById = async function (req, res) {
   const model_task = t_class_task_file();
-  model_task.update(
-    { status: TASK_STATUS.DELETED },
-    { where: { task_file_id: req.params.file_id } }
-  );
+  model_task.update({ status: DELETED }, { where: { task_file_id: req.params.file_id } });
 
   res.json({ message: 'Data has been deleted.' });
 };

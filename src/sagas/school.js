@@ -139,7 +139,7 @@ export function* connectClass() {
     const state = yield select(getSchoolState);
     let param = {
       code: state.connectClassModal.code,
-      m_school_id: state.data.id
+      t_school_id: state.data.id
     };
     const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.school + '/connect_class', param, HeaderAuth());
     if (_res.status === 200) {
@@ -164,7 +164,7 @@ export function* createClass() {
     const state = yield select(getSchoolState);
     const createState = state.createClassModal;
     let param = {
-      m_school_id: state.data.id,
+      t_school_id: state.data.id,
       name: createState.name,
       description: createState.description
     };

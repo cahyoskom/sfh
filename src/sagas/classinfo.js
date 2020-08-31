@@ -30,9 +30,7 @@ export function* setclassmembers() {
   try {
     const accountState = yield select(getClassInfoState);
     const classInfoState = accountState.classInfo;
-    const classMembersState = accountState.members;
     const classId = classInfoState.id;
-    let param = {};
     let url = API_BASE_URL_DEV + API_PATH.getClassMembers + '/' + classId;
 
     const _response = yield call(services.GET, url, HeaderAuth());
@@ -58,7 +56,6 @@ export function* setclassinfo() {
     const accountState = yield select(getClassInfoState);
     const classInfoState = accountState.classInfo;
     const classId = classInfoState.id;
-    let param = {};
     let url = API_BASE_URL_DEV + API_PATH.getClassInfo + '/' + classId;
 
     const _response = yield call(services.GET, url, HeaderAuth());
@@ -67,7 +64,7 @@ export function* setclassinfo() {
       return;
     }
     let data = _response.data;
-    const schoolId = data.data.m_school_id;
+    const schoolId = data.data.t_school_id;
     if (schoolId) {
       try {
         let urlSchool = API_BASE_URL_DEV + API_PATH.getSchoolInfo + '/' + schoolId;
@@ -98,7 +95,6 @@ export function* deleteClass() {
   const classState = yield select(getClassInfoState);
   const classInfoState = classState.classInfo;
   const classId = classInfoState.id;
-  let param = {};
   let url = API_BASE_URL_DEV + API_PATH.deleteClass + '/' + classId;
   const _response = yield call(services.DELETE, url, HeaderAuth());
   if (_response.status != 200) {
@@ -184,11 +180,11 @@ export function* updateClass() {
       });
       return;
     } else {
-      param.m_school_id = schoolData.id;
+      param.t_school_id = schoolData.id;
       schoolName = schoolData.name;
     }
   } else {
-    param.m_school_id = null;
+    param.t_school_id = null;
   }
   console.log(param);
   const _res = yield call(services.POST, API_BASE_URL_DEV + API_PATH.editClass + '/' + param.id, param, HeaderAuth());

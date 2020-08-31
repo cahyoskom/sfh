@@ -8,7 +8,15 @@ const m_param = require('../models/m_param');
 const { query } = require('../models/query');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
-const { DELETED, ACTIVE } = require('../enums/task-status.enums');
+const {
+  DELETED,
+  DEACTIVE,
+  ACTIVE,
+  PUBLISHED,
+  FINISHED,
+  SUBMIITTED,
+  ARCHIVED
+} = require('../enums/task-status.enums');
 
 exports.findAll = async function (req, res) {
   let filter = {};
@@ -43,7 +51,7 @@ exports.findAll = async function (req, res) {
   JOIN m_subject s ON s.id=t.m_subject_id
   JOIN m_class c ON c.id=t.m_class_id
   LEFT OUTER JOIN t_task_collection tc ON tc.t_task_id = t.id
-  WHERE t.status = 1 AND s.status = 1 AND c.status = 1 AND tc.status = 1
+  WHERE t.status = ${ACTIVE} AND s.status = ${ACTIVE} AND c.status = ${ACTIVE} AND tc.status = ${ACTIVE}
   GROUP BY t.id`;
 
   if (Object.keys(filter).length > 0) {
@@ -77,7 +85,7 @@ exports.findOneInclCollection = async function (req, res) {
 
   var sql = `SELECT
     s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
-  FROM (SELECT * from t_student WHERE class_id = :class_id AND status = 1) s
+  FROM (SELECT * from t_student WHERE class_id = :class_id AND status = ${ACTIVE}) s
   LEFT JOIN (SELECT * FROM t_class_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
 
   var data = await query(sql, {
@@ -100,7 +108,7 @@ exports.create = async function (req, res) {
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
     publish_date: req.body.publish_date,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.user_name
   };
@@ -150,19 +158,19 @@ exports.setStatus = async function (req, res) {
 
   switch (req.params.status) {
     case 'archived':
-      status = 5;
+      status = ARCHIVED;
       break;
     case 'published':
-      status = 2;
+      status = PUBLISHED;
       break;
     case 'finished':
-      status = 3;
+      status = FINISHED;
       break;
     default:
-      status = 0;
+      status = DEACTIVE;
   }
 
-  if (status === 0) {
+  if (status === DEACTIVE) {
     res.status(411).json({ error: 11, message: 'Status out of range.' });
     return;
   }

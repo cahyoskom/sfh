@@ -1,3 +1,14 @@
+const { Op } = require('sequelize');
+const moment = require('moment');
+const crypto = require('crypto');
+const { env } = process;
+
+const query = require('../models/query');
+const m_param = require('../models/m_param');
+const m_notification_type = require('../models/m_notification_type');
+const sec_group = require('../models/sec_group');
+const sec_user = require('../models/sec_user');
+const sec_confirmation = require('../models/sec_confirmation');
 const t_class = require('../models/t_class');
 const t_class_member = require('../models/t_class_member');
 const t_class_subject = require('../models/t_class_subject');
@@ -5,18 +16,15 @@ const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_task_collection_file = require('../models/t_class_task_collection_file');
-const t_school = require('../models/t_school');
-const sec_group = require('../models/sec_group');
-const sec_user = require('../models/sec_user');
-const sec_confirmation = require('../models/sec_confirmation');
-const crypto = require('crypto');
-const { env } = process;
-const m_param = require('../models/m_param');
-const Confirmation = require('./confirmation');
-
 const t_notification_user = require('../models/t_notification_user');
 const t_notification = require('../models/t_notification');
-const m_notification_type = require('../models/m_notification_type');
+const t_school = require('../models/t_school');
+
+const Confirmation = require('./confirmation');
+const { sequelize, beginTransaction } = require('../database');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { OWNER, MAINTENER, PARTICIPANT } = require('../enums/group.enums');
+const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/task-status.enums');
 const {
   CLASS_CHANGE_INFO,
   CLASS_DEACTIVATE_USER,
@@ -28,14 +36,6 @@ const {
   CLASS_DELETED,
   CLASS_DUPLICATED
 } = require('../enums/notification-type.enums');
-
-const { beginTransaction } = require('../database');
-const { sha256 } = require('../common/sha');
-const query = require('../models/query');
-const { Op } = require('sequelize');
-const moment = require('moment');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
-const enums = require('../enums/group.enums');
 
 async function isNotifNeeded(type, receiver_id, out_id, out_name) {
   var NOTIFICATION_TYPE = await m_notification_type().findOne({
@@ -92,7 +92,7 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update(
-        { link_status: 0 },
+        { link_status: DONE },
         { where: { id: rel.id } },
         { transaction }
       );
@@ -131,7 +131,7 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update(
-        { link_status: 0, status: DELETED },
+        { link_status: DONE, status: DELETED },
         { where: { id: rel.id } },
         { transaction }
       );
@@ -168,7 +168,7 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update(
-        { link_status: 0, status: ACTIVE },
+        { link_status: DONE, status: ACTIVE },
         { where: { id: rel.id } },
         { transaction }
       );
@@ -205,7 +205,7 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update(
-        { link_status: 0, status: DEACTIVE },
+        { link_status: DONE, status: DEACTIVE },
         { where: { id: rel.id } },
         { transaction }
       );
@@ -242,7 +242,7 @@ exports.classMemberLinkStatus = async function (req, res) {
     }
     try {
       const datum = await model_class_member.update(
-        { link_status: 0, status: DELETED },
+        { link_status: DONE, status: DELETED },
         { where: { id: rel.id } },
         { transaction }
       );
@@ -346,7 +346,7 @@ exports.member = async function (req, res) {
       where: {
         t_class_id: classId,
         status: { [Op.or]: [ACTIVE, DEACTIVE] },
-        sec_group_id: enums.PARTICIPANT
+        sec_group_id: PARTICIPANT
       }
     });
   } else {
@@ -354,8 +354,8 @@ exports.member = async function (req, res) {
       where: {
         t_class_id: classId,
         status: ACTIVE,
-        sec_group_id: enums.PARTICIPANT,
-        link_status: 0
+        sec_group_id: PARTICIPANT,
+        link_status: DONE
       }
     });
   }
@@ -384,7 +384,7 @@ exports.member = async function (req, res) {
     where: {
       t_class_id: classId,
       status: { [Op.or]: [ACTIVE, DEACTIVE] },
-      sec_group_id: enums.MAINTENER
+      sec_group_id: MAINTENER
     }
   });
   for (i in teachers) {
@@ -437,7 +437,7 @@ async function getClassOwner(classId) {
     where: {
       t_class_id: classId,
       status: ACTIVE,
-      sec_group_id: enums.OWNER
+      sec_group_id: OWNER
     }
   });
   var owner = await sec_user().findOne({
@@ -622,7 +622,7 @@ exports.create = async function (req, res) {
       sec_user_id: req.user.id,
       sec_group_id: 1,
       status: ACTIVE,
-      link_status: 0
+      link_status: DONE
     };
     var member = await t_class_member().create(new_member);
     await transaction.commit();
@@ -759,7 +759,7 @@ exports.update = async function (req, res) {
     let all_members = [];
     var class_members = await t_class_member().findAll({
       attributes: ['sec_user_id'],
-      where: { t_class_id: req.params.id, status: ACTIVE, link_status: 0 }
+      where: { t_class_id: req.params.id, status: ACTIVE, link_status: DONE }
     });
     for (membership in class_members) {
       const user = await sec_user().findOne({
@@ -817,7 +817,7 @@ exports.delete = async function (req, res) {
     let all_members = [];
     var class_members = await t_class_member().findAll({
       attributes: ['sec_user_id'],
-      where: { t_class_id: req.params.id, status: ACTIVE, link_status: 0 }
+      where: { t_class_id: req.params.id, status: ACTIVE, link_status: DONE }
     });
     for (membership in class_members) {
       const user = await sec_user().findOne({
@@ -888,7 +888,7 @@ exports.inviteMember = async function (req, res) {
   const sender_name = req.user.name;
   const sender_email = req.user.email;
   const position = req.body.position;
-  let positions = { teacher: enums.MAINTENER, student: enums.PARTICIPANT };
+  let positions = { teacher: MAINTENER, student: PARTICIPANT };
   let positionEnum = positions[position.toLowerCase()];
   var check_user = await sec_user().findOne({
     where: { email: req.body.email, status: ACTIVE }
@@ -962,7 +962,7 @@ exports.inviteMember = async function (req, res) {
           sec_group_id: positionEnum, //MAINTAINER
           created_date: moment().format(),
           created_by: 'SYSTEM',
-          link_status: 2
+          link_status: SELFREQUEST
         };
         var created = await t_class_member().create(new_member, { transaction });
 
@@ -990,7 +990,7 @@ exports.acceptInvitation = async function (req, res) {
   }
   let desc = invitation.description.split('_');
   let classId = desc[1];
-  let positions = { teacher: enums.MAINTENER, student: enums.PARTICIPANT };
+  let positions = { teacher: MAINTENER, student: PARTICIPANT };
   let position = positions[desc[2].toLowerCase()];
   console.log(position);
 
@@ -1035,7 +1035,7 @@ exports.acceptInvitation = async function (req, res) {
       } else {
         if (check_member.status == DELETED) {
           const datum = await t_class_member().update(
-            { status: ACTIVE, link_status: 0 },
+            { status: ACTIVE, link_status: DONE },
             { where: { id: check_member.id } },
             { transaction }
           );
@@ -1045,7 +1045,7 @@ exports.acceptInvitation = async function (req, res) {
           } else return;
         } else {
           const datum = await t_class_member().update(
-            { link_status: 0 },
+            { link_status: DONE },
             { where: { sec_user_id: invitation.sec_user_id, status: ACTIVE } },
             { transaction }
           );

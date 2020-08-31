@@ -7,6 +7,10 @@ const { env } = process;
 
 const query = require('../models/query');
 const m_param = require('../models/m_param');
+const m_notification_type = require('../models/m_notification_type');
+const sec_group = require('../models/sec_group');
+const sec_user = require('../models/sec_user');
+const sec_confirmation = require('../models/sec_confirmation');
 const t_school = require('../models/t_school');
 const t_school_member = require('../models/t_school_member');
 const t_class = require('../models/t_class');
@@ -18,15 +22,13 @@ const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_task_collection_file = require('../models/t_class_task_collection_file');
 const t_notification_user = require('../models/t_notification_user');
 const t_notification = require('../models/t_notification');
-const m_notification_type = require('../models/m_notification_type');
-const sec_group = require('../models/sec_group');
-const sec_user = require('../models/sec_user');
-const sec_confirmation = require('../models/sec_confirmation');
 
+const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { OWNER, MAINTENER } = require('../enums/group.enums');
+const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/task-status.enums');
 const { sequelize, beginTransaction } = require('../database');
-const Confirmation = require('./confirmation');
 const {
   SCHOOL_CHANGE_INFO,
   SCHOOL_REQUEST_CLASS,
@@ -41,7 +43,7 @@ async function checkAuthority(userId) {
   const model_school_member = t_school_member();
   const model_sec_group = sec_group();
   var member = await model_school_member.findAll({
-    where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [1, 2] } }
+    where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [OWNER, MAINTENER] } }
     // include: [
     //   {
     //     model: model_sec_group,
@@ -163,7 +165,7 @@ exports.create = async function (req, res) {
   var new_member = {
     t_school_id: datum.id,
     sec_user_id: req.user.id,
-    sec_group_id: 1, // OWNER
+    sec_group_id: OWNER,
     status: ACTIVE,
     created_date: moment().format()
   };
@@ -181,7 +183,7 @@ exports.join = async function (req, res) {
     t_school_id: req.body.t_school_id,
     sec_user_id: req.body.sec_user_id,
     sec_group_id: req.body.sec_group_id,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.body.name
   };
@@ -236,13 +238,13 @@ exports.update = async function (req, res) {
 
     var all_class = await t_class().findAll({
       attributes: ['id'],
-      where: { t_school_id: req.body.id, status: ACTIVE, link_status: 0 }
+      where: { t_school_id: req.body.id, status: ACTIVE, link_status: DONE }
     });
     var all_members = [];
     for (each_class of all_class) {
       var class_members = await t_class_member().findAll({
         attributes: ['sec_user_id'],
-        where: { t_class_id: each_class.id, status: ACTIVE, link_status: 0 }
+        where: { t_class_id: each_class.id, status: ACTIVE, link_status: DONE }
       });
       const result = all_members.concat(class_members).filter(function (o) {
         return this.has(o.sec_user_id) ? false : this.add(o.sec_user_id);
@@ -267,7 +269,7 @@ exports.update = async function (req, res) {
           notification_datetime: moment().format(),
           notification_year: moment().format('YYYY'),
           notification_month: moment().format('M'),
-          status: 1,
+          status: ACTIVE,
           created_date: moment().format()
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
@@ -440,7 +442,7 @@ exports.connectClass = async function (req, res) {
 
   var update_obj = {
     t_school_id: req.body.t_school_id,
-    link_status: 2 //request by school
+    link_status: SELFREQUEST //request by school
   };
 
   const transaction = await beginTransaction();
@@ -457,7 +459,7 @@ exports.connectClass = async function (req, res) {
 
     var owner_id = await model_class_member.findOne({
       attributes: ['sec_user_id'],
-      where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
+      where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: OWNER }
     });
 
     var owner_name = await sec_user().findOne({
@@ -481,7 +483,7 @@ exports.connectClass = async function (req, res) {
         notification_datetime: moment().format(),
         notification_year: moment().format('YYYY'),
         notification_month: moment().format('M'),
-        status: 1,
+        status: ACTIVE,
         created_date: moment().format()
       };
       var create_notif = await t_notification().create(new_obj, { transaction });
@@ -490,7 +492,7 @@ exports.connectClass = async function (req, res) {
     res.json({
       id: targetClass.id,
       name: targetClass.name,
-      link_status: 2,
+      link_status: SELFREQUEST,
       ownerName: owner_name.name,
       countMembers: members.count
     });
@@ -509,7 +511,7 @@ exports.createClass = async function (req, res) {
     t_school_id: req.body.t_school_id,
     name: req.body.name,
     description: req.body.description,
-    link_status: 0, //CONNECTED
+    link_status: DONE, //DONE when connected
     status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.email
@@ -531,7 +533,7 @@ exports.createClass = async function (req, res) {
   var new_member = {
     t_class_id: datum.id,
     sec_user_id: req.user.id,
-    sec_group_id: 1, // OWNER
+    sec_group_id: OWNER,
     status: ACTIVE,
     created_date: moment().format()
   };
@@ -599,16 +601,16 @@ exports.getAllClass = async function (req, res) {
 exports.approval = async function (req, res) {
   const model_class = t_class();
   var update_obj;
-  if (req.body.status == 1) {
+  if (req.body.status == ACTIVE) {
     update_obj = {
-      link_status: 0, //ACCEPT
+      link_status: DONE, //DONE while accepted
       updated_date: moment().format(),
       updated_by: req.user.email
     };
   } else {
     update_obj = {
       t_school_id: null,
-      link_status: 0, //DECLINE or REMOVE
+      link_status: DONE, //DONE even while decline or remove
       updated_date: moment().format(),
       updated_by: req.user.email
     };
@@ -621,7 +623,7 @@ exports.approval = async function (req, res) {
     });
 
     var class_owner = await t_class_member().findOne({
-      where: { t_class_id: req.params.classId, sec_group_id: 1, status: ACTIVE }
+      where: { t_class_id: req.params.classId, sec_group_id: OWNER, status: ACTIVE }
     });
 
     var notif_user = await isNotifNeeded(
@@ -644,7 +646,7 @@ exports.approval = async function (req, res) {
         notification_datetime: moment().format(),
         notification_year: moment().format('YYYY'),
         notification_month: moment().format('M'),
-        status: 1,
+        status: ACTIVE,
         created_date: moment().format()
       };
       var create_notif = await t_notification().create(new_obj, transaction);
@@ -674,7 +676,7 @@ exports.getMembers = async function (req, res) {
     var checkOwner = await t_school_member().findOne({
       where: { sec_user_id: req.user.id, status: ACTIVE }
     });
-    var isOwner = checkOwner.sec_group_id == 1 ? true : false;
+    var isOwner = checkOwner.sec_group_id == OWNER ? true : false;
     res.json({ listMembers, isOwner });
   } catch (err) {
     res.status(411).json({ error: null, message: err.message });
@@ -686,19 +688,19 @@ exports.changeOwner = async function (req, res) {
   const school_id = req.body.school_id;
   const old_owner_id = req.user.id;
   var new_owner = {
-    sec_group_id: 1,
+    sec_group_id: OWNER,
     updated_date: moment().format(),
     updated_by: req.user.email
   };
   var old_owner = {
-    sec_group_id: 2,
+    sec_group_id: MAINTENER,
     updated_date: moment().format(),
     updated_by: req.user.email
   };
   var user = await t_school_member().findOne({
     where: { sec_user_id: old_owner_id, t_school_id: school_id, status: ACTIVE }
   });
-  if (user.sec_group_id !== 1) {
+  if (user.sec_group_id !== OWNER) {
     res
       .status(403)
       .json({ message: 'Hanya pemilik sekolah yang dapat mengubah kepemilikan sekolah' });
@@ -728,7 +730,7 @@ exports.removeMember = async function (req, res) {
   var target_user = await t_school_member().findOne({
     where: { id: target_id }
   });
-  if (target_user.sec_group_id === 1) {
+  if (target_user.sec_group_id === OWNER) {
     res.status(403).json({ error: null, message: 'Pemilik sekolah tidak dapat dikeluarkan' });
     return;
   }
@@ -768,7 +770,7 @@ exports.removeMember = async function (req, res) {
         notification_datetime: moment().format(),
         notification_year: moment().format('YYYY'),
         notification_month: moment().format('M'),
-        status: 1,
+        status: ACTIVE,
         created_date: moment().format()
       };
       var create_notif = await t_notification().create(new_obj, { transaction });
@@ -905,7 +907,7 @@ exports.acceptInvitation = async function (req, res) {
       });
       if (ever_added_member) {
         ever_added_member.status = ACTIVE;
-        ever_added_member.sec_group_id = 2;
+        ever_added_member.sec_group_id = MAINTENER;
         ever_added_member.updated_date = moment().format();
         var re_add = await ever_added_member.save();
       } else {
@@ -913,7 +915,7 @@ exports.acceptInvitation = async function (req, res) {
           t_school_id: invitation.t_school_id,
           sec_user_id: invitation.sec_user_id,
           status: ACTIVE,
-          sec_group_id: 2, //MAINTAINER
+          sec_group_id: MAINTAINER,
           created_date: moment().format(),
           created_by: 'SYSTEM'
         };

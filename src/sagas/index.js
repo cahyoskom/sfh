@@ -14,11 +14,11 @@ import task from './task';
 export default function* rootSaga(getState) {
   yield all([
     account(),
+    admin(),
     taskSiswa(),
     taskOrtu(),
     taskKepsek(),
     taskGuru(),
-    admin(),
     profile(),
     school(),
     classinfo(),

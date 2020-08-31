@@ -7,14 +7,17 @@ async function create(data) {
   return await model_confirmation.create(data);
 }
 
-exports.sendEmail = async function ({ subject, to_addr, content, datum }) {
+exports.sendEmail = async function ({ subject, to_addr, content, datum }, transaction) {
   console.log('Email confirmation: ', { subject, to_addr, content, datum });
   try {
-    const confirmation = await create({
-      ...datum,
-      status: ACTIVE,
-      sender_addr: process.env.MAIL_USERNAME
-    });
+    const confirmation = await create(
+      {
+        ...datum,
+        status: ACTIVE,
+        sender_addr: process.env.MAIL_USERNAME
+      },
+      { transaction }
+    );
 
     if (!confirmation) throw confirmation;
 
@@ -28,9 +31,11 @@ exports.sendEmail = async function ({ subject, to_addr, content, datum }) {
 
     confirmation.is_sent = 1;
     await confirmation.save();
+    transaction.commit();
 
     return true;
   } catch (e) {
+    transaction.rollback();
     throw e;
   }
 };

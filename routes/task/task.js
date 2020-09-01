@@ -2,6 +2,7 @@ const task = require('../../controllers/task');
 
 module.exports = function (router) {
   router.get('/', task.findAll);
+  router.get('/info/:id', task.getClassTaskInfo);
   router.get('/:id', task.findOne);
   router.get('/:id/collection', task.findOneInclCollection);
   router.put('/', task.create);

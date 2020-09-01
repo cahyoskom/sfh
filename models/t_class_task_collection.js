@@ -49,6 +49,15 @@ module.exports = sequelize => {
       comment: null,
       field: 'submitted_date'
     },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
+    },
     status: {
       type: DataTypes.INTEGER(4),
       allowNull: false,

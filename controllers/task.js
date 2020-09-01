@@ -15,11 +15,47 @@ const { beginTransaction } = require('../database');
 const { Op } = require('sequelize');
 
 exports.findAll = async function (req, res) {
+  var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
+          t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
+          FROM t_class_task t
+          JOIN t_class_subject s ON s.id=t.t_class_subject_id AND s.status=1
+          LEFT JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id AND tc.status = 1
+          WHERE t.status = 1 AND t.t_class_id = :class_id
+          `;
+
+  if (!!req.query.search) {
+    sql = sql + ` AND t.title COLLATE UTF8_GENERAL_CI LIKE '%` + req.query.search + `%'`;
+  }
+  var start_date = '';
+  var finish_date = '';
+  if (!!req.query.startDate) {
+    start_date = moment(moment(req.query.startDate).add(1, 'day')).format();
+    sql = sql + ` AND t.start_date > :start_date`;
+  }
+  if (!!req.query.finishDate) {
+    finish_date = moment(moment(req.query.finishDate).add(1, 'day')).format();
+    sql = sql + ` AND t.finish_date < :finish_date`;
+  }
+
+  sql = sql + ` GROUP BY t.id`;
+
+  data = await query(sql, {
+    class_id: req.query.class,
+    start_date: start_date,
+    finish_date: finish_date
+  });
+
+  res.json({
+    data: data
+  });
+};
+
+exports.getClassTaskInfo = async function (req, res) {
   // get total students of class
   const model_class_member = t_class_member();
   var students = await model_class_member.findAndCountAll({
     where: {
-      t_class_id: req.query.class,
+      t_class_id: req.params.id,
       status: ACTIVE,
       sec_group_id: 3
     }
@@ -28,52 +64,25 @@ exports.findAll = async function (req, res) {
   //authorization check
   var checkUser = await model_class_member.findOne({
     where: {
-      t_class_id: req.query.class,
+      t_class_id: req.params.id,
       status: ACTIVE,
       sec_user_id: req.user.id,
       sec_group_id: { [Op.or]: [1, 2, 3] }
     }
   });
-  var data = [];
   var isStudent = false;
+  var hasAuthority = false;
   if (checkUser) {
-    var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
-          t.publish_date, s.name as subjectName, COUNT(tc.id) as countSubmitted
-          FROM t_class_task t
-          JOIN t_class_subject s ON s.id=t.t_class_subject_id AND s.status=1
-          LEFT JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id AND tc.status = 1
-          WHERE t.status = 1 AND t.t_class_id = :class_id
-          `;
-
-    if (!!req.query.search) {
-      sql = sql + ` AND t.title COLLATE UTF8_GENERAL_CI LIKE '%` + req.query.search + `%'`;
-    }
-    var start_date = '';
-    var finish_date = '';
-    if (!!req.query.startDate) {
-      start_date = moment(moment(req.query.startDate).add(1, 'day')).format();
-      sql = sql + ` AND t.start_date > :start_date`;
-    }
-    if (!!req.query.finishDate) {
-      finish_date = moment(moment(req.query.finishDate).add(1, 'day')).format();
-      sql = sql + ` AND t.finish_date < :finish_date`;
-    }
-
-    sql = sql + ` GROUP BY t.id`;
-
-    data = await query(sql, {
-      class_id: req.query.class,
-      start_date: start_date,
-      finish_date: finish_date
-    });
-    if (checkUser.sec_group_id == 3) {
+    if (checkUser.sec_group_id === 3) {
       isStudent = true;
     }
+    if (checkUser.sec_group_id === 1 || checkUser.sec_group_id === 2) {
+      hasAuthority = true;
+    }
   }
-
   res.json({
-    data: data,
     isStudent: isStudent,
+    hasAuthority: hasAuthority,
     totalStudents: students.count
   });
 };
@@ -269,7 +278,7 @@ exports.upload = async function (req, res) {
   var task = await t_class_task().findOne({ where: { id: req.params.id } });
   let result = [];
   if (!task) {
-    res.status(404).json({ error: 31, message: 'Task not found.' });
+    res.status(404).json({ error: 31, message: 'Tugas tidak ditemukan.' });
     return;
   }
 
@@ -378,4 +387,122 @@ exports.download = async function (req, res) {
   } else {
     res.status(404).json({ error: 24, message: 'File not found' });
   }
+};
+
+exports.createTaskCollection = async function (req, res) {
+  const task_id = req.body.id;
+  var task = await t_class_task().findOne({ where: { id: task_id } });
+  if (!task) {
+    res.status(404).json({ error: 31, message: 'Tugas tidak ditemukan.' });
+    return;
+  }
+
+  new_obj = {
+    t_class_task_id: task_id,
+    sec_user_id: req.user.id,
+    submitted_date: moment().format(),
+    content: req.body.comment,
+    status: ACTIVE,
+    created_date: moment().format()
+  };
+
+  const transaction = await beginTransaction();
+  try {
+    var task_collection = await t_class_task_collection().create(new_obj, transaction);
+    const submitted_link = req.body.link;
+    if (submitted_link.length > 0) {
+      for (let link of submitted_link) {
+        let new_link = {
+          t_class_task_collection_id: task_collection.id,
+          filename: task.title,
+          status: 1,
+          link: link
+        };
+        var save_link = await t_class_task_collection_file().create(new_link, transaction);
+      }
+    }
+    await transaction.commit();
+  } catch (err) {
+    await transaction.rollback();
+    res.status(411).json({ error: 11, message: err.message });
+  }
+};
+
+exports.submitFile = async function (req, res) {
+  const form = formidable({ multiples: true });
+  const task_collection_id = req.params.id;
+
+  var task_collection = await t_class_task_collection().findOne({
+    where: { id: req.params.id }
+  });
+  let result = [];
+  if (!task_collection) {
+    res.status(404).json({ error: 31, message: 'Task collection tidak ditemukan.' });
+    return;
+  }
+
+  let { fields, files } = await new Promise(function (resolve, reject) {
+    form.parse(req, function (err, fields, files) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!Array.isArray(files.files)) {
+        resolve({ fields, files: [files.files] });
+      } else {
+        resolve({ fields, files: files.files });
+      }
+    });
+  });
+
+  if (files.length == 0) {
+    res.status(421).json({ error: 21, message: 'Files not found' });
+  }
+
+  var parameter = m_param();
+  var UPLOAD_DIR = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'UPLOAD_DIR' }
+  });
+  var upload_dir = UPLOAD_DIR.value + '/task_collection_' + task_collection_id + '/';
+  if (!fs.existsSync(upload_dir)) {
+    fs.mkdirSync(upload_dir);
+  }
+  for (const element of files) {
+    let filename = upload_dir + element.name;
+    await MoveFile(element.path, filename);
+    let new_file = {
+      t_class_task_collection_id: task_collection_id,
+      filename: element.name,
+      ext: filename.split('.').pop(),
+      mime_type: element.type,
+      location: filename,
+      sequence: 0, //todo ambil dari terakhir
+      status: 1
+    };
+
+    var task_file = await t_class_task_collection().findOne({
+      where: { t_class_task_collection_id: task_collection_id, filename: element.name }
+    });
+    if (!task_file) {
+      // belum ada, insert baru
+      task_file = await t_class_task_collection_file().create(new_file);
+    } else {
+      // todo, update ganti updated date
+      new_file.updated_date = moment().format();
+      new_file.updated_by = req.user.email;
+      try {
+        var update = await t_class_task_collection_file().update(new_file, {
+          where: { id: task_file.id }
+        });
+      } catch (err) {
+        res.status(411).json({ error: 11, message: err.message });
+      }
+      task_file = new_file;
+    }
+
+    result.push(task_file);
+  }
+
+  res.json({ data: result });
 };

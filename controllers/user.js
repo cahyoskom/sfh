@@ -3,7 +3,6 @@ const STATUS = require('../enums/status.enums');
 const moment = require('moment');
 const isBase64 = require('is-base64');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
-const { ADMIN, STUDENT } = require('../enums/group.enums');
 
 exports.findAll = async function (req, res) {
   const model_user = sec_user();
@@ -38,7 +37,7 @@ exports.create = async function (req, res) {
     is_phone_validated: 0,
     avatar: req.body.avatar,
     auth_provider: 1,
-    is_admin: STUDENT,
+    is_admin: 0,
     status: ACTIVE,
     created_date: moment().format(),
     created_by: req.body.email

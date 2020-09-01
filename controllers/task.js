@@ -1,18 +1,28 @@
 const moment = require('moment');
 const fs = require('fs');
+const { Op } = require('sequelize');
 const formidable = require('formidable');
+
+const { query } = require('../models/query');
+const m_param = require('../models/m_param');
 const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
-const m_param = require('../models/m_param');
-const { query } = require('../models/query');
-const { sha256 } = require('../common/sha');
-const MoveFile = require('../common/move');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
 const t_class_subject = require('../models/t_class_subject');
 const t_class_member = require('../models/t_class_member');
+
+const { sha256 } = require('../common/sha');
+const MoveFile = require('../common/move');
 const { beginTransaction } = require('../database');
-const { Op } = require('sequelize');
+const {
+  DELETED,
+  DEACTIVE,
+  ACTIVE,
+  PUBLISHED,
+  FINISHED,
+  SUBMIITTED,
+  ARCHIVED
+} = require('../enums/task-status.enums');
 
 exports.findAll = async function (req, res) {
   var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
@@ -109,7 +119,7 @@ exports.findOneInclCollection = async function (req, res) {
 
   var sql = `SELECT
     s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
-  FROM (SELECT * from t_student WHERE class_id = :class_id AND status=1) s
+  FROM (SELECT * from t_student WHERE class_id = :class_id AND status = ${ACTIVE}) s
   LEFT JOIN (SELECT * FROM t_class_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
 
   var data = await query(sql, {
@@ -151,7 +161,7 @@ exports.create = async function (req, res) {
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
     publish_date: moment().format(),
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.email
   };
@@ -164,7 +174,7 @@ exports.create = async function (req, res) {
         let new_link = {
           t_class_task_id: task.id,
           filename: task.title,
-          status: 1,
+          status: ACTIVE,
           link: link
         };
         var save_link = await t_class_task_file().create(new_link);
@@ -238,19 +248,19 @@ exports.setStatus = async function (req, res) {
 
   switch (req.params.status) {
     case 'archived':
-      status = 5;
+      status = ARCHIVED;
       break;
     case 'published':
-      status = 2;
+      status = PUBLISHED;
       break;
     case 'finished':
-      status = 3;
+      status = FINISHED;
       break;
     default:
-      status = 0;
+      status = DEACTIVE;
   }
 
-  if (status === 0) {
+  if (status === DEACTIVE) {
     res.status(411).json({ error: 11, message: 'Status out of range.' });
     return;
   }
@@ -319,7 +329,7 @@ exports.upload = async function (req, res) {
       mime_type: element.type,
       location: filename,
       sequence: 0, //todo ambil dari terakhir
-      status: 1
+      status: ACTIVE
     };
 
     var task_file = await t_class_task_file().findOne({
@@ -357,7 +367,7 @@ exports.delete = async function (req, res) {
 
 exports.deleteFileById = async function (req, res) {
   const model_task = t_class_task_file();
-  model_task.update({ status: DELETED }, { where: { T_task_file_id: req.params.file_id } });
+  model_task.update({ status: DELETED }, { where: { t_class_task_file_id: req.params.file_id } });
 
   res.json({ message: 'Data has been deleted.' });
 };

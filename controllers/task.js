@@ -10,7 +10,7 @@ const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_subject = require('../models/t_class_subject');
 const t_class_member = require('../models/t_class_member');
-
+const t_class_task_collection_file = require('../models/t_class_task_collection_file');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
 const { beginTransaction } = require('../database');
@@ -99,9 +99,13 @@ exports.getClassTaskInfo = async function (req, res) {
 
 exports.findOne = async function (req, res) {
   const model_task = t_class_task();
-  var datum = await model_task.findOne({ where: { id: req.params.id } });
+  var datum = await model_task.findOne({ where: { id: req.params.id, status: ACTIVE } });
+  if (!datum) {
+    res.status(411).json({ error: 11, message: 'Task tidak ditemukan' });
+    return;
+  }
   var files = await t_class_task_file().findAll({
-    where: { t_class_task_id: req.params.id }
+    where: { t_class_task_id: req.params.id, status: ACTIVE }
   });
   var result = datum.toJSON();
   result.files = files;
@@ -399,13 +403,16 @@ exports.download = async function (req, res) {
   }
 };
 
-exports.createTaskCollection = async function (req, res) {
-  const task_id = req.body.id;
+exports.submitTask = async function (req, res) {
+  const task_id = req.body.task_id;
   var task = await t_class_task().findOne({ where: { id: task_id } });
   if (!task) {
-    res.status(404).json({ error: 31, message: 'Tugas tidak ditemukan.' });
+    res.status(404).json({ error: 31, message: 'Task tidak ditemukan.' });
     return;
   }
+  // var task_collection = await t_class_task_collection().findOne({
+  //   where: { sec_user_id: req.user.id, t_class_task_id: task.id, status: ACTIVE }
+  // });
 
   new_obj = {
     t_class_task_id: task_id,
@@ -418,7 +425,12 @@ exports.createTaskCollection = async function (req, res) {
 
   const transaction = await beginTransaction();
   try {
-    var task_collection = await t_class_task_collection().create(new_obj, transaction);
+    // if (task_collection) {
+    //     new_obj.updated_by = req.user.email
+    //   new_obj.updated_date = moment().format();
+    //     var update = await t_class_task_collection().update(new_obj, { transaction });
+    //   }
+    var task_collection = await t_class_task_collection().create(new_obj, { transaction });
     const submitted_link = req.body.link;
     if (submitted_link.length > 0) {
       for (let link of submitted_link) {
@@ -428,17 +440,18 @@ exports.createTaskCollection = async function (req, res) {
           status: 1,
           link: link
         };
-        var save_link = await t_class_task_collection_file().create(new_link, transaction);
+        var save_link = await t_class_task_collection_file().create(new_link, { transaction });
       }
     }
     await transaction.commit();
+    res.json({ data: task_collection });
   } catch (err) {
     await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
 
-exports.submitFile = async function (req, res) {
+exports.submitTaskFile = async function (req, res) {
   const form = formidable({ multiples: true });
   const task_collection_id = req.params.id;
 
@@ -491,7 +504,7 @@ exports.submitFile = async function (req, res) {
       status: 1
     };
 
-    var task_file = await t_class_task_collection().findOne({
+    var task_file = await t_class_task_collection_file().findOne({
       where: { t_class_task_collection_id: task_collection_id, filename: element.name }
     });
     if (!task_file) {

@@ -5,6 +5,7 @@ const registration = require('../controllers/registration');
 const school = require('../controllers/school');
 const classController = require('../controllers/class');
 const audit = require('../controllers/audit');
+const todo = require('../controllers/todo');
 
 module.exports = function (router) {
   router.all('/', async function (req, res) {
@@ -45,4 +46,6 @@ module.exports = function (router) {
 
     res.json({ data: is_admin });
   });
+  // router.get('/tableguru', todo.findAll);
+  // router.get('/todomurid', todo.findAll);
 };

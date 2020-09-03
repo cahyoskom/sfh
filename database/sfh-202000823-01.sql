@@ -1,4 +1,5 @@
 ALTER TABLE `t_class_task_collection` ADD `content` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL AFTER `submitted_date`; 
+ALTER TABLE `t_class_task` CHANGE `t_class_subject_id` `t_class_subject_id` INT(11) UNSIGNED NULL; 
 
 CREATE TABLE `t_class_task_collection_comment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

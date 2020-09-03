@@ -11,6 +11,7 @@ module.exports = function (router) {
   router.post('/', task.update);
   router.post('/:status', task.setStatus);
   router.put('/:id/files', task.upload);
+  router.put('/:id/link', task.uploadTaskLink);
   router.delete('/:id', task.delete);
   router.delete('/:id/files/:file_id', task.deleteFileById);
   router.get('/download/:file_id', task.download);

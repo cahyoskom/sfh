@@ -14,63 +14,24 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_collection_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    name: {
+      type: DataTypes.STRING(30),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_collection_id',
-      references: {
-        key: 'id',
-        model: 't_task_collection_model'
-      }
+      field: 'name',
+      unique: 'name'
     },
-    filename: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'filename'
-    },
-    ext: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'ext'
-    },
-    mime_type: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'mime_type'
-    },
-    location: {
+    description: {
       type: DataTypes.STRING(200),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'location'
-    },
-    sequence: {
-      type: DataTypes.INTEGER(8).UNSIGNED,
-      allowNull: true,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sequence'
+      field: 'description'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -120,21 +81,10 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_collection_file',
+    tableName: 'm_recurrent',
     comment: '',
-    indexes: [
-      {
-        name: 't_task_collection_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['t_task_collection_id']
-      }
-    ]
+    indexes: []
   };
-  const TTaskCollectionFileModel = sequelize.define(
-    't_task_collection_file_model',
-    attributes,
-    options
-  );
-  return TTaskCollectionFileModel;
+  const MRecurrentModel = sequelize.define('m_recurrent_model', attributes, options);
+  return MRecurrentModel;
 };

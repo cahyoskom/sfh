@@ -14,7 +14,9 @@ const urlAndMethodMapping = {
   '/request_activation': 'POST',
   '/registration': 'PUT',
   '/confirmation': 'GET',
-  '/check_email': 'GET'
+  '/check_email': 'GET',
+  '/school_invitation': 'GET',
+  '/class_invitation': 'GET'
 };
 
 module.exports = async (req, res, next) => {

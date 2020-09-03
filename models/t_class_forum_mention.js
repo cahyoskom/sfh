@@ -14,27 +14,31 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_class_id: {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+    t_class_forum_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_class_id',
+      field: 't_class_forum_id',
       references: {
         key: 'id',
-        model: 'm_class_model'
+        model: 't_class_forum_model'
       }
     },
-    name: {
-      type: DataTypes.STRING(100),
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
-      defaultValue: '',
+      defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'name'
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -84,17 +88,27 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_subject',
+    tableName: 't_class_forum_mention',
     comment: '',
     indexes: [
       {
-        name: 'm_class_id',
+        name: 't_class_forum_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_class_id']
+        fields: ['t_class_forum_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
       }
     ]
   };
-  const MSubjectModel = sequelize.define('m_subject_model', attributes, options);
-  return MSubjectModel;
+  const TClassForumMentionModel = sequelize.define(
+    't_class_forum_mention_model',
+    attributes,
+    options
+  );
+  return TClassForumMentionModel;
 };

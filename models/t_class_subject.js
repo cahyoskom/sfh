@@ -14,63 +14,27 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_task_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    t_class_id: {
+      type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_task_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 't_task_model'
+        model: 't_class_model'
       }
     },
-    filename: {
+    name: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: null,
+      defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'filename'
-    },
-    ext: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'ext'
-    },
-    mime_type: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'mime_type'
-    },
-    location: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'location'
-    },
-    sequence: {
-      type: DataTypes.INTEGER(8).UNSIGNED,
-      allowNull: true,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'sequence'
+      field: 'name'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -120,17 +84,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_task_file',
+    tableName: 't_class_subject',
     comment: '',
     indexes: [
       {
-        name: 't_task_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_task_id']
+        fields: ['t_class_id']
       }
     ]
   };
-  const TTaskFileModel = sequelize.define('t_task_file_model', attributes, options);
-  return TTaskFileModel;
+  const TClassSubjectModel = sequelize.define('t_class_subject_model', attributes, options);
+  return TClassSubjectModel;
 };

@@ -14,17 +14,17 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    m_school_id: {
+    t_class_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'm_school_id',
+      field: 't_class_id',
       references: {
         key: 'id',
-        model: 'm_school_model'
+        model: 't_class_model'
       }
     },
     sec_user_id: {
@@ -40,18 +40,23 @@ module.exports = sequelize => {
         model: 'sec_user_model'
       }
     },
-    sec_group_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    published_datetime: {
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'sec_group_id',
-      references: {
-        key: 'id',
-        model: 'sec_group_model'
-      }
+      field: 'published_datetime'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -101,29 +106,23 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_school_member',
+    tableName: 't_class_forum',
     comment: '',
     indexes: [
       {
-        name: 'm_school_id',
+        name: 't_class_id',
         unique: false,
         type: 'BTREE',
-        fields: ['m_school_id']
+        fields: ['t_class_id']
       },
       {
         name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
         fields: ['sec_user_id']
-      },
-      {
-        name: 'sec_group_id',
-        unique: false,
-        type: 'BTREE',
-        fields: ['sec_group_id']
       }
     ]
   };
-  const MSchoolMemberModel = sequelize.define('m_school_member_model', attributes, options);
-  return MSchoolMemberModel;
+  const TClassForumModel = sequelize.define('t_class_forum_model', attributes, options);
+  return TClassForumModel;
 };

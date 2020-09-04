@@ -31,7 +31,6 @@ exports.sendEmail = async function ({ subject, to_addr, content, datum }, transa
 
     confirmation.is_sent = 1;
     await confirmation.save();
-    transaction.commit();
 
     return true;
   } catch (e) {

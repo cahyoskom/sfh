@@ -2,6 +2,7 @@ const t_notification = require('../models/t_notification');
 const t_notification_user = require('../models/t_notification_user');
 const m_notification_default = require('../models/m_notification_default');
 const m_notification_type = require('../models/m_notification_type');
+const t_class_member = require('../models/t_class_member');
 const { query } = require('../models/query');
 
 const moment = require('moment');
@@ -9,15 +10,18 @@ const moment = require('moment');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 
 exports.findAll = async (req, res) => {
-  // const data = await t_notification().findAll({
-  //   where: { receiver_user_id: req.user.id, status: ACTIVE }
-  // });
   const sql = `
-  SELECT m_notification_type.id, m_notification_type.content, m_notification_type.content_url,
-  t_notification.m_notification_type_id, t_notification.notification_datetime, t_notification.is_read, 
-  t_notification.receiver_user_id, sec_user.id FROM m_notification_type INNER JOIN t_notification INNER 
-  JOIN sec_user ON m_notification_type.id=t_notification.m_notification_type_id AND sec_user.id = 
-  t_notification.receiver_user_id WHERE t_notification.receiver_user_id = :id`
+  SELECT m_notification_type.id, m_notification_type.content, 
+  m_notification_type.content_url,
+  t_notification.m_notification_type_id,
+  t_notification.notification_datetime, t_notification.is_read, 
+  t_notification.receiver_user_id, sec_user.id 
+  FROM m_notification_type INNER JOIN t_notification INNER 
+  JOIN sec_user ON 
+  m_notification_type.id=t_notification.m_notification_type_id 
+  AND sec_user.id = 
+  t_notification.receiver_user_id 
+  WHERE t_notification.receiver_user_id = :id`
   var test = await query(sql, {
     id: req.user.id
   })
@@ -60,6 +64,11 @@ exports.isRead = async (req, res) => {
       where: { receiver_user_id: req.body.id }
     });
 
+    if (!read) {
+      res.status(401).json({ message: 'Gagal Membaca' });
+      return;
+    }
+
     res.json('success update!')
     res.json({ data: read })
   } catch (error) {
@@ -83,6 +92,17 @@ exports.createUser = async (req, res) => {
   }
 };
 
+exports.defaultSetting = async (req,res) => {
+  try {
+    var data = await t_notification_user().findAll({
+      where: {sec_user_id : req.user.id}
+    });
+    res.json({ data, success: true })
+  } catch (error) {
+    res.json({error, test :'aaaa'})
+  }
+}
+
 exports.updateDefaults = async (req, res) => {
   const new_obj = {
     is_receive_web: req.body.is_receive_web,
@@ -91,10 +111,72 @@ exports.updateDefaults = async (req, res) => {
   };
   try {
     const notif = t_notification_user().update(new_obj, {
-      where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id }
+      // where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id, m_notification_type_id: req.body.m_id }
+      where: {m_notification_type_id: req.body.type_id, sec_user_id: req.user.id}
     });
-    res.json({ update: notif })
+    res.json({ update: notif, success: true })
   } catch (err) {
     console.log(err);
   }
 };
+
+exports.findKelas = async (req,res) => {
+  const sql = `SELECT t_class.name, t_class.id, 
+  t_notification_user.is_receive_web, t_notification_user.is_receive_email,
+  t_notification_user.out_id, t_notification_user.out_name, t_notification_user.sec_user_id
+  FROM t_class INNER JOIN t_notification_user
+  ON t_class.id = t_notification_user.out_id 
+  WHERE t_notification_user.sec_user_id = :id
+  AND t_notification_user.out_name = 't_class'
+  ORDER BY t_class.name ASC`
+  var findKelas = await query(sql, {
+    id: req.user.id
+  })
+  res.json({ data_class: findKelas });
+}
+
+exports.getSettingKelas = async (req, res) => {
+  const sql = `
+  SELECT
+  m_notification_type.id,
+  m_notification_type.activities,
+  m_notification_type.type,
+  t_notification_user.m_notification_type_id,
+  t_notification_user.is_receive_web,
+  t_notification_user.is_receive_email,
+  t_notification_user.id,
+  t_notification_user.sec_user_id,
+  sec_user.id
+  FROM m_notification_type INNER JOIN t_notification_user INNER 
+  JOIN sec_user ON 
+  m_notification_type.id=t_notification_user.m_notification_type_id 
+  AND sec_user.id = t_notification_user.sec_user_id 
+  WHERE t_notification_user.sec_user_id = :id AND m_notification_type.type LIKE 'CLASS%' ORDER BY activities ASC`
+  var test = await query(sql, {
+    id: req.user.id
+  })
+  res.json({ data: test });
+}
+
+exports.getSettingSchool = async (req, res) => {
+  const sql = `
+ SELECT
+  m_notification_type.id,
+  m_notification_type.activities,
+  m_notification_type.type,
+  t_notification_user.m_notification_type_id,
+  t_notification_user.is_receive_web,
+  t_notification_user.is_receive_email,
+  t_notification_user.id,
+  t_notification_user.sec_user_id,
+  sec_user.id
+  FROM m_notification_type INNER JOIN t_notification_user INNER 
+  JOIN sec_user ON 
+  m_notification_type.id=t_notification_user.m_notification_type_id 
+  AND sec_user.id = t_notification_user.sec_user_id 
+  WHERE t_notification_user.sec_user_id = 1 AND m_notification_type.type LIKE 'SCHOOL%' ORDER BY activities ASC`
+  var test = await query(sql, {
+    id: req.user.id
+  })
+  res.json({ data: test });
+}

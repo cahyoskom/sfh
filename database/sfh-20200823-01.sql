@@ -1,4 +1,6 @@
 ALTER TABLE `t_class` ADD UNIQUE(`code`);
-ALTER TABLE `t_school` ADD UNIQUE(`code`); 
-ALTER TABLE `t_class_task_file` ADD `link` VARCHAR(1000) NULL DEFAULT NULL AFTER `sequence`; 
-ALTER TABLE `t_school` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL; 
+ALTER TABLE `t_school` ADD UNIQUE(`code`);
+ALTER TABLE `t_class_task_file` ADD `link` VARCHAR(1000) NULL DEFAULT NULL AFTER `sequence`;
+ALTER TABLE `t_school` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
+ALTER TABLE `t_class` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
+ALTER TABLE `sec_user` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;

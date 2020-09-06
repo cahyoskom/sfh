@@ -74,7 +74,7 @@ module.exports = sequelize => {
       field: 'phone'
     },
     avatar: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT('long'),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,

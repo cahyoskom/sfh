@@ -11,7 +11,6 @@ import './index.scss';
 // Import custom components
 import store from './store';
 import translations from './constants/translations';
-import { getAllProducts } from './actions';
 import Fashion from './components/layouts/fashion';
 
 // Features

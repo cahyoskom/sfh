@@ -319,58 +319,6 @@ export default function adminReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-
-    case SET_TASK_LIST_FILTER:
-      return {
-        ...state,
-        // dt: {
-        //     ...state.dt,
-        //     filter: {
-        //         ...state.dt.filter,
-        //         [action.field]: action.value
-        //     }
-        // }
-        filter: {
-          ...state.filter,
-          [action.field]: action.value
-        }
-      };
-    case GET_TASK_GURU_LIST:
-      return {
-        ...state
-      };
-    case GET_TASK_GURU_LIST_SUCCESS: {
-      return {
-        ...state,
-        // data: action.value
-        [action.field]: action.value
-      };
-    }
-    case GET_SUBJECT_LIST:
-      return {
-        ...state
-      };
-    case GET_SUBJECT_LIST_SUCCESS: {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
-    case GET_CLASS_LIST:
-      return {
-        ...state
-      };
-    case GET_CLASS_LIST_SUCCESS: {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
-    case SET_DATE:
-      return {
-        ...state
-        // stardet: action.value
-      };
     case SET_LOADER:
       return {
         ...state,
@@ -384,21 +332,7 @@ export default function adminReducer(state = initialState, action) {
           [action.field]: action.value
         }
       };
-    // case DELETE_TASK:
-    //   return {
-    //     ...state,
-    //     deletedIds: action.payload
-    //   };
-    case SET_STATE_TASK_DETAIL:
-      return {
-        ...state,
-        taskDetail: action.value
-      };
-    case HANDLE_STATE_UPDATE_TASK:
-      return {
-        ...state,
-        taskDetail: { ...state.taskDetail, [action.field]: action.value }
-      };
+
     case SET_MODAL_FORM:
       return {
         ...state,

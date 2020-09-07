@@ -116,4 +116,4 @@ class HeaderTwo extends Component {
   }
 }
 
-export default connect(null, { changeCurrency })(HeaderTwo);
+export default connect(null)(HeaderTwo);

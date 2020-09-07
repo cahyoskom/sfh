@@ -1,12 +1,7 @@
 import { all, takeEvery, put, fork, select, call } from 'redux-saga/effects';
 import {
-  GET_SUBJECT_LIST,
-  GET_SUBJECT_LIST_SUCCESS,
-  GET_CLASS_LIST,
-  GET_CLASS_LIST_SUCCESS,
   SET_LOADER,
   SET_MODAL,
-  POST_TASK,
   ADMIN_GET_GROUP_LIST,
   ADMIN_GET_GROUP_LIST_SUCCESS,
   ADMIN_GET_USER_LIST,

@@ -11,22 +11,25 @@ const sec_registrant = require('../models/sec_registrant');
 const sec_token = require('../models/sec_token');
 const sec_confirmation = require('../models/sec_confirmation');
 const m_param = require('../models/m_param');
+
+const userController = require('./user');
 const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
+const { beginTransaction } = require('../database');
 const { ACTIVE, DEACTIVE, DELETED } = require('../enums/status.enums');
-const userController = require('./user');
 const pwValidator = new passwordValidator().is().min(6);
 // .is().max(100).has().uppercase().has().lowercase().has().digits().has().not().spaces();
 const phoneValidator = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;
 
-async function shouldSendingMail(flag, filtering, disabling = false) {
+async function shouldSendingMail(transaction, flag, filtering, disabling = false) {
   const model_confirmation = sec_confirmation();
   const confirmation = await model_confirmation.findOne({
     where: {
       ...filtering,
       status: ACTIVE
-    }
+    },
+    transaction
   });
   if (!confirmation) return false;
 
@@ -35,13 +38,14 @@ async function shouldSendingMail(flag, filtering, disabling = false) {
   const parameter = m_param();
   const DURATION = await parameter.findOne({
     attributes: ['value'],
-    where: { name: flag }
+    where: { name: flag },
+    transaction
   });
   dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
     if (disabling) {
       confirmation.status = DEACTIVE;
-      await confirmation.save();
+      await confirmation.save({ transaction });
     }
 
     return false;
@@ -58,6 +62,7 @@ exports.create = async function (req, res) {
   const model_registrant = sec_registrant();
   const model_confirmation = sec_confirmation();
   const model_user = sec_user();
+  const transaction = await beginTransaction();
 
   var new_user = {
     name: req.body.name,
@@ -72,7 +77,8 @@ exports.create = async function (req, res) {
     const checkUser = await model_user.findOne({
       where: {
         email: new_user.email
-      }
+      },
+      transaction
     });
 
     if (checkUser) {
@@ -84,7 +90,8 @@ exports.create = async function (req, res) {
         where: {
           email: new_user.email
         },
-        order: [['id', 'DESC']]
+        order: [['id', 'DESC']],
+        transaction
       });
 
       if (checkReg) {
@@ -92,12 +99,14 @@ exports.create = async function (req, res) {
           const checkConfirmation = await model_confirmation.findOne({
             where: {
               sec_registrant_id: checkReg.id
-            }
+            },
+            transaction
           });
 
           if (checkConfirmation) {
             if (checkConfirmation.status == ACTIVE) {
               const alreadyValidLink = await shouldSendingMail(
+                transaction,
                 'MAIL_INTERVAL_VERIFICATION',
                 { sec_registrant_id: checkReg.id },
                 false
@@ -136,7 +145,7 @@ exports.create = async function (req, res) {
       throw new Error('Nomor telepon yang dimasukkan tidak sesuai kriteria');
     }
 
-    const registrant = await model_registrant.create(new_user);
+    const registrant = await model_registrant.create(new_user, { transaction });
     if (!registrant) throw registrant;
 
     const code = crypto.randomBytes(16).toString('hex');
@@ -152,7 +161,7 @@ exports.create = async function (req, res) {
       code: code
     };
 
-    const sendEmail = await Confirmation.sendEmail({
+    const sendEmail = await Confirmation.sendEmail(transaction, {
       subject,
       to_addr,
       content,
@@ -160,12 +169,14 @@ exports.create = async function (req, res) {
     });
     if (!sendEmail) throw sendEmail;
 
+    await transaction.commit();
     return res.json({
       // message: `An email for account activation has been sent to ${registrant.email}.`,
       message: `Email untuk aktivasi akun sudah dikirimkan ke ${registrant.email}.`,
       data: registrant
     });
   } catch (err) {
+    await transaction.rollback();
     res.status(401).json({ error: null, message: err.message });
   }
 };
@@ -239,6 +250,8 @@ exports.requestActivation = async function (req, res) {
   const model_user = sec_user();
   const model_registrant = sec_registrant();
   const model_confirmation = sec_confirmation();
+  const transaction = await beginTransaction();
+
   try {
     const email = req.body.email;
     const registrant = await model_registrant.findOne({
@@ -246,14 +259,15 @@ exports.requestActivation = async function (req, res) {
         email: email,
         is_email_validated: 0,
         status: ACTIVE
-      }
+      },
+      transaction
     });
     if (!registrant) {
       // throw new Error('Email entered is wrong');
       throw new Error('Email yang dimasukkan salah.');
     }
 
-    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_VERIFICATION', {
+    const countdownMsg = await shouldSendingMail(transaction, 'MAIL_INTERVAL_VERIFICATION', {
       sec_registrant_id: registrant.id
     });
     if (countdownMsg) throw new Error(countdownMsg);
@@ -270,7 +284,7 @@ exports.requestActivation = async function (req, res) {
       sec_registrant_id: registrant.id,
       code: code
     };
-    const sendEmail = await Confirmation.sendEmail({
+    const sendEmail = await Confirmation.sendEmail(transaction, {
       subject,
       to_addr,
       content,
@@ -278,12 +292,14 @@ exports.requestActivation = async function (req, res) {
     });
     if (!sendEmail) throw sendEmail;
 
+    await transaction.commit();
     return res.json({
       // message: `An email for account activation has been sent to ${registrant.email}.`,
       message: `Email untuk aktivasi akun sudah dikirimkan ke ${registrant.email}.`,
       data: registrant
     });
   } catch (e) {
+    await transaction.rollback();
     res.status(401).json({
       error: null,
       message: e.message
@@ -295,13 +311,16 @@ exports.forgotPassword = async function (req, res) {
   const model_user = sec_user();
   const model_registrant = sec_registrant();
   const model_confirmation = sec_confirmation();
+  const transaction = await beginTransaction();
+
   try {
     const email = req.body.email;
     const user = await model_user.findOne({
       where: {
         email: email,
         status: ACTIVE
-      }
+      },
+      transaction
     });
 
     if (!user) {
@@ -309,21 +328,24 @@ exports.forgotPassword = async function (req, res) {
         where: {
           email: email,
           status: ACTIVE
-        }
+        },
+        transaction
       });
 
       if (!registrant) {
         // throw new Error('Email entered is wrong or not registered');
         // throw new Error('Email yang dimasukkan salah atau belum terdaftar.');
+        console.log(`[WARN] someone with email: "${email}" is not a "registrant"`);
         throw new Error('Email yang anda masukkan salah');
       }
 
       // throw new Error('Verify your email to continue');
       // throw new Error('Harap Verifikasi Email Terlebih Dahulu.');
+      console.log(`[WARN] someone with email: "${email}" is not a "user"`);
       throw new Error('Email akan terkirim apabila telah terdaftar');
     }
 
-    const countdownMsg = await shouldSendingMail('MAIL_INTERVAL_FORGOT_PASSWORD', {
+    const countdownMsg = await shouldSendingMail(transaction, 'MAIL_INTERVAL_FORGOT_PASSWORD', {
       sec_user_id: user.id
     });
     if (countdownMsg) throw new Error(countdownMsg);
@@ -340,7 +362,7 @@ exports.forgotPassword = async function (req, res) {
       sec_user_id: user.id,
       code: code
     };
-    const sendEmail = await Confirmation.sendEmail({
+    const sendEmail = await Confirmation.sendEmail(transaction, {
       subject,
       to_addr,
       content,
@@ -348,12 +370,14 @@ exports.forgotPassword = async function (req, res) {
     });
     if (!sendEmail) throw sendEmail;
 
+    await transaction.commit();
     return res.json({
       // message: `An email for check validity password change has been sent to ${user.email}.`
       // message: `Email untuk validasi perubahan password sudah dikirimkan ke ${user.email}.`,
       message: 'Email akan terkirim apabila telah terdaftar'
     });
   } catch (e) {
+    await transaction.rollback();
     res.status(401).json({
       error: null,
       message: e.message

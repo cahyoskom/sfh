@@ -781,88 +781,91 @@ exports.removeMember = async function (req, res) {
   }
 };
 
-async function checkResendInvitation(invitation) {
+async function checkResendInvitation(transaction, invitation) {
   const timeNow = moment();
   const dateCr = moment(invitation.created_date);
   const parameter = m_param();
   const DURATION = await parameter.findOne({
     attributes: ['value'],
-    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' }
+    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' },
+    transaction
   });
   dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
     invitation.status = DEACTIVE;
-    await invitation.save();
+    await invitation.save({ transaction });
     return true;
   }
   return false;
 }
 
 exports.inviteMember = async function (req, res) {
+  const transaction = await beginTransaction();
   const school_id = req.body.school_id;
   const sender_name = req.user.name;
   const sender_email = req.user.email;
-  var check_user = await sec_user().findOne({
-    where: { email: req.body.email, status: ACTIVE }
-  });
-  if (check_user) {
-    var check_member = await t_school_member().findOne({
-      where: { sec_user_id: check_user.id, t_school_id: req.body.school_id, status: ACTIVE }
+
+  try {
+    var check_user = await sec_user().findOne({
+      where: { email: req.body.email, status: ACTIVE },
+      transaction
     });
-    if (check_member) {
-      res
-        .status(411)
-        .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota sekolah' });
+    if (!check_user) throw new Error('Email belum terdaftar sebagai pengguna');
+
+    var check_member = await t_school_member().findOne({
+      where: { sec_user_id: check_user.id, t_school_id: req.body.school_id, status: ACTIVE },
+      transaction
+    });
+    if (!check_member) throw new Error('Anggota sudah terdaftar sebagai anggota sekolah');
+
+    var description,
+      invitation = await sec_confirmation().findOne({
+        where: { sec_user_id: check_user.id, t_school_id: school_id, status: ACTIVE },
+        transaction
+      });
+    if (!invitation) {
+      // send email flag
+      description = 'SCHOOL_MEMBER_INVITATION';
     } else {
-      var invitation = await sec_confirmation().findOne({
-        where: { sec_user_id: check_user.id, t_school_id: school_id, status: ACTIVE }
-      });
-      var description;
-      if (invitation) {
-        var resend = await checkResendInvitation(invitation);
-        if (resend) {
-          // resend email
-          description = 'SCHOOL_MEMBER_REINVITATION';
-        } else {
-          res.status(411).json({ error: null, message: 'Email berisi undangan sudah dikirim' });
-          return;
-        }
-      } else {
-        description = 'SCHOOL_MEMBER_INVITATION';
-      }
-      var school = await t_school().findOne({
-        where: { id: school_id, status: ACTIVE }
-      });
-      //send invitation
-      const code = crypto.randomBytes(16).toString('hex');
-      const subject = `Undangan bergabung dengan ${school.name}`;
-      const to_addr = check_user.email;
-      const url = env.APP_BASEURL || req.headers.host;
-      const content =
-        'Halo,\n\n' +
-        `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${school.name}. Klik link untuk menerima undangan: \n` +
-        `${url}/invitation?q=school&code=${code}`;
-      const datum = {
-        description: description,
-        sec_user_id: check_user.id,
-        t_school_id: school_id,
-        code: code
-      };
-      try {
-        const sendEmail = await Confirmation.sendEmail({
-          subject,
-          to_addr,
-          content,
-          datum
-        });
-        if (!sendEmail) throw sendEmail;
-        res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
-      } catch (err) {
-        res.status(411).json({ error: null, message: err.message });
-      }
+      var resend = await checkResendInvitation(transaction, invitation);
+      if (!resend) throw new Error('Email berisi undangan sudah dikirim');
+
+      // resend email flag
+      description = 'SCHOOL_MEMBER_REINVITATION';
     }
-  } else {
-    res.status(411).json({ error: null, message: 'Email belum terdaftar sebagai pengguna' });
+
+    var school = await t_school().findOne({
+      where: { id: school_id, status: ACTIVE },
+      transaction
+    });
+    //send invitation
+    const code = crypto.randomBytes(16).toString('hex');
+    const subject = `Undangan bergabung dengan ${school.name}`;
+    const to_addr = check_user.email;
+    const url = env.APP_BASEURL || req.headers.host;
+    const content =
+      'Halo,\n\n' +
+      `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${school.name}. Klik link untuk menerima undangan: \n` +
+      `${url}/invitation?q=school&code=${code}`;
+    const datum = {
+      description: description,
+      sec_user_id: check_user.id,
+      t_school_id: school_id,
+      code: code
+    };
+    const sendEmail = await Confirmation.sendEmail(transaction, {
+      subject,
+      to_addr,
+      content,
+      datum
+    });
+    if (!sendEmail) throw sendEmail;
+
+    await transaction.commit();
+    return res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
+  } catch (e) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: e.message });
   }
 };
 

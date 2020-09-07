@@ -21,7 +21,7 @@ const t_notification = require('../models/t_notification');
 const t_school = require('../models/t_school');
 
 const Confirmation = require('./confirmation');
-const { sequelize, beginTransaction } = require('../database');
+const { beginTransaction } = require('../database');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const { OWNER, MAINTENER, PARTICIPANT } = require('../enums/group.enums');
 const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
@@ -868,18 +868,19 @@ exports.delete = async function (req, res) {
   }
 };
 
-async function checkResendInvitation(invitation) {
+async function checkResendInvitation(transaction, invitation) {
   const timeNow = moment();
   const dateCr = moment(invitation.created_date);
   const parameter = m_param();
   const DURATION = await parameter.findOne({
     attributes: ['value'],
-    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' }
+    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' },
+    transaction
   });
   dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
     invitation.status = DEACTIVE;
-    await invitation.save();
+    await invitation.save({ transaction });
     return true;
   }
   return false;
@@ -893,46 +894,49 @@ exports.inviteMember = async function (req, res) {
   const position = req.body.position;
   let positions = { teacher: MAINTENER, student: PARTICIPANT };
   let positionEnum = positions[position.toLowerCase()];
-  var check_user = await sec_user().findOne({
-    where: { email: req.body.email, status: ACTIVE }
-  });
-  if (check_user) {
+
+  try {
+    var check_user = await sec_user().findOne({
+      where: { email: req.body.email, status: ACTIVE },
+      transaction
+    });
+    if (!check_user) throw new Error('Email belum terdaftar sebagai pengguna');
+
     var check_member = await t_class_member().findOne({
-      where: { sec_user_id: check_user.id, t_class_id: classId }
+      where: { sec_user_id: check_user.id, t_class_id: classId },
+      transaction
     });
-    if (check_member) {
-      if (check_member.status == ACTIVE) {
-        res
-          .status(411)
-          .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota kelas' });
-      }
+    if (!check_member) throw new Error('Anggota tidak terdaftar sebagai anggota kelas');
+    if (check_member.status == ACTIVE) {
+      throw new Error('Anggota sudah terdaftar sebagai anggota kelas');
     }
-    var invitation = await sec_confirmation().findOne({
-      where: { sec_user_id: check_user.id, status: ACTIVE }
-    });
-    var description;
-    if (invitation) {
-      var resend = await checkResendInvitation(invitation);
-      if (resend) {
-        // resend email
-        if (invitation.description == `CLASS_${classId}_TEACHER_INVITATION`)
-          description = `CLASS_${classId}_TEACHER_REINVITATION`;
-        else {
-          description = `CLASS_${classId}_STUDENT_REINVITATION`;
-        }
-      } else {
-        res.status(411).json({ error: null, message: 'Email berisi undangan sudah dikirim' });
-        return;
-      }
-    } else {
+
+    var description,
+      invitation = await sec_confirmation().findOne({
+        where: { sec_user_id: check_user.id, status: ACTIVE },
+        transaction
+      });
+    if (!invitation) {
       if (position == 'teacher') {
         description = `CLASS_${classId}_TEACHER_INVITATION`;
       } else {
         description = `CLASS_${classId}_STUDENT_INVITATION`;
       }
+    } else {
+      var resend = await checkResendInvitation(transaction, invitation);
+      if (!resend) throw new Error('Email berisi undangan sudah dikirim');
+
+      // resend email
+      if (invitation.description == `CLASS_${classId}_TEACHER_INVITATION`) {
+        description = `CLASS_${classId}_TEACHER_REINVITATION`;
+      } else {
+        description = `CLASS_${classId}_STUDENT_REINVITATION`;
+      }
     }
+
     var getClass = await t_class().findOne({
-      where: { id: classId, status: ACTIVE }
+      where: { id: classId, status: ACTIVE },
+      transaction
     });
     //send invitation
     const code = crypto.randomBytes(16).toString('hex');
@@ -948,45 +952,39 @@ exports.inviteMember = async function (req, res) {
       sec_user_id: check_user.id,
       code: code
     };
-    try {
-      const sendEmail = await Confirmation.sendEmail(
-        {
-          subject,
-          to_addr,
-          content,
-          datum
-        },
-        transaction
+    const sendEmail = await Confirmation.sendEmail(transaction, {
+      subject,
+      to_addr,
+      content,
+      datum
+    });
+    if (!sendEmail) throw sendEmail;
+
+    if (check_member) {
+      var updating = await t_class_member().update(
+        { ...check_member, status: ACTIVE, link_status: SELFREQUEST },
+        { where: { id: check_member.id }, transaction }
       );
-      if (!sendEmail) throw sendEmail;
-
-      if (check_member) {
-        var dat = await t_class_member().update(
-          { ...check_member, status: ACTIVE, link_status: SELFREQUEST },
-          { where: { id: check_member.id } },
-          { transaction }
-        );
-      } else {
-        var new_member = {
-          t_class_id: classId,
-          sec_user_id: check_user.id,
-          status: ACTIVE,
-          sec_group_id: positionEnum, //MAINTAINER
-          created_date: moment().format(),
-          created_by: 'SYSTEM',
-          link_status: SELFREQUEST
-        };
-        var created = await t_class_member().create(new_member, { transaction });
-      }
-
-      await transaction.commit();
-      return res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
-    } catch (err) {
-      await transaction.rollback();
-      res.status(411).json({ error: null, message: err.message });
+      if (!updating) throw updating;
+    } else {
+      var new_member = {
+        t_class_id: classId,
+        sec_user_id: check_user.id,
+        status: ACTIVE,
+        sec_group_id: positionEnum, //MAINTAINER
+        created_date: moment().format(),
+        created_by: 'SYSTEM',
+        link_status: SELFREQUEST
+      };
+      var created = await t_class_member().create(new_member, { transaction });
+      if (!created) throw created;
     }
-  } else {
-    res.status(411).json({ error: null, message: 'Email belum terdaftar sebagai pengguna' });
+
+    await transaction.commit();
+    return res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
+  } catch (e) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: e.message });
   }
 };
 

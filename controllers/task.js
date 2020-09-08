@@ -316,12 +316,9 @@ exports.upload = async function (req, res) {
   if (!fs.existsSync(upload_dir)) {
     fs.mkdirSync(upload_dir);
   }
-  console.log('aaaaaaaaa');
   let filename = upload_dir + files.name;
   try {
-    console.log('bbbbbb');
     var write = await MoveFile(files.path, filename);
-    console.log('ccccccccc');
     let new_file = {
       t_class_task_id: task_id,
       filename: files.name,
@@ -331,20 +328,15 @@ exports.upload = async function (req, res) {
       sequence: 0, //todo ambil dari terakhir
       status: ACTIVE
     };
-    console.log('ddddddddddd');
 
     var task_file = await t_class_task_file().findOne({
       where: { t_class_task_id: task_id, filename: files.name }
     });
-    console.log('eeeeeee');
     if (!task_file) {
       // belum ada, insert baru
-      console.log('ffffff');
       try {
         task_file = await t_class_task_file().create(new_file);
-        console.log('ggggggg');
       } catch (err) {
-        console.log('llllllllllll');
         res.status(411).json({ error: 11, message: err.message });
       }
     } else {
@@ -352,20 +344,16 @@ exports.upload = async function (req, res) {
       new_file.updated_date = moment().format();
       new_file.updated_by = req.user.email;
       try {
-        console.log('hhhhhh');
         var update = await t_class_task_file().update(new_file, {
           where: { id: task_file.id }
         });
-        console.log('iiiiiii');
       } catch (err) {
-        console.log('jjjjj');
         res.status(411).json({ error: 11, message: err.message });
       }
       task_file = new_file;
     }
     res.json({ data: task_file });
   } catch (err) {
-    console.log('kkkkkkk');
     res.status(411).json({ error: 11, message: err.message });
   }
 };

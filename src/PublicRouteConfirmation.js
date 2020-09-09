@@ -25,5 +25,4 @@ const PublicRouteConfirmation = ({ component, exact = false, path, authenticated
     />
   );
 };
-
 export default PublicRouteConfirmation;

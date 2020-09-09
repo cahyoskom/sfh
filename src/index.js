@@ -28,6 +28,7 @@ import PrivateRoute from './PrivateRoute';
 // import PrivateRouteAdmin from './PrivateRouteAdmin';
 
 import PublicRoute from './PublicRoute';
+import PublicRouteConfirmation from './PublicRouteConfirmation';
 
 // import Admin from './components/usermanagement/admin';
 // import Group from './components/usermanagement/group';
@@ -37,6 +38,7 @@ import PublicRoute from './PublicRoute';
 // import Class from './components/usermanagement/class';
 // import Student from './components/usermanagement/student';
 // import Role from './components/usermanagement/role';
+import Confirmation from './components/pages/confirmation';
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -82,6 +84,8 @@ class Root extends React.Component {
 
                   {/* Custom Routes */}
                   <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
+
+                  <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
 
                   <PublicRoute
                     path={`${process.env.PUBLIC_URL}/register`}

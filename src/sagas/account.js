@@ -297,7 +297,6 @@ export function* confirmLogin() {
     }
 
     let selectedRole = JSON.parse(localStorage.getItem('role'));
-    // console.log('sltd',selectedRole)
     if (selectedRole[0].group_id === 1) {
       window.location.href = process.env.PUBLIC_URL + '/usermanagement';
     }

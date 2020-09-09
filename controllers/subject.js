@@ -1,5 +1,6 @@
 const t_class_subject = require('../models/t_class_subject');
 const moment = require('moment');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_subject = t_class_subject();
@@ -31,4 +32,13 @@ exports.create = async function (req, res) {
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
+};
+
+exports.findByClass = async function (req, res) {
+  const model_subject = t_class_subject();
+  var data = await model_subject.findAll({
+    where: { t_class_id: req.params.id, status: ACTIVE }
+  });
+
+  res.json({ data: data });
 };

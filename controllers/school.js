@@ -1,10 +1,18 @@
-const { sha256 } = require('../common/sha');
-const query = require('../models/query');
 const { Op } = require('sequelize');
 const moment = require('moment');
+const crypto = require('crypto');
+const randomstring = require('randomstring');
+const isBase64 = require('is-base64');
+const { env } = process;
+
+const query = require('../models/query');
+const m_param = require('../models/m_param');
+const m_notification_type = require('../models/m_notification_type');
+const sec_group = require('../models/sec_group');
+const sec_user = require('../models/sec_user');
+const sec_confirmation = require('../models/sec_confirmation');
 const t_school = require('../models/t_school');
 const t_school_member = require('../models/t_school_member');
-const sec_group = require('../models/sec_group');
 const t_class = require('../models/t_class');
 const t_class_member = require('../models/t_class_member');
 const t_class_subject = require('../models/t_class_subject');
@@ -12,23 +20,30 @@ const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_task_collection_file = require('../models/t_class_task_collection_file');
-const sec_user = require('../models/sec_user');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
-const randomstring = require('randomstring');
-const crypto = require('crypto');
-const isBase64 = require('is-base64');
-const { sequelize } = require('../database');
-const sec_confirmation = require('../models/sec_confirmation');
-const m_param = require('../models/m_param');
+const t_notification_user = require('../models/t_notification_user');
+const t_notification = require('../models/t_notification');
+
 const Confirmation = require('./confirmation');
-const { env } = process;
+const { sha256 } = require('../common/sha');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { OWNER, MAINTENER } = require('../enums/group.enums');
+const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
+const { sequelize, beginTransaction } = require('../database');
+const {
+  SCHOOL_CHANGE_INFO,
+  SCHOOL_REQUEST_CLASS,
+  SCHOOL_ACCEPT_CLASS,
+  SCHOOL_REJECT_CLASS,
+  SCHOOL_REMOVE_CLASS,
+  SCHOOL_REMOVE_USER
+} = require('../enums/notification-type.enums');
 const pattern = /^[0-9]*$/;
 
 async function checkAuthority(userId) {
   const model_school_member = t_school_member();
   const model_sec_group = sec_group();
   var member = await model_school_member.findAll({
-    where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [1, 2] } }
+    where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [OWNER, MAINTENER] } }
     // include: [
     //   {
     //     model: model_sec_group,
@@ -44,6 +59,37 @@ async function checkAuthority(userId) {
     return true;
   }
   return false;
+}
+
+async function isNotifNeeded(type, receiver_id, out_id, out_name) {
+  var NOTIFICATION_TYPE = await m_notification_type().findOne({
+    attributes: ['id'],
+    where: { type: type }
+  });
+
+  var user_notif = await t_notification_user().findOne({
+    where: {
+      m_notification_type_id: NOTIFICATION_TYPE.id,
+      sec_user_id: receiver_id,
+      out_id: out_id,
+      out_name: out_name
+    }
+  });
+  if (!user_notif) {
+    user_notif = await t_notification_user().findOne({
+      where: {
+        m_notification_type_id: NOTIFICATION_TYPE.id,
+        sec_user_id: receiver_id,
+        out_id: null,
+        out_name: null
+      }
+    });
+  }
+  if (user_notif.is_receive_web == 1) {
+    return user_notif;
+  } else {
+    return null;
+  }
 }
 
 exports.findAll = async function (req, res) {
@@ -117,7 +163,7 @@ exports.create = async function (req, res) {
   var new_member = {
     t_school_id: datum.id,
     sec_user_id: req.user.id,
-    sec_group_id: 1, // OWNER
+    sec_group_id: OWNER,
     status: ACTIVE,
     created_date: moment().format()
   };
@@ -135,7 +181,7 @@ exports.join = async function (req, res) {
     t_school_id: req.body.t_school_id,
     sec_user_id: req.body.sec_user_id,
     sec_group_id: req.body.sec_group_id,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.body.name
   };
@@ -181,12 +227,56 @@ exports.update = async function (req, res) {
     updated_by: req.user.email
   };
 
+  const transaction = await beginTransaction();
   try {
     var datum = await model_school.update(update_obj, {
-      where: { id: req.body.id }
+      where: { id: req.body.id },
+      transaction
     });
+
+    var all_class = await t_class().findAll({
+      attributes: ['id'],
+      where: { t_school_id: req.body.id, status: ACTIVE, link_status: DONE }
+    });
+    var all_members = [];
+    for (each_class of all_class) {
+      var class_members = await t_class_member().findAll({
+        attributes: ['sec_user_id'],
+        where: { t_class_id: each_class.id, status: ACTIVE, link_status: DONE }
+      });
+      const result = all_members.concat(class_members).filter(function (o) {
+        return this.has(o.sec_user_id) ? false : this.add(o.sec_user_id);
+      }, new Set());
+      all_members = result;
+    }
+
+    for (member of all_members) {
+      var notif_user = await isNotifNeeded(
+        SCHOOL_CHANGE_INFO,
+        member.sec_user_id,
+        req.body.id,
+        't_school'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: notif_user.sec_user_id,
+          out_id: req.body.id,
+          out_name: 't_school',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: ACTIVE,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+    }
+    await transaction.commit();
     res.json({ message: 'Data has been updated.' });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
@@ -350,11 +440,14 @@ exports.connectClass = async function (req, res) {
 
   var update_obj = {
     t_school_id: req.body.t_school_id,
-    link_status: 2 //request by school
+    link_status: SELFREQUEST //request by school
   };
+
+  const transaction = await beginTransaction();
   try {
     var datum = await model_class.update(update_obj, {
-      where: { id: targetClass.id }
+      where: { id: targetClass.id },
+      transaction
     });
 
     const model_class_member = t_class_member();
@@ -364,23 +457,45 @@ exports.connectClass = async function (req, res) {
 
     var owner_id = await model_class_member.findOne({
       attributes: ['sec_user_id'],
-      where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: 1 }
+      where: { t_class_id: targetClass.id, status: ACTIVE, sec_group_id: OWNER }
     });
-    console.log(owner_id);
+
     var owner_name = await sec_user().findOne({
       attributes: ['name'],
       where: { id: owner_id.sec_user_id }
     });
-    console.log(owner_name);
 
+    var notif_user = await isNotifNeeded(
+      SCHOOL_REQUEST_CLASS,
+      owner_id.sec_user_id,
+      targetClass.id,
+      't_class'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: targetClass.id,
+        out_name: 't_class',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: ACTIVE,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, { transaction });
+    }
+    await transaction.commit();
     res.json({
       id: targetClass.id,
       name: targetClass.name,
-      link_status: 2,
+      link_status: SELFREQUEST,
       ownerName: owner_name.name,
       countMembers: members.count
     });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({
       error: null,
       message: err.message
@@ -394,7 +509,7 @@ exports.createClass = async function (req, res) {
     t_school_id: req.body.t_school_id,
     name: req.body.name,
     description: req.body.description,
-    link_status: 0, //CONNECTED
+    link_status: DONE, //DONE when connected
     status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.email
@@ -416,7 +531,7 @@ exports.createClass = async function (req, res) {
   var new_member = {
     t_class_id: datum.id,
     sec_user_id: req.user.id,
-    sec_group_id: 1, // OWNER
+    sec_group_id: OWNER,
     status: ACTIVE,
     created_date: moment().format()
   };
@@ -484,27 +599,60 @@ exports.getAllClass = async function (req, res) {
 exports.approval = async function (req, res) {
   const model_class = t_class();
   var update_obj;
-  if (req.body.status) {
+  if (req.body.status == ACTIVE) {
     update_obj = {
-      link_status: 0, //ACCEPT
+      link_status: DONE, //DONE while accepted
       updated_date: moment().format(),
       updated_by: req.user.email
     };
   } else {
     update_obj = {
       t_school_id: null,
-      link_status: 0, //DECLINE
+      link_status: DONE, //DONE even while decline or remove
       updated_date: moment().format(),
       updated_by: req.user.email
     };
   }
-
+  const transaction = await beginTransaction();
   try {
     var update = await model_class.update(update_obj, {
-      where: { id: req.params.classId }
+      where: { id: req.params.classId },
+      transaction
     });
+
+    var class_owner = await t_class_member().findOne({
+      where: { t_class_id: req.params.classId, sec_group_id: OWNER, status: ACTIVE }
+    });
+
+    var notif_user = await isNotifNeeded(
+      req.body.status == 1
+        ? SCHOOL_ACCEPT_CLASS
+        : req.body.status == 0
+          ? SCHOOL_REJECT_CLASS
+          : SCHOOL_REMOVE_CLASS,
+      class_owner.sec_user_id,
+      req.params.classId,
+      't_class'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: req.params.classId,
+        out_name: 't_class',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: ACTIVE,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, transaction);
+    }
+    await transaction.commit();
     res.json({ message: 'Link status berhasil diubah' });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: null, message: err.message });
   }
 };
@@ -526,7 +674,7 @@ exports.getMembers = async function (req, res) {
     var checkOwner = await t_school_member().findOne({
       where: { sec_user_id: req.user.id, status: ACTIVE }
     });
-    var isOwner = checkOwner.sec_group_id == 1 ? true : false;
+    var isOwner = checkOwner.sec_group_id == OWNER ? true : false;
     res.json({ listMembers, isOwner });
   } catch (err) {
     res.status(411).json({ error: null, message: err.message });
@@ -538,19 +686,19 @@ exports.changeOwner = async function (req, res) {
   const school_id = req.body.school_id;
   const old_owner_id = req.user.id;
   var new_owner = {
-    sec_group_id: 1,
+    sec_group_id: OWNER,
     updated_date: moment().format(),
     updated_by: req.user.email
   };
   var old_owner = {
-    sec_group_id: 2,
+    sec_group_id: MAINTENER,
     updated_date: moment().format(),
     updated_by: req.user.email
   };
   var user = await t_school_member().findOne({
     where: { sec_user_id: old_owner_id, t_school_id: school_id, status: ACTIVE }
   });
-  if (user.sec_group_id !== 1) {
+  if (user.sec_group_id !== OWNER) {
     res
       .status(403)
       .json({ message: 'Hanya pemilik sekolah yang dapat mengubah kepemilikan sekolah' });
@@ -580,7 +728,7 @@ exports.removeMember = async function (req, res) {
   var target_user = await t_school_member().findOne({
     where: { id: target_id }
   });
-  if (target_user.sec_group_id === 1) {
+  if (target_user.sec_group_id === OWNER) {
     res.status(403).json({ error: null, message: 'Pemilik sekolah tidak dapat dikeluarkan' });
     return;
   }
@@ -590,9 +738,11 @@ exports.removeMember = async function (req, res) {
     updated_date: moment().format(),
     updated_by: req.user.email
   };
+  const transaction = await beginTransaction();
   try {
     var update = await t_school_member().update(obj, {
-      where: { id: target_id }
+      where: { id: target_id },
+      transaction
     });
 
     var change_authority;
@@ -601,94 +751,121 @@ exports.removeMember = async function (req, res) {
     } else {
       change_authority = false;
     }
+
+    var notif_user = await isNotifNeeded(
+      SCHOOL_REMOVE_USER,
+      target_user.sec_user_id,
+      target_user.t_school_id,
+      't_school'
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: target_user.t_school_id,
+        out_name: 't_school',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: ACTIVE,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, { transaction });
+    }
+    await transaction.commit();
     res.json({ message: 'Anggota berhasil dikeluarkan', changeAuthority: change_authority });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: null, message: err.message });
   }
 };
 
-async function checkResendInvitation(invitation) {
+async function checkResendInvitation(transaction, invitation) {
   const timeNow = moment();
   const dateCr = moment(invitation.created_date);
   const parameter = m_param();
   const DURATION = await parameter.findOne({
     attributes: ['value'],
-    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' }
+    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' },
+    transaction
   });
   dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
     invitation.status = DEACTIVE;
-    await invitation.save();
+    await invitation.save({ transaction });
     return true;
   }
   return false;
 }
 
 exports.inviteMember = async function (req, res) {
+  const transaction = await beginTransaction();
   const school_id = req.body.school_id;
   const sender_name = req.user.name;
   const sender_email = req.user.email;
-  var check_user = await sec_user().findOne({
-    where: { email: req.body.email, status: ACTIVE }
-  });
-  if (check_user) {
-    var check_member = await t_school_member().findOne({
-      where: { sec_user_id: check_user.id, t_school_id: req.body.school_id, status: ACTIVE }
+
+  try {
+    var check_user = await sec_user().findOne({
+      where: { email: req.body.email, status: ACTIVE },
+      transaction
     });
-    if (check_member) {
-      res
-        .status(411)
-        .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota sekolah' });
+    if (!check_user) throw new Error('Email belum terdaftar sebagai pengguna');
+
+    var check_member = await t_school_member().findOne({
+      where: { sec_user_id: check_user.id, t_school_id: req.body.school_id, status: ACTIVE },
+      transaction
+    });
+    if (!check_member) throw new Error('Anggota sudah terdaftar sebagai anggota sekolah');
+
+    var description,
+      invitation = await sec_confirmation().findOne({
+        where: { sec_user_id: check_user.id, t_school_id: school_id, status: ACTIVE },
+        transaction
+      });
+    if (!invitation) {
+      // send email flag
+      description = 'SCHOOL_MEMBER_INVITATION';
     } else {
-      var invitation = await sec_confirmation().findOne({
-        where: { sec_user_id: check_user.id, t_school_id: school_id, status: ACTIVE }
-      });
-      var description;
-      if (invitation) {
-        var resend = await checkResendInvitation(invitation);
-        if (resend) {
-          // resend email
-          description = 'SCHOOL_MEMBER_REINVITATION';
-        } else {
-          res.status(411).json({ error: null, message: 'Email berisi undangan sudah dikirim' });
-          return;
-        }
-      } else {
-        description = 'SCHOOL_MEMBER_INVITATION';
-      }
-      var school = await t_school().findOne({
-        where: { id: school_id, status: ACTIVE }
-      });
-      //send invitation
-      const code = crypto.randomBytes(16).toString('hex');
-      const subject = `Undangan bergabung dengan ${school.name}`;
-      const to_addr = check_user.email;
-      const url = env.APP_BASEURL || req.headers.host;
-      const content =
-        'Halo,\n\n' +
-        `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${school.name}. Klik link untuk menerima undangan: \n` +
-        `${url}/invitation?q=school&code=${code}`;
-      const datum = {
-        description: description,
-        sec_user_id: check_user.id,
-        t_school_id: school_id,
-        code: code
-      };
-      try {
-        const sendEmail = await Confirmation.sendEmail({
-          subject,
-          to_addr,
-          content,
-          datum
-        });
-        if (!sendEmail) throw sendEmail;
-        res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
-      } catch (err) {
-        res.status(411).json({ error: null, message: err.message });
-      }
+      var resend = await checkResendInvitation(transaction, invitation);
+      if (!resend) throw new Error('Email berisi undangan sudah dikirim');
+
+      // resend email flag
+      description = 'SCHOOL_MEMBER_REINVITATION';
     }
-  } else {
-    res.status(411).json({ error: null, message: 'Email belum terdaftar sebagai pengguna' });
+
+    var school = await t_school().findOne({
+      where: { id: school_id, status: ACTIVE },
+      transaction
+    });
+    //send invitation
+    const code = crypto.randomBytes(16).toString('hex');
+    const subject = `Undangan bergabung dengan ${school.name}`;
+    const to_addr = check_user.email;
+    const url = env.APP_BASEURL || req.headers.host;
+    const content =
+      'Halo,\n\n' +
+      `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${school.name}. Klik link untuk menerima undangan: \n` +
+      `${url}/invitation?q=school&code=${code}`;
+    const datum = {
+      description: description,
+      sec_user_id: check_user.id,
+      t_school_id: school_id,
+      code: code
+    };
+    const sendEmail = await Confirmation.sendEmail(transaction, {
+      subject,
+      to_addr,
+      content,
+      datum
+    });
+    if (!sendEmail) throw sendEmail;
+
+    await transaction.commit();
+    return res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
+  } catch (e) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: e.message });
   }
 };
 
@@ -731,7 +908,7 @@ exports.acceptInvitation = async function (req, res) {
       });
       if (ever_added_member) {
         ever_added_member.status = ACTIVE;
-        ever_added_member.sec_group_id = 2;
+        ever_added_member.sec_group_id = MAINTENER;
         ever_added_member.updated_date = moment().format();
         var re_add = await ever_added_member.save();
       } else {
@@ -739,7 +916,7 @@ exports.acceptInvitation = async function (req, res) {
           t_school_id: invitation.t_school_id,
           sec_user_id: invitation.sec_user_id,
           status: ACTIVE,
-          sec_group_id: 2, //MAINTAINER
+          sec_group_id: MAINTAINER,
           created_date: moment().format(),
           created_by: 'SYSTEM'
         };

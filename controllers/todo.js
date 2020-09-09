@@ -62,11 +62,17 @@ exports.create = async (req, res) => {
   }
   console.log(req.body)
   console.log(new_post)
+  var datum = await model_todo.create(new_post);
+  todo_id = datum.id;
+
+  // console.log(req.body)
+  // console.log(new_post)
 
   var new_todo = {
     t_class_todo_id: todo_id,
     m_answer_type_id: req.body.m_answer_type_id,
     type: req.body.type,
+    content: req.body.content,
     valid_answer: req.body.valid_answer,
     content: req.body.content,
     is_recurrent: req.body.is_recurrent,

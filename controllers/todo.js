@@ -35,11 +35,12 @@ exports.delete = async function (req, res) {
 exports.create = async (req, res) => {
   const model_todo = t_class_todo();
   const model_detail = t_class_todo_detail();
+
   var todo_id;
   var existed_todo = await model_todo.findOne({
     where: { name: req.body.name, t_class_id: req.body.t_class_id, status: ACTIVE }
   });
-  if (existed_subject) {
+  if (existed_todo) {
     //subject already existed
     todo_id = existed_todo.id;
   } else {
@@ -55,16 +56,17 @@ exports.create = async (req, res) => {
       created_date: moment().format(),
       created_by: req.user.name
     };
-    var datum = await model_todo.create(new_post);
-    todo_id = datum.id;
+    var data = await model_todo.create(new_post);
+    todo_id = data.id;
+
   }
-  // console.log(req.body)
-  // console.log(new_post)
+  console.log(req.body)
+  console.log(new_post)
+
   var new_todo = {
     t_class_todo_id: todo_id,
     m_answer_type_id: req.body.m_answer_type_id,
     type: req.body.type,
-    content: req.body.content,
     valid_answer: req.body.valid_answer,
     content: req.body.content,
     is_recurrent: req.body.is_recurrent,
@@ -80,6 +82,62 @@ exports.create = async (req, res) => {
 
   } catch (err) {
     res.status(411).json({ error: 0, message: err.message });
+  }
+};
+
+exports.update = async function (req, res) {
+  const model_todo = t_class_todo();
+  const model_detail = t_class_todo_detail();
+  var todo_id;
+  var existed_todo = await model_todo.findOne({
+    where: { name: req.body.name, t_class_id: req.body.t_class_id, status: ACTIVE }
+  });
+  if (existed_todo) {
+    //subject already existed
+    todo_id = existed_todo.id;
+  } else {
+    var new_post = {
+      name: req.body.name,
+      t_class_id: req.body.t_class_id,
+      sec_user_id: req.body.sec_user_id,
+      m_recurrent_id: req.body.m_recurrent_id,
+      start_datetime: req.body.start_datetime,
+      end_datetime: req.body.end_datetime,
+      status: ACTIVE,
+      created_date: moment().format(),
+      created_by: req.user.name
+    };
+
+    try {
+      var datum = await model_todo.create(new_post);
+      todo_id = datum.id;
+    } catch (err) {
+      res.status(411).json({ error: 11, message: err.message });
+    }
+  }
+  var update_obj = {
+    t_class_todo_id: todo_id,
+    m_answer_type_id: req.body.m_answer_type_id,
+    type: req.body.type,
+    content: req.body.content,
+    valid_answer: req.body.valid_answer,
+    content: req.body.content,
+    is_recurrent: req.body.is_recurrent,
+    todo_date: req.body.todo_date,
+    status: 1,
+    created_date: moment().format(),
+    created_by: req.user.name
+  };
+
+  console.log(update_obj);
+  try {
+    var datum = await model_detail.update(update_obj, {
+      where: { id: req.body.id }
+
+    });
+    res.json({ message: 'Data has been updated.' });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
   }
 };
 

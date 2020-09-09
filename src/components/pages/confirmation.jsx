@@ -18,18 +18,12 @@ class Confirmation extends Component {
     var search = window.location.search.substring(1);
     var code = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
 
-    console.log(code);
-    console.log(API_BASE_URL_DEV + API_PATH.activating + '/' + code.code);
-
     axios.get(API_BASE_URL_DEV + API_PATH.activating + '/' + code.code).then(res => {
-      console.log('test');
-      if (res.status == 200) {
+      if (res.status === 200) {
         this.setState({ check: true });
       } else {
         this.setState({ check: false });
       }
-      // const posts = res.data.data.children.map(obj => obj.data);
-      // this.setState({ posts });
     });
   }
 
@@ -39,8 +33,8 @@ class Confirmation extends Component {
       '{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}'
     );
 
-    if (queryStringObj.q == 'activating') {
-      if (this.state.check == true) {
+    if (queryStringObj.q === 'activating') {
+      if (this.state.check === true) {
         return (
           <div>
             <section className='confirmation-page'>
@@ -103,7 +97,7 @@ class Confirmation extends Component {
           </div>
         );
       }
-    } else if (queryStringObj.q == 'update_password') {
+    } else if (queryStringObj.q === 'update_password') {
       return (
         <Link to={`${process.env.PUBLIC_URL}/update_password/${queryStringObj.code}`}>
           <Button variant='contained' color='primary'>

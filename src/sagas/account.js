@@ -1,18 +1,14 @@
-import { all, takeEvery, put, fork, select, call } from 'redux-saga/effects';
+import { all, takeEvery, put, select, call } from 'redux-saga/effects';
 import {
   SET_LOGIN,
   SET_LOGIN_SUCCESS,
   SET_LOGIN_FAILED,
   SET_CONFIRM_LOGIN,
-  // SET_CONFIRM_LOGIN_SUCCESS,
-  // SET_ROLES_SUCCESS,
   SET_TOKEN_SUCCESS,
   SET_LOGOUT,
   SET_LOADER,
   SET_SPINNER,
-  // SET_MODAL,
   SET_NEW_PASSWORD,
-  SET_NEW_PASSWORD_SUCCESS,
   SET_UPDATE_PASSWORD,
   SET_GOOGLE_LOGIN,
   RESET_STATE_LOGIN,
@@ -30,9 +26,7 @@ import {
 import { fail, success } from '../components/common/toast-message';
 import * as services from '../services';
 import { API_BASE_URL_DEV, API_PATH } from '../constants/api';
-import { Header, HeaderAuth } from '../services/header';
-import group from '../components/usermanagement/group';
-//import updatePassword from "../components/pages/update-password";
+import { Header } from '../services/header';
 
 const getAccountState = state => state.account;
 export function* googleLogin(action) {
@@ -48,7 +42,7 @@ export function* googleLogin(action) {
         name: data.user.name || '',
         email: data.user.email || ''
       };
-      if (data.token && data.token != '') {
+      if (data.token && data.token !== '') {
         localStorage.setItem('profile', JSON.stringify(profile));
         localStorage.setItem('token', data.token || null);
         localStorage.setItem('name', JSON.stringify(data.user.name));
@@ -93,7 +87,6 @@ export function* login() {
       email: loginState.email,
       password: loginState.password
     };
-    console.log(param);
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.login, param, Header());
     if (_response.status === 200) {
       let data = _response.data;
@@ -102,7 +95,7 @@ export function* login() {
         username: data.user.name || '',
         email: data.user.email || ''
       };
-      if (data.token && data.token != '') {
+      if (data.token && data.token !== '') {
         localStorage.setItem('profile', JSON.stringify(profile));
         localStorage.setItem('token', data.token || null);
         localStorage.setItem('name', JSON.stringify(data.user.name));
@@ -135,7 +128,6 @@ export function* login() {
         value: _response.data.resendActivation
       });
     } else {
-      console.log(_response.data.message);
       yield put({
         type: SET_LOGIN_FAILED,
         value: _response.data.message
@@ -146,10 +138,6 @@ export function* login() {
       value: false
     });
   } catch (error) {
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: false
-    // });
     yield put({
       type: SET_LOGIN_FAILED,
       value: error
@@ -158,12 +146,10 @@ export function* login() {
       type: SET_SPINNER,
       value: false
     });
-    // fail(error);
   }
 }
 
 export function* newPassword() {
-  console.log('new Password clicked');
   try {
     const accountState = yield select(getAccountState);
     const newPasswordState = accountState.newPassword;
@@ -189,9 +175,8 @@ export function* newPassword() {
 
     const _response = yield call(services.POST, API_BASE_URL_DEV + API_PATH.newPassword, param, Header());
 
-    if (_response.status == 200) {
+    if (_response.status === 200) {
       let data = _response.data;
-      console.log(_response);
       let message = data.message;
 
       yield put({
@@ -239,12 +224,11 @@ export function* newPassword() {
 }
 
 export function* updatePassword() {
-  console.log('update Password');
   try {
     const accountState = yield select(getAccountState);
     const updatePasswordState = accountState.updatePassword;
 
-    if (updatePasswordState.password != updatePasswordState.repeatPassword) {
+    if (updatePasswordState.password !== updatePasswordState.repeatPassword) {
       fail('password tidak sama');
       return;
     }
@@ -264,9 +248,8 @@ export function* updatePassword() {
       Header()
     );
 
-    if (_response.status == 200) {
+    if (_response.status === 200) {
       let message = _response.data.message;
-      console.log(_response);
       yield put({
         type: ON_CHANGE_STATE_UPDATE_PASSWORD,
         value: true,
@@ -281,21 +264,18 @@ export function* updatePassword() {
 }
 
 export function* confirmLogin() {
+  //! What the hell is this?
   try {
     const accountState = yield select(getAccountState);
     yield put({
       type: SET_LOADER,
       value: true
     });
-
-    // let roles = accountState.roles[0];
     let roles = JSON.parse(localStorage.getItem('roles'));
     let group_id = accountState.role.group_id;
     let result = [];
-    // console.log('cap', accountState.login)
-    // console.log('ampun2', group_id)
     for (var i = 0; i < roles.length; i++) {
-      if (roles[i].group_id == group_id) {
+      if (roles[i].group_id === group_id) {
         let role = {};
         role.group_id = roles[i].group_id;
         role.group_name = roles[i].group_name;
@@ -318,27 +298,27 @@ export function* confirmLogin() {
 
     let selectedRole = JSON.parse(localStorage.getItem('role'));
     // console.log('sltd',selectedRole)
-    if (selectedRole[0].group_id == 1) {
+    if (selectedRole[0].group_id === 1) {
       window.location.href = process.env.PUBLIC_URL + '/usermanagement';
     }
 
-    if (selectedRole[0].group_id == 2) {
+    if (selectedRole[0].group_id === 2) {
       window.location.href = process.env.PUBLIC_URL + '/taskkepsek';
     }
 
-    if (selectedRole[0].group_id == 3) {
+    if (selectedRole[0].group_id === 3) {
       window.location.href = process.env.PUBLIC_URL + '/taskortu';
     }
 
-    if (selectedRole[0].group_id == 4) {
+    if (selectedRole[0].group_id === 4) {
       window.location.href = process.env.PUBLIC_URL + '/taskguru';
     }
 
-    if (selectedRole[0].group_id == 5) {
+    if (selectedRole[0].group_id === 5) {
       window.location.href = process.env.PUBLIC_URL + '/taskguardian';
     }
 
-    if (selectedRole[0].group_id == 6) {
+    if (selectedRole[0].group_id === 6) {
       window.location.href = process.env.PUBLIC_URL + '/tasksiswa';
     }
 
@@ -357,26 +337,9 @@ export function* confirmLogin() {
 
 export function logout() {
   try {
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: true,
-    // });
-    // const _response = yield call(
-    //   services.GET,
-    //   API_BASE_URL_DEV + API_PATH.logout,
-    //   HeaderAuth()
-    // );
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: false,
-    // });
     localStorage.clear();
     window.location.href = process.env.PUBLIC_URL + '/login';
   } catch (error) {
-    // yield put({
-    //   type: SET_LOADER,
-    //   value: false
-    // });
     fail(error);
   }
 }

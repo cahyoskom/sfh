@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Container from '@material-ui/core/Container';
-import { Grid, TextField, Button, IconButton, Card, CardContent, Collapse } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 class Home extends Component {
   constructor(props) {
@@ -22,7 +22,6 @@ class Home extends Component {
   }
 }
 
-// export default SignIn
 const mapStateToProps = state => ({
   landingState: state.landingpage
 });

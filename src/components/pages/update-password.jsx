@@ -51,95 +51,6 @@ class UpdatePassword extends Component {
     return (
       <div>
         <section className='login-page section-b-space'>
-          <div className='container'>
-            {/* <div className='row row d-flex justify-content-center'>
-              <div className='col-lg-4'>
-                <div className={'text-center'}>
-                  <h5>Perbarui kata sandi</h5>
-                </div>
-
-                <div className='theme-card'>
-                  <form className='theme-form'>
-                    <div className='form-group'>
-                      <label htmlFor='email'>Email</label>
-                      <input
-                        type='text'
-                        className='form-control'
-                        id='email'
-                        placeholder='Email'
-                        onChange={(e) =>
-                          onChangeStateUpdatePassword(
-                            e.target.id,
-                            e.target.value
-                          )
-                        }
-                        autoComplete={'email'}
-                      />
-                      {this.validator.message(
-                        'email',
-                        accountState.updatePassword.email,
-                        'required'
-                      )}
-                    </div>
-                    <div className='form-group'>
-                      <label htmlFor='review'>Masukkan kata sandi baru</label>
-                      <input
-                        type='password'
-                        className='form-control'
-                        id='password'
-                        placeholder='Enter your password'
-                        onChange={(e) =>
-                          onChangeStateUpdatePassword(
-                            e.target.id,
-                            e.target.value
-                          )
-                        }
-                        autoComplete={'password'}
-                      />
-                      {this.validator.message(
-                        'password',
-                        accountState.updatePassword.password,
-                        'required'
-                      )}
-                    </div>
-                    <div className='form-group'>
-                      <label htmlFor='review'>Ulangi kata sandi baru</label>
-                      <input
-                        type='password'
-                        className='form-control'
-                        id='repeatPassword'
-                        placeholder='Enter your password'
-                        onChange={(e) =>
-                          onChangeStateUpdatePassword(
-                            e.target.id,
-                            e.target.value
-                          )
-                        }
-                        autoComplete={'password'}
-                      />
-                      {this.validator.message(
-                        'password',
-                        accountState.updatePassword.password,
-                        'required'
-                      )}
-                    </div>
-
-                    
-                    <div className={'text-center'}>
-                      <a
-                        onClick={() => {
-                          this.onClickUpdatePassword();
-                        }}
-                        className='btn btn-solid'>
-                        Ganti kata sandi
-                      </a>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div> */}
-          </div>
-
           <Container>
             <Grid container direction='column' justify='center' alignItems='center'>
               <Grid item xs={12} lg={12}>
@@ -184,19 +95,6 @@ class UpdatePassword extends Component {
                               <h4>Ulangi kata sandi yang baru</h4>
                             </Grid>
                             <Grid item xs={12} lg={7}>
-                              {/* <input
-                type="password"
-                className="form-control"
-                id="repeatPassword"
-                placeholder="Masukkan kata sandi"
-                onChange={(e) =>
-                  onChangeStateUpdatePassword(
-                    e.target.id,
-                    e.target.value
-                  )
-                }
-                autoComplete={"password"}
-              /> */}
                               <OutlinedInput
                                 id='repeatPassword'
                                 placeholder='Masukkan kata sandi'
@@ -278,7 +176,6 @@ class UpdatePassword extends Component {
   }
 }
 
-// export default UpdatePassword
 const mapStateToProps = state => ({
   accountState: state.account
 });

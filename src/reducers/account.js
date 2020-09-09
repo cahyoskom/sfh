@@ -6,7 +6,6 @@ import {
   SET_REGISTER_SUCCESS,
   SET_REGISTER_FAILED,
   SET_CLOSE_REGIST_ALERT,
-  // SET_FORGOT_SUCCESS,
   SET_CONFIRM_LOGIN_SUCCESS,
   SET_LOADER,
   ON_CHANGE_STATE_LOGIN,
@@ -16,8 +15,6 @@ import {
   SET_TOKEN_SUCCESS,
   SET_MODAL,
   SET_MODAL_FORM_LOGIN,
-  // SET_NEW_PASSWORD,
-  // SET_NEW_PASSWORD_SUCCESS,
   ON_CHANGE_STATE_NEW_PASSWORD,
   ON_CHANGE_STATE_UPDATE_PASSWORD,
   SET_UPDATE_PASSWORD_CODE,
@@ -27,8 +24,6 @@ import {
   EMAIL_ACTIVATION_SUCCESS,
   SET_RESEND_ACTIVATION_REGIST
 } from '../constants/ActionTypes';
-import Config from '../constants/config';
-import { ErrorMessage } from 'formik';
 
 const initialState = {
   login: {
@@ -66,30 +61,6 @@ const initialState = {
     code: '',
     success: false
   },
-  // roles:[],
-  // roles: localStorage.getItem("roles")
-  //   ? JSON.parse(localStorage.getItem("roles"))
-  //   : undefined,
-  // dataSourceRoleAccount:[
-  //   // {label:"A",value:"A"},
-  //   // {label:"B",value:"B"}
-  // ],
-  // selectedRole: localStorage.getItem("role")
-  //   ? JSON.parse(localStorage.getItem("role"))
-  //   : undefined,
-  // role:{
-  //   group_id: "",
-  //   group_name: "",
-  //   class_id: 0,
-  //   class_name: "",
-  //   subject_id: 0,
-  //   subject_name: "",
-  //   student_id: 0,
-  //   student_no: "",
-  //   student_name: "",
-  //   student_class_id: 0,
-  //   sex: ""
-  // },
   token: localStorage.getItem('token'),
   profile: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')) : undefined,
   loader: false,

@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import SimpleReactValidator from 'simple-react-validator';
 import { connect } from 'react-redux';
 import HeaderOne from '../common/headers/header-one';
-import FooterTwo from '../common/footers/footer-two';
+import FooterOne from '../common/footers/footer-one';
 import BlockUi from 'react-block-ui';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
@@ -20,6 +18,8 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import * as EmailValidator from 'email-validator';
 import { GoogleLogin } from 'react-google-login';
 import { Credential } from '../../constants/google-key';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Grid } from '@material-ui/core';
 import {
   postLogin,
   onChangeStateLogin,
@@ -33,11 +33,6 @@ import {
   setModalActivation,
   resendEmail
 } from '../../actions';
-import { Form, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Spinner, Input } from 'reactstrap';
-import Select from 'react-select';
-import { Grid } from '@material-ui/core';
-
-import Breadcrumb from '../common/breadcrumb';
 
 class SignIn extends Component {
   state = {
@@ -76,7 +71,7 @@ class SignIn extends Component {
   }
 
   onEnterKeyPress(e) {
-    if (e.charCode == 13) {
+    if (e.charCode === 13) {
       this.onClickLogin();
     }
   }
@@ -113,9 +108,6 @@ class SignIn extends Component {
     const {
       accountState,
       onChangeStateLogin,
-      setStateModalFormLogin,
-      buttonLabel,
-      className,
       onChangeStateNewPassword,
       newPassword,
       closeAlert,
@@ -235,6 +227,7 @@ class SignIn extends Component {
                             />
                           </Grid>
                           <Grid item>
+                            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                             <a href='#' onClick={this.openModalNewPassword}>
                               Lupa kata sandi?
                             </a>
@@ -400,19 +393,18 @@ class SignIn extends Component {
               )}
             </Modal>
           </section>
-          <FooterTwo />
+          <FooterOne />
         </div>
       </BlockUi>
     );
   }
 }
 
-// export default SignIn
 const mapStateToProps = state => ({
   accountState: state.account
 });
 
-export default connect(mapStateToProps, {
+const mapDispatchToProps = {
   postLogin,
   onChangeStateLogin,
   resetStateLoginMenu,
@@ -424,4 +416,6 @@ export default connect(mapStateToProps, {
   onChangeStateNewPassword,
   setModalActivation,
   resendEmail
-})(SignIn);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

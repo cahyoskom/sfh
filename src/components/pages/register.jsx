@@ -137,7 +137,7 @@ class Register extends Component {
 
     return (
       <div>
-        {/*Regsiter section*/}
+        {/* Regsiter section */}
         <section className='register-page section-b-space'>
           {!accountState.register.success && (
             <div className='container'>

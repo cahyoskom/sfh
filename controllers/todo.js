@@ -62,11 +62,7 @@ exports.create = async (req, res) => {
   }
   console.log(req.body)
   console.log(new_post)
-  var datum = await model_todo.create(new_post);
-  todo_id = datum.id;
 
-  // console.log(req.body)
-  // console.log(new_post)
 
   var new_todo = {
     t_class_todo_id: todo_id,

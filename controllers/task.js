@@ -11,6 +11,9 @@ const t_class_task_collection = require('../models/t_class_task_collection');
 const t_class_subject = require('../models/t_class_subject');
 const t_class_member = require('../models/t_class_member');
 const t_class_task_collection_file = require('../models/t_class_task_collection_file');
+const m_notification_type = require('../models/m_notification_type');
+const t_notification_user = require('../models/t_notification_user');
+const t_notification = require('../models/t_notification');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
 const { beginTransaction } = require('../database');
@@ -24,6 +27,41 @@ const {
   ARCHIVED
 } = require('../enums/task-status.enums');
 const { check } = require('prettier');
+const { TASK_NEW_ITEM, TASK_CHANGE_ITEM } = require('../enums/notification-type.enums');
+
+async function isNotifNeeded(type, receiver_id, out_id, out_name) {
+  var NOTIFICATION_TYPE = await m_notification_type().findOne({
+    attributes: ['id'],
+    where: { type: type }
+  });
+  console.log(NOTIFICATION_TYPE.id);
+
+  var user_notif = await t_notification_user().findOne({
+    where: {
+      m_notification_type_id: NOTIFICATION_TYPE.id,
+      sec_user_id: receiver_id,
+      out_id: out_id,
+      out_name: out_name
+    }
+  });
+  console.log(receiver_id);
+
+  if (!user_notif) {
+    user_notif = await t_notification_user().findOne({
+      where: {
+        m_notification_type_id: NOTIFICATION_TYPE.id,
+        sec_user_id: receiver_id,
+        out_id: null,
+        out_name: null
+      }
+    });
+  }
+  if (user_notif.is_receive_web == 1) {
+    return user_notif;
+  } else {
+    return null;
+  }
+}
 
 exports.findAll = async function (req, res) {
   var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
@@ -147,6 +185,7 @@ exports.create = async function (req, res) {
   const model_task = t_class_task();
   const model_subject = t_class_subject();
   var subject_id = null;
+  const transaction = await beginTransaction();
   if (req.body.subject) {
     var existed_subject = await model_subject.findOne({
       where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
@@ -163,7 +202,7 @@ exports.create = async function (req, res) {
         created_date: moment().format(),
         created_by: req.user.email
       };
-      var datum = await model_subject.create(new_obj);
+      var datum = await model_subject.create(new_obj, { transaction });
       subject_id = datum.id;
     }
   }
@@ -181,10 +220,40 @@ exports.create = async function (req, res) {
     created_by: req.user.email
   };
   try {
-    var task = await model_task.create(new_obj);
+    var task = await model_task.create(new_obj, { transaction });
 
+    var class_members = await t_class_member().findAll({
+      where: { t_class_id: req.body.class_id, status: ACTIVE }
+    });
+
+    for (member of class_members) {
+      var notif_user = await isNotifNeeded(
+        TASK_NEW_ITEM,
+        member.sec_user_id,
+        req.body.class_id,
+        't_class'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: notif_user.sec_user_id,
+          out_id: req.body.class_id,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: ACTIVE,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+    }
+
+    await transaction.commit();
     res.json({ data: task });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
@@ -234,6 +303,35 @@ exports.update = async function (req, res) {
       where: { id: req.body.task_id },
       transaction
     });
+
+    var class_members = await t_class_member().findAll({
+      where: { t_class_id: req.body.class_id, status: ACTIVE }
+    });
+
+    for (member of class_members) {
+      var notif_user = await isNotifNeeded(
+        TASK_CHANGE_ITEM,
+        member.sec_user_id,
+        req.body.class_id,
+        't_class'
+      );
+      if (notif_user) {
+        var new_obj = {
+          m_notification_type_id: notif_user.m_notification_type_id,
+          sender_user_id: req.user.id,
+          receiver_user_id: notif_user.sec_user_id,
+          out_id: req.body.class_id,
+          out_name: 't_class',
+          notification_datetime: moment().format(),
+          notification_year: moment().format('YYYY'),
+          notification_month: moment().format('M'),
+          status: ACTIVE,
+          created_date: moment().format()
+        };
+        var create_notif = await t_notification().create(new_obj, { transaction });
+      }
+    }
+
     await transaction.commit();
     res.json({ message: 'Tugas berhasil diubah.' });
   } catch (err) {

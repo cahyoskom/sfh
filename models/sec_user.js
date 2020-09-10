@@ -78,7 +78,7 @@ module.exports = sequelize => {
       field: 'is_phone_validated'
     },
     avatar: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT('long'),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,

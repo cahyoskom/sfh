@@ -1,66 +1,123 @@
 const moment = require('moment');
 const fs = require('fs');
+const { Op } = require('sequelize');
 const formidable = require('formidable');
+
+const { query } = require('../models/query');
+const m_param = require('../models/m_param');
 const t_class_task = require('../models/t_class_task');
 const t_class_task_file = require('../models/t_class_task_file');
 const t_class_task_collection = require('../models/t_class_task_collection');
-const m_param = require('../models/m_param');
-const { query } = require('../models/query');
+const t_class_subject = require('../models/t_class_subject');
+const t_class_member = require('../models/t_class_member');
+const t_class_task_collection_file = require('../models/t_class_task_collection_file');
 const { sha256 } = require('../common/sha');
 const MoveFile = require('../common/move');
-const TASK_STATUS = require('../enums/status.enums');
+const { beginTransaction } = require('../database');
+const {
+  DELETED,
+  DEACTIVE,
+  ACTIVE,
+  PUBLISHED,
+  FINISHED,
+  SUBMIITTED,
+  ARCHIVED
+} = require('../enums/task-status.enums');
+const { check } = require('prettier');
 
 exports.findAll = async function (req, res) {
-  let filter = {};
-  let where = [];
+  var sql = `SELECT t.sec_user_id, t.id, t.t_class_id, t.title, t.notes, t.start_date, t.finish_date, 
+          t.publish_date, COUNT(tc.id) as countSubmitted
+          FROM t_class_task t
+          LEFT JOIN t_class_task_collection tc ON tc.t_class_task_id = t.id AND tc.status = 1
+          WHERE t.status = 1 AND t.t_class_id = :class_id
+          `;
 
-  if (!!req.query.class) {
-    filter.class_id = req.query.class;
-    where.push('c.class_id IN (:class_id)');
+  if (!!req.query.search) {
+    sql = sql + ` AND t.title COLLATE UTF8_GENERAL_CI LIKE '%` + req.query.search + `%'`;
+  }
+  var start_date = '';
+  var finish_date = '';
+  if (!!req.query.startDate) {
+    start_date = moment(moment(req.query.startDate).add(1, 'day')).format();
+    sql = sql + ` AND t.start_date > :start_date`;
+  }
+  if (!!req.query.finishDate) {
+    finish_date = moment(moment(req.query.finishDate).add(1, 'day')).format();
+    sql = sql + ` AND t.finish_date < :finish_date`;
   }
 
-  if (!!req.query.subject) {
-    filter.subject_id = req.query.subject;
-    where.push('s.subject_id IN (:subject_id)');
-  }
+  sql = sql + ` GROUP BY t.id`;
 
-  // if start_date specified, by default finish_date=start_date, unless finish_date is specified
-  // if start_date not specified, then finish_date will be skipped.
-  if (!!req.query.start_date) {
-    filter.start_date = req.query.start_date;
-    filter.finish_date = filter.start_date;
-    if (!!req.query.finish_date) {
-      filter.finish_date = req.query.finish_date;
+  data = await query(sql, {
+    class_id: req.query.class,
+    start_date: start_date,
+    finish_date: finish_date
+  });
+
+  res.json({
+    data: data
+  });
+};
+
+exports.getClassTaskInfo = async function (req, res) {
+  // get total students of class
+  const model_class_member = t_class_member();
+  var students = await model_class_member.findAndCountAll({
+    where: {
+      t_class_id: req.params.id,
+      status: ACTIVE,
+      sec_group_id: 3
     }
-    where.push(
-      '((start_date <= :start_date && :start_date <= finish_date) || (start_date <= :finish_date && :finish_date <= finish_date) || (:start_date <= start_date && finish_date <= :finish_date))'
-    );
+  });
+
+  //authorization check
+  var checkUser = await model_class_member.findOne({
+    where: {
+      t_class_id: req.params.id,
+      status: ACTIVE,
+      sec_user_id: req.user.id,
+      sec_group_id: { [Op.or]: [1, 2, 3] }
+    }
+  });
+  var isStudent = false;
+  var hasAuthority = false;
+  if (checkUser) {
+    if (checkUser.sec_group_id === 3) {
+      isStudent = true;
+    }
+    if (checkUser.sec_group_id === 1 || checkUser.sec_group_id === 2) {
+      hasAuthority = true;
+    }
   }
-
-  var sql = `SELECT t.assignor_id, t.task_id, title, notes, weight, start_date, finish_date, 
-    publish_date, s.subject_id, subject_name, c.class_id, class_level, class_parallel,class_name
-  FROM t_class_task t
-  JOIN t_class_subject s ON s.subject_id=t.subject_id
-  JOIN t_class c ON c.class_id=t.class_id
-  WHERE t.status = 1 AND s.status=1 AND c.status = 1`;
-
-  if (Object.keys(filter).length > 0) {
-    sql = sql + ' AND ' + where.join(' AND ');
-  }
-
-  var data = await query(sql, filter);
-
-  res.json({ data: data });
+  res.json({
+    isStudent: isStudent,
+    hasAuthority: hasAuthority,
+    totalStudents: students.count
+  });
 };
 
 exports.findOne = async function (req, res) {
   const model_task = t_class_task();
-  var datum = await model_task.findOne({ where: { task_id: req.params.id } });
-  var files = await t_class_task_file().findAll({
-    where: { task_id: req.params.id }
-  });
+  var datum = await model_task.findOne({ where: { id: req.params.id, status: ACTIVE } });
+  if (!datum) {
+    res.status(411).json({ error: 11, message: 'Task tidak ditemukan' });
+    return;
+  }
   var result = datum.toJSON();
+  var files = await t_class_task_file().findAll({
+    where: { t_class_task_id: req.params.id, status: ACTIVE }
+  });
   result.files = files;
+  if (datum.t_class_subject_id) {
+    var subject = await t_class_subject().findOne({
+      where: { id: datum.t_class_subject_id }
+    });
+    result.subject = subject.name;
+  } else {
+    result.subject = '';
+  }
+
   res.json({ data: result });
 };
 
@@ -75,7 +132,7 @@ exports.findOneInclCollection = async function (req, res) {
 
   var sql = `SELECT
     s.student_no, s.student_name, c.task_collection_id,submitted_date, c.status
-  FROM (SELECT * from t_student WHERE class_id = :class_id AND status=1) s
+  FROM (SELECT * from t_student WHERE class_id = :class_id AND status = ${ACTIVE}) s
   LEFT JOIN (SELECT * FROM t_class_task_collection WHERE task_id = :task_id) c ON c.student_id=s.student_id`;
 
   var data = await query(sql, {
@@ -88,23 +145,45 @@ exports.findOneInclCollection = async function (req, res) {
 
 exports.create = async function (req, res) {
   const model_task = t_class_task();
+  const model_subject = t_class_subject();
+  var subject_id = null;
+  if (req.body.subject) {
+    var existed_subject = await model_subject.findOne({
+      where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
+    });
+    if (existed_subject) {
+      //subject already existed
+      subject_id = existed_subject.id;
+    } else {
+      //create new subject
+      var new_obj = {
+        name: req.body.subject,
+        t_class_id: req.body.class_id,
+        status: ACTIVE,
+        created_date: moment().format(),
+        created_by: req.user.email
+      };
+      var datum = await model_subject.create(new_obj);
+      subject_id = datum.id;
+    }
+  }
   var new_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    sec_user_id: req.user.id,
+    t_class_id: req.body.class_id,
+    t_class_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
-    weight: req.body.weight,
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
-    publish_date: req.body.publish_date,
-    status: 1,
+    publish_date: moment().format(),
+    status: ACTIVE,
     created_date: moment().format(),
-    created_by: req.user.user_name
+    created_by: req.user.email
   };
   try {
-    var datum = await model_task.create(new_obj);
-    res.json({ data: datum });
+    var task = await model_task.create(new_obj);
+
+    res.json({ data: task });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
@@ -112,26 +191,53 @@ exports.create = async function (req, res) {
 
 exports.update = async function (req, res) {
   const model_task = t_class_task();
+  const model_subject = t_class_subject();
+  const transaction = await beginTransaction();
+  var subject_id = null;
+  if (req.body.subject) {
+    var existed_subject = await model_subject.findOne({
+      where: { name: req.body.subject, t_class_id: req.body.class_id, status: ACTIVE }
+    });
+    if (existed_subject) {
+      //subject already existed
+      subject_id = existed_subject.id;
+    } else {
+      //create new subject
+      var new_obj = {
+        name: req.body.subject,
+        t_class_id: req.body.class_id,
+        status: ACTIVE,
+        created_date: moment().format(),
+        created_by: req.user.email
+      };
+      try {
+        var datum = await model_subject.create(new_obj, { transaction });
+        subject_id = datum.id;
+      } catch (err) {
+        res.status(411).json({ error: 11, message: err.message });
+      }
+    }
+  }
   var update_obj = {
-    assignor_id: req.body.assignor_id,
-    class_id: req.body.class_id,
-    subject_id: req.body.subject_id,
+    t_class_subject_id: subject_id,
     title: req.body.title,
     notes: req.body.notes,
     weight: req.body.weight,
     start_date: req.body.start_date,
     finish_date: req.body.finish_date,
-    publish_date: req.body.publish_date,
-    status: TASK_STATUS.ACTIVE,
+    status: ACTIVE,
     updated_date: moment().format(),
-    updated_by: req.user.user_name
+    updated_by: req.user.email
   };
   try {
     var datum = await model_task.update(update_obj, {
-      where: { task_id: req.body.task_id }
+      where: { id: req.body.task_id },
+      transaction
     });
-    res.json({ message: 'Data has been updated.' });
+    await transaction.commit();
+    res.json({ message: 'Tugas berhasil diubah.' });
   } catch (err) {
+    await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
   }
 };
@@ -144,23 +250,23 @@ exports.setStatus = async function (req, res) {
   }
 
   let update_obj = {};
-  let status = TASK_STATUS.ACTIVE;
+  let status = ACTIVE;
 
   switch (req.params.status) {
     case 'archived':
-      status = 5;
+      status = ARCHIVED;
       break;
     case 'published':
-      status = 2;
+      status = PUBLISHED;
       break;
     case 'finished':
-      status = 3;
+      status = FINISHED;
       break;
     default:
-      status = 0;
+      status = DEACTIVE;
   }
 
-  if (status === 0) {
+  if (status === DEACTIVE) {
     res.status(411).json({ error: 11, message: 'Status out of range.' });
     return;
   }
@@ -182,13 +288,12 @@ exports.setStatus = async function (req, res) {
 };
 
 exports.upload = async function (req, res) {
-  const form = formidable({ multiples: true });
+  const form = formidable();
   const task_id = req.params.id;
 
-  var task = await t_class_task().findOne({ where: { task_id: req.params.id } });
-  let result = [];
+  var task = await t_class_task().findOne({ where: { id: req.params.id } });
   if (!task) {
-    res.status(404).json({ error: 31, message: 'Task not found.' });
+    res.status(404).json({ error: 31, message: 'Tugas tidak ditemukan.' });
     return;
   }
 
@@ -198,17 +303,9 @@ exports.upload = async function (req, res) {
         reject(err);
         return;
       }
-      if (!Array.isArray(files.files)) {
-        resolve({ fields, files: [files.files] });
-      } else {
-        resolve({ fields, files: files.files });
-      }
+      resolve({ fields, files: files.files });
     });
   });
-
-  if (files.length == 0) {
-    res.status(421).json({ error: 21, message: 'Files not found' });
-  }
 
   var parameter = m_param();
   var UPLOAD_DIR = await parameter.findOne({
@@ -219,52 +316,106 @@ exports.upload = async function (req, res) {
   if (!fs.existsSync(upload_dir)) {
     fs.mkdirSync(upload_dir);
   }
-  for (const element of files) {
-    let filename = upload_dir + element.name;
-    await MoveFile(element.path, filename);
+  console.log('aaaaaaaaa');
+  let filename = upload_dir + files.name;
+  try {
+    console.log('bbbbbb');
+    var write = await MoveFile(files.path, filename);
+    console.log('ccccccccc');
     let new_file = {
-      task_id: task_id,
-      filename: element.name,
+      t_class_task_id: task_id,
+      filename: files.name,
       ext: filename.split('.').pop(),
-      mime_type: element.type,
+      mime_type: files.type,
       location: filename,
       sequence: 0, //todo ambil dari terakhir
-      status: 1,
-      created_date: moment().format(),
-      created_by: req.user.user_name
+      status: ACTIVE
     };
+    console.log('ddddddddddd');
 
     var task_file = await t_class_task_file().findOne({
-      where: { task_id: task_id, filename: element.name }
+      where: { t_class_task_id: task_id, filename: files.name }
     });
+    console.log('eeeeeee');
     if (!task_file) {
       // belum ada, insert baru
-      task_file = await t_class_task_file().create(new_file);
+      console.log('ffffff');
+      try {
+        task_file = await t_class_task_file().create(new_file);
+        console.log('ggggggg');
+      } catch (err) {
+        console.log('llllllllllll');
+        res.status(411).json({ error: 11, message: err.message });
+      }
     } else {
       // todo, update ganti updated date
+      new_file.updated_date = moment().format();
+      new_file.updated_by = req.user.email;
+      try {
+        console.log('hhhhhh');
+        var update = await t_class_task_file().update(new_file, {
+          where: { id: task_file.id }
+        });
+        console.log('iiiiiii');
+      } catch (err) {
+        console.log('jjjjj');
+        res.status(411).json({ error: 11, message: err.message });
+      }
+      task_file = new_file;
     }
-
-    result.push(task_file);
+    res.json({ data: task_file });
+  } catch (err) {
+    console.log('kkkkkkk');
+    res.status(411).json({ error: 11, message: err.message });
   }
+};
 
-  res.json({ data: result });
+exports.uploadTaskLink = async function (req, res) {
+  const task_id = req.params.id;
+  const name = req.body.task_name;
+  const links = req.body.links;
+  const transaction = await beginTransaction();
+  for (link of links) {
+    var new_link = {
+      t_class_task_id: task_id,
+      filename: name,
+      status: ACTIVE,
+      link: link,
+      created_date: moment().format(),
+      created_by: req.user.id
+    };
+    try {
+      var datum = await t_class_task_file().create(new_link, { transaction });
+    } catch (err) {
+      await transaction.rollback();
+      res.status(411).json({ error: 11, message: err.message });
+    }
+  }
+  await transaction.commit();
+  res.json({ message: 'Tautan berhasil diunggah' });
 };
 
 exports.delete = async function (req, res) {
   const model_task = t_class_task();
-  model_task.update({ status: TASK_STATUS.DELETED }, { where: { task_id: req.params.id } });
-
-  res.json({ message: 'Data has been deleted.' });
+  try {
+    var update = await model_task.update({ status: DELETED }, { where: { id: req.params.id } });
+    res.json({ message: 'Data has been deleted.' });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+  }
 };
 
 exports.deleteFileById = async function (req, res) {
   const model_task = t_class_task_file();
-  model_task.update(
-    { status: TASK_STATUS.DELETED },
-    { where: { task_file_id: req.params.file_id } }
-  );
-
-  res.json({ message: 'Data has been deleted.' });
+  try {
+    var update = await model_task.update(
+      { status: DELETED },
+      { where: { id: req.params.file_id } }
+    );
+    res.json({ message: 'Data has been deleted.' });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+  }
 };
 
 exports.download = async function (req, res) {
@@ -292,4 +443,131 @@ exports.download = async function (req, res) {
   } else {
     res.status(404).json({ error: 24, message: 'File not found' });
   }
+};
+
+exports.submitTask = async function (req, res) {
+  const task_id = req.body.task_id;
+  var task = await t_class_task().findOne({ where: { id: task_id } });
+  if (!task) {
+    res.status(404).json({ error: 31, message: 'Task tidak ditemukan.' });
+    return;
+  }
+  // var task_collection = await t_class_task_collection().findOne({
+  //   where: { sec_user_id: req.user.id, t_class_task_id: task.id, status: ACTIVE }
+  // });
+
+  new_obj = {
+    t_class_task_id: task_id,
+    sec_user_id: req.user.id,
+    submitted_date: moment().format(),
+    content: req.body.comment,
+    status: ACTIVE,
+    created_date: moment().format()
+  };
+
+  const transaction = await beginTransaction();
+  try {
+    // if (task_collection) {
+    //     new_obj.updated_by = req.user.email
+    //   new_obj.updated_date = moment().format();
+    //     var update = await t_class_task_collection().update(new_obj, { transaction });
+    //   }
+    var task_collection = await t_class_task_collection().create(new_obj, { transaction });
+    const submitted_link = req.body.link;
+    if (submitted_link.length > 0) {
+      for (let link of submitted_link) {
+        let new_link = {
+          t_class_task_collection_id: task_collection.id,
+          filename: task.title,
+          status: 1,
+          link: link
+        };
+        var save_link = await t_class_task_collection_file().create(new_link, { transaction });
+      }
+    }
+    await transaction.commit();
+    res.json({ data: task_collection });
+  } catch (err) {
+    await transaction.rollback();
+    res.status(411).json({ error: 11, message: err.message });
+  }
+};
+
+exports.submitTaskFile = async function (req, res) {
+  const form = formidable({ multiples: true });
+  const task_collection_id = req.params.id;
+
+  var task_collection = await t_class_task_collection().findOne({
+    where: { id: req.params.id }
+  });
+  let result = [];
+  if (!task_collection) {
+    res.status(404).json({ error: 31, message: 'Task collection tidak ditemukan.' });
+    return;
+  }
+
+  let { fields, files } = await new Promise(function (resolve, reject) {
+    form.parse(req, function (err, fields, files) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!Array.isArray(files.files)) {
+        resolve({ fields, files: [files.files] });
+      } else {
+        resolve({ fields, files: files.files });
+      }
+    });
+  });
+
+  if (files.length == 0) {
+    res.status(421).json({ error: 21, message: 'Files not found' });
+  }
+
+  var parameter = m_param();
+  var UPLOAD_DIR = await parameter.findOne({
+    attributes: ['value'],
+    where: { name: 'UPLOAD_DIR' }
+  });
+  var upload_dir = UPLOAD_DIR.value + '/task_collection_' + task_collection_id + '/';
+  if (!fs.existsSync(upload_dir)) {
+    fs.mkdirSync(upload_dir);
+  }
+  for (const element of files) {
+    let filename = upload_dir + element.name;
+    await MoveFile(element.path, filename);
+    let new_file = {
+      t_class_task_collection_id: task_collection_id,
+      filename: element.name,
+      ext: filename.split('.').pop(),
+      mime_type: element.type,
+      location: filename,
+      sequence: 0, //todo ambil dari terakhir
+      status: 1
+    };
+
+    var task_file = await t_class_task_collection_file().findOne({
+      where: { t_class_task_collection_id: task_collection_id, filename: element.name }
+    });
+    if (!task_file) {
+      // belum ada, insert baru
+      task_file = await t_class_task_collection_file().create(new_file);
+    } else {
+      // todo, update ganti updated date
+      new_file.updated_date = moment().format();
+      new_file.updated_by = req.user.email;
+      try {
+        var update = await t_class_task_collection_file().update(new_file, {
+          where: { id: task_file.id }
+        });
+      } catch (err) {
+        res.status(411).json({ error: 11, message: err.message });
+      }
+      task_file = new_file;
+    }
+
+    result.push(task_file);
+  }
+
+  res.json({ data: result });
 };

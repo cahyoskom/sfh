@@ -3,6 +3,8 @@ const auth = require('../controllers/authentication');
 const authGoogle = require('../controllers/google-auth');
 const registration = require('../controllers/registration');
 const school = require('../controllers/school');
+const classController = require('../controllers/class');
+const audit = require('../controllers/audit');
 
 module.exports = function (router) {
   router.all('/', async function (req, res) {
@@ -33,4 +35,14 @@ module.exports = function (router) {
   });
   router.get('/check_email', registration.checkEmail);
   router.get('/school_invitation', school.acceptInvitation);
+  router.get('/class_invitation', classController.acceptInvitation);
+  router.get('/audit_trail', audit.getData);
+  router.get('/is_admin', function (req, res) {
+    let is_admin = false;
+    if (req.user.is_admin == 1) {
+      is_admin = true;
+    }
+
+    res.json({ data: is_admin });
+  });
 };

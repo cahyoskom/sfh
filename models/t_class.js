@@ -57,7 +57,7 @@ module.exports = sequelize => {
       field: 'description'
     },
     avatar: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT('long'),
       allowNull: true,
       defaultValue: null,
       primaryKey: false,

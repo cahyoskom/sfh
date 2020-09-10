@@ -3,7 +3,7 @@ const { OAuth2Client } = require('google-auth-library');
 const sec_user = require('../models/sec_user');
 const sec_token = require('../models/sec_token');
 const m_param = require('../models/m_param');
-const USER_STATUS = require('../enums/status.enums');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function checkUser(email) {
@@ -11,7 +11,7 @@ async function checkUser(email) {
   var user = await model_user.findOne({
     where: {
       email: email,
-      status: USER_STATUS.ACTIVE
+      status: ACTIVE
     }
   });
   return user;
@@ -19,11 +19,11 @@ async function checkUser(email) {
 
 async function setToken(tokenId, userId) {
   var token = await sec_token().findAll({
-    where: { sec_user_id: userId, status: USER_STATUS.ACTIVE }
+    where: { sec_user_id: userId, status: ACTIVE }
   });
   if (token.length > 0) {
     // token exists, delete
-    sec_token().update({ status: USER_STATUS.DELETED }, { where: { sec_user_id: userId } });
+    sec_token().update({ status: DELETED }, { where: { sec_user_id: userId } });
   }
 
   var parameter = m_param();
@@ -34,7 +34,7 @@ async function setToken(tokenId, userId) {
   var new_token = {
     token: tokenId,
     sec_user_id: userId,
-    status: USER_STATUS.ACTIVE,
+    status: ACTIVE,
     valid_until: moment().add(TOKEN_VALIDITY.value, 'hours').format()
   };
   var curr_token = await sec_token().create(new_token);
@@ -58,7 +58,7 @@ exports.googleLogin = async function (req, res) {
         email: email,
         password: '',
         avatar: picture,
-        status: USER_STATUS.ACTIVE,
+        status: ACTIVE,
         is_email_validated: true,
         created_date: moment().format(),
         created_by: 'SYSTEM',

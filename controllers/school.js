@@ -44,16 +44,6 @@ async function checkAuthority(userId) {
   const model_sec_group = sec_group();
   var member = await model_school_member.findAll({
     where: { sec_user_id: userId, status: ACTIVE, sec_group_id: { [Op.or]: [OWNER, MAINTENER] } }
-    // include: [
-    //   {
-    //     model: model_sec_group,
-    //     where: {
-    //       id: {
-    //         [Op.or]: [1, 2]
-    //       }
-    //     }
-    //   }
-    // ]
   });
   if (member.length > 0) {
     return true;
@@ -577,7 +567,6 @@ exports.getAllClass = async function (req, res) {
         'name',
 
         [sequelize().fn('COUNT', sequelize().col('sec_user_id')), 'countMembers']
-        // ['sec_user_model.name', 'ownerName']
       ],
       where: condition,
       include: [

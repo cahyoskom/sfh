@@ -7,7 +7,7 @@ const sec_token = require('../models/sec_token');
 const sec_confirmation = require('../models/sec_confirmation');
 const m_param = require('../models/m_param');
 const { sha256 } = require('../common/sha');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DELETED } = require('../enums/task-status.enums');
 
 async function getLogin(email, password) {
   const model_user = sec_user();

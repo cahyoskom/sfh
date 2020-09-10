@@ -1,6 +1,6 @@
 const t_class_subject = require('../models/t_class_subject');
 const moment = require('moment');
-const { ACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DELETED } = require('../enums/task-status.enums');
 
 exports.findAll = async function (req, res) {
   const model_subject = t_class_subject();

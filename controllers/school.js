@@ -25,7 +25,7 @@ const t_notification = require('../models/t_notification');
 
 const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/task-status.enums');
 const { OWNER, MAINTENER } = require('../enums/group.enums');
 const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
 const { sequelize, beginTransaction } = require('../database');

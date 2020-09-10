@@ -22,7 +22,7 @@ const t_school = require('../models/t_school');
 
 const Confirmation = require('./confirmation');
 const { beginTransaction } = require('../database');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/task-status.enums');
 const { OWNER, MAINTENER, PARTICIPANT } = require('../enums/group.enums');
 const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
 const {

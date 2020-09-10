@@ -3,7 +3,7 @@ const { OAuth2Client } = require('google-auth-library');
 const sec_user = require('../models/sec_user');
 const sec_token = require('../models/sec_token');
 const m_param = require('../models/m_param');
-const USER_STATUS = require('../enums/status.enums');
+const USER_STATUS = require('../enums/task-status.enums');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function checkUser(email) {

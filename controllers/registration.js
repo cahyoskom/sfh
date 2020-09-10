@@ -17,7 +17,7 @@ const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
 const mailer = require('../common/mailer');
 const { beginTransaction } = require('../database');
-const { ACTIVE, DEACTIVE, DELETED } = require('../enums/status.enums');
+const { ACTIVE, DEACTIVE, DELETED } = require('../enums/task-status.enums');
 const pwValidator = new passwordValidator().is().min(6);
 // .is().max(100).has().uppercase().has().lowercase().has().digits().has().not().spaces();
 const phoneValidator = /^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/;

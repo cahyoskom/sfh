@@ -406,19 +406,19 @@ exports.updatePassword = async function (req, res) {
   if (confirm.status !== ACTIVE) {
     return res.status(401).json({
       error: null,
-      message: 'This code is invalid'
+      message: 'Token tidak ditemukan, harap request perubahan password lagi.'
     });
   }
 
   const user = await model_user.findOne({
-    where: { id: confirm.sec_user_id }
+    where: { id: confirm.sec_user_id, status: ACTIVE }
   });
 
   if (!user) {
     return res.status(401).json({
       error: null,
       // message: 'Invalid account: mismatch code',
-      message: 'Invalid code: account not found'
+      message: 'Akun anda tidak ditemukan.'
     });
   }
 

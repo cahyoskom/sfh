@@ -8,25 +8,51 @@ const { query } = require('../models/query');
 const moment = require('moment');
 
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
+let notificationData = []
+
 
 exports.findAll = async (req, res) => {
   const sql = `
   SELECT m_notification_type.id, m_notification_type.content, 
   m_notification_type.content_url,
+  m_notification_type.type,
+  m_notification_type.action_yes,
+  m_notification_type.action_no,
+  t_notification.id AS id_notif,
   t_notification.m_notification_type_id,
   t_notification.notification_datetime, t_notification.is_read, 
-  t_notification.receiver_user_id, sec_user.id 
+  t_notification.receiver_user_id, sec_user.id,
+  IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 0, 'TODAY', IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 1, 'YESTERDAY', t_notification.notification_datetime)) humanDate 
   FROM m_notification_type INNER JOIN t_notification INNER 
   JOIN sec_user ON 
   m_notification_type.id=t_notification.m_notification_type_id 
   AND sec_user.id = 
   t_notification.receiver_user_id 
-  WHERE t_notification.receiver_user_id = :id`
+  WHERE t_notification.receiver_user_id = :id AND 
+  DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) < 4
+  ORDER BY t_notification.notification_datetime DESC
+  `
   var test = await query(sql, {
     id: req.user.id
   })
   res.json({ data: test });
 };
+
+exports.deleteNotification = async (req,res) => {
+  try {
+    let data = await t_notification().destroy({
+      where: { m_notification_type_id: req.params.id }
+    })
+
+    if(!data){
+      return res.status(411).json({ message: 'cannot delete' });
+    }
+
+    res.json({ deleted: data, success: true })
+  } catch (error) {
+    res.json({res : 'Failed to delete', success: false})
+  }
+}
 
 exports.create = async (req, res) => {
   let type = m_notification_default().findOne({
@@ -62,6 +88,27 @@ exports.isRead = async (req, res) => {
   try {
     var read = await t_notification().update(update_obj, {
       where: { receiver_user_id: req.body.id }
+    });
+
+    if (!read) {
+      res.status(401).json({ message: 'Gagal Membaca' });
+      return;
+    }
+
+    res.json('success update!')
+    res.json({ data: read })
+  } catch (error) {
+    res.json({ error })
+  }
+}
+
+exports.isReadById = async (req, res) => {
+  const update_obj = {
+    is_read: req.body.is_read,
+  }
+  try {
+    var read = await t_notification().update(update_obj, {
+      where: { receiver_user_id: req.body.id, m_notification_type_id: req.body.type_id }
     });
 
     if (!read) {
@@ -120,19 +167,43 @@ exports.updateDefaults = async (req, res) => {
   }
 };
 
-exports.findKelas = async (req,res) => {
-  const sql = `SELECT t_class.name, t_class.id, 
-  t_notification_user.is_receive_web, t_notification_user.is_receive_email,
-  t_notification_user.out_id, t_notification_user.out_name, t_notification_user.sec_user_id
-  FROM t_class INNER JOIN t_notification_user
-  ON t_class.id = t_notification_user.out_id 
-  WHERE t_notification_user.sec_user_id = :id
-  AND t_notification_user.out_name = 't_class'
+exports.updateMasterNotification = async (req,res) => {
+  const obj = {
+    is_receive_web: req.body.is_receive_web,
+    is_receive_email: req.body.is_receive_email,
+    // is_receive_sms: req.body.is_receive_sms
+  }
+  try {
+    const notif = t_notification_user().update(obj, {
+      // where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id, m_notification_type_id: req.body.m_id }
+      where: { sec_user_id: req.user.id, out_id: req.body.out_id, out_name: req.body.out_name}
+    });
+    res.json({ update: notif, success: true })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+exports.findClass = async (req,res) => {
+  const sql = `SELECT t_class.name, t_class.id, t_class_member.t_class_id, t_class_member.sec_user_id
+  FROM t_class INNER JOIN t_class_member ON t_class.id = t_class_member.t_class_id
+  WHERE t_class_member.sec_user_id = :id
   ORDER BY t_class.name ASC`
-  var findKelas = await query(sql, {
+  var findClass = await query(sql, {
     id: req.user.id
   })
-  res.json({ data_class: findKelas });
+  res.json({ data_class: findClass });
+}
+
+exports.findSchool = async (req,res) => {
+  const sql = `SELECT t_school.name, t_school.id, t_school_member.t_school_id, t_school_member.sec_user_id
+  FROM t_school INNER JOIN t_school_member ON t_school.id = t_school_member.t_school_id
+  WHERE t_school_member.sec_user_id = :id
+  ORDER BY t_school.name ASC`
+  var findSchool = await query(sql, {
+    id: req.user.id
+  })
+  res.json({data_school: findSchool})
 }
 
 exports.getSettingKelas = async (req, res) => {
@@ -148,10 +219,10 @@ exports.getSettingKelas = async (req, res) => {
   t_notification_user.sec_user_id,
   sec_user.id
   FROM m_notification_type INNER JOIN t_notification_user INNER 
-  JOIN sec_user ON 
-  m_notification_type.id=t_notification_user.m_notification_type_id 
+  JOIN sec_user ON
+  m_notification_type.id=t_notification_user.m_notification_type_id
   AND sec_user.id = t_notification_user.sec_user_id 
-  WHERE t_notification_user.sec_user_id = :id AND m_notification_type.type LIKE 'CLASS%' ORDER BY activities ASC`
+  WHERE t_notification_user.sec_user_id = :id AND m_notification_type.type REGEXP '^CLASS|^USER'`
   var test = await query(sql, {
     id: req.user.id
   })
@@ -160,7 +231,7 @@ exports.getSettingKelas = async (req, res) => {
 
 exports.getSettingSchool = async (req, res) => {
   const sql = `
- SELECT
+  SELECT
   m_notification_type.id,
   m_notification_type.activities,
   m_notification_type.type,
@@ -174,7 +245,7 @@ exports.getSettingSchool = async (req, res) => {
   JOIN sec_user ON 
   m_notification_type.id=t_notification_user.m_notification_type_id 
   AND sec_user.id = t_notification_user.sec_user_id 
-  WHERE t_notification_user.sec_user_id = 1 AND m_notification_type.type LIKE 'SCHOOL%' ORDER BY activities ASC`
+  WHERE t_notification_user.sec_user_id = :id AND m_notification_type.type LIKE 'SCHOOL%' ORDER BY activities ASC`
   var test = await query(sql, {
     id: req.user.id
   })

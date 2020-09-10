@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 02 Sep 2020 pada 06.01
+-- Waktu pembuatan: 10 Sep 2020 pada 15.23
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.4.7
 
@@ -102,7 +102,8 @@ CREATE TABLE `m_notification_default` (
 
 INSERT INTO `m_notification_default` (`id`, `m_notification_type_id`, `out_id`, `out_name`, `is_receive_web`, `is_receive_email`, `is_receive_sms`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
 (1, 1, 1, 'haha', 1, 1, 0, 1, '2020-09-01 17:25:52', 'SYSTEM', NULL, NULL),
-(2, 2, 2, 'test2', 1, 1, 0, 0, '2020-09-01 17:25:52', 'SYSTEM', NULL, NULL);
+(2, 2, 2, 'test2', 1, 1, 0, 0, '2020-09-01 17:25:52', 'SYSTEM', NULL, NULL),
+(3, 3, 3, 'test2', 1, 1, 0, 1, '2020-09-02 20:47:10', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -131,7 +132,14 @@ CREATE TABLE `m_notification_type` (
 
 INSERT INTO `m_notification_type` (`id`, `type`, `content`, `content_url`, `activities`, `action_yes`, `action_no`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
 (1, 'CLASS_ACCEPT_USER', 'Anda di terima di kelas 12A', 'http://localhost:3001/', 'Pemberitahuan penerimaan kelas', 'http://localhost:3001/', 'http://localhost:3001/', 1, '2020-09-01 17:22:36', 'SYSTEM', NULL, NULL),
-(2, 'CLASS_CHANGE_INFO', 'jam kelas anda berubah menjadi jam 9 pagi!', 'http://localhost:3001/', 'Pemberitahuan penggantian kelas', 'http://localhost:3001/', 'http://localhost:3001/', 1, '2020-09-01 17:22:36', 'SYSTEM', NULL, NULL);
+(2, 'CLASS_CHANGE_INFO', 'jam kelas anda berubah menjadi jam ', 'http://localhost:3001/', 'Pemberitahuan penggantian kelas', 'http://localhost:3001/', 'http://localhost:3001/', 1, '2020-09-01 17:22:36', 'SYSTEM', NULL, NULL),
+(3, 'CLASS_REJECT_USER', 'Anda ditolak untuk bergabung pada', 'http://localhost:3001/notification/setting', 'Pemberitahuan ditolak pada kelas', 'http://localhost:3001/notification/setting', 'http://localhost:3001/notification/setting', 1, '2020-09-02 20:46:47', 'SYSTEM', NULL, NULL),
+(4, 'CLASS_ACCEPT_SCHOOL', 'Anda diterima di ', 'http://localhost:3001/notification/setting', 'Pemberitahuan penerimaan kelas', 'http://localhost:3001/notification/setting', 'http://localhost:3001/notification/setting', 1, '2020-09-03 19:17:18', 'SYSTEM', NULL, NULL),
+(5, 'SCHOOL_ACCEPT_CLASS', 'kelas anda diterima di sekolah ', 'http://localhost:3001/notification/setting', 'Pemberitahuan penerimaan kelas di sekolah', 'http://localhost:3001/notification/setting', 'http://localhost:3001/notification/setting', 1, '2020-09-03 19:18:29', 'SYSTEM', NULL, NULL),
+(6, 'SCHOOL_CHANGE_INFO', 'Sekolah anda sekarang bernama', 'http://localhost:3001/notification/setting', 'Pemberitahuan perubahan nama sekolah', 'http://localhost:3001/notification/setting', 'http://localhost:3001/notification/setting', 1, '2020-09-03 19:19:34', 'SYSTEM', NULL, NULL),
+(7, 'USER_REQUEST_CLASS', 'Ingin bergabung ke ', 'http://localhost:3001/notification', 'Pemberitahuan permintaan bergabung', 'http://localhost:3001/notification', 'http://localhost:3001/notification', 1, '2020-09-08 12:14:07', 'SYSTEM', NULL, NULL),
+(8, 'CLASS_REMOVE_USER', 'menghapus user', 'a', 'Pemberitahuan penghapusan user pada kelas', 's', 'a', 1, '2020-09-10 19:45:39', 'SYSTEM', NULL, NULL),
+(9, 'CLASS_REQUEST_SCHOOL', 'meminta bergabung dengan sekolah', 'a', 'Pemberitahuan permintaan kelas pada sekolah', 'a', 's', 1, '2020-09-10 19:45:39', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -219,7 +227,8 @@ CREATE TABLE `sec_confirmation` (
 --
 
 INSERT INTO `sec_confirmation` (`id`, `description`, `sec_registrant_id`, `sec_user_id`, `t_school_id`, `sender_addr`, `code`, `is_sent`, `status`, `created_by`, `created_date`, `updated_by`, `updated_date`) VALUES
-(1, 'ACCOUNT_ACTIVATION', 1, NULL, NULL, 'sfh-dev@karpalabs.com', 'af2dbf4569832d176946d1010f542efa', 1, -1, 'SYSTEM', '2020-09-01 08:01:39', 'SYSTEM', '2020-09-01 08:05:10');
+(1, 'ACCOUNT_ACTIVATION', 1, NULL, NULL, 'sfh-dev@karpalabs.com', 'af2dbf4569832d176946d1010f542efa', 1, -1, 'SYSTEM', '2020-09-01 08:01:39', 'SYSTEM', '2020-09-01 08:05:10'),
+(2, 'ACCOUNT_ACTIVATION', 2, NULL, NULL, 'sfh-dev@karpalabs.com', 'a696036cd2a80999ab146b60f4cbbf0e', 1, -1, 'SYSTEM', '2020-09-10 07:28:36', 'SYSTEM', '2020-09-10 07:29:02');
 
 -- --------------------------------------------------------
 
@@ -273,7 +282,8 @@ CREATE TABLE `sec_registrant` (
 --
 
 INSERT INTO `sec_registrant` (`id`, `name`, `email`, `username`, `password`, `is_email_validated`, `phone`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
-(1, 'Dwiyan', 'putra.dwiyan26@gmail.com', '', 'd03d3c93506c4294d498178e5dbe4a1972f20f8cf4fedb7524903198e1039a54', 1, '087782118653', -1, '2020-09-01 08:01:38', 'SYSTEM', '2020-09-01 08:05:10', 'SYSTEM');
+(1, 'Dwiyan', 'putra.dwiyan26@gmail.com', '', 'd03d3c93506c4294d498178e5dbe4a1972f20f8cf4fedb7524903198e1039a54', 1, '087782118653', -1, '2020-09-01 08:01:38', 'SYSTEM', '2020-09-01 08:05:10', 'SYSTEM'),
+(2, 'Rashgaroth', 'putra.dwiyan20@gmail.com', '', 'b0942bb84e7d789bc1f242f6d6a66a95492fcba36b74ea9da6fceeffe150838f', 1, '0877782128271', -1, '2020-09-10 07:28:35', 'SYSTEM', '2020-09-10 07:29:02', 'SYSTEM');
 
 -- --------------------------------------------------------
 
@@ -298,8 +308,13 @@ CREATE TABLE `sec_token` (
 --
 
 INSERT INTO `sec_token` (`id`, `sec_user_id`, `token`, `valid_until`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
-(1, 1, 'd609492680de6d1e0765fdc23cfe64cfb3542d6d49dd6a61633fc0a55fb9bb40', '2020-09-03 01:59:10', -1, '2020-09-01 08:05:22', 'SYSTEM', '2020-09-02 01:59:10', 'putra.dwiyan26@gmail.com'),
-(2, 1, '09492c7361795ca1099b76ed8f29a9783b3b824a9e2850ad3b9a298f2862bf7d', '2020-09-02 10:56:43', 1, '2020-09-01 10:39:02', 'SYSTEM', '2020-09-01 10:56:43', 'putra.dwiyan26@gmail.com');
+(1, 1, 'd609492680de6d1e0765fdc23cfe64cfb3542d6d49dd6a61633fc0a55fb9bb40', '2020-09-05 02:32:36', -1, '2020-09-01 08:05:22', 'SYSTEM', '2020-09-04 02:32:36', 'putra.dwiyan26@gmail.com'),
+(2, 1, '09492c7361795ca1099b76ed8f29a9783b3b824a9e2850ad3b9a298f2862bf7d', '2020-09-05 02:23:08', -1, '2020-09-01 10:39:02', 'SYSTEM', '2020-09-04 02:23:08', 'putra.dwiyan26@gmail.com'),
+(3, 1, '203c26a16b8c453dc63db9e8fbb06f338333c0b3fd76db5a6f2f457b215436dd', '2020-09-08 04:34:49', -1, '2020-09-05 04:41:46', 'SYSTEM', '2020-09-07 04:34:49', 'putra.dwiyan26@gmail.com'),
+(4, 1, 'a73f55a8cae40701739726009dcd38f851d1566f0ec6ae6b96dd4cbfe59a75f8', '2020-09-11 06:47:10', -1, '2020-09-08 05:08:23', 'SYSTEM', '2020-09-10 06:47:10', 'putra.dwiyan26@gmail.com'),
+(5, 1, '0e0c66cecd08ed0d60b7bc6ed8a953e468b576ea26e98d5c8d465df6f81d9580', '2020-09-11 06:49:16', -1, '2020-09-10 06:48:12', 'SYSTEM', '2020-09-10 06:49:16', 'putra.dwiyan26@gmail.com'),
+(6, 1, '05794fe5e63b42c437bc623f42c59efb94454336b4b36d83e3eb48266b73f509', '2020-09-11 07:25:31', 1, '2020-09-10 06:52:31', 'SYSTEM', '2020-09-10 07:25:31', 'putra.dwiyan26@gmail.com'),
+(7, 2, '93be86c36b37bc9d238962c14147665a7d99f402ff5c7ce25c43ff7a5762133b', '2020-09-11 12:24:27', 1, '2020-09-10 07:29:14', 'SYSTEM', '2020-09-10 12:24:27', 'putra.dwiyan20@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -333,7 +348,8 @@ CREATE TABLE `sec_user` (
 --
 
 INSERT INTO `sec_user` (`id`, `name`, `email`, `username`, `password`, `is_email_validated`, `phone`, `is_phone_validated`, `avatar`, `auth_provider`, `auth_profile_id`, `auth_data`, `is_admin`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
-(1, 'Dwiyan', 'putra.dwiyan26@gmail.com', '', 'd03d3c93506c4294d498178e5dbe4a1972f20f8cf4fedb7524903198e1039a54', 1, '087782118653', 0, NULL, 0, NULL, NULL, 0, 1, '2020-09-01 08:05:10', 'SYSTEM', NULL, NULL);
+(1, 'Dwiyan', 'putra.dwiyan26@gmail.com', '', 'd03d3c93506c4294d498178e5dbe4a1972f20f8cf4fedb7524903198e1039a54', 1, '087782118653', 0, NULL, 0, NULL, NULL, 0, 1, '2020-09-01 08:05:10', 'SYSTEM', NULL, NULL),
+(2, 'Rashgaroth', 'putra.dwiyan20@gmail.com', '', 'b0942bb84e7d789bc1f242f6d6a66a95492fcba36b74ea9da6fceeffe150838f', 1, '0877782128271', 0, NULL, 0, NULL, NULL, 0, 1, '2020-09-10 07:29:03', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -356,6 +372,14 @@ CREATE TABLE `t_class` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data untuk tabel `t_class`
+--
+
+INSERT INTO `t_class` (`id`, `t_school_id`, `code`, `name`, `description`, `avatar`, `link_status`, `note`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
+(1, 1, '152', 'Kelas 12 A', 'kelas 12 a', 'a', 1, 'qweewq', 1, '2020-09-03 17:12:45', 'SYSTEM', NULL, NULL),
+(2, 1, '002', 'Kelas 12B', 'Kelas 12 B ', NULL, 1, NULL, 1, '2020-09-10 14:31:01', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -468,6 +492,14 @@ CREATE TABLE `t_class_member` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data untuk tabel `t_class_member`
+--
+
+INSERT INTO `t_class_member` (`id`, `t_class_id`, `sec_user_id`, `sec_group_id`, `link_status`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
+(1, 1, 1, 4, 1, 1, '2020-09-03 17:13:10', 'SYSTEM', NULL, NULL),
+(2, 2, 2, 3, 1, 1, '2020-09-10 14:31:28', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -699,8 +731,8 @@ CREATE TABLE `t_notification` (
 --
 
 INSERT INTO `t_notification` (`id`, `m_notification_type_id`, `sender_user_id`, `receiver_user_id`, `out_id`, `out_name`, `variable`, `notification_datetime`, `notification_year`, `notification_month`, `is_read`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
-(1, 1, 1, 1, 1, 'haha', NULL, '2020-09-01 17:27:24', 2020, 7, 1, 0, '2020-09-01 17:28:07', 'SYSTEM', NULL, NULL),
-(2, 2, 1, 1, 2, 'test2', NULL, '2020-09-01 17:28:09', 2020, 7, 1, 0, '2020-09-01 17:29:07', 'SYSTEM', NULL, NULL);
+(9, 7, 1, 2, 1, 't_class', NULL, '2020-09-10 17:05:29', 2020, 9, 1, 1, '2020-09-10 17:06:12', 'SYSTEM', NULL, NULL),
+(10, 4, 1, 2, 1, 't_class', NULL, '2020-09-09 19:18:07', 2020, 9, 0, 1, '2020-09-10 19:18:34', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -729,8 +761,13 @@ CREATE TABLE `t_notification_user` (
 --
 
 INSERT INTO `t_notification_user` (`id`, `m_notification_type_id`, `sec_user_id`, `out_id`, `out_name`, `is_receive_web`, `is_receive_email`, `is_receive_sms`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
-(1, 1, 1, 1, 'haha', 1, 1, 0, 0, '2020-09-01 17:27:11', 'SYSTEM', NULL, NULL),
-(2, 2, 1, 2, 'test2', 1, 1, 0, 0, '2020-09-01 17:27:11', 'SYSTEM', NULL, NULL);
+(1, 1, 1, 1, 't_class', 1, 1, 0, 1, '2020-09-01 17:27:11', 'SYSTEM', NULL, NULL),
+(5, 5, 1, 1, 't_school', 1, 1, 1, 1, '2020-09-03 19:30:15', 'SYSTEM', NULL, NULL),
+(6, 2, 1, 1, 't_class', 1, 1, 1, 1, '2020-09-05 11:45:32', 'SYSTEM', NULL, NULL),
+(7, 3, 1, 1, 't_class', 1, 1, 1, 1, '2020-09-05 11:45:32', 'SYSTEM', NULL, NULL),
+(8, 7, 1, 1, 't_class', 1, 1, 1, 1, '2020-09-08 12:29:17', 'SYSTEM', NULL, NULL),
+(9, 1, 2, 2, 't_class', 1, 1, 0, 1, '2020-09-10 14:49:03', 'SYSTEM', NULL, NULL),
+(10, 2, 2, 2, 't_class', 1, 1, 0, 1, '2020-09-10 14:49:03', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -754,6 +791,13 @@ CREATE TABLE `t_school` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data untuk tabel `t_school`
+--
+
+INSERT INTO `t_school` (`id`, `t_school_id`, `code`, `name`, `address`, `zipcode`, `phone`, `avatar`, `note`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
+(1, 1, '152', 'SMAN 16 KABUPATEN TANGERANG', 'Kabupaten Tangerang', 'AA__12', '021868572', 'aa', 'aa', 1, '2020-09-03 17:06:55', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -865,6 +909,14 @@ CREATE TABLE `t_school_member` (
   `updated_date` datetime DEFAULT NULL,
   `updated_by` varchar(100) COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data untuk tabel `t_school_member`
+--
+
+INSERT INTO `t_school_member` (`id`, `t_school_id`, `sec_user_id`, `sec_group_id`, `status`, `created_date`, `created_by`, `updated_date`, `updated_by`) VALUES
+(1, 1, 1, 4, 1, '2020-09-06 20:20:55', 'SYSTEM', NULL, NULL),
+(2, 1, 2, 3, 1, '2020-09-10 14:33:12', 'SYSTEM', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1302,13 +1354,13 @@ ALTER TABLE `m_answer_type`
 -- AUTO_INCREMENT untuk tabel `m_notification_default`
 --
 ALTER TABLE `m_notification_default`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `m_notification_type`
 --
 ALTER TABLE `m_notification_type`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `m_param`
@@ -1326,7 +1378,7 @@ ALTER TABLE `m_recurrent`
 -- AUTO_INCREMENT untuk tabel `sec_confirmation`
 --
 ALTER TABLE `sec_confirmation`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `sec_group`
@@ -1338,25 +1390,25 @@ ALTER TABLE `sec_group`
 -- AUTO_INCREMENT untuk tabel `sec_registrant`
 --
 ALTER TABLE `sec_registrant`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `sec_token`
 --
 ALTER TABLE `sec_token`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `sec_user`
 --
 ALTER TABLE `sec_user`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_class`
 --
 ALTER TABLE `t_class`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_class_forum`
@@ -1392,7 +1444,7 @@ ALTER TABLE `t_class_forum_mention`
 -- AUTO_INCREMENT untuk tabel `t_class_member`
 --
 ALTER TABLE `t_class_member`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_class_subject`
@@ -1458,19 +1510,19 @@ ALTER TABLE `t_class_todo_option`
 -- AUTO_INCREMENT untuk tabel `t_notification`
 --
 ALTER TABLE `t_notification`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_notification_user`
 --
 ALTER TABLE `t_notification_user`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_school`
 --
 ALTER TABLE `t_school`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_school_forum`
@@ -1506,7 +1558,7 @@ ALTER TABLE `t_school_forum_mention`
 -- AUTO_INCREMENT untuk tabel `t_school_member`
 --
 ALTER TABLE `t_school_member`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_school_todo`
@@ -1779,29 +1831,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-ALTER TABLE `t_class` ADD UNIQUE(`code`);
-ALTER TABLE `t_school` ADD UNIQUE(`code`);
-ALTER TABLE `t_class_task_file` ADD `link` VARCHAR(1000) NULL DEFAULT NULL AFTER `sequence`;
-ALTER TABLE `t_school` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-ALTER TABLE `t_class` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-ALTER TABLE `sec_user` CHANGE `avatar` `avatar` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
-ALTER TABLE `t_class_task_collection` ADD `content` TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL AFTER `submitted_date`; 
-ALTER TABLE `t_class_task` CHANGE `t_class_subject_id` `t_class_subject_id` INT(11) UNSIGNED NULL; 
-
-CREATE TABLE `t_class_task_collection_comment` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `t_class_task_collection_id` int(11) unsigned NOT NULL,
-  `sec_user_id` int(11) unsigned NOT NULL,
-  `published_datetime` datetime NOT NULL,
-  `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT '0',
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'SYSTEM',
-  `updated_date` datetime DEFAULT NULL,
-  `updated_by` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `t_class_task_collection_id` (`t_class_task_collection_id`),
-  KEY `sec_user_id` (`sec_user_id`),
-  CONSTRAINT `t_class_task_collection_comment_ibfk_1` FOREIGN KEY (`t_class_task_collection_id`) REFERENCES `t_class_task_collection` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `t_class_task_collection_comment_ibfk_2` FOREIGN KEY (`sec_user_id`) REFERENCES `sec_user` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;

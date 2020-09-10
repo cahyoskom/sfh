@@ -1,8 +1,8 @@
 const sec_user = require('../models/sec_user');
-const STATUS = require('../enums/task-status.enums');
+const STATUS = require('../enums/status.enums');
 const moment = require('moment');
 const isBase64 = require('is-base64');
-const { ACTIVE, DELETED } = require('../enums/task-status.enums');
+const { ACTIVE, DELETED } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_user = sec_user();

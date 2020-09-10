@@ -182,6 +182,7 @@ exports.create = async function (req, res) {
   };
   try {
     var task = await model_task.create(new_obj);
+
     res.json({ data: task });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });

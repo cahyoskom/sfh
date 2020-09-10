@@ -3,5 +3,5 @@ module.exports = {
   DAILY: 2,
   WEEKLY: 3,
   MONTHLY: 4,
-  YEARLY: 5,
+  YEARLY: 5
 };

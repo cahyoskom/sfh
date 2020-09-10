@@ -1,6 +1,6 @@
 const t_class_member = require('../models/t_class_member');
 const moment = require('moment');
-const TASK_STATUS = require('../enums/task-status.enums');
+const TASK_STATUS = require('../enums/status.enums');
 const ROLES = require('../common/roles');
 
 exports.findAll = async function (req, res) {

@@ -4,9 +4,7 @@ const m_recurrent = require('../models/m_recurrent');
 const moment = require('moment');
 const { Op } = require('sequelize');
 const { query } = require('express');
-
-
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/task-status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 
 exports.findAll = async function (req, res) {
   const model_todo = t_class_todo_detail();
@@ -25,11 +23,8 @@ exports.findAll = async function (req, res) {
   if (q_status) {
     var data = await model_todo.findAndCountAll({
       where: {
-        [Op.and]: [
-          { status: { [Op.like]: q_status } },
-
-        ]
-      },
+        [Op.and]: [{ status: { [Op.like]: q_status } }]
+      }
     });
   } else if (q_startDate && q_endDate) {
     var data = await model_todo.findAndCountAll({
@@ -38,7 +33,6 @@ exports.findAll = async function (req, res) {
           [Op.between]: [moment(q_startDate).add(1, 'day'), moment(q_endDate).add(1, 'day')]
         }
       }
-
     });
   }
 
@@ -47,14 +41,13 @@ exports.findAll = async function (req, res) {
   res.json({ data: data });
 };
 
-
 exports.delete = async function (req, res) {
   const model_todo = t_class_todo();
   const model_detail = t_class_todo_detail();
 
   model_todo.update({ status: DELETED }, { where: { id: req.params.id } });
   model_detail.update({ status: DELETED }, { where: { id: req.params.id } });
-  res.json({ message: 'Data has been deleted.' })
+  res.json({ message: 'Data has been deleted.' });
 };
 
 exports.create = async (req, res) => {
@@ -83,11 +76,9 @@ exports.create = async (req, res) => {
     };
     var data = await model_todo.create(new_post);
     todo_id = data.id;
-
   }
-  console.log(req.body)
-  console.log(new_post)
-
+  console.log(req.body);
+  console.log(new_post);
 
   var new_todo = {
     t_class_todo_id: todo_id,
@@ -106,7 +97,6 @@ exports.create = async (req, res) => {
   try {
     var data = await model_detail.create(new_todo);
     res.json({ data: data });
-
   } catch (err) {
     res.status(411).json({ error: 0, message: err.message });
   }
@@ -160,15 +150,9 @@ exports.update = async function (req, res) {
   try {
     var datum = await model_detail.update(update_obj, {
       where: { id: req.body.id }
-
     });
     res.json({ message: 'Data has been updated.' });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }
 };
-
-
-
-
-

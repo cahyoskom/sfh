@@ -22,7 +22,7 @@ const t_school = require('../models/t_school');
 
 const Confirmation = require('./confirmation');
 const { beginTransaction } = require('../database');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/task-status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const { OWNER, MAINTENER, PARTICIPANT } = require('../enums/group.enums');
 const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
 const {
@@ -453,6 +453,7 @@ async function getClassOwner(classId) {
 async function deleting(classId, transaction) {
   // const transaction = await beginTransaction();
   // delete class within id from classId
+
   const model_class = t_class();
   const datum = await model_class.update(
     { status: DELETED },

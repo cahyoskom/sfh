@@ -25,7 +25,7 @@ const t_notification = require('../models/t_notification');
 
 const Confirmation = require('./confirmation');
 const { sha256 } = require('../common/sha');
-const { ACTIVE, DELETED, DEACTIVE } = require('../enums/task-status.enums');
+const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const { OWNER, MAINTENER } = require('../enums/group.enums');
 const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
 const { sequelize, beginTransaction } = require('../database');
@@ -628,8 +628,8 @@ exports.approval = async function (req, res) {
       req.body.status == 1
         ? SCHOOL_ACCEPT_CLASS
         : req.body.status == 0
-          ? SCHOOL_REJECT_CLASS
-          : SCHOOL_REMOVE_CLASS,
+        ? SCHOOL_REJECT_CLASS
+        : SCHOOL_REMOVE_CLASS,
       class_owner.sec_user_id,
       req.params.classId,
       't_class'

@@ -1,107 +1,89 @@
+const { DataTypes } = require('sequelize');
 const db = require('../database');
 
-const {
-  DataTypes
-} = require('sequelize');
-
 module.exports = sequelize => {
-  if (!sequelize) {
-    sequelize = db.sequelize();
-  }
+  if (!sequelize) sequelize = db.sequelize();
+
   const attributes = {
-    task_collection_file_id: {
-      type: DataTypes.INTEGER(11),
+    id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: true,
       autoIncrement: true,
       comment: null,
-      field: "task_collection_file_id"
+      field: 'id'
     },
-    task_collection_id: {
-      type: DataTypes.INTEGER(11),
+    t_class_task_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "task_collection_id",
+      field: 't_class_task_id',
       references: {
-        key: "task_collection_id",
-        model: "t_task_collection_model"
+        key: 'id',
+        model: 't_class_task_model'
       }
     },
-    filename: {
-      type: DataTypes.STRING(100),
+    sec_user_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
-      comment: null,
-      field: "filename"
+      comment: 'user that given finished task, in this case student',
+      field: 'sec_user_id',
+      references: {
+        key: 'id',
+        model: 'sec_user_model'
+      }
     },
-    ext: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: "ext"
-    },
-    mime_type: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: "mime_type"
-    },
-    location: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: "location"
-    },
-    sequence: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: "0",
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: "sequence"
-    },
-    status: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: "0",
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: "status"
-    },
-    created_date: {
+    submitted_date: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_date"
+      field: 'submitted_date'
     },
-    created_by: {
-      type: DataTypes.STRING(100),
+    content: {
+      type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "created_by"
+      field: 'content'
+    },
+    status: {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'status'
+    },
+    created_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'created_date'
+    },
+    created_by: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: 'SYSTEM',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'created_by'
     },
     updated_date: {
       type: DataTypes.DATE,
@@ -110,7 +92,7 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_date"
+      field: 'updated_date'
     },
     updated_by: {
       type: DataTypes.STRING(100),
@@ -119,20 +101,32 @@ module.exports = sequelize => {
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: "updated_by"
+      field: 'updated_by'
     }
   };
   const options = {
-    tableName: "t_task_collection_file",
     timestamps: false,
-    comment: "",
-    indexes: [{
-      name: "fk_t_task_collection_file_t_task_collection",
-      unique: false,
-      type: "BTREE",
-      fields: ["task_collection_id"]
-    }]
+    tableName: 't_class_task_collection',
+    comment: '',
+    indexes: [
+      {
+        name: 't_class_task_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['t_class_task_id']
+      },
+      {
+        name: 'sec_user_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['sec_user_id']
+      }
+    ]
   };
-  const TTaskCollectionFileModel = sequelize.define("t_task_collection_file_model", attributes, options);
-  return TTaskCollectionFileModel;
+  const TClassTaskCollectionModel = sequelize.define(
+    't_class_task_collection_model',
+    attributes,
+    options
+  );
+  return TClassTaskCollectionModel;
 };

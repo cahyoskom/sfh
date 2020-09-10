@@ -1,6 +1,6 @@
 const sec_confirmation = require('../models/sec_confirmation');
 const mailer = require('../common/mailer');
-const { ACTIVE } = require('../enums/task-status.enums');
+const { ACTIVE } = require('../enums/status.enums');
 
 exports.sendEmail = async function (transaction, { subject, to_addr, content, datum }) {
   const model_confirmation = sec_confirmation();

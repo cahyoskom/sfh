@@ -1,5 +1,4 @@
 const sec_user = require('../models/sec_user');
-const STATUS = require('../enums/status.enums');
 const moment = require('moment');
 const isBase64 = require('is-base64');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
@@ -9,40 +8,27 @@ const { Op } = require('sequelize');
 const pwValidator = /(?=.{6,}$)/;
 
 exports.findAll = async function (req, res) {
-  const q_item = parseInt(req.query.page_item);
-  const q_offset = parseInt(req.query.offset);
+  let filterName = {};
+
+  const { page_item = 10, offset = 0, name = '' } = req.query;
+  const q_item = parseInt(page_item);
+  const q_offset = parseInt(offset);
   const model_user = sec_user();
-  console.log(req.query.page_item);
-  var users = await model_user.findAll({
-    where: { status: 1 },
+
+  if (name) {
+    filterName = { name: { [Op.like]: name } };
+  }
+
+  var users = await model_user.findAndCountAll({
+    where: {
+      ...filterName,
+      status: 1
+    },
     limit: q_item,
     offset: q_offset
   });
 
-  if (req.query.name) {
-    var users = await model_user.findAll({
-      where: {
-        name: { [Op.like]: req.query.name },
-        status: 1
-      },
-      limit: q_item,
-      offset: q_offset
-    });
-  }
-  const allData = await model_user.findAll({
-    where: {
-      status: 1
-    }
-  });
-
-  const dataLength = allData.length;
-  console.log('datalength' + dataLength);
-  let is_admin = false;
-  if (req.user.is_admin == 1) {
-    is_admin = true;
-  }
-
-  res.json({ data: users, dataLength: dataLength, is_admin: is_admin });
+  res.json({ data: users.rows, dataLength: users.count });
 };
 
 exports.findOne = async function (req, res) {
@@ -102,7 +88,7 @@ exports.update = async function (req, res) {
     auth_provider: 1,
     is_admin: req.body.is_admin,
     status: req.body.status,
-    updated_date: moment().format('MM/DD/YYYY'),
+    updated_date: moment().format(),
     updated_by: req.body.email
   };
   console.log(req.body.password);
@@ -122,7 +108,7 @@ exports.update = async function (req, res) {
       auth_provider: 1,
       is_admin: req.body.is_admin,
       status: req.body.status,
-      updated_date: moment().format('MM/DD/YYYY'),
+      updated_date: moment().format(),
       updated_by: req.body.email
     };
   }
@@ -149,7 +135,7 @@ exports.delete = async function (req, res) {
   const model_user = sec_user();
   var user = await model_user.update(
     {
-      status: STATUS.DELETED
+      status: DELETED
     },
     { where: { id: req.params.id } }
   );

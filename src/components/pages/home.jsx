@@ -16,13 +16,6 @@ class Home extends Component {
       <section className='home-page section-b-space'>
         <Container>
           <Grid container direction='row' justify='flex-start' alignItems='center'>
-            <Grid item xs={12} lg={12}>
-              <li className='nav-item'>
-                <Link to={`${process.env.PUBLIC_URL}/dashboard/iklan`} className='nav-link'>
-                  Dashboard Iklan
-                  </Link>
-              </li>
-            </Grid>
           </Grid>
         </Container>
       </section>

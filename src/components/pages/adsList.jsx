@@ -39,19 +39,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -232,7 +221,7 @@ const useStyles = makeStyles((theme) => ({
 
 //-----------------end shortlist
 
-class AdsAproval extends Component {
+class AdsList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -250,13 +239,14 @@ class AdsAproval extends Component {
 
   render() {
     const { classState, postAddMember, onChangeStateAddMember } = this.props;
-    let students = [
+    let iklan = [
       {
         id: 1,
         nama: "Naster kering enak",
         pembuat: "ipul",
         dilihat: 0,
         periode: "01-08-2020 sampai 07-08-2020",
+        status: "Menunggu Persetujuan",
         tarif: 5000
       },
       {
@@ -265,6 +255,7 @@ class AdsAproval extends Component {
         pembuat: "Bagio",
         dilihat: 10,
         periode: "01-08-2020 sampai 01-09-2020",
+        status: "Menunggu Persetujuan",
         tarif: 10000
       },
       {
@@ -273,6 +264,7 @@ class AdsAproval extends Component {
         pembuat: "Darmi",
         dilihat: 20,
         periode: "01-08-2020 sampai 07-08-2020",
+        status: "Menunggu Persetujuan",
         tarif: 5000
       },
       {
@@ -281,6 +273,7 @@ class AdsAproval extends Component {
         pembuat: "Ajoy",
         dilihat: 100,
         periode: "01-08-2020 sampai 07-08-2021",
+        status: "Menunggu Persetujuan",
         tarif: 50000
       },
       {
@@ -289,6 +282,7 @@ class AdsAproval extends Component {
         pembuat: "Diana",
         dilihat: 5,
         periode: "01-07-2020 sampai 30-07-2020",
+        status: "Dipubilkasikan",
         tarif: 10000
       }
     ];
@@ -299,7 +293,7 @@ class AdsAproval extends Component {
         <Container>
           <section className='home-page pt-4'>
             <Grid container direction='col' spacing={2} justify='center' alignItems='center'>
-              <Grid item xs={10} sm={10} md={10} lg={10} xl={10} spacing={1}>
+              <Grid item xs={10} sm={10} md={10} lg={10} xl={12} spacing={1}>
 
                 <div className="h5 font-weight-bold pb-3">Dashboard Iklan</div>
 
@@ -308,8 +302,8 @@ class AdsAproval extends Component {
                 <TableContainer component={Paper} elevation={3}>
                   <Table className='tableMember'/*  aria-label='simple table' */ size="small" aria-label="a dense table">
                     <TableHead>
-                      <TableRow style={{ height: '50px' }}>
-                        <TableCell>
+                      <TableRow style={{ height: '60px' }}>
+                        <TableCell style={{ width: '165px' }}>
                           <strong>Nama Iklan</strong>
                         </TableCell>
                         <TableCell>
@@ -318,27 +312,36 @@ class AdsAproval extends Component {
                         <TableCell>
                           <strong>Dilihat</strong>
                         </TableCell>
-                        <TableCell>
+                        <TableCell style={{ width: '170px' }}>
                           <strong>Periode</strong>
                         </TableCell>
                         <TableCell>
                           <strong>Tarif</strong>
                         </TableCell>
                         <TableCell>
+                          <strong>Status</strong>
+                        </TableCell>
+                        <TableCell style={{ width: '150px' }}>
                           <strong>Aksi</strong>
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {students.map(row => (
+                      {iklan.map(row => (
                         <TableRow hover key={row.nama}>
                           <TableCell style={{ color: '#000000' }}>{row.nama}</TableCell>
                           <TableCell style={{ color: '#000000' }}>{row.pembuat}</TableCell>
                           <TableCell style={{ color: '#000000' }}>{row.dilihat}</TableCell>
                           <TableCell style={{ color: '#000000' }}>{row.periode}</TableCell>
                           <TableCell style={{ color: '#000000', align: 'right' }}>{'Rp. ' + new Intl.NumberFormat(['ban', 'id']).format(row.tarif)}</TableCell>
+                          {row.status == 'Dipubilkasikan' && (
+                            <TableCell style={{ color: '#5FD855' }}>{row.status}</TableCell>
+                          )}
+                          {row.status == 'Menunggu Persetujuan' && (
+                            <TableCell style={{ color: '#F4A31E' }}>{row.status}</TableCell>
+                          )}
                           <TableCell >
-                            <Link to={`${process.env.PUBLIC_URL}/dashboard/iklan/${row.id}`}>
+                            <Link to={`${process.env.PUBLIC_URL}/pratinjau/${row.id}`}>
                               <Button style={{ backgroundColor: '#15A3B8' }} className='btn text-white'>
                                 Pratinjau
                             </Button>
@@ -350,8 +353,9 @@ class AdsAproval extends Component {
                     <TableFooter>
                       <TableRow>
                         <TablePagination
+                          style={{ padding: '0 115px 0 0' }}
                           rowsPerPageOptions={[3, 5, 25, 50, 100]}
-                          colSpan={6}
+                          colSpan={7}
                           count={5}
                           rowsPerPage={3}
                           page={0}
@@ -370,10 +374,10 @@ class AdsAproval extends Component {
             </Grid>
           </section>
         </Container>
-      </div>
+      </div >
     );
   }
 }
 
 
-export default connect(/* mapStateToProps, mapDispatchToProps */)(AdsAproval);
+export default connect(/* mapStateToProps, mapDispatchToProps */)(AdsList);

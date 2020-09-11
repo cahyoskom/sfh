@@ -25,7 +25,8 @@ import Register from './components/pages/register';
 import UpdatePassword from './components/pages/update-password';
 import Confirmation from './components/pages/confirmation';
 import PageNotFound from './components/pages/404';
-import AdsAproval from './components/pages/ads-aproval';
+import AdsList from './components/pages/adsList';
+import AdsAproval from './components/pages/adsAproval';
 
 // import PrivateRouteAdmin from './PrivateRouteAdmin';
 
@@ -65,7 +66,9 @@ class Root extends React.Component {
             <ScrollContext>
               <App>
                 <Switch>
-                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={Home} authenticated={this.authCheck()} />
+                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={AdsList} authenticated={this.authCheck()} />
+                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/pratinjau/:id`} component={AdsAproval} authenticated={this.authCheck()} />
+
                   <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
                   <PublicRoute
@@ -74,12 +77,6 @@ class Root extends React.Component {
                     authenticated={this.authCheck()}
                   />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/update_password/:code`} component={UpdatePassword} />
-                  <PrivateRoute
-                    path={`${process.env.PUBLIC_URL}/dashboard/iklan`}
-                    component={AdsAproval}
-                    authenticated={this.authCheck()}
-                  />
-
                   <Route component={PageNotFound} />
 
 

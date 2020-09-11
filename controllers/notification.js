@@ -8,7 +8,6 @@ const { query } = require('../models/query');
 const moment = require('moment');
 
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
-let notificationData = [];
 
 exports.findAll = async (req, res) => {
   const sql = `
@@ -54,7 +53,7 @@ exports.deleteNotification = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  let type = m_notification_default().findOne({
+  let type = await m_notification_default().findOne({
     where: { type: req.body.type }
   });
   let date = moment().format();
@@ -94,7 +93,6 @@ exports.isRead = async (req, res) => {
       return;
     }
 
-    res.json('success update!');
     res.json({ data: read });
   } catch (error) {
     res.json({ error });
@@ -115,7 +113,6 @@ exports.isReadById = async (req, res) => {
       return;
     }
 
-    res.json('success update!');
     res.json({ data: read });
   } catch (error) {
     res.json({ error });
@@ -131,7 +128,7 @@ exports.createUser = async (req, res) => {
     new_obj['id'] = null;
     new_obj['sec_user_id'] = req.body.id;
     try {
-      t_notification_user().create(new_obj);
+      await t_notification_user().create(new_obj);
     } catch (err) {
       console.log(err);
     }
@@ -156,7 +153,7 @@ exports.updateDefaults = async (req, res) => {
     // is_receive_sms: req.body.is_receive_sms
   };
   try {
-    const notif = t_notification_user().update(new_obj, {
+    const notif = await t_notification_user().update(new_obj, {
       // where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id, m_notification_type_id: req.body.m_id }
       where: { m_notification_type_id: req.body.type_id, sec_user_id: req.user.id }
     });
@@ -173,7 +170,7 @@ exports.updateMasterNotification = async (req, res) => {
     // is_receive_sms: req.body.is_receive_sms
   };
   try {
-    const notif = t_notification_user().update(obj, {
+    const notif = await t_notification_user().update(obj, {
       // where: { out_name: req.body.out_name, out_id: req.body.out_id, sec_user_id: req.user.id, m_notification_type_id: req.body.m_id }
       where: { sec_user_id: req.user.id, out_id: req.body.out_id, out_name: req.body.out_name }
     });

@@ -21,10 +21,10 @@ const t_notification = require('../models/t_notification');
 const t_school = require('../models/t_school');
 
 const Confirmation = require('./confirmation');
-const { sequelize, beginTransaction } = require('../database');
+const { beginTransaction } = require('../database');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 const { OWNER, MAINTENER, PARTICIPANT } = require('../enums/group.enums');
-const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/task-status.enums');
+const { DONE, THEIRREQUEST, SELFREQUEST } = require('../enums/link-status.enums');
 const {
   CLASS_CHANGE_INFO,
   CLASS_DEACTIVATE_USER,
@@ -37,7 +37,7 @@ const {
   CLASS_DUPLICATED
 } = require('../enums/notification-type.enums');
 
-async function isNotifNeeded(type, receiver_id, out_id, out_name) {
+async function isNotifNeeded(type, receiver_id, out_id, out_name, transaction) {
   var NOTIFICATION_TYPE = await m_notification_type().findOne({
     attributes: ['id'],
     where: { type: type }
@@ -60,7 +60,11 @@ async function isNotifNeeded(type, receiver_id, out_id, out_name) {
         out_name: null
       }
     });
+    if (!user_notif) {
+      return null;
+    }
   }
+
   if (user_notif.is_receive_web == 1) {
     return user_notif;
   } else {
@@ -86,7 +90,7 @@ exports.classMemberLinkStatus = async function (req, res) {
   }
   const request = req.body.request;
   if (request == 'setujui') {
-    if (rel.link_status != 1) {
+    if (rel.link_status != THEIRREQUEST) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -96,7 +100,13 @@ exports.classMemberLinkStatus = async function (req, res) {
         { where: { id: rel.id } },
         { transaction }
       );
-      var notif_user = await isNotifNeeded(CLASS_ACCEPT_USER, userId, classId, 't_class');
+      var notif_user = await isNotifNeeded(
+        CLASS_ACCEPT_USER,
+        userId,
+        classId,
+        't_class',
+        transaction
+      );
       if (notif_user) {
         var new_obj = {
           m_notification_type_id: notif_user.m_notification_type_id,
@@ -112,20 +122,18 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
-
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      await transaction.commit();
       return res.json({ message: 'Permintaan gabung disetujui' });
     } catch (err) {
       await transaction.rollback();
       return res.status(401).json({ message: err });
     }
   } else if (request == 'tolak') {
-    if (rel.link_status != 1) {
+    if (rel.link_status != THEIRREQUEST) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -135,7 +143,13 @@ exports.classMemberLinkStatus = async function (req, res) {
         { where: { id: rel.id } },
         { transaction }
       );
-      var notif_user = await isNotifNeeded(CLASS_REJECT_USER, userId, classId, 't_class');
+      var notif_user = await isNotifNeeded(
+        CLASS_REJECT_USER,
+        userId,
+        classId,
+        't_class',
+        transaction
+      );
       if (notif_user) {
         var new_obj = {
           m_notification_type_id: notif_user.m_notification_type_id,
@@ -151,18 +165,18 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      await transaction.commit();
       return res.json({ message: 'Permintaan gabung ditolak' });
     } catch (err) {
       await transaction.rollback();
       return res.status(401).json({ message: err });
     }
   } else if (request == 'aktifkan') {
-    if (rel.link_status != 0 && rel.status != DEACTIVE) {
+    if (rel.link_status != DONE && rel.status != DEACTIVE) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -172,7 +186,13 @@ exports.classMemberLinkStatus = async function (req, res) {
         { where: { id: rel.id } },
         { transaction }
       );
-      var notif_user = await isNotifNeeded(CLASS_ACTIVATE_USER, userId, classId, 't_class');
+      var notif_user = await isNotifNeeded(
+        CLASS_ACTIVATE_USER,
+        userId,
+        classId,
+        't_class',
+        transaction
+      );
       if (notif_user) {
         var new_obj = {
           m_notification_type_id: notif_user.m_notification_type_id,
@@ -188,18 +208,18 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      await transaction.commit();
       return res.json({ message: 'Member diaktifkan' });
     } catch (err) {
       await transaction.rollback();
       return res.status(401).json({ message: err });
     }
   } else if (request == 'nonaktifkan') {
-    if (rel.link_status != 0 && rel.status != DEACTIVE) {
+    if (rel.link_status != DONE && rel.status != DEACTIVE) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -209,7 +229,13 @@ exports.classMemberLinkStatus = async function (req, res) {
         { where: { id: rel.id } },
         { transaction }
       );
-      var notif_user = await isNotifNeeded(CLASS_DEACTIVATE_USER, userId, classId, 't_class');
+      var notif_user = await isNotifNeeded(
+        CLASS_DEACTIVATE_USER,
+        userId,
+        classId,
+        't_class',
+        transaction
+      );
       if (notif_user) {
         var new_obj = {
           m_notification_type_id: notif_user.m_notification_type_id,
@@ -225,18 +251,18 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      await transaction.commit();
       return res.json({ message: 'Member dinonaktifkan' });
     } catch (err) {
       await transaction.rollback();
       return res.status(401).json({ message: err });
     }
   } else if (request == 'batalkan') {
-    if (rel.link_status != 2) {
+    if (rel.link_status != SELFREQUEST) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -267,18 +293,30 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      const confirm = await sec_confirmation().findOne({
+        where: {
+          sec_user_id: userId,
+          description: {
+            [Op.or]: [`CLASS_${classId}_TEACHER_INVITATION`, `CLASS_${classId}_STUDENT_INVITATION`]
+          },
+          status: ACTIVE
+        }
+      });
+      if (confirm) {
+        sec_confirmation().update({ status: DEACTIVE }, { where: { id: confirm.id } }, transaction);
+      }
+      await transaction.commit();
       return res.json({ message: 'Permintaan gabung dibatalkan' });
     } catch (err) {
       await transaction.rollback();
       return res.status(401).json({ message: err });
     }
   } else if (request == 'keluarkan') {
-    if (rel.link_status != 0) {
+    if (rel.link_status != DONE) {
       res.status(401).json({ message: 'aksi tidak cocok' });
       return;
     }
@@ -288,7 +326,13 @@ exports.classMemberLinkStatus = async function (req, res) {
         { where: { id: rel.id } },
         { transaction }
       );
-      var notif_user = await isNotifNeeded(CLASS_REMOVE_USER, userId, classId, 't_class');
+      var notif_user = await isNotifNeeded(
+        CLASS_REMOVE_USER,
+        userId,
+        classId,
+        't_class',
+        transaction
+      );
       if (notif_user) {
         var new_obj = {
           m_notification_type_id: notif_user.m_notification_type_id,
@@ -304,11 +348,11 @@ exports.classMemberLinkStatus = async function (req, res) {
         };
         var create_notif = await t_notification().create(new_obj, { transaction });
       }
-      await transaction.commit();
       if (!datum[0]) {
         await transaction.rollback();
         return res.status(401).json({ message: 'Perubahan gagal dilakukan' });
       }
+      await transaction.commit();
       return res.json({ message: 'Berhasil dikeluarkan' });
     } catch (err) {
       await transaction.rollback();
@@ -366,9 +410,10 @@ exports.member = async function (req, res) {
         id: students[i].sec_user_id
       }
     });
+    if (!iuser) continue;
     let user = JSON.parse(JSON.stringify(iuser));
 
-    if (students[i].status == DEACTIVE && students[i].link_status == 0) {
+    if (students[i].status == DEACTIVE && students[i].link_status == DONE) {
       user['link_status'] = link_status_enums[3];
     } else {
       user['link_status'] = link_status_enums[students[i].link_status];
@@ -393,18 +438,17 @@ exports.member = async function (req, res) {
         id: teachers[i].sec_user_id
       }
     });
+    if (!iuser) continue;
     let user = JSON.parse(JSON.stringify(iuser));
-    if (teachers[i].status == DEACTIVE && teachers[i].link_status == 0) {
+    if (teachers[i].status == DEACTIVE && teachers[i].link_status == DONE) {
       user['link_status'] = link_status_enums[3];
     } else {
-      user['link_status'] = link_status_enums[students[i].link_status];
+      user['link_status'] = link_status_enums[teachers[i].link_status];
     }
     teachersData.push(user);
   }
   data['teachers'] = teachersData;
-
-  res.json(data);
-  return;
+  return res.json(data);
 };
 
 exports.findAll = async function (req, res) {
@@ -447,7 +491,6 @@ async function getClassOwner(classId) {
 }
 
 async function deleting(classId, transaction) {
-  // const transaction = await beginTransaction();
   // delete class within id from classId
 
   const model_class = t_class();
@@ -583,6 +626,19 @@ exports.findOne = async function (req, res) {
   res.status(200).json({ data: datum, hasAuthority: hasAuthority, owner: owner });
 };
 
+async function generateClassCode() {
+  let loop = true;
+  let code = '';
+  while (loop) {
+    code = crypto.randomBytes(3).toString('hex');
+    let check_code = await t_class().findOne({
+      where: { code: code }
+    });
+    if (!check_code) loop = false;
+  }
+  return code;
+}
+
 exports.create = async function (req, res) {
   const transaction = await beginTransaction();
   let schoolId;
@@ -595,14 +651,7 @@ exports.create = async function (req, res) {
       return;
     } else schoolId = check_school.id;
   }
-  let loop = true;
-  while (loop) {
-    var code = crypto.randomBytes(3).toString('hex');
-    let check_code = await t_class().findOne({
-      where: { code: code }
-    });
-    if (!check_code) loop = false;
-  }
+  let code = generateClassCode();
   var new_obj = {
     t_school_id: schoolId,
     code: code,
@@ -615,9 +664,9 @@ exports.create = async function (req, res) {
   };
 
   try {
-    var datum = await t_class.create(new_obj, { transaction });
+    var datum = await t_class().create(new_obj, { transaction });
     var new_member = {
-      t_class: datum.id,
+      t_class_id: datum.id,
       sec_user_id: req.user.id,
       sec_group_id: 1,
       status: ACTIVE,
@@ -642,9 +691,10 @@ exports.duplicate = async function (req, res) {
     res.status(401).json({ message: 'Kelas tidak ditemukan.' });
     return;
   }
+  let code = generateClassCode();
   var new_obj = {
     t_school_id: datum.t_school_id,
-    code: datum.code,
+    code: code,
     name: datum.name,
     note: datum.note,
     description: datum.description,
@@ -654,7 +704,6 @@ exports.duplicate = async function (req, res) {
   };
   try {
     var savedDuplicate = await model_class.create(new_obj, { transaction });
-    // await transaction.commit();
   } catch (err) {
     await transaction.rollback();
     res.status(411).json({ error: 11, message: err.message });
@@ -670,7 +719,6 @@ exports.duplicate = async function (req, res) {
   if (members.length == 0) {
     return;
   }
-  console.log(members);
   try {
     for (const indexMember in members) {
       member = members[indexMember];
@@ -793,7 +841,6 @@ exports.update = async function (req, res) {
     if (!datum[0]) {
       await transaction.rollback();
       res.status(411).json({ message: 'Kelas tidak ditemukan.' });
-      console.log('class not found');
       return;
     }
     var updatedDatum = await model_class.findOne({
@@ -864,18 +911,19 @@ exports.delete = async function (req, res) {
   }
 };
 
-async function checkResendInvitation(invitation) {
+async function checkResendInvitation(transaction, invitation) {
   const timeNow = moment();
   const dateCr = moment(invitation.created_date);
   const parameter = m_param();
   const DURATION = await parameter.findOne({
     attributes: ['value'],
-    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' }
+    where: { name: 'MAIL_INTERVAL_MEMBER_INVITATION' },
+    transaction
   });
   dateCr.add(DURATION.value, 'hours');
   if (dateCr < timeNow) {
     invitation.status = DEACTIVE;
-    await invitation.save();
+    await invitation.save({ transaction });
     return true;
   }
   return false;
@@ -889,91 +937,97 @@ exports.inviteMember = async function (req, res) {
   const position = req.body.position;
   let positions = { teacher: MAINTENER, student: PARTICIPANT };
   let positionEnum = positions[position.toLowerCase()];
-  var check_user = await sec_user().findOne({
-    where: { email: req.body.email, status: ACTIVE }
-  });
-  if (check_user) {
-    var check_member = await t_class_member().findOne({
-      where: { sec_user_id: check_user.id, t_class_id: classId, status: ACTIVE }
+
+  try {
+    var check_user = await sec_user().findOne({
+      where: { email: req.body.email, status: ACTIVE },
+      transaction
     });
-    if (check_member) {
-      res
-        .status(411)
-        .json({ error: null, message: 'Anggota sudah terdaftar sebagai anggota kelas' });
-    } else {
-      var invitation = await sec_confirmation().findOne({
-        where: { sec_user_id: check_user.id, status: ACTIVE }
+    if (!check_user) throw new Error('Email belum terdaftar sebagai pengguna');
+
+    var check_member = await t_class_member().findOne({
+      where: { sec_user_id: check_user.id, t_class_id: classId },
+      transaction
+    });
+    // if (!check_member) throw new Error('Anggota tidak terdaftar sebagai anggota kelas');
+    if (check_member && check_member.status == ACTIVE) {
+      throw new Error('Anggota sudah terdaftar sebagai anggota kelas');
+    }
+
+    var description,
+      invitation = await sec_confirmation().findOne({
+        where: { sec_user_id: check_user.id, status: ACTIVE },
+        transaction
       });
-      var description;
-      if (invitation) {
-        var resend = await checkResendInvitation(invitation);
-        if (resend) {
-          // resend email
-          if (invitation.description == `CLASS_${classId}_TEACHER_INVITATION`)
-            description = `CLASS_${classId}_TEACHER_REINVITATION`;
-          else {
-            description = `CLASS_${classId}_STUDENT_REINVITATION`;
-          }
-        } else {
-          res.status(411).json({ error: null, message: 'Email berisi undangan sudah dikirim' });
-          return;
-        }
+    if (!invitation) {
+      if (position == 'teacher') {
+        description = `CLASS_${classId}_TEACHER_INVITATION`;
       } else {
-        if (position == 'teacher') {
-          description = `CLASS_${classId}_TEACHER_INVITATION`;
-        } else {
-          description = `CLASS_${classId}_STUDENT_INVITATION`;
-        }
+        description = `CLASS_${classId}_STUDENT_INVITATION`;
       }
-      var getClass = await t_class().findOne({
-        where: { id: classId, status: ACTIVE }
-      });
-      //send invitation
-      const code = crypto.randomBytes(16).toString('hex');
-      const subject = `Undangan bergabung dengan ${getClass.name}`;
-      const to_addr = check_user.email;
-      const url = env.APP_BASEURL || req.headers.host;
-      const content =
-        'Halo,\n\n' +
-        `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${getClass.name}. Klik link untuk menerima undangan: \n` +
-        `${url}/invitation?q=class&code=${code}`;
-      const datum = {
-        description: description,
-        sec_user_id: check_user.id,
-        code: code
-      };
-      try {
-        const sendEmail = await Confirmation.sendEmail(
-          {
-            subject,
-            to_addr,
-            content,
-            datum
-          },
-          transaction
-        );
-        if (!sendEmail) throw sendEmail;
+    } else {
+      var resend = await checkResendInvitation(transaction, invitation);
+      if (!resend) throw new Error('Email berisi undangan sudah dikirim');
 
-        var new_member = {
-          t_class_id: classId,
-          sec_user_id: check_user.id,
-          status: ACTIVE,
-          sec_group_id: positionEnum, //MAINTAINER
-          created_date: moment().format(),
-          created_by: 'SYSTEM',
-          link_status: SELFREQUEST
-        };
-        var created = await t_class_member().create(new_member, { transaction });
-
-        await transaction.commit();
-        res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
-      } catch (err) {
-        await transaction.rollback();
-        res.status(411).json({ error: null, message: err.message });
+      // resend email
+      if (invitation.description == `CLASS_${classId}_TEACHER_INVITATION`) {
+        description = `CLASS_${classId}_TEACHER_REINVITATION`;
+      } else {
+        description = `CLASS_${classId}_STUDENT_REINVITATION`;
       }
     }
-  } else {
-    res.status(411).json({ error: null, message: 'Email belum terdaftar sebagai pengguna' });
+
+    var getClass = await t_class().findOne({
+      where: { id: classId, status: ACTIVE },
+      transaction
+    });
+    //send invitation
+    const code = crypto.randomBytes(16).toString('hex');
+    const subject = `Undangan bergabung dengan ${getClass.name}`;
+    const to_addr = check_user.email;
+    const url = env.APP_BASEURL || req.headers.host;
+    const content =
+      'Halo,\n\n' +
+      `${sender_name} (${sender_email}) mengundang Anda untuk begabung dengan ${getClass.name}. Klik link untuk menerima undangan: \n` +
+      `${url}/invitation?q=class&code=${code}`;
+    const datum = {
+      description: description,
+      sec_user_id: check_user.id,
+      code: code
+    };
+    const sendEmail = await Confirmation.sendEmail(transaction, {
+      subject,
+      to_addr,
+      content,
+      datum
+    });
+    if (!sendEmail) throw sendEmail;
+
+    if (check_member) {
+      var updating = await t_class_member().update(
+        { ...check_member, status: ACTIVE, link_status: SELFREQUEST },
+        { where: { id: check_member.id }, transaction }
+      );
+      if (!updating) throw updating;
+    } else {
+      var new_member = {
+        t_class_id: classId,
+        sec_user_id: check_user.id,
+        status: ACTIVE,
+        sec_group_id: positionEnum, //MAINTAINER
+        created_date: moment().format(),
+        created_by: 'SYSTEM',
+        link_status: SELFREQUEST
+      };
+      var created = await t_class_member().create(new_member, { transaction });
+      if (!created) throw created;
+    }
+
+    await transaction.commit();
+    return res.json({ message: `Email berisi undangan berhasil dikirim ke ${req.body.email}` });
+  } catch (e) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: e.message });
   }
 };
 
@@ -985,13 +1039,12 @@ exports.acceptInvitation = async function (req, res) {
     where: { code: code }
   });
   if (!invitation) {
-    res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
+    return res.status(411).json({ error: null, message: 'Link undangan tidak valid' });
   }
   let desc = invitation.description.split('_');
   let classId = desc[1];
   let positions = { teacher: MAINTENER, student: PARTICIPANT };
   let position = positions[desc[2].toLowerCase()];
-  console.log(position);
 
   var getClass = await t_class().findOne({
     where: { id: classId }

@@ -22,19 +22,36 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   const model_class = t_class_forum();
+  const model_mention_class = t_class_forum_mention();
+
   var new_post = {
     t_class_id: req.body.t_class_id,
     sec_user_id: req.user.id,
     published_datetime: moment().format(),
     content: req.body.content,
-    status: 1,
+    status: ACTIVE,
     created_date: moment().format(),
     created_by: req.user.name
   };
 
   try {
+    var datmen = [];
     var datum = await model_class.create(new_post);
-    res.json({ data: datum });
+
+    if (req.body.mentionedPeoples.length != 0) {
+      req.body.mentionedPeoples.map(people => {
+        var new_mention = {
+          t_class_forum_id: datum.dataValues.id,
+          sec_user_id: people.id,
+          status: ACTIVE,
+          created_date: moment().format(),
+          created_by: people.name
+        };
+        var temp = model_mention_class.create(new_mention);
+        datmen.push(temp);
+      });
+    }
+    res.json({ data_post: datum, data_mention: datmen });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }

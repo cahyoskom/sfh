@@ -2,40 +2,31 @@ const sec_confirmation = require('../models/sec_confirmation');
 const mailer = require('../common/mailer');
 const { ACTIVE } = require('../enums/status.enums');
 
-async function create(data) {
+exports.sendEmail = async function (transaction, { subject, to_addr, content, datum }) {
   const model_confirmation = sec_confirmation();
-  return await model_confirmation.create(data);
-}
+  const confirmation = await model_confirmation.create(
+    {
+      ...datum,
+      is_sent: 0,
+      status: ACTIVE,
+      sender_addr: process.env.MAIL_USERNAME
+    },
+    { transaction }
+  );
+  if (!confirmation) return confirmation;
 
-exports.sendEmail = async function ({ subject, to_addr, content, datum }, transaction) {
-  console.log('Email confirmation: ', { subject, to_addr, content, datum });
-  try {
-    const confirmation = await create(
-      {
-        ...datum,
-        status: ACTIVE,
-        sender_addr: process.env.MAIL_USERNAME
-      },
-      { transaction }
-    );
+  const email = await mailer({
+    to: to_addr,
+    text: content,
+    subject
+  });
+  if (!email) return email;
 
-    if (!confirmation) throw confirmation;
+  confirmation.is_sent = 1;
+  const resave = await confirmation.save({ transaction });
+  if (!resave) return resave;
 
-    const email = await mailer({
-      to: to_addr,
-      text: content,
-      subject
-    });
+  console.log('Email confirmation:', { subject, to_addr, content, datum, response: email });
 
-    if (!email) throw email;
-
-    confirmation.is_sent = 1;
-    await confirmation.save();
-    transaction.commit();
-
-    return true;
-  } catch (e) {
-    transaction.rollback();
-    throw e;
-  }
+  return true;
 };

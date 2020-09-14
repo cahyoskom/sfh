@@ -29,6 +29,7 @@ exports.findAll = async (req, res) => {
   t_notification.receiver_user_id 
   WHERE t_notification.receiver_user_id = :id AND 
   DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) < 4
+  AND t_notification.status > 0
   ORDER BY t_notification.notification_datetime DESC
   `;
   var test = await query(sql, {
@@ -109,7 +110,7 @@ exports.isReadById = async (req, res) => {
   };
   try {
     var read = await t_notification().update(update_obj, {
-      where: { receiver_user_id: req.body.id, m_notification_type_id: req.body.type_id }
+      where: { receiver_user_id: req.body.id, id: req.body.type_id }
     });
 
     if (!read) {

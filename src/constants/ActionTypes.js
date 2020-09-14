@@ -1,7 +1,7 @@
 // GLOBAL
 export const SET_LOADER = 'SET_LOADER';
 
-// LOGIN
+// LOGIN & REGISTRATION
 export const SET_LOGIN = 'SET_LOGIN';
 export const SET_LOGIN_FAILED = 'SET_LOGIN_FAILED';
 export const SET_CLOSE_ALERT = 'SET_CLOSE_ALERT';

@@ -27,6 +27,7 @@ import Confirmation from './components/pages/confirmation';
 import PageNotFound from './components/pages/404';
 import AdsList from './components/pages/adsList';
 import AdsAproval from './components/pages/adsAproval';
+<<<<<<< HEAD
 
 // import PrivateRouteAdmin from './PrivateRouteAdmin';
 
@@ -39,6 +40,8 @@ import AdsAproval from './components/pages/adsAproval';
 // import Class from './components/usermanagement/class';
 // import Student from './components/usermanagement/student';
 // import Role from './components/usermanagement/role';
+=======
+>>>>>>> 6d56e5f0008bd657189c6f4e6e86e78bf61c3da4
 
 var lang = localStorage.getItem('locale-lang');
 
@@ -66,8 +69,23 @@ class Root extends React.Component {
             <ScrollContext>
               <App>
                 <Switch>
+<<<<<<< HEAD
                   <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={AdsList} authenticated={this.authCheck()} />
                   <PrivateRoute exact path={`${process.env.PUBLIC_URL}/pratinjau/:id`} component={AdsAproval} authenticated={this.authCheck()} />
+=======
+                  <PrivateRoute
+                    exact
+                    path={`${process.env.PUBLIC_URL}/`}
+                    component={AdsList}
+                    authenticated={this.authCheck()}
+                  />
+                  <PrivateRoute
+                    exact
+                    path={`${process.env.PUBLIC_URL}/pratinjau/:id`}
+                    component={AdsAproval}
+                    authenticated={this.authCheck()}
+                  />
+>>>>>>> 6d56e5f0008bd657189c6f4e6e86e78bf61c3da4
 
                   <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />

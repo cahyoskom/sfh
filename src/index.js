@@ -28,18 +28,6 @@ import PageNotFound from './components/pages/404';
 import AdsList from './components/pages/adsList';
 import AdsAproval from './components/pages/adsAproval';
 
-// import PrivateRouteAdmin from './PrivateRouteAdmin';
-
-
-// import Admin from './components/usermanagement/admin';
-// import Group from './components/usermanagement/group';
-// import User from './components/usermanagement/user';
-// import UserPerId from './components/usermanagement/user_perid';
-// import Subject from './components/usermanagement/subject';
-// import Class from './components/usermanagement/class';
-// import Student from './components/usermanagement/student';
-// import Role from './components/usermanagement/role';
-
 var lang = localStorage.getItem('locale-lang');
 
 if (!lang) {
@@ -66,8 +54,18 @@ class Root extends React.Component {
             <ScrollContext>
               <App>
                 <Switch>
-                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={AdsList} authenticated={this.authCheck()} />
-                  <PrivateRoute exact path={`${process.env.PUBLIC_URL}/pratinjau/:id`} component={AdsAproval} authenticated={this.authCheck()} />
+                  <PrivateRoute
+                    exact
+                    path={`${process.env.PUBLIC_URL}/`}
+                    component={AdsList}
+                    authenticated={this.authCheck()}
+                  />
+                  <PrivateRoute
+                    exact
+                    path={`${process.env.PUBLIC_URL}/pratinjau/:id`}
+                    component={AdsAproval}
+                    authenticated={this.authCheck()}
+                  />
 
                   <PublicRoute path={`${process.env.PUBLIC_URL}/login`} component={SignIn} authenticated={this.authCheck()} />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/confirmation`} component={Confirmation} />
@@ -78,68 +76,6 @@ class Root extends React.Component {
                   />
                   <PublicRoute path={`${process.env.PUBLIC_URL}/update_password/:code`} component={UpdatePassword} />
                   <Route component={PageNotFound} />
-
-
-
-                  {/* <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/group`}
-                    component={Group}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/user/:id`}
-                    component={UserPerId}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                    exact={true}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/user`}
-                    component={User}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                    exact={true}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/subject`}
-                    component={Subject}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/class`}
-                    component={Class}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/student`}
-                    component={Student}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement/role`}
-                    component={Role}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  />
-
-                  <PrivateRouteAdmin
-                    path={`${process.env.PUBLIC_URL}/usermanagement`}
-                    component={Admin}
-                    authenticated={this.authCheck()}
-                    role={this.roleAdminCheck()}
-                  /> */}
-
-                  {/* <Route component={PageNotFound} /> */}
                 </Switch>
               </App>
             </ScrollContext>

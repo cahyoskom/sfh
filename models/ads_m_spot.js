@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
-const t_class_member = require('../models/t_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -15,73 +14,45 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_school_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    ads_m_app_page: {
+      type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_school_id',
+      field: 'ads_m_app_page',
       references: {
         key: 'id',
-        model: 't_school_model'
+        model: 'ads_m_app_page_model'
       }
     },
-    code: {
-      type: DataTypes.STRING(10),
-      unique: true,
+    position: {
+      type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: 'position'
     },
-    name: {
-      type: DataTypes.STRING(100),
+    width: {
+      type: DataTypes.INTEGER(6),
       allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'name'
-    },
-    description: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'description'
-    },
-    avatar: {
-      type: DataTypes.TEXT('long'),
-      allowNull: true,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'avatar'
+      field: 'width'
     },
-    link_status: {
-      type: DataTypes.INTEGER(4),
-      allowNull: true,
-      defaultValue: '0',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'link_status'
-    },
-    note: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
+    height: {
+      type: DataTypes.INTEGER(6),
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'note'
+      field: 'height'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -131,18 +102,17 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_class',
+    tableName: 'ads_m_spot',
     comment: '',
     indexes: [
       {
-        name: 't_school_id',
+        name: 'ads_m_app_page',
         unique: false,
         type: 'BTREE',
-        fields: ['t_school_id']
+        fields: ['ads_m_app_page']
       }
     ]
   };
-  const TClassModel = sequelize.define('t_class_model', attributes, options);
-  TClassModel.hasMany(t_class_member(), { foreignKey: 't_class_id' });
-  return TClassModel;
+  const AdsMSpotModel = sequelize.define('ads_m_spot_model', attributes, options);
+  return AdsMSpotModel;
 };

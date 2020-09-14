@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
-const t_class_member = require('../models/t_class_member');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -15,73 +14,121 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    t_school_id: {
+    sec_user_id: {
       type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 't_school_id',
+      field: 'sec_user_id',
       references: {
         key: 'id',
-        model: 't_school_model'
+        model: 'sec_user_model'
       }
     },
-    code: {
-      type: DataTypes.STRING(10),
-      unique: true,
+    ads_m_rates_id: {
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'code'
+      field: 'ads_m_rates_id',
+      references: {
+        key: 'id',
+        model: 'ads_m_rates_model'
+      }
     },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'name'
-    },
-    description: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'description'
-    },
-    avatar: {
+    content: {
       type: DataTypes.TEXT('long'),
-      allowNull: true,
+      allowNull: false,
       defaultValue: null,
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'avatar'
+      field: 'content'
     },
-    link_status: {
-      type: DataTypes.INTEGER(4),
-      allowNull: true,
+    content_type: {
+      type: DataTypes.ENUM('image', 'audio', 'video'),
+      allowNull: false,
+      defaultValue: 'image',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'content_type'
+    },
+    start_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'start_datetime'
+    },
+    end_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'end_datetime'
+    },
+    deal_price: {
+      type: DataTypes.INTEGER(6).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'deal_price'
+    },
+    deal_frequence: {
+      type: DataTypes.INTEGER(6).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'deal_frequence'
+    },
+    deal_duration: {
+      type: DataTypes.INTEGER(6).UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'deal_duration'
+    },
+    deal_duration_unit: {
+      type: DataTypes.ENUM('second', 'minute'),
+      allowNull: false,
+      defaultValue: 'second',
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'deal_duration_unit'
+    },
+    order_datetime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: null,
+      primaryKey: false,
+      autoIncrement: false,
+      comment: null,
+      field: 'order_datetime'
+    },
+    order_status: {
+      type: DataTypes.INTEGER(4).UNSIGNED,
+      allowNull: false,
       defaultValue: '0',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'link_status'
-    },
-    note: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'note'
+      field: 'order_status'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -131,18 +178,23 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 't_class',
+    tableName: 'ads_t_order',
     comment: '',
     indexes: [
       {
-        name: 't_school_id',
+        name: 'sec_user_id',
         unique: false,
         type: 'BTREE',
-        fields: ['t_school_id']
+        fields: ['sec_user_id']
+      },
+      {
+        name: 'ads_m_rates_id',
+        unique: false,
+        type: 'BTREE',
+        fields: ['ads_m_rates_id']
       }
     ]
   };
-  const TClassModel = sequelize.define('t_class_model', attributes, options);
-  TClassModel.hasMany(t_class_member(), { foreignKey: 't_class_id' });
-  return TClassModel;
+  const AdsTOrderModel = sequelize.define('ads_t_order_model', attributes, options);
+  return AdsTOrderModel;
 };

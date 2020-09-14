@@ -14,60 +14,14 @@ module.exports = sequelize => {
       comment: null,
       field: 'id'
     },
-    type: {
-      type: DataTypes.STRING(50),
+    name: {
+      type: DataTypes.STRING(30),
       allowNull: false,
       defaultValue: '',
       primaryKey: false,
       autoIncrement: false,
       comment: null,
-      field: 'type',
-      unique: 'type'
-    },
-    content: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'content'
-    },
-    content_url: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'content_url'
-    },
-    activity: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: '',
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'activity'
-    },
-    action_yes: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'action_yes'
-    },
-    action_no: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      defaultValue: null,
-      primaryKey: false,
-      autoIncrement: false,
-      comment: null,
-      field: 'action_no'
+      field: 'name'
     },
     status: {
       type: DataTypes.INTEGER(4),
@@ -117,10 +71,10 @@ module.exports = sequelize => {
   };
   const options = {
     timestamps: false,
-    tableName: 'm_notification_type',
+    tableName: 'ads_m_payment_type',
     comment: '',
     indexes: []
   };
-  const MNotificationTypeModel = sequelize.define('m_notification_type_model', attributes, options);
-  return MNotificationTypeModel;
+  const AdsMPaymentTypeModel = sequelize.define('ads_m_payment_type_model', attributes, options);
+  return AdsMPaymentTypeModel;
 };

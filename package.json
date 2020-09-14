@@ -1,6 +1,6 @@
 {
   "name": "sfh-api",
-  "version": "1.2.101",
+  "version": "1.3.1",
   "description": "School From Home - API",
   "private": true,
   "scripts": {

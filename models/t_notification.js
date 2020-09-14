@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const m_notification_type_ = require('./m_notification_type');
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -162,6 +163,7 @@ module.exports = sequelize => {
       field: 'updated_by'
     }
   };
+
   const options = {
     timestamps: false,
     tableName: 't_notification',

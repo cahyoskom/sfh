@@ -17,10 +17,11 @@ exports.findAll = async (req, res) => {
   m_notification_type.action_yes,
   m_notification_type.action_no,
   t_notification.id AS id_notif,
+  t_notification.status,
   t_notification.m_notification_type_id,
   t_notification.notification_datetime, t_notification.is_read, 
   t_notification.receiver_user_id, sec_user.id,
-  IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 0, 'TODAY', IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 1, 'YESTERDAY', t_notification.notification_datetime)) humanDate 
+  IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 0, 'Hari Ini', IF(DATEDIFF(CURDATE(), DATE(t_notification.notification_datetime)) = 1, 'Kemarin', t_notification.notification_datetime)) humanDate 
   FROM m_notification_type INNER JOIN t_notification INNER 
   JOIN sec_user ON 
   m_notification_type.id=t_notification.m_notification_type_id 
@@ -38,8 +39,11 @@ exports.findAll = async (req, res) => {
 
 exports.deleteNotification = async (req, res) => {
   try {
-    let data = await t_notification().destroy({
-      where: { m_notification_type_id: req.params.id }
+    const obj = {
+      status: DELETED
+    };
+    let data = await t_notification().update(obj, {
+      where: { id: req.params.id }
     });
 
     if (!data) {

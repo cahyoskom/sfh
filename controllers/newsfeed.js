@@ -11,7 +11,7 @@ const moment = require('moment');
 const { ACTIVE, DELETED, DEACTIVE } = require('../enums/status.enums');
 
 exports.findAll = async (req, res) => {
-  sqlQuery = `select t_class_forum.published_datetime, t_class_forum.content, t_class_forum.status AS class_status, sec_user.name, sec_user.username, sec_user.status, sec_user.avatar,t_class.name AS class_name, t_class.status from t_class_forum INNER JOIN sec_user INNER JOIN T_CLASS where sec_user.id = t_class_forum.sec_user_id AND t_class_forum.status= :status AND t_class_forum.t_class_id = t_class.id AND t_class.id = :id`;
+  sqlQuery = `select t_class_forum.id, t_class_forum.published_datetime, t_class_forum.content, t_class_forum.status AS class_status, sec_user.name, sec_user.username, sec_user.status, sec_user.avatar,t_class.name AS class_name, t_class.status from t_class_forum INNER JOIN sec_user INNER JOIN T_CLASS where sec_user.id = t_class_forum.sec_user_id AND t_class_forum.status= :status AND t_class_forum.t_class_id = t_class.id AND t_class.id = :id`;
 
   var data = await query(sqlQuery, {
     status: ACTIVE,
@@ -46,10 +46,10 @@ exports.create = async (req, res) => {
           status: ACTIVE,
           created_date: moment().format(),
           created_by: people.name
-        }
+        };
         var temp = model_mention_class.create(new_mention);
         datmen.push(temp);
-      })
+      });
     }
     res.json({ data_post: datum, data_mention: datmen });
   } catch (err) {

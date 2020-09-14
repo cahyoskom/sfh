@@ -12,21 +12,5 @@ export const API_PATH = {
   requestActivation: '/request_activation',
   activating: '/activating',
   checkEmail: '/check_email',
-  profile: '/profile',
-  school: '/school',
-  schoolInvitation: '/school_invitation',
-  getClassInfo: '/class',
-  getClassMembers: '/class/member',
-  getSchoolInfo: '/school',
-  deleteClass: '/class',
-  editClass: '/class',
-  schoolByCode: '/school/code',
-  duplicateClass: '/class/duplicate',
-  updateMember: '/class/link-update/1',
-  addMember: '/class/add-member/1',
-  classInvitation: '/class_invitation',
-  createClass: '/class',
-  getClasses: '/class/user-classes',
-  task: '/task',
-  subject: '/subject'
+  profile: '/profile'
 };

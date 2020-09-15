@@ -651,7 +651,7 @@ exports.create = async function (req, res) {
       return;
     } else schoolId = check_school.id;
   }
-  let code = generateClassCode();
+  let code = await generateClassCode();
   var new_obj = {
     t_school_id: schoolId,
     code: code,

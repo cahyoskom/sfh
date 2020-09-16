@@ -60,7 +60,7 @@ exports.findAll = async function (req, res) {
   const dataLength = allData.length;
   console.log('dataLength: ' + dataLength);
 
-  res.json({ data: adsMSpot, dataLength: dataLength });
+  res.json({ data: adsMSpot, dataMSpotLength: dataLength });
 };
 
 exports.findOne = async function (req, res) {

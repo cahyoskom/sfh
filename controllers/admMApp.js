@@ -38,10 +38,10 @@ exports.findAll = async function (req, res) {
     }
   });
 
-  const dataAppLength = allData.length;
-  console.log('dataLength: ' + dataAppLength);
+  const dataLength = allData.length;
+  console.log('dataLength: ' + dataLength);
 
-  res.json({ data: adsMApp, dataAppLength: dataAppLength });
+  res.json({ data: adsMApp, dataMAppLength: dataLength });
 };
 
 exports.findOne = async function (req, res) {

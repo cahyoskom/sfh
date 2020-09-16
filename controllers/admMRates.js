@@ -50,10 +50,10 @@ exports.findAll = async function (req, res) {
     }
   });
 
-  const dataPageLength = allData.length;
-  console.log('dataPageLength: ' + dataPageLength);
+  const dataLength = allData.length;
+  console.log('dataLength: ' + dataLength);
 
-  res.json({ data: adsMRates, dataPageLength: dataPageLength });
+  res.json({ data: adsMRates, dataMRatesLength: dataLength });
 };
 
 exports.findOne = async function (req, res) {

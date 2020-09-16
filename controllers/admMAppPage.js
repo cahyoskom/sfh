@@ -43,10 +43,10 @@ exports.findAll = async function (req, res) {
     }
   });
 
-  const dataPageLength = allData.length;
-  console.log('dataPageLength: ' + dataPageLength);
+  const dataLength = allData.length;
+  console.log('dataLength: ' + dataLength);
 
-  res.json({ data: adsMAppPage, dataPageLength: dataPageLength });
+  res.json({ data: adsMAppPage, dataMPageLength: dataLength });
 };
 
 exports.findOne = async function (req, res) {

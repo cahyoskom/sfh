@@ -34,8 +34,12 @@ const {
   CLASS_CANCEL_INVITATION_USER,
   CLASS_REMOVE_USER,
   CLASS_DELETED,
-  CLASS_DUPLICATED
+  CLASS_DUPLICATED,
+  CLASS_ACCEPT_SCHOOL,
+  CLASS_REJECT_SCHOOL,
+  CLASS_REMOVE_SCHOOL
 } = require('../enums/notification-type.enums');
+const t_school_member = require('../models/t_school_member');
 
 async function isNotifNeeded(type, receiver_id, out_id, out_name, transaction) {
   var NOTIFICATION_TYPE = await m_notification_type().findOne({
@@ -1162,4 +1166,70 @@ exports.userClasses = async function (req, res) {
 
   res.json({ data: data });
   return;
+};
+
+exports.schoolRequest = async function (req, res) {
+  const class_owner = await getClassOwner(req.params.classId);
+  if (class_owner.id != req.user.id) {
+    return res.status(411).json({ message: 'Akun tidak berhak melakukan perubahan' });
+  }
+  const classObj = await t_class().findOne({ where: { id: req.params.classId } });
+  const schoolOwner = await t_school_member().findOne({
+    where: { t_school_id: classObj.t_school_id, sec_group_id: OWNER }
+  });
+
+  var update_obj;
+  if (req.body.accept == ACTIVE) {
+    update_obj = {
+      link_status: DONE, //DONE while accepted
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  } else {
+    update_obj = {
+      t_school_id: null,
+      link_status: DONE, //DONE even while decline or remove
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  }
+  const transaction = await beginTransaction();
+  try {
+    var update = await t_class().update(update_obj, {
+      where: { id: req.params.classId },
+      transaction
+    });
+
+    var notif_user = await isNotifNeeded(
+      req.body.accept === 1
+        ? CLASS_ACCEPT_SCHOOL
+        : req.body.accept === 0
+        ? CLASS_REJECT_SCHOOL
+        : CLASS_REMOVE_SCHOOL,
+      schoolOwner.sec_user_id,
+      schoolOwner.t_school_id,
+      't_school',
+      transaction
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: schoolOwner.sec_user_id,
+        out_name: 't_school',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: ACTIVE,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, transaction);
+    }
+    await transaction.commit();
+    res.json({ message: 'Link status berhasil diubah' });
+  } catch (err) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: err.message });
+  }
 };

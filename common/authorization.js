@@ -17,7 +17,6 @@ const urlAndMethodMapping = {
   '/check_email': 'GET',
   '/school_invitation': 'GET',
   '/class_invitation': 'GET',
-  '/adm-ads-aproval': 'GET'
 };
 
 module.exports = async (req, res, next) => {

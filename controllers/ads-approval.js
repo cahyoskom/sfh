@@ -1,4 +1,7 @@
+const sec_user = require('../models/sec_user');
 const ads_t_order = require('../models/ads_t_order');
+const ads_m_rates = require('../models/ads_m_rates');
+const ads_m_spot = require('../models/ads_m_spot');
 const moment = require('moment');
 const isBase64 = require('is-base64');
 const { ACTIVE, DELETED } = require('../enums/status.enums');
@@ -13,7 +16,26 @@ exports.findAll = async function (req, res) {
   const { page_item = 10, offset = 0, name = '' } = req.query;
   const q_item = parseInt(page_item);
   const q_offset = parseInt(offset);
+  const model_sec_user = sec_user();
   const model_ads_t_order = ads_t_order();
+  var data = await model_ads_t_order.findAll({
+    attributes: [
+      'id',
+      ['start_datetime', 'periode_awal'],
+      ['end_datetime', 'periode_akhir'],
+      ['deal_price', 'tarif'],
+      'order_datetime',
+      ['order_status', 'status']
+    ],
+    include:
+    {
+      model: model_sec_user, as: 'sec_user_model',
+      attributes: [
+        'name',
+        'email',
+      ]
+    },
+  });
 
   if (name) {
     filterName = { name: { [Op.like]: name } };
@@ -28,17 +50,41 @@ exports.findAll = async function (req, res) {
     offset: q_offset
   });
 
-  res.json({ dataLength: ads_t_orders.count, data: ads_t_orders.rows, });
+  res.json({ dataLength: ads_t_orders.count, data: data, });
 };
 
-// exports.findOne = async function (req, res) {
-//   const model_ads_t_order = ads_t_order();
-//   var user = await model_ads_t_order.findOne({
-//     where: { id: req.params.id }
-//   });
+exports.findOne = async function (req, res) {
+  const model_ads_t_order = ads_t_order();
+  const model_ads_m_rates = ads_m_rates();
+  const model_ads_m_spot = ads_m_spot();
 
-//   res.json({ data: user });
-// };
+
+  var data = await model_ads_t_order.findOne({
+    where: { id: req.params.id },
+    attributes: [
+      'id',
+      'order_status'
+    ],
+
+    include:
+    {
+      model: model_ads_m_rates, as: 'ads_m_rates_model',
+      attributes: [
+        'id',
+      ],
+      include: {
+        model: model_ads_m_spot, as: 'ads_m_spot_model',
+        attributes: [
+          'position',
+          'width',
+          'height',
+        ],
+      }
+    }
+  });
+
+  res.json({ data: data });
+};
 
 // exports.create = async function (req, res) {
 //   const model_ads_t_order = ads_t_order();

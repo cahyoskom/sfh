@@ -1,5 +1,8 @@
 const { DataTypes } = require('sequelize');
 const db = require('../database');
+const sec_user = require('../models/sec_user');
+const ads_m_rates = require('../models/ads_m_rates');
+
 
 module.exports = sequelize => {
   if (!sequelize) sequelize = db.sequelize();
@@ -196,5 +199,7 @@ module.exports = sequelize => {
     ]
   };
   const AdsTOrderModel = sequelize.define('ads_t_order_model', attributes, options);
+  AdsTOrderModel.belongsTo(sec_user(), { foreignKey: 'sec_user_id' });
+  AdsTOrderModel.belongsTo(ads_m_rates(), { foreignKey: 'ads_m_rates_id' });
   return AdsTOrderModel;
 };

@@ -34,8 +34,12 @@ const {
   CLASS_CANCEL_INVITATION_USER,
   CLASS_REMOVE_USER,
   CLASS_DELETED,
-  CLASS_DUPLICATED
+  CLASS_DUPLICATED,
+  CLASS_ACCEPT_SCHOOL,
+  CLASS_REJECT_SCHOOL,
+  CLASS_REMOVE_SCHOOL
 } = require('../enums/notification-type.enums');
+const t_school_member = require('../models/t_school_member');
 
 async function isNotifNeeded(type, receiver_id, out_id, out_name, transaction) {
   var NOTIFICATION_TYPE = await m_notification_type().findOne({
@@ -303,7 +307,7 @@ exports.classMemberLinkStatus = async function (req, res) {
           description: {
             [Op.or]: [`CLASS_${classId}_TEACHER_INVITATION`, `CLASS_${classId}_STUDENT_INVITATION`]
           },
-          status: ACTIVE
+          status: { [Op.gte]: ACTIVE }
         }
       });
       if (confirm) {
@@ -397,7 +401,7 @@ exports.member = async function (req, res) {
     students = await model_class_member.findAll({
       where: {
         t_class_id: classId,
-        status: ACTIVE,
+        status: { [Op.gte]: ACTIVE },
         sec_group_id: PARTICIPANT,
         link_status: DONE
       }
@@ -464,7 +468,7 @@ async function checkAuthority(userId) {
   var member = await model_class_member.findAll({
     where: {
       sec_user_id: userId,
-      status: ACTIVE,
+      status: { [Op.gte]: ACTIVE },
       sec_group_id: { [Op.or]: [1, 2] }
     }
   });
@@ -480,12 +484,12 @@ async function getClassOwner(classId) {
   var memberRelation = await model_class_member.findOne({
     where: {
       t_class_id: classId,
-      status: ACTIVE,
+      status: { [Op.gte]: ACTIVE },
       sec_group_id: OWNER
     }
   });
   var owner = await sec_user().findOne({
-    where: { id: memberRelation.sec_user_id, status: ACTIVE }
+    where: { id: memberRelation.sec_user_id, status: { [Op.gte]: ACTIVE } }
   });
   return owner;
 }
@@ -612,7 +616,7 @@ async function deleting(classId, transaction) {
 exports.findOne = async function (req, res) {
   const model_class = t_class();
   var datum = await model_class.findOne({
-    where: { id: req.params.id, status: ACTIVE }
+    where: { id: req.params.id, status: { [Op.gte]: ACTIVE } }
   });
   if (!datum) {
     res.status(401).json({ message: 'Kelas tidak ditemukan.' });
@@ -685,7 +689,7 @@ exports.duplicate = async function (req, res) {
   const transaction = await beginTransaction();
   const model_class = t_class();
   var datum = await model_class.findOne({
-    where: { id: req.params.id, status: ACTIVE }
+    where: { id: req.params.id, status: { [Op.gte]: ACTIVE } }
   });
   if (!datum) {
     res.status(401).json({ message: 'Kelas tidak ditemukan.' });
@@ -712,7 +716,7 @@ exports.duplicate = async function (req, res) {
   const model_class_member = t_class_member();
   let members = await model_class_member.findAll({
     where: {
-      status: ACTIVE,
+      status: { [Op.gte]: ACTIVE },
       t_class_id: datum.id
     }
   });
@@ -806,7 +810,7 @@ exports.update = async function (req, res) {
     let all_members = [];
     var class_members = await t_class_member().findAll({
       attributes: ['sec_user_id'],
-      where: { t_class_id: req.params.id, status: ACTIVE, link_status: DONE }
+      where: { t_class_id: req.params.id, status: { [Op.gte]: ACTIVE }, link_status: DONE }
     });
     for (membership in class_members) {
       const user = await sec_user().findOne({
@@ -844,7 +848,7 @@ exports.update = async function (req, res) {
       return;
     }
     var updatedDatum = await model_class.findOne({
-      where: { id: req.params.id, status: ACTIVE }
+      where: { id: req.params.id, status: { [Op.gte]: ACTIVE } }
     });
     res.json({ message: 'Data has been updated.', data: updatedDatum });
   } catch (err) {
@@ -863,7 +867,7 @@ exports.delete = async function (req, res) {
     let all_members = [];
     var class_members = await t_class_member().findAll({
       attributes: ['sec_user_id'],
-      where: { t_class_id: req.params.id, status: ACTIVE, link_status: DONE }
+      where: { t_class_id: req.params.id, status: { [Op.gte]: ACTIVE }, link_status: DONE }
     });
     for (membership in class_members) {
       const user = await sec_user().findOne({
@@ -940,7 +944,7 @@ exports.inviteMember = async function (req, res) {
 
   try {
     var check_user = await sec_user().findOne({
-      where: { email: req.body.email, status: ACTIVE },
+      where: { email: req.body.email, status: { [Op.gte]: ACTIVE } },
       transaction
     });
     if (!check_user) throw new Error('Email belum terdaftar sebagai pengguna');
@@ -956,7 +960,7 @@ exports.inviteMember = async function (req, res) {
 
     var description,
       invitation = await sec_confirmation().findOne({
-        where: { sec_user_id: check_user.id, status: ACTIVE },
+        where: { sec_user_id: check_user.id, status: { [Op.gte]: ACTIVE } },
         transaction
       });
     if (!invitation) {
@@ -978,7 +982,7 @@ exports.inviteMember = async function (req, res) {
     }
 
     var getClass = await t_class().findOne({
-      where: { id: classId, status: ACTIVE },
+      where: { id: classId, status: { [Op.gte]: ACTIVE } },
       transaction
     });
     //send invitation
@@ -1054,7 +1058,7 @@ exports.acceptInvitation = async function (req, res) {
       where: {
         sec_user_id: invitation.sec_user_id,
         t_class_id: classId,
-        status: ACTIVE
+        status: { [Op.gte]: ACTIVE }
       }
     });
     if (check_member) {
@@ -1140,20 +1144,21 @@ exports.userClasses = async function (req, res) {
 
   const user = req.user;
   let memberData = await t_class_member().findAll({
-    where: { sec_user_id: user.id, status: ACTIVE }
+    where: { sec_user_id: user.id, status: { [Op.gte]: ACTIVE } }
   });
 
   data = [];
   for (i in memberData) {
     let getclass = await t_class().findOne({
-      where: { id: memberData[i].t_class_id, status: ACTIVE }
+      where: { id: memberData[i].t_class_id, status: { [Op.gte]: ACTIVE } }
     });
+    if (!getclass) continue;
     let classData = JSON.parse(JSON.stringify(getclass));
     let ownerMember = await t_class_member().findOne({
-      where: { t_class_id: getclass.id, sec_group_id: 1, status: ACTIVE }
+      where: { t_class_id: getclass.id, sec_group_id: 1, status: { [Op.gte]: ACTIVE } }
     });
     let owner = await sec_user().findOne({
-      where: { id: ownerMember.sec_user_id, status: ACTIVE }
+      where: { id: ownerMember.sec_user_id, status: { [Op.gte]: ACTIVE } }
     });
     classData['owner'] = owner.name;
     data.push(classData);
@@ -1161,4 +1166,70 @@ exports.userClasses = async function (req, res) {
 
   res.json({ data: data });
   return;
+};
+
+exports.schoolRequest = async function (req, res) {
+  const class_owner = await getClassOwner(req.params.classId);
+  if (class_owner.id != req.user.id) {
+    return res.status(411).json({ message: 'Akun tidak berhak melakukan perubahan' });
+  }
+  const classObj = await t_class().findOne({ where: { id: req.params.classId } });
+  const schoolOwner = await t_school_member().findOne({
+    where: { t_school_id: classObj.t_school_id, sec_group_id: OWNER }
+  });
+
+  var update_obj;
+  if (req.body.accept == ACTIVE) {
+    update_obj = {
+      link_status: DONE, //DONE while accepted
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  } else {
+    update_obj = {
+      t_school_id: null,
+      link_status: DONE, //DONE even while decline or remove
+      updated_date: moment().format(),
+      updated_by: req.user.email
+    };
+  }
+  const transaction = await beginTransaction();
+  try {
+    var update = await t_class().update(update_obj, {
+      where: { id: req.params.classId },
+      transaction
+    });
+
+    var notif_user = await isNotifNeeded(
+      req.body.accept === 1
+        ? CLASS_ACCEPT_SCHOOL
+        : req.body.accept === 0
+        ? CLASS_REJECT_SCHOOL
+        : CLASS_REMOVE_SCHOOL,
+      schoolOwner.sec_user_id,
+      schoolOwner.t_school_id,
+      't_school',
+      transaction
+    );
+    if (notif_user) {
+      var new_obj = {
+        m_notification_type_id: notif_user.m_notification_type_id,
+        sender_user_id: req.user.id,
+        receiver_user_id: notif_user.sec_user_id,
+        out_id: schoolOwner.sec_user_id,
+        out_name: 't_school',
+        notification_datetime: moment().format(),
+        notification_year: moment().format('YYYY'),
+        notification_month: moment().format('M'),
+        status: ACTIVE,
+        created_date: moment().format()
+      };
+      var create_notif = await t_notification().create(new_obj, transaction);
+    }
+    await transaction.commit();
+    res.json({ message: 'Link status berhasil diubah' });
+  } catch (err) {
+    await transaction.rollback();
+    res.status(411).json({ error: null, message: err.message });
+  }
 };

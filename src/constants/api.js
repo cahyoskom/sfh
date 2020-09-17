@@ -12,5 +12,9 @@ export const API_PATH = {
   requestActivation: '/request_activation',
   activating: '/activating',
   checkEmail: '/check_email',
-  profile: '/profile'
+  profile: '/profile',
+
+  admadslist: '/ads',
+  admadsdetail: '/ads/pratinjau/id:',
+  admadsdetailupdate: '/admadsdetailupdate/id:'
 };

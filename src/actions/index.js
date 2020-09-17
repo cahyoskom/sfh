@@ -74,3 +74,8 @@ export const saveRegister = () => ({
 export const newPassword = () => ({
   type: types.SET_NEW_PASSWORD
 });
+
+// ADMIN ADS APROVAL
+export const adminAprovalGetDataAds = () => ({
+  type: types.ADMIN_APROVAL_GET_DATA_ADS
+});

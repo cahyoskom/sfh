@@ -49,6 +49,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 
 
 class AdsAproval extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -145,7 +146,7 @@ class AdsAproval extends Component {
               </Grid>
 
               <Grid container item spacing={3} xs={12} name="Grid Container 3" justify="center" alignItem="center">
-                <Grid item xs={12} ><Paper elevation={0} style={{ padding: '0px 15px 0px 15px' }}><img
+                <Grid item xs={12} ><Paper elevation={0} style={{ padding: '0px 10px 0px 10px' }}><img
                   style={{
                     margin: 'auto',
                     display: 'block',

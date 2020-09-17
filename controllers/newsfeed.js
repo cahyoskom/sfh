@@ -45,13 +45,53 @@ exports.create = async (req, res) => {
           sec_user_id: people.id,
           status: ACTIVE,
           created_date: moment().format(),
-          created_by: people.name
+          created_by: req.user.name
         };
         var temp = model_mention_class.create(new_mention);
         datmen.push(temp);
       });
     }
     res.json({ data_post: datum, data_mention: datmen });
+  } catch (err) {
+    res.status(411).json({ error: 11, message: err.message });
+  }
+};
+
+exports.createComment = async (req, res) => {
+  const model_forum_comment = t_class_forum_comment();
+  const model_forum_comment_mention = t_class_forum_comment_mention();
+
+  var new_comment_post = {
+    t_class_forum_id: req.body.t_class_forum_id,
+    sec_user_id: req.user.id,
+    published_datetime: moment().format(),
+    content: req.body.content,
+    status: ACTIVE,
+    created_date: moment().format(),
+    created_by: req.user.name
+  };
+
+  try {
+    var datmen = [];
+    var datum = await model_forum_comment.create(new_comment_post);
+    if (req.body.mentionedPeoples.length != 0) {
+      req.body.mentionedPeoples.map(people => {
+        var new_mention = {
+          t_class_forum_comment_id: datum.dataValues.id,
+          sec_user_id: people[0],
+          status: ACTIVE,
+          created_date: moment().format(),
+          created_by: req.user.name
+        };
+        var temp = model_forum_comment_mention.create(new_mention);
+        datmen.push(temp);
+      });
+    }
+
+    res.json({
+      data_post: datum,
+      data_mention: datmen
+    });
   } catch (err) {
     res.status(411).json({ error: 11, message: err.message });
   }

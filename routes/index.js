@@ -15,6 +15,7 @@ module.exports = function (router) {
     });
     res.end(slug.value + ' v.' + version);
   });
+
   router.post('/login', auth.login);
   router.post('/login_google', authGoogle.googleLogin);
   router.get('/check_token/:token', auth.checkToken);

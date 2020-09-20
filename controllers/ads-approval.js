@@ -21,6 +21,7 @@ exports.findAll = async function (req, res) {
   var data = await model_ads_t_order.findAll({
     attributes: [
       'id',
+      'title',
       ['start_datetime', 'periode_awal'],
       ['end_datetime', 'periode_akhir'],
       ['deal_price', 'tarif'],
@@ -63,7 +64,9 @@ exports.findOne = async function (req, res) {
     where: { id: req.params.id },
     attributes: [
       'id',
-      'order_status'
+      'order_status',
+      'content',
+      'content_type'
     ],
 
     include:
@@ -83,7 +86,7 @@ exports.findOne = async function (req, res) {
     }
   });
 
-  res.json({ data: data });
+  res.json({ data: [data] });
 };
 
 // exports.create = async function (req, res) {

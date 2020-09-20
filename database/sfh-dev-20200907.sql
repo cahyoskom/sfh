@@ -1264,6 +1264,9 @@ CREATE TABLE `t_school_todo_option` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- Add colum 'title' at  table : ads_t_order
+ALTER TABLE `ads_t_order` ADD `title` VARCHAR(255) NULL AFTER `ads_m_rates_id`; 
+
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

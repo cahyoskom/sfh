@@ -69,13 +69,11 @@ class Root extends React.Component {
                   <PrivateRoute exact path={`${process.env.PUBLIC_URL}/`} component={AdsList} authenticated={this.authCheck()} />
                   <PrivateRoute exact path={`${process.env.PUBLIC_URL}/pratinjau/:id`} component={AdsAproval} authenticated={this.authCheck()} />
                   <PrivateRoute
-                    exact
                     path={`${process.env.PUBLIC_URL}/`}
                     component={AdsList}
                     authenticated={this.authCheck()}
                   />
                   <PrivateRoute
-                    exact
                     path={`${process.env.PUBLIC_URL}/pratinjau/:id`}
                     component={AdsAproval}
                     authenticated={this.authCheck()}

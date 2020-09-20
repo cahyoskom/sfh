@@ -1,5 +1,6 @@
 import {
-  ADMIN_APROVAL_GET_DATA_ADS_SUCCESS
+  ADMIN_APROVAL_GET_DATA_ADS_SUCCESS,
+  ADMIN_APROVAL_GET_DETAIL_DATA_ADS_SUCCESS
 } from '../constants/ActionTypes';
 
 const initialState = {
@@ -14,6 +15,12 @@ export default function adminAdsAproval(state = initialState, action) {
         ...state,
         // data: action.value.listAds    //kalo pake saga langsung tanpa api
         data: action.value.data.data
+      };
+    case ADMIN_APROVAL_GET_DETAIL_DATA_ADS_SUCCESS:
+      console.log("Reducer : ", action);
+      return {
+        ...state,
+        data: action.value.data.data,
       };
     default:
   }

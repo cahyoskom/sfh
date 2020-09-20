@@ -20,15 +20,23 @@ import { Grid, Box, Collapse, IconButton, Container, Breadcrumbs, Typography, Bu
 
 class AdsList extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   componentDidMount() {
+    console.log('componentDidMountCalled');
     const { adminAprovalGetDataAds } = this.props;
     adminAprovalGetDataAds();
   }
+
+  constructor(props) {
+    super(props);
+    this.state = {};
+    console.log('constructor : ', this.state);
+  }
+  onPratinjauClick = (e) => {
+    console.log('onPratinjauClick : ', e);
+    console.log('onPratinjauClick : ', this.props.match.params.id);
+    //adminAprovalGetDetailDataAds(e);
+  };
+
   render() {
     return (
       <div>
@@ -72,9 +80,9 @@ class AdsList extends Component {
                     <TableBody>
                       {Array.isArray(this.props.admListAdsState.data) &&
                         this.props.admListAdsState.data.map(row => (
-                          <TableRow hover key={row.id}>
-                            <TableCell style={{ color: '#000000' }}>{row.sec_user_model.email}</TableCell>
-                            <TableCell style={{ color: '#000000' }}>{row.sec_user_model.name}</TableCell>
+                          <TableRow hover key={row.id}>{row.content}
+                            <TableCell style={{ color: '#000000' }}>{row.title}</TableCell>
+                            <TableCell style={{ color: '#000000' }}>{'row.sec_user_model.name'}</TableCell>
                             <TableCell style={{ color: '#000000' }}>{0}</TableCell>
                             <TableCell style={{
                               color: '#000000',
@@ -89,7 +97,10 @@ class AdsList extends Component {
                             )}
                             <TableCell >
                               <Link to={`${process.env.PUBLIC_URL}/pratinjau/${row.id}`}>
-                                <Button style={{ backgroundColor: '#15A3B8' }} className='btn text-white'>
+                                <Button
+                                  style={{ backgroundColor: '#15A3B8' }}
+                                  className='btn text-white'
+                                >
                                   Pratinjau
                             </Button>
                               </Link>

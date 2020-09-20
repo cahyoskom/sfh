@@ -79,3 +79,7 @@ export const newPassword = () => ({
 export const adminAprovalGetDataAds = () => ({
   type: types.ADMIN_APROVAL_GET_DATA_ADS
 });
+export const adminAprovalGetDetailDataAds = id => ({
+  type: types.ADMIN_APROVAL_GET_DETAIL_DATA_ADS,
+  id
+});

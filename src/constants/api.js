@@ -15,6 +15,6 @@ export const API_PATH = {
   profile: '/profile',
 
   admadslist: '/ads',
-  admadsdetail: '/ads/pratinjau/id:',
+  admadsdetail: '/ads/pratinjau/',
   admadsdetailupdate: '/admadsdetailupdate/id:'
 };
